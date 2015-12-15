@@ -32,6 +32,9 @@ public class Function implements Serializable {
 
 	@Column
 	private String key;
+	
+	@Column
+	private boolean exportReg;
 
 	public Long getId() {
 		return this.id;
@@ -88,6 +91,14 @@ public class Function implements Serializable {
 
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+	public boolean isExportReg() {
+		return exportReg;
+	}
+
+	public void setExportReg(boolean exportReg) {
+		this.exportReg = exportReg;
 	}
 
 	@Override

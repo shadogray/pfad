@@ -9,6 +9,7 @@ package at.tfr.pfad.view;
 
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,6 @@ import com.google.common.net.HttpHeaders;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Member;
-import at.tfr.pfad.model.Squad;
 
 @Named
 @RequestScoped
@@ -99,18 +99,21 @@ public class DownloadBean {
 			c.setCellValue(h);
 		}
 
+		Collection<Member> leaders = squadRepo.findLeaders();
+
 		for (Member m : membRepo.findAll().stream().sorted().collect(Collectors.toList())) {
 
-			if (!withLocal && !m.isAktiv())
+			if (!withLocal && !(m.isAktiv() || leaders.contains(m)
+					|| m.getFunktionen().stream().filter(f -> f.isExportReg()).count() > 0))
 				continue;
 
 			ValidationResult vr = validate(m);
-			
+
 			row = sheet.createRow(rCount++);
 			if (!vr.valid) {
 				row.getRowStyle().setFillBackgroundColor(HSSFColor.RED.index);
 			}
-			
+
 			int cCount = 0;
 			row.createCell(cCount++).setCellValue(m.getBVKey());
 			row.createCell(cCount++).setCellValue(m.getGruppenSchluessel());
@@ -182,18 +185,18 @@ public class DownloadBean {
 		}
 		return sb.toString().trim();
 	}
-	
+
 	public ValidationResult validate(Member member) {
 		if (member.isAktiv() && member.getVollzahler() != null && !member.getVollzahler().isAktiv()) {
 			return new ValidationResult(false, "Vollzahler INAKTIV");
 		}
 		return new ValidationResult(true, "");
 	}
-	
+
 	public static class ValidationResult {
 		public boolean valid;
 		public String message;
-		
+
 		public ValidationResult() {
 		}
 

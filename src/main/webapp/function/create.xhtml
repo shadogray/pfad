@@ -48,6 +48,12 @@
 					<h:message for="functionBeanFunctionKey" styleClass="error"/>
 				</h:panelGroup>
 				<h:outputText/>
+				<h:outputLabel for="functionBeanFunctionExportReg" value="ExportReg:"/>
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="functionBeanFunctionExportReg" value="#{functionBean.function.exportReg}"/>
+					<h:message for="functionBeanFunctionExportReg" styleClass="error"/>
+				</h:panelGroup>
+				<h:outputText/>
 			</h:panelGrid>
 
 			<div class="buttons">

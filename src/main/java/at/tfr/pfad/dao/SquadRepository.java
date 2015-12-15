@@ -10,6 +10,7 @@ package at.tfr.pfad.dao;
 import java.util.List;
 
 import org.apache.deltaspike.data.api.EntityRepository;
+import org.apache.deltaspike.data.api.Query;
 import org.apache.deltaspike.data.api.Repository;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
@@ -42,5 +43,21 @@ public abstract class SquadRepository implements EntityRepository<Squad, Long>, 
 		leaders.addAll(findByAssistant(responsible));
 		return leaders;
 	}
+
+	public List<Member> findLeaders() {
+		List<Member> leaders = findLeadersFemale();
+		leaders.addAll(findLeadersMale());
+		leaders.addAll(findAssistants());
+		return leaders;
+	}
+
+	@Query(named="Squad.leadersFemale")
+	public abstract List<Member> findLeadersFemale();
+
+	@Query(named="Squad.leadersMale")
+	public abstract List<Member> findLeadersMale();
+
+	@Query(named="Squad.assistants")
+	public abstract List<Member> findAssistants();
 
 }

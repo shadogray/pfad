@@ -31,6 +31,9 @@
 			<h:outputLabel for="functionBeanFunctionKey" value="Key:"/>
 			<h:outputText id="functionBeanFunctionKey" value="#{functionBean.function.key}"/>
 			<h:outputText/>
+			<h:outputLabel value="ExportReg:"/>
+			<h:outputText styleClass="#{functionBean.function.exportReg ? 'boolean-true' : 'boolean-false'}" value=""/>
+			<h:outputText/>
 		</h:panelGrid>
 
 		<div class="buttons">

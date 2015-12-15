@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:forgeview="http://jboss.org/forge/view"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	template="/resources/scaffold/pageTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="page" value='#{memberBean.page}'/>
+		<f:event type="preRenderView" listener='#{memberBean.paginate}'/>
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Search Member entities"/>
+
+	<ui:define name="header">
+		Member
+	</ui:define>
+
+	<ui:define name="subheader">
+		Search Member entities
+	</ui:define>
+
+	<ui:define name="footer"/>
+
+	<ui:define name="main">
+		<h:form id="search">
+			<f:validateBean disabled="true">
+				<h:panelGroup styleClass="search">
+
+					<h:panelGrid columnClasses="label,component,required" columns="3">
+						<h:outputLabel for="memberBeanExampleBVKey" value="BV Key:"/>
+						<h:panelGroup>
+							<h:inputText id="memberBeanExampleBVKey" value="#{memberBean.example.BVKey}"/>
+							<h:message for="memberBeanExampleBVKey" styleClass="error"/>
+						</h:panelGroup>
+						<h:outputText/>
+						<h:outputLabel for="memberBeanExampleVorname" value="Vorname:"/>
+						<h:panelGroup>
+							<rich:autocomplete id="memberBeanExampleVorname" value="#{memberBean.example.vorname}" mode="lazyClient" autocompleteList="#{memberBean.distinctVorname}" clientFilterFunction="autoFilter"/>
+							<h:message for="memberBeanExampleVorname" styleClass="error"/>
+						</h:panelGroup>
+						<h:outputText/>
+						<h:outputLabel for="memberBeanExampleName" value="Name:"/>
+						<h:panelGroup>
+							<rich:autocomplete id="memberBeanExampleName" value="#{memberBean.example.name}" mode="lazyClient" autocompleteList="#{memberBean.distinctName}" minChars="2" clientFilterFunction="autoFilter"/>
+							<h:message for="memberBeanExampleName" styleClass="error"/>
+						</h:panelGroup>
+						<h:outputText/>
+						<h:outputLabel for="memberBeanExampleTelefon" value="Telefon:"/>
+						<h:panelGroup>
+							<h:inputText id="memberBeanExampleTelefon" value="#{memberBean.example.telefon}"/>
+							<h:message for="memberBeanExampleTelefon" styleClass="error"/>
+						</h:panelGroup>
+						<h:outputText/>
+						<h:outputLabel for="squadBeanExampleTrupp" value="Trupp:"/>
+						<h:panelGroup>
+							<h:selectOneMenu converter="#{squadBean.converter}" id="squadBeanExampleTrupp" value="#{memberBean.example.trupp}">
+								<f:selectItem/>
+								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{squadBean.all}" var="_item"/>
+							</h:selectOneMenu>
+							<h:message for="squadBeanExampleTrupp" styleClass="error"/>
+						</h:panelGroup>
+						<h:outputText/>
+						<h:outputLabel for="memberBeanExampleFunktion" value="Funktion:"/>
+						<h:panelGroup>
+							<h:selectManyListbox converter="#{functionBean.converter}" id="memberBeanExampleFunktion" value="#{memberBean.example.funktionen}" size="2">
+								<f:selectItem />
+								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{functionBean.all}" var="_item"/>
+							</h:selectManyListbox>
+							<h:message for="memberBeanExampleFunktion" styleClass="error"/>
+						</h:panelGroup>
+						<h:outputText/>
+					</h:panelGrid>
+					<h:panelGroup styleClass="buttons">
+						<h:commandLink value="Search" action='#{memberBean.search}' styleClass="btn btn-primary"/>
+						<h:commandLink value="Create New" action='#{memberBean.create}' styleClass="btn btn-primary"/>
+					</h:panelGroup>
+				</h:panelGroup>
+			</f:validateBean>
+			
+			<h:dataTable id="memberBeanPageItems" styleClass="data-table" value="#{memberBean.pageItems}" var="_item">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="BV Key"/>
+					</f:facet>
+					<h:link outcome="/member/view">
+						<f:param name="id" value="#{_item.id}"/>
+						<h:outputText id="itemBVKey" value="#{_item.BVKey}"/>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Name"/>
+					</f:facet>
+					<h:link outcome="/member/view">
+						<f:param name="id" value="#{_item.id}"/>
+						<h:outputText id="itemName" value="#{_item.name}"/>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Vorname"/>
+					</f:facet>
+					<h:link outcome="/member/view">
+						<f:param name="id" value="#{_item.id}"/>
+						<h:outputText id="itemVorname" value="#{_item.vorname}"/>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Aktiv"/>
+					</f:facet>
+					<h:link outcome="/member/view">
+						<f:param name="id" value="#{_item.id}"/>
+						<h:outputText id="itemAktiv" value="#{_item.aktiv}"/>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Trupp"/>
+					</f:facet>
+					<h:link outcome="/member/view">
+						<f:param name="id" value="#{_item.id}"/>
+						<h:outputText id="itemTrupp" value="#{_item.trupp.name}"/>
+					</h:link>
+				</h:column>
+			</h:dataTable>
+			<ui:include src="/resources/scaffold/paginator.xhtml">
+				<ui:param name="paginatorBean" value='#{memberBean}'/>
+			</ui:include>
+		</h:form>
+			
+	</ui:define>
+
+</ui:composition>

@@ -20,11 +20,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
 import at.tfr.pfad.SquadType;
+
+@NamedQueries({
+	@NamedQuery(name="Squad.leadersFemale", query="select s.leaderFemale from Squad s"),
+	@NamedQuery(name="Squad.leadersMale", query="select s.leaderMale from Squad s"),
+	@NamedQuery(name="Squad.assistants", query="select a from Squad s inner join s.assistants a"),
+})
+
 @Entity
 public class Squad implements Serializable, Comparable<Squad> {
 
