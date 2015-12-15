@@ -15,12 +15,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import javax.persistence.Version;
+
 @Entity
 public class Function implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "function_seq")
-	@SequenceGenerator(name = "function_seq", sequenceName = "function_seq", allocationSize=1, initialValue=1)
+	@SequenceGenerator(name = "function_seq", sequenceName = "function_seq", allocationSize = 1, initialValue = 1)
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	@Version
@@ -32,7 +33,7 @@ public class Function implements Serializable {
 
 	@Column
 	private String key;
-	
+
 	@Column
 	private boolean exportReg;
 
@@ -106,6 +107,7 @@ public class Function implements Serializable {
 		String result = "" + function;
 		if (key != null && !key.trim().isEmpty())
 			result += ", key: " + key;
+		result += ", reg: " + exportReg;
 		return result;
 	}
 }
