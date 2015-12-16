@@ -137,7 +137,7 @@ public class DownloadBean {
 					|| m.getFunktionen().stream().filter(f -> f.isExportReg()).count() > 0))
 				continue;
 			
-			if (squads != null) {
+			if (squads != null && squads.length > 0) {
 				if (!Stream.of(squads).anyMatch(s->s.equals(m.getTrupp()))) {
 					continue;
 				}
