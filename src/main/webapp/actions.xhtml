@@ -20,13 +20,13 @@
 		<h:form id="download">
 			<h:panelGroup styleClass="buttons">
 				<h:outputLabel value="Registrierungs-Daten" />
-				<h:commandButton value="Download Registrierung" action="#{downloadBean.downloadRegistrierung()}"
+				<h:commandLink value="Download Registrierung" action="#{downloadBean.downloadRegistrierung()}"
 					styleClass="btn btn-primary" disabled="#{!memberBean.admin and !memberBean.gruppe}" />
 			</h:panelGroup>
 
 			<h:panelGroup styleClass="buttons">
 				<h:outputLabel value="Daten gesamt" />
-				<h:commandButton value="Download Gesamt" action="#{downloadBean.downloadAll()}"
+				<h:commandLink value="Download Gesamt" action="#{downloadBean.downloadAll()}"
 					styleClass="btn btn-primary" disabled="#{!memberBean.admin and !memberBean.gruppe}" />
 			</h:panelGroup>
 		</h:form>

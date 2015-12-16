@@ -18,6 +18,9 @@ import javax.persistence.Version;
 @Entity
 public class Configuration implements Serializable {
 
+	public static final String BADEN_KEY = "BAD";
+	public static final String BADEN_KEYPFX = "3-BAD-";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="configuration_seq")
 	@SequenceGenerator(name="configuration_seq", sequenceName="configuration_seq", allocationSize=1, initialValue=1)

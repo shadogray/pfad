@@ -101,10 +101,15 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 	 * Support updating and deleting Configuration entities
 	 */
 
+	@Override
+	public boolean isUpdateAllowed() {
+		return isAdmin() || isGruppe();
+	}
+	
 	public String update() {
 		this.conversation.end();
 
-		if (!sessionContext.isCallerInRole(Roles.admin.name()) && !sessionContext.isCallerInRole(Roles.gruppe.name()))
+		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe may update entry");
 		
 		try {
@@ -126,7 +131,7 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 	public String delete() {
 		this.conversation.end();
 
-		if (!sessionContext.isCallerInRole(Roles.admin.name()))
+		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");
 		
 		try {

@@ -238,13 +238,13 @@
 			</h:panelGrid>
 
 			<div class="buttons">
-				<h:commandLink value="Save" action='#{memberBean.update}' styleClass="btn btn-primary"/>
+				<h:commandLink value="Save" action='#{memberBean.update}' styleClass="btn btn-primary" disabled="#{!memberBean.updateAllowed}"/>
 				<c:choose>
 					<c:when test='#{!empty memberBean.id}'>
 						<h:link value="Cancel" outcome="view" styleClass="btn btn-primary">
 							<f:param name="id" value='#{memberBean.id}'/>
 						</h:link>
-						<h:commandLink value="Delete" action='#{memberBean.delete}' styleClass="btn btn-primary" disabled="#{!memberBean.admin and !memberBean.gruppe}"/>
+						<h:commandLink value="Delete" action='#{memberBean.delete}' styleClass="btn btn-primary" disabled="#{!memberBean.deleteAllowed}"/>
 					</c:when>
 					<c:otherwise>
 						<h:link value="Cancel" outcome="search" styleClass="btn btn-primary"/>

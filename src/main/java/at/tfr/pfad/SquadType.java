@@ -13,13 +13,13 @@ public enum SquadType {
 	public String getKey(Sex sex) {
 		switch (this) {
 		case WIWO:
-			return sex == Sex.W ? "WI" : "WO";
+			return Sex.W.equals(sex) ? "WI" : "WO";
 		case GUSP:
-			return sex == Sex.W ? "GU" : "SP";
+			return Sex.W.equals(sex) ? "GU" : "SP";
 		case CAEX:
-			return sex == Sex.W ? "CA" : "EX";
+			return Sex.W.equals(sex) ? "CA" : "EX";
 		case RARO:
-			return sex == Sex.W ? "RA" : "RO";
+			return Sex.W.equals(sex) ? "RA" : "RO";
 		}
 		return "";
 	}

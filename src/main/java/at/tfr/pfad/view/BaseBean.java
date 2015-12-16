@@ -19,7 +19,7 @@ import javax.persistence.PersistenceContextType;
 
 import org.jboss.logging.Logger;
 
-public class BaseBean implements Serializable {
+public abstract class BaseBean implements Serializable {
 
 	protected Logger log = Logger.getLogger(getClass());
 	
@@ -49,4 +49,10 @@ public class BaseBean implements Serializable {
 	public SessionContext getSessionContext() {
 		return sessionContext;
 	}
+	
+	public abstract boolean isUpdateAllowed();
+	public boolean isDeleteAllowed() {
+		return isAdmin();
+	}
+	
 }

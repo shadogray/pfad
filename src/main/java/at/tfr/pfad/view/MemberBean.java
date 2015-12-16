@@ -25,12 +25,14 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
+import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
@@ -126,18 +128,21 @@ public class MemberBean extends BaseBean implements Serializable {
 	public String update() {
 		this.conversation.end();
 
+		if (isUpdateAllowed())
+			throw new SecurityException("only admin,gruppe,leiter may update entry");
+		
 		log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
 
 		try {
 			if (this.id == null) {
 				this.entityManager.persist(this.member);
 				if (StringUtils.isEmpty(member.getBVKey())) {
-					member.setBVKey("3-BAD-" + member.getId());
+					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
 				}
 				return "search?faces-redirect=true";
 			} else {
 				if (StringUtils.isEmpty(member.getBVKey())) {
-					member.setBVKey("3-BAD-" + member.getId());
+					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
 				}
 				this.entityManager.merge(this.member);
 				return "view?faces-redirect=true&id=" + this.member.getId();
@@ -148,10 +153,14 @@ public class MemberBean extends BaseBean implements Serializable {
 		}
 	}
 
+	public boolean isUpdateAllowed() {
+		return isAdmin() || isGruppe() || isLeiter();
+	}
+
 	public String delete() {
 		this.conversation.end();
 
-		if (!isAdmin())
+		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");
 
 		log.info("deleted " + member + " by " + sessionContext.getCallerPrincipal());
@@ -382,5 +391,12 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	public List<String> getDistinctReligion() {
 		return memberRepo.findDistinctReligion();
+	}
+	
+	public String logout() {
+		try {
+			((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).logout();
+		} catch (Exception e) {}
+		return "index?faces-redirect=true";
 	}
 }

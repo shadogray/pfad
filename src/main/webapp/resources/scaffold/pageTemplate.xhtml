@@ -35,23 +35,25 @@
 			<h:link id="homeLink" outcome="/index.xhtml">
 				<img src='#{resource["forge-logo.png"]}' alt="Forge... get hammered" border="0" />
 			</h:link>
-			<ul>
-				<li>
-					<h:link outcome="/configuration/search" value="Configuration"/>
-				</li>
-				<li>
-					<h:link outcome="/function/search" value="Function"/>
-				</li>
-				<li>
-					<h:link outcome="/member/search" value="Member"/>
-				</li>
-				<li>
-					<h:link outcome="/squad/search" value="Squad"/>
-				</li>
-				<li>
-					<h:link outcome="/actions" value="Action"/>
-				</li>
-			</ul>
+			<h:form>
+				<ul>
+					<li>
+						<h:link outcome="/configuration/search" value="Configuration"/>
+					</li>
+					<li>
+						<h:link outcome="/function/search" value="Function"/>
+					</li>
+					<li>
+						<h:link outcome="/member/search" value="Member"/>
+					</li>
+					<li>
+						<h:link outcome="/squad/search" value="Squad"/>
+					</li>
+					<li>
+						<h:link outcome="/actions" value="Action"/>
+					</li>
+				</ul>
+			</h:form>
 		</div>
 
 		<div id="content">

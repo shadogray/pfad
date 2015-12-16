@@ -22,6 +22,8 @@ import at.tfr.pfad.model.Squad_;
 @Repository
 public abstract class SquadRepository implements EntityRepository<Squad, Long>, CriteriaSupport<Squad> {
 
+	public abstract List<Squad> findByName(String name);
+	
 	public abstract List<Squad> findByLeaderFemaleEqual(Member leader);
 
 	public abstract List<Squad> findByLeaderMaleEqual(Member leader);

@@ -103,10 +103,15 @@ public class FunctionBean extends BaseBean implements Serializable {
 	 * Support updating and deleting Function entities
 	 */
 
+	@Override
+	public boolean isUpdateAllowed() {
+		return isAdmin() || isGruppe();
+	}
+	
 	public String update() {
 		this.conversation.end();
 
-		if (!isAdmin() && !isGruppe())
+		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe may update entry");
 		
 		log.info("updated "+function+" by "+sessionContext.getCallerPrincipal());
@@ -129,7 +134,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 	public String delete() {
 		this.conversation.end();
 
-		if (!isAdmin())
+		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");
 		
 		log.info("deleted "+function+" by "+sessionContext.getCallerPrincipal());

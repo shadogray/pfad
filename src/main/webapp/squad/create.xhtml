@@ -134,13 +134,13 @@
 			</h:panelGrid>
 
 			<div class="buttons">
-				<h:commandLink value="Save" action='#{squadBean.update}' styleClass="btn btn-primary"/>
+				<h:commandLink value="Save" action='#{squadBean.update}' styleClass="btn btn-primary" disabled="#{squadBean.id != null and !squadBean.updateAllowed}"/>
 				<c:choose>
 					<c:when test='#{!empty squadBean.id}'>
 						<h:link value="Cancel" outcome="view" styleClass="btn btn-primary">
 							<f:param name="id" value='#{squadBean.id}'/>
 						</h:link>
-						<h:commandLink value="Delete" action='#{squadBean.delete}' styleClass="btn btn-primary" disabled="#{!squadBean.admin}"/>
+						<h:commandLink value="Delete" action='#{squadBean.delete}' styleClass="btn btn-primary" disabled="#{!squadBean.deleteAllowed}"/>
 					</c:when>
 					<c:otherwise>
 						<h:link value="Cancel" outcome="search" styleClass="btn btn-primary"/>

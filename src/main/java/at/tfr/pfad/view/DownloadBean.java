@@ -12,12 +12,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.enterprise.context.RequestScoped;
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -31,9 +39,12 @@ import com.google.common.net.HttpHeaders;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Squad;
 
 @Named
-@RequestScoped
+@Stateless
+@TransactionManagement(TransactionManagementType.BEAN)
+@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class DownloadBean {
 
 	enum HeaderRegistrierung {
@@ -54,6 +65,10 @@ public class DownloadBean {
 	private SquadRepository squadRepo;
 	@Inject
 	private MemberBean memberBean;
+	@Inject
+	private SquadBean squadBean;
+	@Resource
+	private SessionContext sessionContext;
 
 	public String downloadRegistrierung() throws Exception {
 		return downloadData(false);
@@ -62,16 +77,31 @@ public class DownloadBean {
 	public String downloadAll() throws Exception {
 		return downloadData(true);
 	}
+	
+	public String downloadSquad(Squad squad) throws Exception {
+		return downloadData(true, squad);
+	}
 
-	public String downloadData(boolean withLocal) throws Exception {
+	public boolean isDownloadAllowed() {
+		return isDownloadAllowed(new Squad[]{});
+	}
 
-		if (!memberBean.isAdmin() && !memberBean.isGruppe())
+	public boolean isDownloadAllowed(Squad...squads) {
+		if (memberBean.isAdmin() || memberBean.isGruppe() || 
+				(memberBean.isLeiter() && squads != null && Stream.of(squads).allMatch(s -> squadBean.isUpdateAllowed(s))))
+			return true;
+		return false;
+	}
+	
+	public String downloadData(boolean withLocal, Squad...squads) throws Exception {
+
+		if (!isDownloadAllowed(squads))
 			throw new SecurityException(
 					"user may not download: " + memberBean.getSessionContext().getCallerPrincipal());
 
 		ExternalContext ectx = setHeaders();
 		try (OutputStream os = ectx.getResponseOutputStream()) {
-			HSSFWorkbook wb = generateData(withLocal);
+			HSSFWorkbook wb = generateData(withLocal, squads);
 			wb.write(os);
 		}
 		FacesContext.getCurrentInstance().responseComplete();
@@ -79,7 +109,7 @@ public class DownloadBean {
 		return "";
 	}
 
-	private HSSFWorkbook generateData(boolean withLocal) {
+	private HSSFWorkbook generateData(boolean withLocal, Squad...squads) {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Export_" + DateTime.now().toString("yyyy.mm.dd"));
 
@@ -101,11 +131,17 @@ public class DownloadBean {
 
 		Collection<Member> leaders = squadRepo.findLeaders();
 
-		for (Member m : membRepo.findAll().stream().sorted().collect(Collectors.toList())) {
+		for (Member m : getMembers()) {
 
 			if (!withLocal && !(m.isAktiv() || leaders.contains(m)
 					|| m.getFunktionen().stream().filter(f -> f.isExportReg()).count() > 0))
 				continue;
+			
+			if (squads != null) {
+				if (!Stream.of(squads).anyMatch(s->s.equals(m.getTrupp()))) {
+					continue;
+				}
+			}
 
 			ValidationResult vr = validate(m);
 
@@ -148,6 +184,19 @@ public class DownloadBean {
 
 		}
 		return wb;
+	}
+
+	private List<Member> getMembers() {
+		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
+		if (sessionContext.isCallerInRole(Roles.admin.name()) || sessionContext.isCallerInRole(Roles.gruppe.name()))
+			return members;
+		if (sessionContext.isCallerInRole(Roles.leiter.name())) {
+			List<Squad> squads = squadRepo.findByName(sessionContext.getCallerPrincipal().getName());
+			members = members.stream()
+					.filter(m -> m.getTrupp() != null && squads.contains(m.getTrupp()))
+					.collect(Collectors.toList());
+		}
+		return members;
 	}
 
 	private ExternalContext setHeaders() {

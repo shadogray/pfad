@@ -106,11 +106,20 @@ public class SquadBean extends BaseBean implements Serializable {
 	 * Support updating and deleting Squad entities
 	 */
 
+	@Override
+	public boolean isUpdateAllowed() {
+		return isUpdateAllowed(squad);
+	}
+
+	public boolean isUpdateAllowed(Squad squad) {
+		return isAdmin() || isGruppe() || sessionContext.getCallerPrincipal().getName().equals(squad.getName());
+	}
+
 	public String update() {
 		this.conversation.end();
 
-		if (!isAdmin() && !isGruppe())
-			throw new SecurityException("only admins, gruppe may update entry");
+		if (!isUpdateAllowed())
+			throw new SecurityException("only admins, gruppe, "+squad.getName()+" may update entry");
 		
 		log.info("updated "+squad+" by "+sessionContext.getCallerPrincipal());
 

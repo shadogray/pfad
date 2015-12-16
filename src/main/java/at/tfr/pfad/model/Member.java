@@ -27,6 +27,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
+import org.apache.commons.lang3.StringUtils;
+
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
 
@@ -170,7 +172,10 @@ public class Member implements Serializable, Comparable<Member> {
 	}
 
 	public String getBVKey() {
-		return BVKey;
+		if (id == null) {
+			return BVKey;
+		}
+		return StringUtils.isEmpty(BVKey) ? Configuration.BADEN_KEYPFX+id : BVKey;
 	}
 
 	public void setBVKey(String BVKey) {
@@ -178,7 +183,7 @@ public class Member implements Serializable, Comparable<Member> {
 	}
 
 	public String getGruppenSchluessel() {
-		return GruppenSchluessel;
+		return StringUtils.isEmpty(GruppenSchluessel) ? Configuration.BADEN_KEY : GruppenSchluessel;
 	}
 
 	public void setGruppenSchluessel(String GruppenSchluessel) {
@@ -186,7 +191,7 @@ public class Member implements Serializable, Comparable<Member> {
 	}
 
 	public long getPersonenKey() {
-		return PersonenKey;
+		return PersonenKey == 0 && id != null ? id : PersonenKey;
 	}
 
 	public void setPersonenKey(long PersonenKey) {
@@ -349,13 +354,11 @@ public class Member implements Serializable, Comparable<Member> {
 	public String toString() {
 		String result = getClass().getSimpleName() + " ";
 		if (BVKey != null && !BVKey.trim().isEmpty())
-			result += "BVKey: " + BVKey;
+			result += "" + BVKey;
 		if (Name != null && !Name.trim().isEmpty())
-			result += ", Name: " + Name;
+			result += ", " + Name;
 		if (Vorname != null && !Vorname.trim().isEmpty())
 			result += ", " + Vorname;
-		if (PLZ != null && !PLZ.trim().isEmpty())
-			result += ", PLZ: " + PLZ;
 		result += ", Aktiv: " + Aktiv;
 		return result;
 	}
