@@ -128,7 +128,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	public String update() {
 		this.conversation.end();
 
-		if (isUpdateAllowed())
+		if (!isUpdateAllowed())
 			throw new SecurityException("only admin,gruppe,leiter may update entry");
 		
 		log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());

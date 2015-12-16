@@ -127,7 +127,7 @@
 							<f:selectItem/>
 							<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{memberBean.selectableLeaders}" var="_item"/>
 						</h:selectOneMenu>
-						<h:commandLink action="#{_collection.add(requestScope['squadBeanSquadAssistantsSelect'])}" id="squadBeanSquadAssistantsAdd" onclick="if (document.getElementById(document.forms[0].id+':squadBeanSquadAssistantsSelect').selectedIndex &lt; 1) { alert('Must select a Member'); return false; }" styleClass="add-button"/>
+						<h:commandLink action="#{_collection.add(requestScope['squadBeanSquadAssistantsSelect'])}" id="squadBeanSquadAssistantsAdd" onclick="if (document.getElementById('create:squadBeanSquadAssistantsSelect').selectedIndex &lt; 1) { alert('Must select a Member'); return false; }" styleClass="add-button"/>
 					</h:panelGrid>
 				</h:panelGroup>
 				<h:outputText/>

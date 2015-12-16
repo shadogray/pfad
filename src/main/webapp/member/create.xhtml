@@ -207,7 +207,7 @@
 							<f:selectItem/>
 							<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{functionBean.all}" var="_item"/>
 						</h:selectOneMenu>
-						<h:commandLink action="#{_collection.add(requestScope['memberBeanMemberFunktionenSelect'])}" id="memberBeanMemberFunktionenAdd" onclick="if (document.getElementById(document.forms[0].id+':memberBeanMemberFunktionenSelect').selectedIndex &lt; 1) { alert('Must select a Function'); return false; }" styleClass="add-button"/>
+						<h:commandLink action="#{_collection.add(requestScope['memberBeanMemberFunktionenSelect'])}" id="memberBeanMemberFunktionenAdd" onclick="if (document.getElementById('create:memberBeanMemberFunktionenSelect').selectedIndex &lt; 1) { alert('Must select a Function'); return false; }" styleClass="add-button"/>
 					</h:panelGrid>
 				</h:panelGroup>
 				<h:outputText/>
