@@ -101,7 +101,8 @@ span.invalid {
 }
 
 label {
-   float: left;
+   //float: left;
+   display: inline;
    width: 15%;
    margin-left: 20px;
    margin-right: 0.5em;
@@ -232,7 +233,7 @@ footer p {
  */
  
 #content {
-	margin-left: 230px;
+	margin-left: 150px;
 	padding-left:10px;
 }
 
@@ -275,14 +276,14 @@ footer p {
 }
 
 #content .boolean-false {
-	display: block;
+	display: inline-block;
 	width: 22px;
 	height: 22px;
 	background-image: url(#{request.contextPath}/resources/false.png);
 }
 
 #content .boolean-true {
-	display: block;
+	display: inline-block;
 	width: 22px;
 	height: 22px;
 	background-image: url(#{request.contextPath}/resources/true.png);
@@ -695,4 +696,26 @@ h4.page-header {
 	font-size: 16px;
 }
 
+.rf-au {
+	background-color: #ffffff;
+	background-image: url("/pfad/org.richfaces.resources/rfRes/autocompleteFieldGradient.png?v=4.5.11.Final&db=eAFj!P!x3cv!QAAAIrgHxQ__&ln=org.richfaces.images");
+	background-position: left top;
+	background-repeat: repeat-x;
+	border-color: #c4c0b9;
+	border-style: solid;
+	border-width: 1px;
+	display: inline-block;
+	font-size: 1px;
+	vertical-align: middle;
+	width: 95%;
+}
 
+.fullwidth {
+	width: 95%;	
+}
+
+.rf-sel-lst-scrl {
+	width: 30em;
+  overflow-x: hidden;
+  overflow-y: auto;
+}

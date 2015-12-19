@@ -51,6 +51,12 @@
 					<h:message for="squadBeanSquadName" styleClass="error"/>
 				</h:panelGroup>
 				<h:outputText/>
+				<h:outputLabel for="squadBeanSquadLogin" value="Login:"/>
+				<h:panelGroup>
+					<h:inputText id="squadBeanSquadLogin" value="#{squadBean.squad.login}"/>
+					<h:message for="squadBeanSquadLogin" styleClass="error"/>
+				</h:panelGroup>
+				<h:outputText/>
 				<h:outputLabel for="squadBeanSquadLeaderFemale" value="LeaderFemale:"/>
 				<h:panelGroup>
 					<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanSquadLeaderFemale" value="#{squadBean.squad.leaderFemale}">

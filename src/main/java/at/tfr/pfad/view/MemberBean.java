@@ -9,10 +9,14 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -26,9 +30,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
@@ -50,6 +56,7 @@ import at.tfr.pfad.model.Squad;
 @Named
 @Stateful
 @ConversationScoped
+@TransactionManagement(TransactionManagementType.BEAN)
 public class MemberBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -125,6 +132,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	 * Support updating and deleting Member entities
 	 */
 
+	@Transactional
 	public String update() {
 		this.conversation.end();
 
@@ -138,6 +146,9 @@ public class MemberBean extends BaseBean implements Serializable {
 				this.entityManager.persist(this.member);
 				if (StringUtils.isEmpty(member.getBVKey())) {
 					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
+				}
+				if (this.member.getId() != null) {
+					return "view?faces-redirect=true&id=" + this.member.getId();
 				}
 				return "search?faces-redirect=true";
 			} else {
@@ -157,6 +168,7 @@ public class MemberBean extends BaseBean implements Serializable {
 		return isAdmin() || isGruppe() || isLeiter();
 	}
 
+	@Transactional
 	public String delete() {
 		this.conversation.end();
 
@@ -209,7 +221,7 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	public String search() {
 		this.page = 0;
-		return null;
+		return "";
 	}
 
 	public void paginate() {
@@ -243,11 +255,6 @@ public class MemberBean extends BaseBean implements Serializable {
 		if (BVKey != null && !"".equals(BVKey)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.<String> get("BVKey")), '%' + BVKey.toLowerCase() + '%'));
-		}
-		String GruppenSchluessel = this.example.getGruppenSchluessel();
-		if (GruppenSchluessel != null && !"".equals(GruppenSchluessel)) {
-			predicatesList.add(builder.like(builder.lower(root.<String> get("GruppenSchluessel")),
-					'%' + GruppenSchluessel.toLowerCase() + '%'));
 		}
 		long PersonenKey = this.example.getPersonenKey();
 		if (PersonenKey != 0) {
@@ -398,5 +405,9 @@ public class MemberBean extends BaseBean implements Serializable {
 			((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).logout();
 		} catch (Exception e) {}
 		return "index?faces-redirect=true";
+	}
+	
+	public List<ScoutRole> getScoutRoles() {
+		return Arrays.asList(ScoutRole.values());
 	}
 }

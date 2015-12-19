@@ -8,12 +8,14 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -27,10 +29,13 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
-import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
+import at.tfr.pfad.dao.AuditListener;
 
 @NamedQueries({ @NamedQuery(name = "distName", query = "select distinct m.Name from Member m order by m.Name"),
 		@NamedQuery(name = "distVorname", query = "select distinct m.Vorname from Member m order by m.Vorname"),
@@ -41,8 +46,10 @@ import at.tfr.pfad.Sex;
 		@NamedQuery(name = "distAnrede", query = "select distinct m.Anrede from Member m order by m.Anrede"),
 		@NamedQuery(name = "distReligion", query = "select distinct m.Religion from Member m order by m.Religion"), })
 
+@Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED,withModifiedFlag=true)
 @Entity
-public class Member implements Serializable, Comparable<Member> {
+@EntityListeners({AuditListener.class})
+public class Member implements Serializable, Comparable<Member>, Auditable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
@@ -51,85 +58,116 @@ public class Member implements Serializable, Comparable<Member> {
 	private Long id;
 	@Version
 	@Column(name = "version")
-	private int version;
+	protected int version;
 
 	@Column
-	private String BVKey;
+	protected String BVKey;
 
 	@Column
-	private String GruppenSchluessel;
+	protected String GruppenSchluessel;
 
 	@Column
-	private long PersonenKey;
+	protected long PersonenKey;
 
 	@Column
-	private String Titel;
+	protected String Titel;
 
 	@Column
-	private String Name;
+	protected String Name;
 
 	@Column
-	private String Vorname;
+	protected String Vorname;
 
 	@Column
-	private String Anrede;
+	protected String Anrede;
 
 	@Column
-	private int GebTag;
+	protected int GebTag;
 
 	@Column
-	private int GebMonat;
+	protected int GebMonat;
 
 	@Column
-	private int GebJahr;
+	protected int GebJahr;
 
 	@Column
-	private String Strasse;
+	protected String Strasse;
 
 	@Column
-	private String PLZ;
+	protected String PLZ;
 
 	@Column
-	private String Ort;
+	protected String Ort;
 
 	@Enumerated(EnumType.STRING)
-	private Sex Geschlecht;
+	protected Sex Geschlecht;
 
 	@Column
-	private boolean Aktiv;
+	protected boolean Aktiv;
 
 	@Column
-	private String Email;
+	protected String Email;
 
 	@Column
-	private String Religion;
+	protected String Religion;
 
 	@Column
-	private String Telefon;
+	protected String Telefon;
 
 	@Column
-	private boolean Trail;
+	protected boolean Trail;
 
 	@Column
-	private boolean Gilde;
+	protected boolean Gilde;
 
 	@Column
-	private boolean AltER;
+	protected boolean AltER;
+	
+	@Column
+	protected boolean Support;
+	
+	@Column 
+	protected boolean InfoMail;
 
 	@Enumerated(EnumType.STRING)
-	private ScoutRole Rolle;
+	protected ScoutRole Rolle;
 
+	@Column
+	protected Date changed;
+	
+	@Column
+	protected Date created;
+	
+	@Column
+	protected String changedBy;
+	
+	@Column
+	protected String createdBy;
+	
 	@ManyToOne
 	@OrderBy("name")
-	private Squad Trupp;
+	protected Squad Trupp;
+	
+	@NotAudited
+	@Column(insertable=false, updatable=false, name="Trupp_id")
+	protected Long TruppId;
 
 	@ManyToOne
 	@OrderBy("name, vorname")
-	private Member Vollzahler;
+	protected Member Vollzahler;
+	
+	@NotAudited
+	@Column(insertable=false, updatable=false, name="Vollzahler_id")
+	protected Long VollzahlerId;
 
 	@ManyToMany
-	private Set<Function> Funktionen = new HashSet<>();
+	protected Set<Function> Funktionen = new HashSet<>();
 
+	@NotAudited
+	@ManyToMany
+	@OrderBy("name, vorname")
+	protected Set<Member> siblings;
+	
 	public Long getId() {
 		return this.id;
 	}
@@ -175,7 +213,8 @@ public class Member implements Serializable, Comparable<Member> {
 		if (id == null) {
 			return BVKey;
 		}
-		return StringUtils.isEmpty(BVKey) ? Configuration.BADEN_KEYPFX+id : BVKey;
+		return BVKey;
+		//return StringUtils.isEmpty(BVKey) ? Configuration.BADEN_KEYPFX+id : BVKey;
 	}
 
 	public void setBVKey(String BVKey) {
@@ -183,15 +222,19 @@ public class Member implements Serializable, Comparable<Member> {
 	}
 
 	public String getGruppenSchluessel() {
-		return StringUtils.isEmpty(GruppenSchluessel) ? Configuration.BADEN_KEY : GruppenSchluessel;
+		return GruppenSchluessel;
+		//return StringUtils.isEmpty(GruppenSchluessel) ? Configuration.BADEN_KEY : GruppenSchluessel;
 	}
 
 	public void setGruppenSchluessel(String GruppenSchluessel) {
+//		if (Configuration.BADEN_KEY.equals(BVKey)) 
+//			return;
 		this.GruppenSchluessel = GruppenSchluessel;
 	}
 
 	public long getPersonenKey() {
-		return PersonenKey == 0 && id != null ? id : PersonenKey;
+		return PersonenKey;
+		//		return PersonenKey == 0 && id != null ? id : PersonenKey;
 	}
 
 	public void setPersonenKey(long PersonenKey) {
@@ -350,15 +393,72 @@ public class Member implements Serializable, Comparable<Member> {
 		this.Rolle = Rolle;
 	}
 
+	public boolean isInfoMail() {
+		return InfoMail;
+	}
+
+	public void setInfoMail(boolean infoMail) {
+		InfoMail = infoMail;
+	}
+
+	public boolean isSupport() {
+		return Support;
+	}
+
+	public void setSupport(boolean support) {
+		Support = support;
+	}
+
+	@Override
+	public Date getChanged() {
+		return changed;
+	}
+
+	@Override
+	public void setChanged(Date changed) {
+		this.changed = changed;
+	}
+
+	@Override
+	public Date getCreated() {
+		return created;
+	}
+
+	@Override
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	@Override
+	public String getChangedBy() {
+		return changedBy;
+	}
+
+	@Override
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	@Override
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	@Override
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
 	@Override
 	public String toString() {
-		String result = getClass().getSimpleName() + " ";
+		String result = "";
 		if (BVKey != null && !BVKey.trim().isEmpty())
 			result += "" + BVKey;
 		if (Name != null && !Name.trim().isEmpty())
 			result += ", " + Name;
 		if (Vorname != null && !Vorname.trim().isEmpty())
 			result += ", " + Vorname;
+		result += ", " + GebJahr;
 		result += ", Aktiv: " + Aktiv;
 		return result;
 	}
@@ -393,6 +493,14 @@ public class Member implements Serializable, Comparable<Member> {
 		this.Funktionen = Funktionen;
 	}
 
+	public Set<Member> getSiblings() {
+		return siblings;
+	}
+
+	public void setSiblings(Set<Member> siblings) {
+		this.siblings = siblings;
+	}
+
 	@Override
 	public int compareTo(Member o) {
 		return getCompareString().compareTo(o.getCompareString());
@@ -400,5 +508,13 @@ public class Member implements Serializable, Comparable<Member> {
 
 	public String getCompareString() {
 		return (("" + Name) + Vorname) + id;
+	}
+
+	public Long getTruppId() {
+		return TruppId;
+	}
+	
+	public Long getVollzahlerId() {
+		return VollzahlerId;
 	}
 }

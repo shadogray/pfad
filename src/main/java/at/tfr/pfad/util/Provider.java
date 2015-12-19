@@ -12,6 +12,11 @@ import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import javax.persistence.SynchronizationType;
+
+import org.hibernate.Session;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
 
 public class Provider {
 
@@ -22,6 +27,12 @@ public class Provider {
 	@RequestScoped
 	public EntityManager getEntityManager() {
 		return entityManagerFactory.createEntityManager();
+	}
+	
+	@Produces
+	@RequestScoped
+	public AuditReader getAuditReader() {
+		return AuditReaderFactory.get(entityManagerFactory.createEntityManager(SynchronizationType.UNSYNCHRONIZED).unwrap(Session.class));
 	}
 	
 }

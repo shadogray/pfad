@@ -10,6 +10,7 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +27,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.model.Member;
-import at.tfr.pfad.model.Member_;
+import at.tfr.pfad.model.Squad;
 
 /**
  * Backing bean for Squad entities.
@@ -112,20 +112,27 @@ public class SquadBean extends BaseBean implements Serializable {
 	}
 
 	public boolean isUpdateAllowed(Squad squad) {
-		return isAdmin() || isGruppe() || sessionContext.getCallerPrincipal().getName().equals(squad.getName());
+		return isAdmin() || isGruppe() || sessionContext.getCallerPrincipal().getName().equals(squad.getLogin());
 	}
 
 	public String update() {
 		this.conversation.end();
 
 		if (!isUpdateAllowed())
-			throw new SecurityException("only admins, gruppe, "+squad.getName()+" may update entry");
+			throw new SecurityException("only admins, gruppe, "+squad.getLogin()+" may update entry");
 		
 		log.info("updated "+squad+" by "+sessionContext.getCallerPrincipal());
+		this.squad.setChanged(new Date());
+		this.squad.setChangedBy(sessionContext.getCallerPrincipal().getName());
 
 		try {
 			if (this.id == null) {
+				this.squad.setCreated(new Date());
+				this.squad.setCreatedBy(sessionContext.getCallerPrincipal().getName());
 				this.entityManager.persist(this.squad);
+				if (this.squad.getId() != null) {
+					return "view?faces-redirect=true&id=" + this.squad.getId();
+				}
 				return "search?faces-redirect=true";
 			} else {
 				this.entityManager.merge(this.squad);

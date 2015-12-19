@@ -6,5 +6,5 @@
  */
 package at.tfr.pfad;
 public enum ScoutRole {
-	Scout, Leader, Assistant, Gilde
+	Scout, Leader, Assistant, Gilde, Support, undef
 }

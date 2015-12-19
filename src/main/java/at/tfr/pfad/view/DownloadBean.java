@@ -28,10 +28,12 @@ import javax.inject.Named;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.joda.time.DateTime;
 
 import com.google.common.net.HttpHeaders;
@@ -52,7 +54,7 @@ public class DownloadBean {
 	}
 
 	enum HeaderLocal {
-		Religion, FunktionenBaden, Trail, Gilde, AltER
+		Religion, FunktionenBaden, Trail, Gilde, AltER, InfoMail, Mitarbeit
 	}
 
 	enum DataStructure {
@@ -112,6 +114,9 @@ public class DownloadBean {
 	private HSSFWorkbook generateData(boolean withLocal, Squad...squads) {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Export_" + DateTime.now().toString("yyyy.mm.dd"));
+		CellStyle red = wb.createCellStyle();
+		red.setFillForegroundColor(HSSFColor.RED.index);
+		red.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
 		int rCount = 0;
 		HSSFRow row = sheet.createRow(rCount++);
@@ -125,6 +130,11 @@ public class DownloadBean {
 
 		for (int i = 0; i < headers.size(); i++) {
 			String h = headers.get(i);
+			switch (h) {
+			case "Vollzahler": 
+				h = "Ermäßigt";
+				break;
+			}
 			HSSFCell c = row.createCell(i);
 			c.setCellValue(h);
 		}
@@ -146,9 +156,6 @@ public class DownloadBean {
 			ValidationResult vr = validate(m);
 
 			row = sheet.createRow(rCount++);
-			if (!vr.valid) {
-				row.getRowStyle().setFillBackgroundColor(HSSFColor.RED.index);
-			}
 
 			int cCount = 0;
 			row.createCell(cCount++).setCellValue(m.getBVKey());
@@ -164,14 +171,19 @@ public class DownloadBean {
 			row.createCell(cCount++).setCellValue(m.getStrasse());
 			row.createCell(cCount++).setCellValue(m.getPLZ());
 			row.createCell(cCount++).setCellValue(m.getOrt());
-			row.createCell(cCount++).setCellValue(m.getGeschlecht().name());
+			row.createCell(cCount++).setCellValue(m.getGeschlecht() != null ? m.getGeschlecht().name() : "");
 			row.createCell(cCount++).setCellValue(m.isAktiv() ? "J" : "N");
 			row.createCell(cCount++).setCellValue(m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "");
 			row.createCell(cCount++).setCellValue(m.getEmail());
 			row.createCell(cCount++).setCellValue(m.getTelefon());
 			row.createCell(cCount++).setCellValue(getFunktionen(m));
 			row.createCell(cCount++).setCellValue(m.getTrupp() != null ? m.getTrupp().getName() : "");
-			row.createCell(cCount++).setCellValue(vr.message);
+			
+			HSSFCell ok = row.createCell(cCount++);
+			ok.setCellValue(vr.message);
+			if (!vr.valid) {
+				ok.setCellStyle(red);
+			}
 
 			// and Local Data
 			if (withLocal) { // Religion, FunktionenBaden, Trail, Gilde, AltER
@@ -180,6 +192,8 @@ public class DownloadBean {
 				row.createCell(cCount++).setCellValue(m.isTrail() ? "X" : "");
 				row.createCell(cCount++).setCellValue(m.isGilde() ? "X" : "");
 				row.createCell(cCount++).setCellValue(m.isAltER() ? "X" : "");
+				row.createCell(cCount++).setCellValue(m.isInfoMail() ? "X" : "");
+				row.createCell(cCount++).setCellValue(m.isSupport() ? "X" : "");
 			}
 
 		}

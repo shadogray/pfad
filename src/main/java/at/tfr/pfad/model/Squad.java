@@ -8,6 +8,7 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ import at.tfr.pfad.SquadType;
 })
 
 @Entity
-public class Squad implements Serializable, Comparable<Squad> {
+public class Squad implements Serializable, Comparable<Squad>, Auditable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "squad_seq")
@@ -51,7 +52,22 @@ public class Squad implements Serializable, Comparable<Squad> {
 
 	@Column
 	private String name;
+	
+	@Column
+	private String login;
 
+	@Column
+	private Date changed;
+	
+	@Column
+	private Date created;
+	
+	@Column
+	private String changedBy;
+	
+	@Column
+	private String createdBy;
+	
 	@ManyToOne
 	private Member leaderMale;
 
@@ -117,6 +133,46 @@ public class Squad implements Serializable, Comparable<Squad> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getLogin() {
+		return login;
+	}
+
+	public void setLogin(String login) {
+		this.login = login;
+	}
+
+	public Date getChanged() {
+		return changed;
+	}
+
+	public void setChanged(Date changed) {
+		this.changed = changed;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public String getChangedBy() {
+		return changedBy;
+	}
+
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
 	@Override

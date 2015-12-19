@@ -29,6 +29,9 @@
 			<h:outputLabel for="squadBeanSquadName" value="Name:" />
 			<h:outputText id="squadBeanSquadName" value="#{squadBean.squad.name}" />
 			<h:outputText />
+			<h:outputLabel for="squadBeanSquadLogin" value="Login:" />
+			<h:outputText id="squadBeanSquadLogin" value="#{squadBean.squad.login}" />
+			<h:outputText />
 			<h:outputLabel for="squadBeanSquadLeaderFemale" value="LeaderFemale:" />
 			<h:link id="squadBeanSquadLeaderFemale" outcome="/member/view" rendered="#{!empty squadBean.squad.leaderFemale}"
 				value="#{squadBean.squad.leaderFemale}">
