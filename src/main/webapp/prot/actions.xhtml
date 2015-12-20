@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
+	template="/resources/scaffold/pageTemplate.xhtml">
+
+	<ui:param name="pageTitle" value="Actions" />
+
+	<ui:define name="header">
+		Actions
+	</ui:define>
+
+	<ui:define name="subheader">
+	</ui:define>
+
+	<ui:define name="footer" />
+
+	<ui:define name="main">
+		<h:form id="download">
+			<h:panelGroup styleClass="buttons">
+				<h:outputLabel value="Registrierungs-Daten" />
+				<h:commandLink value="Download Registrierung" action="#{downloadBean.downloadRegistrierung()}"
+					styleClass="btn btn-primary" disabled="#{!downloadBean.downloadAllowed}" />
+			</h:panelGroup>
+
+			<h:panelGroup styleClass="buttons">
+				<h:outputLabel value="Daten gesamt" />
+				<h:commandLink value="Download Gesamt" action="#{downloadBean.downloadAll()}" styleClass="btn btn-primary"
+					disabled="#{!downloadBean.downloadAllowed}" />
+			</h:panelGroup>
+		</h:form>
+
+		<h:panelGroup rendered="#{memberBean.admin}">
+			<h:form id="query">
+				<f:ajax>
+					<h:outputLabel value="Query" />
+					<h:panelGroup width="100%">
+						<h:outputLabel value="NativeQuery" />
+						<h:selectBooleanCheckbox value="#{downloadBean.nativeQuery}" immediate="true" />
+					</h:panelGroup>
+					<h:panelGroup>
+						<h:inputTextarea id="queryQuery" value="#{downloadBean.query}" style="width:80%;height:5em;" immediate="true"
+							required="true" />
+						<h:message for="queryQuery" />
+						<h:outputText value="" />
+					</h:panelGroup>
+					<h:commandLink actionListener="#{downloadBean.query()}" value="Query" styleClass="btn btn-primary">
+						<f:ajax execute="@form" render="queryDataTable messages"/>
+					</h:commandLink>
+					<h:dataTable id="queryDataTable" value="#{downloadBean.results}" var="item">
+						<h:column>
+							<h:outputText value="#{item}" />
+						</h:column>
+					</h:dataTable>
+					<h:messages id="messages" />
+				</f:ajax>
+			</h:form>
+		</h:panelGroup>
+
+	</ui:define>
+
+</ui:composition>

@@ -165,7 +165,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isGruppe() || isLeiter();
+		return isAdmin() || isGruppe() || (isLeiter() && !isRegistrationEnd());
 	}
 
 	@Transactional

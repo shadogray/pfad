@@ -8,6 +8,8 @@
 package at.tfr.pfad.view;
 
 import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -21,10 +23,19 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
+import javax.persistence.TupleElement;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -44,17 +55,15 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 
 @Named
-@Stateless
-@TransactionManagement(TransactionManagementType.BEAN)
-@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-public class DownloadBean {
+@SessionScoped
+public class DownloadBean implements Serializable {
 
 	enum HeaderRegistrierung {
 		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Telefon, Funktionen, Trupp, OK
 	}
 
 	enum HeaderLocal {
-		Religion, FunktionenBaden, Trail, Gilde, AltER, InfoMail, Mitarbeit
+		Religion, FunktionenBaden, Trail, Gilde, AltER, InfoMail, Mitarbeit, Eltern, Kinder, KinderTrupps
 	}
 
 	enum DataStructure {
@@ -69,8 +78,11 @@ public class DownloadBean {
 	private MemberBean memberBean;
 	@Inject
 	private SquadBean squadBean;
-	@Resource
-	private SessionContext sessionContext;
+	@Inject
+	private EntityManager em;
+	private String query;
+	private boolean nativeQuery;
+	private List<List<?>> results;
 
 	public String downloadRegistrierung() throws Exception {
 		return downloadData(false);
@@ -194,6 +206,10 @@ public class DownloadBean {
 				row.createCell(cCount++).setCellValue(m.isAltER() ? "X" : "");
 				row.createCell(cCount++).setCellValue(m.isInfoMail() ? "X" : "");
 				row.createCell(cCount++).setCellValue(m.isSupport() ? "X" : "");
+				// Eltern, Kinder, KinderTrupps
+				row.createCell(cCount++).setCellValue(!m.getSiblings().isEmpty() ? "X" : "");
+				row.createCell(cCount++).setCellValue(m.getSiblings().stream().map(s->s.toString()).collect(Collectors.joining(",")));
+				row.createCell(cCount++).setCellValue(m.getSiblings().stream().map(s->s.getTrupp().getName()).collect(Collectors.joining(",")));
 			}
 
 		}
@@ -202,10 +218,11 @@ public class DownloadBean {
 
 	private List<Member> getMembers() {
 		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
-		if (sessionContext.isCallerInRole(Roles.admin.name()) || sessionContext.isCallerInRole(Roles.gruppe.name()))
+		SessionContext ctx = memberBean.getSessionContext();
+		if (ctx.isCallerInRole(Roles.admin.name()) || ctx.isCallerInRole(Roles.gruppe.name()))
 			return members;
-		if (sessionContext.isCallerInRole(Roles.leiter.name())) {
-			List<Squad> squads = squadRepo.findByName(sessionContext.getCallerPrincipal().getName());
+		if (ctx.isCallerInRole(Roles.leiter.name())) {
+			List<Squad> squads = squadRepo.findByName(ctx.getCallerPrincipal().getName());
 			members = members.stream()
 					.filter(m -> m.getTrupp() != null && squads.contains(m.getTrupp()))
 					.collect(Collectors.toList());
@@ -270,4 +287,46 @@ public class DownloadBean {
 		}
 	}
 
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
+	}
+
+	public boolean isNativeQuery() {
+		return nativeQuery;
+	}
+
+	public void setNativeQuery(boolean nativeQuery) {
+		this.nativeQuery = nativeQuery;
+	}
+
+	public List<List<?>> getResults() {
+		return results;
+	}
+
+	public String query() {
+		try {
+			results = new ArrayList<>();
+			if (nativeQuery) {
+				results = em.createNativeQuery(query).getResultList();
+			} else {
+				Query q = em.createQuery(query);
+				List<?> res = q.getResultList();
+				if (res.size() > 0) {
+					if (res.get(0) instanceof Tuple) {
+						results = ((List<Tuple>)res).stream().map(r->r.getElements()).collect(Collectors.toList());
+					}
+					if (res.get(0) instanceof Object[]) {
+						results = res.stream().map(r->Arrays.asList((Object[])r)).collect(Collectors.toList());
+					}
+				}
+			}
+		} catch (Exception e) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getLocalizedMessage()));
+		}
+		return "";
+	}
 }

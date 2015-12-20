@@ -59,7 +59,7 @@
 					<f:facet name="header">
 						<h:outputText value="BV Key" />
 					</f:facet>
-					<h:link outcome="/member/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText id="itemBVKey" value="#{_item.member.BVKey}" />
 					</h:link>
@@ -68,7 +68,7 @@
 					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
-					<h:link outcome="/member/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText id="itemName" value="#{_item.member.name}" />
 					</h:link>
@@ -77,7 +77,7 @@
 					<f:facet name="header">
 						<h:outputText value="Vorname" />
 					</f:facet>
-					<h:link outcome="/member/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText id="itemVorname" value="#{_item.member.vorname}" />
 					</h:link>
@@ -86,7 +86,7 @@
 					<f:facet name="header">
 						<h:outputText value="Aktiv" />
 					</f:facet>
-					<h:link outcome="/member/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText id="itemAktiv" value="#{_item.member.aktiv}" />
 					</h:link>
@@ -95,7 +95,7 @@
 					<f:facet name="header">
 						<h:outputText value="Trupp" />
 					</f:facet>
-					<h:link outcome="/member/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText id="itemTrupp" value="#{_item.member.truppId}" />
 					</h:link>
@@ -104,7 +104,7 @@
 					<f:facet name="header">
 						<h:outputText value="Datum" />
 					</f:facet>
-					<h:link outcome="/member/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText value="#{_item.member.changed}" converter="javax.faces.DateTime" />
 					</h:link>
@@ -113,7 +113,7 @@
 					<f:facet name="header">
 						<h:outputText value="User" />
 					</f:facet>
-					<h:link outcome="/member/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText value="#{_item.member.changedBy}" />
 					</h:link>

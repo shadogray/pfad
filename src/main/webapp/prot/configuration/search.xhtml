@@ -54,7 +54,7 @@
 					<f:facet name="header">
 						<h:outputText value="Ckey"/>
 					</f:facet>
-					<h:link outcome="/configuration/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="itemCkey" value="#{_item.ckey}"/>
 					</h:link>
@@ -63,7 +63,7 @@
 					<f:facet name="header">
 						<h:outputText value="Cvalue"/>
 					</f:facet>
-					<h:link outcome="/configuration/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="itemCvalue" value="#{_item.cvalue}"/>
 					</h:link>

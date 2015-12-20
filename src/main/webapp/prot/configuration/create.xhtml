@@ -51,13 +51,13 @@
 			</h:panelGrid>
 
 			<div class="buttons">
-				<h:commandLink value="Save" action='#{configurationBean.update}' styleClass="btn btn-primary"/>
+				<h:commandLink value="Save" action='#{configurationBean.update}' styleClass="btn btn-primary" disabled="#{!configurationBean.updateAllowed}"/>
 				<c:choose>
 					<c:when test='#{!empty configurationBean.id}'>
 						<h:link value="Cancel" outcome="view" styleClass="btn btn-primary">
 							<f:param name="id" value='#{configurationBean.id}'/>
 						</h:link>
-						<h:commandLink value="Delete" action='#{configurationBean.delete}' styleClass="btn btn-primary"/>
+						<h:commandLink value="Delete" action='#{configurationBean.delete}' styleClass="btn btn-primary" disabled="#{!configurationBean.deleteAllowed}"/>
 					</c:when>
 					<c:otherwise>
 						<h:link value="Cancel" outcome="search" styleClass="btn btn-primary"/>

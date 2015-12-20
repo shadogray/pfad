@@ -54,7 +54,7 @@
 					<f:facet name="header">
 						<h:outputText value="Function"/>
 					</f:facet>
-					<h:link outcome="/function/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="itemFunction" value="#{_item.function}"/>
 					</h:link>
@@ -63,7 +63,7 @@
 					<f:facet name="header">
 						<h:outputText value="Key"/>
 					</f:facet>
-					<h:link outcome="/function/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="itemKey" value="#{_item.key}"/>
 					</h:link>
@@ -72,7 +72,7 @@
 					<f:facet name="header">
 						<h:outputText value="ExportReg"/>
 					</f:facet>
-					<h:link outcome="/function/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="itemExportReg" value="#{_item.exportReg}"/>
 					</h:link>

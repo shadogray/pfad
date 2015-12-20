@@ -29,6 +29,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
@@ -166,7 +167,7 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	@NotAudited
 	@ManyToMany
 	@OrderBy("name, vorname")
-	protected Set<Member> siblings;
+	protected Set<Member> siblings = new HashSet<>();
 	
 	public Long getId() {
 		return this.id;
@@ -213,8 +214,7 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 		if (id == null) {
 			return BVKey;
 		}
-		return BVKey;
-		//return StringUtils.isEmpty(BVKey) ? Configuration.BADEN_KEYPFX+id : BVKey;
+		return StringUtils.isEmpty(BVKey) ? Configuration.BADEN_KEYPFX+id : BVKey;
 	}
 
 	public void setBVKey(String BVKey) {
@@ -222,19 +222,17 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	}
 
 	public String getGruppenSchluessel() {
-		return GruppenSchluessel;
-		//return StringUtils.isEmpty(GruppenSchluessel) ? Configuration.BADEN_KEY : GruppenSchluessel;
+		return StringUtils.isEmpty(GruppenSchluessel) ? Configuration.BADEN_KEY : GruppenSchluessel;
 	}
 
 	public void setGruppenSchluessel(String GruppenSchluessel) {
-//		if (Configuration.BADEN_KEY.equals(BVKey)) 
-//			return;
+		if (Configuration.BADEN_KEY.equals(BVKey)) 
+			return;
 		this.GruppenSchluessel = GruppenSchluessel;
 	}
 
 	public long getPersonenKey() {
-		return PersonenKey;
-		//		return PersonenKey == 0 && id != null ? id : PersonenKey;
+		return (PersonenKey == 0 && id != null) ? id : PersonenKey;
 	}
 
 	public void setPersonenKey(long PersonenKey) {

@@ -16,14 +16,19 @@
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
-				<h:link id="brandLink" outcome="/index.xhtml" styleClass="brand">
+				<h:link id="brandLink" outcome="/prot/index.xhtml" styleClass="brand">
 					<h:outputText value="Welcome to " rendered=" #{request.userPrincipal !=null} "/>
                     Pfad
                     <h:outputText value=",  #{request.userPrincipal.name}" rendered="#{request.userPrincipal !=null} "/>
 				</h:link>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
-						<li><a href="http://forge.jboss.org/document/hands-on-lab">How to Customize</a></li>
+						<li>
+						<h:panelGroup rendered="#{configurationBean.registrationEndDate != null}">
+							<h:outputLabel value="Registrierung Ende:" />
+							<h:outputText value="#{configurationBean.registrationEndDate}" converter="javax.faces.DateTime"/>
+						</h:panelGroup>
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -31,30 +36,33 @@
 	</div>
 
 	<div class="container forgecontainer">
-		<div id="navigation">
-			<h:link id="homeLink" outcome="/index.xhtml">
+		<h:panelGroup id="navigation" rendered="#{memberBean.sessionContext.callerPrincipal != 'anonymous'}">
+			<h:link id="homeLink" outcome="/prot/index.xhtml">
 				<img style="max-width: 10em;" src='#{resource["forge-logo.png"]}' alt="Forge... get hammered" border="0" />
 			</h:link>
 			<h:form>
 				<ul>
 					<li>
-						<h:link outcome="/configuration/search" value="Configuration"/>
+						<h:link outcome="/prot/configuration/search" value="Configuration"/>
 					</li>
 					<li>
-						<h:link outcome="/function/search" value="Function"/>
+						<h:link outcome="/prot/function/search" value="Function"/>
 					</li>
 					<li>
-						<h:link outcome="/member/search" value="Member"/>
+						<h:link outcome="/prot/member/search" value="Member"/>
 					</li>
 					<li>
-						<h:link outcome="/squad/search" value="Squad"/>
+						<h:link outcome="/prot/squad/search" value="Squad"/>
 					</li>
 					<li>
-						<h:link outcome="/actions" value="Action"/>
+						<h:link outcome="/prot/actions" value="Action"/>
+					</li>
+					<li>
+						<h:commandLink action="#{loginBean.logout()}" value="Logout"/>
 					</li>
 				</ul>
 			</h:form>
-		</div>
+		</h:panelGroup>
 
 		<div id="content">
 			<h1>

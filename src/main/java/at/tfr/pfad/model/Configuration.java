@@ -20,6 +20,7 @@ public class Configuration implements Serializable {
 
 	public static final String BADEN_KEY = "BAD";
 	public static final String BADEN_KEYPFX = "3-BAD-";
+	public static final String REGEND_KEY = "RegistrationEnd";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="configuration_seq")

@@ -9,6 +9,7 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateful;
@@ -17,6 +18,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -24,6 +26,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
+import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.model.Configuration;
 
 /**
@@ -42,6 +49,9 @@ import at.tfr.pfad.model.Configuration;
 public class ConfigurationBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	@Inject
+	private ConfigurationRepository configRepo;
 
 	/*
 	 * Support creating and retrieving Configuration entities
@@ -105,25 +115,23 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 	public boolean isUpdateAllowed() {
 		return isAdmin() || isGruppe();
 	}
-	
+
 	public String update() {
 		this.conversation.end();
 
 		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe may update entry");
-		
+
 		try {
 			if (this.id == null) {
 				this.entityManager.persist(this.configuration);
 				return "search?faces-redirect=true";
 			} else {
 				this.entityManager.merge(this.configuration);
-				return "view?faces-redirect=true&id="
-						+ this.configuration.getId();
+				return "view?faces-redirect=true&id=" + this.configuration.getId();
 			}
 		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(e.getMessage()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
 	}
@@ -133,7 +141,7 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");
-		
+
 		try {
 			Configuration deletableEntity = findById(getId());
 
@@ -141,8 +149,7 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(e.getMessage()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
 	}
@@ -190,21 +197,16 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
 		Root<Configuration> root = countCriteria.from(Configuration.class);
-		countCriteria = countCriteria.select(builder.count(root)).where(
-				getSearchPredicates(root));
-		this.count = this.entityManager.createQuery(countCriteria)
-				.getSingleResult();
+		countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root));
+		this.count = this.entityManager.createQuery(countCriteria).getSingleResult();
 
 		// Populate this.pageItems
 
-		CriteriaQuery<Configuration> criteria = builder
-				.createQuery(Configuration.class);
+		CriteriaQuery<Configuration> criteria = builder.createQuery(Configuration.class);
 		root = criteria.from(Configuration.class);
 		TypedQuery<Configuration> query = this.entityManager
-				.createQuery(criteria.select(root).where(
-						getSearchPredicates(root)));
-		query.setFirstResult(this.page * getPageSize()).setMaxResults(
-				getPageSize());
+				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
+		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
 	}
 
@@ -215,15 +217,12 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 		String ckey = this.example.getCkey();
 		if (ckey != null && !"".equals(ckey)) {
-			predicatesList.add(builder.like(
-					builder.lower(root.<String> get("ckey")),
-					'%' + ckey.toLowerCase() + '%'));
+			predicatesList.add(builder.like(builder.lower(root.<String> get("ckey")), '%' + ckey.toLowerCase() + '%'));
 		}
 		String cvalue = this.example.getCvalue();
 		if (cvalue != null && !"".equals(cvalue)) {
-			predicatesList.add(builder.like(
-					builder.lower(root.<String> get("cvalue")),
-					'%' + cvalue.toLowerCase() + '%'));
+			predicatesList
+					.add(builder.like(builder.lower(root.<String> get("cvalue")), '%' + cvalue.toLowerCase() + '%'));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -244,30 +243,25 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 	public List<Configuration> getAll() {
 
-		CriteriaQuery<Configuration> criteria = this.entityManager
-				.getCriteriaBuilder().createQuery(Configuration.class);
-		return this.entityManager.createQuery(
-				criteria.select(criteria.from(Configuration.class)))
-				.getResultList();
+		CriteriaQuery<Configuration> criteria = this.entityManager.getCriteriaBuilder()
+				.createQuery(Configuration.class);
+		return this.entityManager.createQuery(criteria.select(criteria.from(Configuration.class))).getResultList();
 	}
 
 	public Converter getConverter() {
 
-		final ConfigurationBean ejbProxy = this.sessionContext
-				.getBusinessObject(ConfigurationBean.class);
+		final ConfigurationBean ejbProxy = this.sessionContext.getBusinessObject(ConfigurationBean.class);
 
 		return new Converter() {
 
 			@Override
-			public Object getAsObject(FacesContext context,
-					UIComponent component, String value) {
+			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
 			@Override
-			public String getAsString(FacesContext context,
-					UIComponent component, Object value) {
+			public String getAsString(FacesContext context, UIComponent component, Object value) {
 
 				if (value == null) {
 					return "";
@@ -292,5 +286,18 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 		Configuration added = this.add;
 		this.add = new Configuration();
 		return added;
+	}
+
+	public Date getRegistrationEndDate() {
+		try {
+			Configuration config = configRepo.findOptionalByCkey(Configuration.REGEND_KEY);
+			if (config != null && StringUtils.isNotBlank(config.getCvalue())) {
+				return DateTime.parse(config.getCvalue(), DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")).toDate();
+			}
+		} catch (Exception e) {
+			log.info("cannot parse Date: " + e, e);
+			return new Date();
+		}
+		return null;
 	}
 }

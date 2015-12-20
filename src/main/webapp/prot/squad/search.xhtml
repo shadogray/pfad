@@ -76,7 +76,7 @@
 					<f:facet name="header">
 						<h:outputText value="Type"/>
 					</f:facet>
-					<h:link outcome="/squad/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="itemType" value="#{_item.type}"/>
 					</h:link>
@@ -85,7 +85,7 @@
 					<f:facet name="header">
 						<h:outputText value="Name"/>
 					</f:facet>
-					<h:link outcome="/squad/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="itemName" value="#{_item.name}"/>
 					</h:link>
@@ -94,7 +94,7 @@
 					<f:facet name="header">
 						<h:outputText value="LeaderFemale"/>
 					</f:facet>
-					<h:link outcome="/squad/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="forgeviewdisplayitemLeaderFemale" value="#{forgeview:display(_item.leaderFemale)}"/>
 					</h:link>
@@ -103,7 +103,7 @@
 					<f:facet name="header">
 						<h:outputText value="LeaderMale"/>
 					</f:facet>
-					<h:link outcome="/squad/view">
+					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
 						<h:outputText id="forgeviewdisplayitemLeaderMale" value="#{forgeview:display(_item.leaderMale)}"/>
 					</h:link>

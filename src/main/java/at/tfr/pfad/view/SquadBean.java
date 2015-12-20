@@ -112,7 +112,8 @@ public class SquadBean extends BaseBean implements Serializable {
 	}
 
 	public boolean isUpdateAllowed(Squad squad) {
-		return isAdmin() || isGruppe() || sessionContext.getCallerPrincipal().getName().equals(squad.getLogin());
+		return isAdmin() || isGruppe() || 
+				(sessionContext.getCallerPrincipal().getName().equals(squad.getLogin()) && !isRegistrationEnd());
 	}
 
 	public String update() {

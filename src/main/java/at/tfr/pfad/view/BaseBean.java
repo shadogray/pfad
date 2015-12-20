@@ -8,6 +8,7 @@
 package at.tfr.pfad.view;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
@@ -29,6 +30,8 @@ public abstract class BaseBean implements Serializable {
 	protected transient EntityManager entityManager;
 	@Resource
 	protected SessionContext sessionContext;
+	@Inject
+	protected SessionBean sessionBean;
 
 	public BaseBean() {
 		super();
@@ -53,6 +56,10 @@ public abstract class BaseBean implements Serializable {
 	public abstract boolean isUpdateAllowed();
 	public boolean isDeleteAllowed() {
 		return isAdmin();
+	}
+	
+	public boolean isRegistrationEnd() {
+		return sessionBean.getRegistrationEndDate() != null && sessionBean.getRegistrationEndDate().before(new Date());
 	}
 	
 }

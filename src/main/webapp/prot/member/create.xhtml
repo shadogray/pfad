@@ -181,7 +181,7 @@
 							<f:facet name="header">
 								<h:outputText value="Funktion"/>
 							</f:facet>
-							<h:link outcome="/function/view">
+							<h:link outcome="/prot/function/view">
 								<f:param name="id" value="#{_item.id}"/>
 								<h:outputText id="itemFunction" value="#{_item.function}"/>
 							</h:link>
@@ -190,7 +190,7 @@
 							<f:facet name="header">
 								<h:outputText value="Key"/>
 							</f:facet>
-							<h:link outcome="/function/view">
+							<h:link outcome="/prot/function/view">
 								<f:param name="id" value="#{_item.id}"/>
 								<h:outputText id="itemKey" value="#{_item.key}"/>
 							</h:link>
@@ -216,7 +216,7 @@
 							<f:facet name="header">
 								<h:outputText value="Name"/>
 							</f:facet>
-							<h:link outcome="/member/view">
+							<h:link outcome="view">
 								<f:param name="id" value="#{_item.id}"/>
 								<h:outputText id="itemFunction" value="#{_item.name}"/>
 							</h:link>
@@ -225,7 +225,7 @@
 							<f:facet name="header">
 								<h:outputText value="Vorname"/>
 							</f:facet>
-							<h:link outcome="/member/view">
+							<h:link outcome="view">
 								<f:param name="id" value="#{_item.id}"/>
 								<h:outputText id="itemVorname" value="#{_item.vorname}"/>
 							</h:link>
@@ -234,7 +234,7 @@
 							<f:facet name="header">
 								<h:outputText value="Geb.Jahr"/>
 							</f:facet>
-							<h:link outcome="/member/view">
+							<h:link outcome="view">
 								<f:param name="id" value="#{_item.id}"/>
 								<h:outputText id="itemGebJahr" value="#{_item.gebJahr}"/>
 							</h:link>
