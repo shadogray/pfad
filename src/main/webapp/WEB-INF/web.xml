@@ -49,7 +49,7 @@
 		<role-name>leiter</role-name>
 	</security-role>
 	<welcome-file-list>
-		<welcome-file>faces/index.xhtml</welcome-file>
+		<welcome-file>/index.html</welcome-file>
 	</welcome-file-list>
 	<error-page>
 		<error-code>404</error-code>
