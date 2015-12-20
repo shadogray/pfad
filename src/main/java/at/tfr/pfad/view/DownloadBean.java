@@ -45,6 +45,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
 
 import com.google.common.net.HttpHeaders;
@@ -58,6 +59,8 @@ import at.tfr.pfad.model.Squad;
 @SessionScoped
 public class DownloadBean implements Serializable {
 
+	private Logger log = Logger.getLogger(getClass());
+	
 	enum HeaderRegistrierung {
 		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Telefon, Funktionen, Trupp, OK
 	}
@@ -209,7 +212,7 @@ public class DownloadBean implements Serializable {
 				// Eltern, Kinder, KinderTrupps
 				row.createCell(cCount++).setCellValue(!m.getSiblings().isEmpty() ? "X" : "");
 				row.createCell(cCount++).setCellValue(m.getSiblings().stream().map(s->s.toString()).collect(Collectors.joining(",")));
-				row.createCell(cCount++).setCellValue(m.getSiblings().stream().map(s->s.getTrupp().getName()).collect(Collectors.joining(",")));
+				row.createCell(cCount++).setCellValue(m.getSiblings().stream().map(s->s.getTrupp()!=null ? s.getTrupp().getName() : "").collect(Collectors.joining(",")));
 			}
 
 		}
@@ -308,25 +311,37 @@ public class DownloadBean implements Serializable {
 	}
 
 	public String query() {
+		Query q = null;
 		try {
 			results = new ArrayList<>();
 			if (nativeQuery) {
 				results = em.createNativeQuery(query).getResultList();
 			} else {
-				Query q = em.createQuery(query);
+				q = em.createQuery(query);
 				List<?> res = q.getResultList();
 				if (res.size() > 0) {
 					if (res.get(0) instanceof Tuple) {
 						results = ((List<Tuple>)res).stream().map(r->r.getElements()).collect(Collectors.toList());
-					}
-					if (res.get(0) instanceof Object[]) {
+					} else if (res.get(0) instanceof Object[]) {
 						results = res.stream().map(r->Arrays.asList((Object[])r)).collect(Collectors.toList());
+					} else {
+						results = res.stream().map(r->Arrays.asList(new Object[]{r})).collect(Collectors.toList());
 					}
 				}
 			}
 		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.getLocalizedMessage()));
+			log.info("cannot execute: "+q+" : "+e, e);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+					getMessage(e), e.getLocalizedMessage()));
 		}
 		return "";
+	}
+	
+	String getMessage(Throwable e) {
+		String m = "";
+		if (e != null && e.getCause() != null) {
+			m = getMessage(e.getCause());
+		}
+		return m + e.getMessage();
 	}
 }
