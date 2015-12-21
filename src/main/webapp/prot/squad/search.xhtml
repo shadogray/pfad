@@ -78,6 +78,7 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
+						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemType" value="#{_item.type}"/>
 					</h:link>
 				</h:column>
@@ -87,6 +88,7 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
+						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemName" value="#{_item.name}"/>
 					</h:link>
 				</h:column>
@@ -96,6 +98,7 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
+						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="forgeviewdisplayitemLeaderFemale" value="#{forgeview:display(_item.leaderFemale)}"/>
 					</h:link>
 				</h:column>
@@ -105,6 +108,7 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
+						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="forgeviewdisplayitemLeaderMale" value="#{forgeview:display(_item.leaderMale)}"/>
 					</h:link>
 				</h:column>
