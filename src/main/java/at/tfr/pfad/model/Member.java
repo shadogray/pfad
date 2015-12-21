@@ -107,6 +107,9 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	protected boolean Aktiv;
 
 	@Column
+	protected boolean AktivExtern;
+
+	@Column
 	protected String Email;
 
 	@Column
@@ -333,6 +336,14 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 
 	public void setAktiv(boolean Aktiv) {
 		this.Aktiv = Aktiv;
+	}
+
+	public boolean isAktivExtern() {
+		return AktivExtern;
+	}
+
+	public void setAktivExtern(boolean aktivExtern) {
+		AktivExtern = aktivExtern;
 	}
 
 	public String getEmail() {

@@ -252,25 +252,30 @@ public class DownloadBean implements Serializable {
 	}
 
 	String getFunktionen(Member m) {
-		StringBuilder sb = new StringBuilder();
+		List<String> functions = new ArrayList<>();
 		if (m.getTrupp() != null) {
-			sb.append(m.getTrupp().getType().getKey(m.getGeschlecht())).append(" ");
+			functions.add(m.getTrupp().getType().getKey(m.getGeschlecht()));
 		}
+		
 		List<String> toLead = squadRepo.findByLeaderFemaleEqualOrLeaderMaleEqual(m).stream()
 				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
+		functions.addAll(toLead);
+		
 		List<String> toAss = squadRepo.findByAssistant(m).stream()
 				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
-		toLead.addAll(toAss);
-		sb.append(toLead.stream().distinct().collect(Collectors.joining(" ")));
-		sb.append(" ");
+		functions.addAll(toAss);
+		
 		if (!m.getFunktionen().isEmpty()) {
-			sb.append(m.getFunktionen().stream().map(f -> f.getKey()).collect(Collectors.joining(" ")));
+			functions.addAll(m.getFunktionen().stream().map(f -> f.getKey()).collect(Collectors.toList()));
 		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(functions.stream().distinct().collect(Collectors.joining(",")));
 		return sb.toString().trim();
 	}
 
 	public ValidationResult validate(Member member) {
-		if (member.isAktiv() && member.getVollzahler() != null && !member.getVollzahler().isAktiv()) {
+		if (member.isAktiv() && member.getVollzahler() != null && !(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
 			return new ValidationResult(false, "Vollzahler INAKTIV");
 		}
 		return new ValidationResult(true, "");

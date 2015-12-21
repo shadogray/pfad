@@ -20,7 +20,7 @@ public class ProcessorBean implements Serializable {
 	@Schedule(hour = "*", minute = "0", second = "0")
 	public void doBackup() {
 		try {
-			String backupName = "pfad_" + new DateTime().toString("yyyy.mm.dd_HH") + ".zip";
+			String backupName = "pfad_" + new DateTime().toString("yyyy.MM.dd_HH") + ".zip";
 			int result = entityManager.createNativeQuery("backup to '" + backupName + "';").executeUpdate();
 			log.info("executed Backup to: " + backupName + ", result=" + result);
 		} catch (Throwable e) {

@@ -263,6 +263,12 @@
 					<h:message for="memberBeanMemberAktiv" styleClass="error"/>
 				</h:panelGroup>
 				<h:outputText/>
+				<h:outputLabel for="memberBeanMemberAktivExtern" value="AktivExtern:"/>
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="memberBeanMemberAktivExtern" value="#{memberBean.member.aktivExtern}"/>
+					<h:message for="memberBeanMemberAktivExtern" styleClass="error"/>
+				</h:panelGroup>
+				<h:outputText/>
 				<h:outputLabel for="memberBeanMemberTrail" value="Trail:"/>
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="memberBeanMemberTrail" value="#{memberBean.member.trail}"/>
