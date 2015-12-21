@@ -325,7 +325,7 @@ public class MemberBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Member> criteria = this.entityManager.getCriteriaBuilder().createQuery(Member.class);
 		return this.entityManager.createQuery(criteria.select(criteria.from(Member.class))).getResultList().stream()
-				.filter(m -> m.isAktiv()).sorted().collect(Collectors.toList());
+				.filter(m -> m.isAktiv() || m.isAktivExtern()).sorted().collect(Collectors.toList());
 	}
 
 	public Converter getConverter() {
