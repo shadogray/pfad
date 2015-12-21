@@ -14,18 +14,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.annotation.Resource;
 import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.enterprise.context.RequestScoped;
+import javax.el.ValueExpression;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.html.HtmlColumn;
+import javax.faces.component.html.HtmlDataTable;
+import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -33,10 +32,6 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
-import javax.persistence.TupleElement;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -85,7 +80,8 @@ public class DownloadBean implements Serializable {
 	private EntityManager em;
 	private String query;
 	private boolean nativeQuery;
-	private List<List<?>> results;
+	private List<List<?>> results = new ArrayList<>();
+	private HtmlPanelGroup dataTableGroup;
 
 	public String downloadRegistrierung() throws Exception {
 		return downloadData(false);
@@ -316,25 +312,37 @@ public class DownloadBean implements Serializable {
 	public List<List<?>> getResults() {
 		return results;
 	}
+	
+	public List<Integer> getResultIndexes() {
+		return IntStream.range(0, results.size()).boxed().collect(Collectors.toList());
+	}
 
 	public String query() {
 		Query q = null;
+		if (dataTableGroup != null) {
+			dataTableGroup.getChildren().clear();
+		}
 		try {
 			results = new ArrayList<>();
+			List<?> res;
 			if (nativeQuery) {
-				results = em.createNativeQuery(query).getResultList();
+				res = em.createNativeQuery(query).getResultList();
 			} else {
 				q = em.createQuery(query);
-				List<?> res = q.getResultList();
-				if (res.size() > 0) {
-					if (res.get(0) instanceof Tuple) {
-						results = ((List<Tuple>)res).stream().map(r->r.getElements()).collect(Collectors.toList());
-					} else if (res.get(0) instanceof Object[]) {
-						results = res.stream().map(r->Arrays.asList((Object[])r)).collect(Collectors.toList());
-					} else {
-						results = res.stream().map(r->Arrays.asList(new Object[]{r})).collect(Collectors.toList());
-					}
+				res = q.getResultList();
+			}
+			if (res.size() > 0) {
+				if (res.get(0) instanceof Tuple) {
+					results = ((List<Tuple>)res).stream().map(r->r.getElements()).collect(Collectors.toList());
+				} else if (res.get(0) instanceof Object[]) {
+					results = res.stream().map(r->Arrays.asList((Object[])r)).collect(Collectors.toList());
+				} else {
+					results = res.stream().map(r->Arrays.asList(new Object[]{r})).collect(Collectors.toList());
 				}
+			}
+			if (dataTableGroup != null && results != null && results.size() > 0) {
+				dataTableGroup.getChildren().add(populateDataTable(results));
+				dataTableGroup = null;
 			}
 		} catch (Exception e) {
 			log.info("cannot execute: "+q+" : "+e, e);
@@ -351,4 +359,48 @@ public class DownloadBean implements Serializable {
 		}
 		return m + e.getMessage();
 	}
-}
+	
+	public HtmlPanelGroup getDataTableGroup() {
+		if (dataTableGroup != null && (results == null || results.isEmpty()))
+			dataTableGroup.getChildren().clear();
+		return dataTableGroup;
+	}
+	
+	public void setDataTableGroup(HtmlPanelGroup panel) {
+		this.dataTableGroup = panel;
+	}
+	
+	private HtmlDataTable populateDataTable(List<List<?>> list) {
+	    HtmlDataTable dynamicDataTable = new HtmlDataTable();
+	    dynamicDataTable.setId("dynamicDataTable_"+System.currentTimeMillis());
+        dynamicDataTable.setValueExpression("value",createValueExpression("#{downloadBean.results}", List.class));
+        dynamicDataTable.setVar("line");
+        dynamicDataTable.setStyleClass("table table-striped tabel-bordered table-hover");
+
+        // Iterate over columns.
+        for (int idx = 0; idx < list.get(0).size(); idx++) {
+
+            // Create <h:column>.
+            HtmlColumn column = new HtmlColumn();
+            dynamicDataTable.getChildren().add(column);
+
+            // Create <h:outputText value="dynamicHeaders[i]"> for <f:facet name="header"> of column.
+            HtmlOutputText header = new HtmlOutputText();
+            header.setValue(""+idx);
+            column.setHeader(header);
+
+            // Create <h:outputText value="#{dynamicItem[" + i + "]}"> for the body of column.
+            HtmlOutputText output = new HtmlOutputText();
+            output.setValueExpression("value",
+                createValueExpression("#{line[" + idx + "]}", String.class));
+            column.getChildren().add(output);
+        }
+        return dynamicDataTable;
+	}
+    // Helpers -----------------------------------------------------------------------------------
+
+    private ValueExpression createValueExpression(String valueExpression, Class<?> valueType) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        return facesContext.getApplication().getExpressionFactory().createValueExpression(
+            facesContext.getELContext(), valueExpression, valueType);
+    }}

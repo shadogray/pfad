@@ -3,6 +3,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
+	xmlns:x="http://primefaces.org/ui"
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<ui:param name="pageTitle" value="Actions" />
@@ -46,14 +47,12 @@
 						<h:outputText value="" />
 					</h:panelGroup>
 					<h:commandLink actionListener="#{downloadBean.query()}" value="Query" styleClass="btn btn-primary">
-						<f:ajax execute="@form" render="queryDataTable messages"/>
+						<f:ajax execute="@form" render="queryResults messages" />
 					</h:commandLink>
-					<h:dataTable id="queryDataTable" value="#{downloadBean.results}" var="item">
-						<h:column>
-							<h:outputText value="#{item}" />
-						</h:column>
-					</h:dataTable>
 					<h:messages id="messages" />
+					<h:panelGroup id="results" layout="block" rendered="#{not empty downloadBean.results}" >
+						<h:panelGroup id="queryResults" layout="block" binding="#{downloadBean.dataTableGroup}"/>
+					</h:panelGroup>
 				</f:ajax>
 			</h:form>
 		</h:panelGroup>
