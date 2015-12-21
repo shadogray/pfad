@@ -275,7 +275,9 @@ public class DownloadBean implements Serializable {
 	}
 
 	public ValidationResult validate(Member member) {
-		if (member.isAktiv() && member.getVollzahler() != null && !(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
+		if (member.isAktiv() && member.getVollzahler() != null
+				&& !member.equals(member.getVollzahler()) 
+				&&	!(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
 			return new ValidationResult(false, "Vollzahler INAKTIV");
 		}
 		return new ValidationResult(true, "");

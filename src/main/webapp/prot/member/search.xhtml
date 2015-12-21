@@ -39,7 +39,7 @@
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
-					<h:panelGrid columnClasses="label,component,required" columns="3">
+					<h:panelGrid columnClasses="label,component,required" columns="6">
 						<h:outputLabel for="memberBeanExampleName" value="Name:" />
 						<h:panelGroup>
 							<rich:autocomplete id="memberBeanExampleName" value="#{memberBean.example.name}" mode="lazyClient"
@@ -47,17 +47,17 @@
 							<h:message for="memberBeanExampleName" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
+						<h:outputLabel for="memberBeanExampleBVKey" value="BV Key:" />
+						<h:panelGroup>
+							<h:inputText id="memberBeanExampleBVKey" value="#{memberBean.example.BVKey}" />
+							<h:message for="memberBeanExampleBVKey" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
 						<h:outputLabel for="memberBeanExampleVorname" value="Vorname:" />
 						<h:panelGroup>
 							<rich:autocomplete id="memberBeanExampleVorname" value="#{memberBean.example.vorname}" mode="lazyClient"
 								autofill="false" autocompleteList="#{memberBean.distinctVorname}" clientFilterFunction="autoFilter" />
 							<h:message for="memberBeanExampleVorname" styleClass="error" />
-						</h:panelGroup>
-						<h:outputText />
-						<h:outputLabel for="memberBeanExampleBVKey" value="BV Key:" />
-						<h:panelGroup>
-							<h:inputText id="memberBeanExampleBVKey" value="#{memberBean.example.BVKey}" />
-							<h:message for="memberBeanExampleBVKey" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 						<h:outputLabel for="memberBeanExampleTelefon" value="Telefon:" />
@@ -85,6 +85,12 @@
 									var="_item" />
 							</h:selectManyListbox>
 							<h:message for="memberBeanExampleFunktion" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+						<h:outputLabel for="memberBeanExampleAktiv" value="Aktiv:" />
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="memberBeanExampleAktiv" value="#{memberBean.example.aktiv}" />
+							<h:message for="memberBeanExampleAktiv" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 					</h:panelGrid>
@@ -140,6 +146,15 @@
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemTrupp" value="#{_item.trupp.name}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="GebJahr" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemJahr" value="#{_item.gebJahr}" />
 					</h:link>
 				</h:column>
 			</h:dataTable>

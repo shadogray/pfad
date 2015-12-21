@@ -280,6 +280,9 @@ public class MemberBean extends BaseBean implements Serializable {
 			predicatesList
 					.add(builder.like(builder.lower(root.<String> get("Telefon")), '%' + Telefon.toLowerCase() + '%'));
 		}
+		if (this.example.isAktiv()) {
+			predicatesList.add(builder.equal(root.get(Member_.Aktiv), this.example.isAktiv()));
+		}
 
 		Squad trupp = this.example.getTrupp();
 		if (trupp != null) {
