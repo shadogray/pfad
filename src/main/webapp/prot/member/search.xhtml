@@ -13,11 +13,14 @@
 	<ui:param name="pageTitle" value="Search Member entities" />
 
 	<ui:define name="header">
-		Member
+		<h:outputText value="Personen" />
+		<h:panelGroup rendered="#{configurationBean.registrationEndDate != null}">
+			<h:outputLabel value="Registrierung-Ende:" />
+			<h:outputText value="#{configurationBean.registrationEndDate}" converter="javax.faces.DateTime" />
+		</h:panelGroup>
 	</ui:define>
 
 	<ui:define name="subheader">
-		Search Member entities
 	</ui:define>
 
 	<ui:define name="footer" />
