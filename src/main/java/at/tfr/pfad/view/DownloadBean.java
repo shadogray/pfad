@@ -375,7 +375,7 @@ public class DownloadBean implements Serializable {
 	    dynamicDataTable.setId("dynamicDataTable_"+System.currentTimeMillis());
         dynamicDataTable.setValueExpression("value",createValueExpression("#{downloadBean.results}", List.class));
         dynamicDataTable.setVar("line");
-        dynamicDataTable.setStyleClass("table table-striped tabel-bordered table-hover");
+        dynamicDataTable.setStyleClass("table table-striped table-bordered table-hover");
 
         // Iterate over columns.
         for (int idx = 0; idx < list.get(0).size(); idx++) {
