@@ -19,6 +19,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -77,6 +79,7 @@ public class Squad implements Serializable, Comparable<Squad>, Auditable {
 
 	@ManyToMany
 	@OrderBy("Name, Vorname")
+	@JoinTable(name = "squad_member", joinColumns=@JoinColumn(name="squad_id"), inverseJoinColumns=@JoinColumn(name="assistants_id"))
 	private Set<Member> assistants = new HashSet<Member>();
 	
 	@OneToMany(mappedBy="Trupp")

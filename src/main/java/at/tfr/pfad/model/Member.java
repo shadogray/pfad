@@ -158,6 +158,10 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	@NotAudited
 	@Column(insertable = false, updatable = false, name = "Trupp_id")
 	protected Long TruppId;
+	
+	@NotAudited
+	@ManyToMany(mappedBy="assistants")
+	protected Set<Squad> squads;
 
 	@ManyToOne
 	protected Member Vollzahler;
