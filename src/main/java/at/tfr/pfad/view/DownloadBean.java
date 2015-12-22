@@ -259,7 +259,7 @@ public class DownloadBean implements Serializable {
 			ectx.setResponseCharacterEncoding(encoding);
 		}
 		ectx.setResponseHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Export_"
-				+ DateTime.now().toString("yyyymmdd_HHMM") + "." + dataStructure.name().toLowerCase());
+				+ DateTime.now().toString("yyyyMMdd_HHmm") + "." + dataStructure.name().toLowerCase());
 		return ectx;
 	}
 
