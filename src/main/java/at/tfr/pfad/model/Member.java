@@ -168,7 +168,7 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	protected Set<Squad> femaleGuided;
 	
 	@NotAudited
-	@OneToMany(mappedBy="leaderFemale")
+	@OneToMany(mappedBy="leaderMale")
 	protected Set<Squad> maleGuided;
 	
 	@ManyToOne
