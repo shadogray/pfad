@@ -57,11 +57,11 @@ public class DownloadBean implements Serializable {
 	private Logger log = Logger.getLogger(getClass());
 	
 	enum HeaderRegistrierung {
-		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Telefon, Funktionen, Trupp, OK
+		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Religion, Telefon, Funktionen,
 	}
 
 	enum HeaderLocal {
-		Religion, FunktionenBaden, Trail, Gilde, AltER, InfoMail, Mitarbeit, Eltern, Kinder, KinderTrupps
+		OK, Trupp, Religion, FunktionenBaden, Trail, Gilde, AltER, InfoMail, Mitarbeit, Eltern, Kinder, KinderTrupps
 	}
 
 	enum DataStructure {
@@ -181,18 +181,20 @@ public class DownloadBean implements Serializable {
 			row.createCell(cCount++).setCellValue(m.isAktiv() ? "J" : "N");
 			row.createCell(cCount++).setCellValue(m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "");
 			row.createCell(cCount++).setCellValue(m.getEmail());
+			row.createCell(cCount++).setCellValue(withLocal ? m.getReligion() : ""); // do not return Religion 
 			row.createCell(cCount++).setCellValue(m.getTelefon());
 			row.createCell(cCount++).setCellValue(getFunktionen(m));
-			row.createCell(cCount++).setCellValue(m.getTrupp() != null ? m.getTrupp().getName() : "");
-			
-			HSSFCell ok = row.createCell(cCount++);
-			ok.setCellValue(vr.message);
-			if (!vr.valid) {
-				ok.setCellStyle(red);
-			}
 
 			// and Local Data
 			if (withLocal) { // Religion, FunktionenBaden, Trail, Gilde, AltER
+
+				HSSFCell ok = row.createCell(cCount++);
+				ok.setCellValue(vr.message);
+				if (!vr.valid) {
+					ok.setCellStyle(red);
+				}
+
+				row.createCell(cCount++).setCellValue(m.getTrupp() != null ? m.getTrupp().getName() : "");
 				row.createCell(cCount++).setCellValue(m.getReligion());
 				row.createCell(cCount++).setCellValue("");
 				row.createCell(cCount++).setCellValue(m.isTrail() ? "X" : "");
@@ -221,6 +223,9 @@ public class DownloadBean implements Serializable {
 			break;
 		case "GruppenSchlussel":
 			h = "GruppenSchlüssel";
+			break;
+		case "PLZ":
+			h = "Postleitzahl";
 			break;
 		}
 		return h;
