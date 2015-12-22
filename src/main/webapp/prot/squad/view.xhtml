@@ -95,6 +95,65 @@
 				</h:column>
 			</h:dataTable>
 			<h:outputText />
+			<h:outputLabel for="squadBeanSquadScouts" value="Scouts:" />
+			<h:dataTable id="squadBeanSquadScouts" styleClass="data-table"
+				value="#{forgeview:asList(squadBean.squad.scouts)}" var="_item">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="BV Key" />
+					</f:facet>
+					<h:link outcome="/prot/member/view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemScoutBVKey" value="#{_item.BVKey}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Name" />
+					</f:facet>
+					<h:link outcome="/prot/member/view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemScoutName" value="#{_item.name}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Vorname" />
+					</f:facet>
+					<h:link outcome="/prot/member/view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemScoutVorname" value="#{_item.vorname}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Aktiv" />
+					</f:facet>
+					<h:link outcome="/prot/member/view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemScoutAktiv" value="#{_item.aktiv}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="GebJahr" />
+					</f:facet>
+					<h:link outcome="/prot/member/view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemScoutGebJahr" value="#{_item.gebJahr}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="PLZ" />
+					</f:facet>
+					<h:link outcome="/prot/member/view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemScoutPLZ" value="#{_item.PLZ}" />
+					</h:link>
+				</h:column>
+			</h:dataTable>
+			<h:outputText />
 		</h:panelGrid>
 
 		<h:form>

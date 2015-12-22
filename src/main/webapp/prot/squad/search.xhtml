@@ -93,6 +93,16 @@
 				</h:column>
 				<h:column>
 					<f:facet name="header">
+						<h:outputText value="Scouts"/>
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}"/>
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemScouts" value="#{_item.scouts.size()}"/>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
 						<h:outputText value="LeaderFemale"/>
 					</f:facet>
 					<h:link outcome="view">

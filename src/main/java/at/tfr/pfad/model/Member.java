@@ -21,10 +21,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
@@ -47,9 +50,9 @@ import at.tfr.pfad.dao.AuditListener;
 		@NamedQuery(name = "distAnrede", query = "select distinct m.Anrede from Member m order by m.Anrede"),
 		@NamedQuery(name = "distReligion", query = "select distinct m.Religion from Member m order by m.Religion"), })
 
-@Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED,withModifiedFlag=true)
+@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED, withModifiedFlag = true)
 @Entity
-@EntityListeners({AuditListener.class})
+@EntityListeners({ AuditListener.class })
 public class Member implements Serializable, Comparable<Member>, Auditable {
 
 	@Id
@@ -126,11 +129,11 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 
 	@Column
 	protected boolean AltER;
-	
+
 	@Column
 	protected boolean Support;
-	
-	@Column 
+
+	@Column
 	protected boolean InfoMail;
 
 	@Enumerated(EnumType.STRING)
@@ -138,30 +141,33 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 
 	@Column
 	protected Date changed;
-	
+
 	@Column
 	protected Date created;
-	
+
 	@Column
 	protected String changedBy;
-	
+
 	@Column
 	protected String createdBy;
-	
+
 	@ManyToOne
 	@OrderBy("name")
 	protected Squad Trupp;
-	
+
 	@NotAudited
-	@Column(insertable=false, updatable=false, name="Trupp_id")
+	@Column(insertable = false, updatable = false, name = "Trupp_id")
 	protected Long TruppId;
 
 	@ManyToOne
-	@OrderBy("name, vorname")
 	protected Member Vollzahler;
-	
+
+	@OneToMany(mappedBy = "Vollzahler")
+	@OrderBy("Name, Vorname")
+	protected Set<Member> reduced;
+
 	@NotAudited
-	@Column(insertable=false, updatable=false, name="Vollzahler_id")
+	@Column(insertable = false, updatable = false, name = "Vollzahler_id")
 	protected Long VollzahlerId;
 
 	@ManyToMany
@@ -169,9 +175,15 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 
 	@NotAudited
 	@ManyToMany
-	@OrderBy("name, vorname")
+	@JoinTable(name = "member_member", joinColumns = @JoinColumn(name = "member_id") , inverseJoinColumns = @JoinColumn(name = "siblings_id") )
+	@OrderBy("Name, Vorname")
 	protected Set<Member> siblings = new HashSet<>();
-	
+
+	@NotAudited
+	@ManyToMany(mappedBy = "siblings")
+	@OrderBy("Name, Vorname")
+	protected Set<Member> parents = new HashSet<>();
+
 	public Long getId() {
 		return this.id;
 	}
@@ -217,7 +229,7 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 		if (id == null) {
 			return BVKey;
 		}
-		return StringUtils.isEmpty(BVKey) ? Configuration.BADEN_KEYPFX+id : BVKey;
+		return StringUtils.isEmpty(BVKey) ? Configuration.BADEN_KEYPFX + id : BVKey;
 	}
 
 	public void setBVKey(String BVKey) {
@@ -229,7 +241,7 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	}
 
 	public void setGruppenSchluessel(String GruppenSchluessel) {
-		if (Configuration.BADEN_KEY.equals(BVKey)) 
+		if (Configuration.BADEN_KEY.equals(BVKey))
 			return;
 		this.GruppenSchluessel = GruppenSchluessel;
 	}
@@ -522,7 +534,7 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	public Long getTruppId() {
 		return TruppId;
 	}
-	
+
 	public Long getVollzahlerId() {
 		return VollzahlerId;
 	}

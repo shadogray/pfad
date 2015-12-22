@@ -23,6 +23,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
@@ -75,8 +76,12 @@ public class Squad implements Serializable, Comparable<Squad>, Auditable {
 	private Member leaderFemale;
 
 	@ManyToMany
-	@OrderBy("name, vorname")
+	@OrderBy("Name, Vorname")
 	private Set<Member> assistants = new HashSet<Member>();
+	
+	@OneToMany(mappedBy="Trupp")
+	@OrderBy("Name, Vorname")
+	private Set<Member> scouts = new HashSet<Member>();
 
 	public Long getId() {
 		return this.id;
@@ -206,6 +211,10 @@ public class Squad implements Serializable, Comparable<Squad>, Auditable {
 
 	public void setAssistants(final Set<Member> assistants) {
 		this.assistants = assistants;
+	}
+
+	public Set<Member> getScouts() {
+		return scouts;
 	}
 	
 	@Override
