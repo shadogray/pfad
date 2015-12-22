@@ -57,7 +57,7 @@ public class DownloadBean implements Serializable {
 	private Logger log = Logger.getLogger(getClass());
 	
 	enum HeaderRegistrierung {
-		BVKey, GruppenSchlüssel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Telefon, Funktionen, Trupp, OK
+		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Telefon, Funktionen, Trupp, OK
 	}
 
 	enum HeaderLocal {
@@ -218,6 +218,9 @@ public class DownloadBean implements Serializable {
 			break;
 		case "BVKey":
 			h = "BV-Key";
+			break;
+		case "GruppenSchlussel":
+			h = "GruppenSchlüssel";
 			break;
 		}
 		return h;
