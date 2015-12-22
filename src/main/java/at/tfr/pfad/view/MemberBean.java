@@ -327,7 +327,11 @@ public class MemberBean extends BaseBean implements Serializable {
 	public List<Member> getActive() {
 
 		CriteriaQuery<Member> criteria = this.entityManager.getCriteriaBuilder().createQuery(Member.class);
-		return this.entityManager.createQuery(criteria.select(criteria.from(Member.class))).getResultList().stream()
+		List<Member> resultList = this.entityManager.createQuery(criteria.select(criteria.from(Member.class))).getResultList();
+		if (isAdmin()) {
+			return resultList;
+		}
+		return resultList.stream()
 				.filter(m -> m.isAktiv() || m.isAktivExtern()).sorted().collect(Collectors.toList());
 	}
 
@@ -412,5 +416,9 @@ public class MemberBean extends BaseBean implements Serializable {
 	
 	public List<ScoutRole> getScoutRoles() {
 		return Arrays.asList(ScoutRole.values());
+	}
+	
+	public List<Sex> getSexes() {
+		return Arrays.asList(Sex.values());
 	}
 }

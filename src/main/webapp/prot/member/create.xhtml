@@ -83,19 +83,26 @@
 				<h:outputText/>
 				<h:outputLabel for="memberBeanMemberGebTag" value="Geb Tag:"/>
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberGebTag" value="#{memberBean.member.gebTag}" p:placeholder="numerisch" title="Tag des Monats, Zahl"/>
+					<h:inputText id="memberBeanMemberGebTag" value="#{memberBean.member.gebTag}" p:placeholder="numerisch" title="Tag des Monats, Zahl">
+						<f:validateLongRange minimum="0" maximum="31"/>
+					</h:inputText>
 					<h:message for="memberBeanMemberGebTag" styleClass="error"/>
 				</h:panelGroup>
 				<h:outputText/>
 				<h:outputLabel for="memberBeanMemberGebMonat" value="Geb Monat:"/>
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberGebMonat" value="#{memberBean.member.gebMonat}" p:placeholder="numerisch" title="Monat des Jahres, Zahl"/>
+					<h:inputText id="memberBeanMemberGebMonat" value="#{memberBean.member.gebMonat}" p:placeholder="numerisch" title="Monat des Jahres, Zahl">
+						<f:validateLongRange minimum="0" maximum="12"/>
+					</h:inputText>
 					<h:message for="memberBeanMemberGebMonat" styleClass="error"/>
 				</h:panelGroup>
 				<h:outputText/>
 				<h:outputLabel for="memberBeanMemberGebJahr" value="Geb Jahr:"/>
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberGebJahr" value="#{memberBean.member.gebJahr}"  p:placeholder="numerisch" title="Jahr, Zahl"/>
+					<h:inputText id="memberBeanMemberGebJahr" value="#{memberBean.member.gebJahr}"  p:placeholder="numerisch" title="Jahr, Zahl">
+						<f:validateRequired />
+						<f:validator validatorId="gebJahrValidator"/>
+					</h:inputText>
 					<h:message for="memberBeanMemberGebJahr" styleClass="error"/>
 				</h:panelGroup>
 				<h:outputText/>
@@ -119,11 +126,8 @@
 				<h:outputText/>
 				<h:outputLabel for="memberBeanMemberGeschlecht" value="Geschlecht:"/>
 				<h:panelGroup>
-					<h:selectOneMenu id="memberBeanMemberGeschlecht" value="#{memberBean.member.geschlecht}">
-						<f:selectItem/>
-						<f:selectItem itemValue="M"/>
-						<f:selectItem itemValue="W"/>
-						<f:selectItem itemValue="X"/>
+					<h:selectOneMenu id="memberBeanMemberGeschlecht" value="#{memberBean.member.geschlecht}" required="true">
+						<f:selectItems value="#{memberBean.sexes}"/>
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberGeschlecht" styleClass="error"/>
 				</h:panelGroup>

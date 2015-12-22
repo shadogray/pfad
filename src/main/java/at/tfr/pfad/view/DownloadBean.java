@@ -57,7 +57,7 @@ public class DownloadBean implements Serializable {
 	private Logger log = Logger.getLogger(getClass());
 	
 	enum HeaderRegistrierung {
-		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Telefon, Funktionen, Trupp, OK
+		BVKey, GruppenSchlüssel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Telefon, Funktionen, Trupp, OK
 	}
 
 	enum HeaderLocal {
@@ -140,12 +140,7 @@ public class DownloadBean implements Serializable {
 		}
 
 		for (int i = 0; i < headers.size(); i++) {
-			String h = headers.get(i);
-			switch (h) {
-			case "Vollzahler": 
-				h = "Ermäßigt";
-				break;
-			}
+			String h = transformHeaders(headers, i);
 			HSSFCell c = row.createCell(i);
 			c.setCellValue(h);
 		}
@@ -213,6 +208,19 @@ public class DownloadBean implements Serializable {
 
 		}
 		return wb;
+	}
+
+	private String transformHeaders(List<String> headers, int i) {
+		String h = headers.get(i);
+		switch (h) {
+		case "Vollzahler": 
+			h = "Ermäßigt";
+			break;
+		case "BVKey":
+			h = "BV-Key";
+			break;
+		}
+		return h;
 	}
 
 	private List<Member> getMembers() {

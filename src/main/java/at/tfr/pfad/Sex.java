@@ -8,5 +8,5 @@
 package at.tfr.pfad;
 
 public enum Sex {
-	M, W, X
+	W, M, X
 }
