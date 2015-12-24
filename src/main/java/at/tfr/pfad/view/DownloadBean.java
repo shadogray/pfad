@@ -45,6 +45,7 @@ import org.joda.time.DateTime;
 
 import com.google.common.net.HttpHeaders;
 
+import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Member;
@@ -58,6 +59,10 @@ public class DownloadBean implements Serializable {
 	
 	enum HeaderRegistrierung {
 		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Religion, Telefon, Funktionen,
+	}
+	
+	enum HeaderGruppe {
+		Key, Name, Heim1, Straße1, Plz1, Ort1, Heim2, Straße2, Plz2, Ort2, BIC, IBAN, Bezirk, Web, Mail, Gruendungsjahr_Verein, Letzte_Wahl_GFm, Letzte_Wahl_GFw,Letzte_Wahl_ER, ZVR, BLZ, KontoNr;
 	}
 
 	enum HeaderLocal {
@@ -73,9 +78,13 @@ public class DownloadBean implements Serializable {
 	@Inject
 	private SquadRepository squadRepo;
 	@Inject
+	private ConfigurationRepository configRepo;
+	@Inject
 	private MemberBean memberBean;
 	@Inject
 	private SquadBean squadBean;
+	@Inject
+	private SessionBean sessionBean;
 	@Inject
 	private EntityManager em;
 	private String query;
@@ -124,7 +133,7 @@ public class DownloadBean implements Serializable {
 
 	private HSSFWorkbook generateData(boolean withLocal, Squad...squads) {
 		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet("Export_" + DateTime.now().toString("yyyy.mm.dd"));
+		HSSFSheet sheet = wb.createSheet("Personen"); 
 		CellStyle red = wb.createCellStyle();
 		red.setFillForegroundColor(HSSFColor.RED.index);
 		red.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
@@ -209,9 +218,85 @@ public class DownloadBean implements Serializable {
 			}
 
 		}
+		
+		formatGruppeSheet(wb.createSheet("Gruppe"));
+		formatStatusSheet(wb.createSheet("Status"));
+		
 		return wb;
 	}
 
+	private HSSFSheet formatGruppeSheet(HSSFSheet sheet) {
+		//Key	Name	Heim1	Straße1	Plz1	Ort1	Heim2	Straße2	Plz2	Ort2	BIC	IBAN	Bezirk	Web	Mail	
+		//	Gründungsjahr	Verein	Letzte Wahl GFm	Letzte Wahl GFw	Letzte Wahl ER	ZVR	BLZ	KontoNr
+		//BAD	Baden		Marchetstraße 7	2500	Baden					0	0		www.ontrail.at	vorstand@ontrail.at			
+		//	22.06.14	22.06.14	2015-11-18		0	0
+		List<String> headers = transformGruppeHeaders();
+		HSSFRow row = sheet.createRow(0);
+		for (int i=0; i<headers.size(); i++) {
+			row.createCell(i).setCellValue(headers.get(i));
+		}
+		row = sheet.createRow(1);
+		int cCount = 0;
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Key.name(), "BAD"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Name.name(), "Baden"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Heim1.name(), "Fritz Fangl Pfadfinderheim"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Straße1.name(), "Marchetstraße 7"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Plz1.name(), "2500"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Ort1.name(), "Baden"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Heim2.name(), ""));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Straße2.name(), ""));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Plz2.name(), ""));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Ort2.name(), ""));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.BIC.name(), ""));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.IBAN.name(), ""));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Bezirk.name(), "Baden"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Web.name(), "www.ontrail.at"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Mail.name(), "vorstand@ontrail.at"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Gruendungsjahr_Verein.name(), "1930"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_GFw.name(), "22.06.2014"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_GFm.name(), "22.06.2014"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_ER.name(), "18.11.2015"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.ZVR.name(), "545163933"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.BLZ.name(), "20205"));
+		return sheet;
+	}
+	
+	private HSSFSheet formatStatusSheet(HSSFSheet sheet) {
+		int rCount=0;
+		//"Export_" + DateTime.now().toString("yyyy.mm.dd"));
+		//Die Auswertung wurde mit folgenden Optionen erstellt:
+		HSSFRow row = sheet.createRow(rCount++);
+		row.createCell(0).setCellValue("Die Auswertung wurde mit folgenden Optionen erstellt:");
+		//	Gruppenkürzel	BAD
+		row = sheet.createRow(rCount++);
+		row.createCell(0).setCellValue("Gruppenkürzel");
+		row.createCell(1).setCellValue(configRepo.getValue(HeaderGruppe.Key.name(), "BAD"));
+		//	Auswertung vom	23.12.2015 10:22
+		row = sheet.createRow(rCount++);
+		row.createCell(0).setCellValue("Auswertung vom");
+		row.createCell(1).setCellValue(DateTime.now().toString("dd.MM.yyyy HH:mm"));
+		//	GRINS Art	HR
+		row = sheet.createRow(rCount++);
+		row.createCell(0).setCellValue("GRINS Art");
+		row.createCell(1).setCellValue(configRepo.getValue("GRINS_Art", "HR"));
+		//	Benutzer	reg
+		row = sheet.createRow(rCount++);
+		row.createCell(0).setCellValue("Benutzer");
+		row.createCell(1).setCellValue(sessionBean.getUser().getName());
+		//	Akzeptierte Fehler
+		row = sheet.createRow(rCount++);
+		row.createCell(0).setCellValue("Akzeptierte Fehler");
+		row.createCell(1).setCellValue("");
+		
+		return sheet;
+	}
+	
+	private List<String> transformGruppeHeaders() {
+		return Stream.of(HeaderGruppe.values())
+				.map(h->h.name().replaceAll("_", " ").replaceAll("ue", "ü").replaceAll("oe", "ö"))
+				.collect(Collectors.toList());
+	}
+	
 	private String transformHeaders(List<String> headers, int i) {
 		String h = headers.get(i);
 		switch (h) {

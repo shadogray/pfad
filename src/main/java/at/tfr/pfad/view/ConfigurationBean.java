@@ -287,17 +287,4 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 		this.add = new Configuration();
 		return added;
 	}
-
-	public Date getRegistrationEndDate() {
-		try {
-			Configuration config = configRepo.findOptionalByCkey(Configuration.REGEND_KEY);
-			if (config != null && StringUtils.isNotBlank(config.getCvalue())) {
-				return DateTime.parse(config.getCvalue(), DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")).toDate();
-			}
-		} catch (Exception e) {
-			log.info("cannot parse Date: " + e, e);
-			return new Date();
-		}
-		return null;
-	}
 }

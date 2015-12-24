@@ -1,6 +1,7 @@
 package at.tfr.pfad.dao;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Repository;
@@ -12,4 +13,11 @@ public abstract class ConfigurationRepository implements EntityRepository<Config
 
 	public abstract Configuration findOptionalByCkey(String key);
 	
+	public String getValue(String key, String defaultValue) {
+		Configuration cfg = findOptionalByCkey(key);
+		if (cfg != null) {
+			return cfg.getCvalue();
+		}
+		return defaultValue;
+	}
 }

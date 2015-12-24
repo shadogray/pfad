@@ -24,9 +24,9 @@
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li>
-						<h:panelGroup rendered="#{configurationBean.registrationEndDate != null}">
+						<h:panelGroup rendered="#{sessionBean.registrationEndDate != null}">
 							<h:outputLabel value="Registrierung Ende:" />
-							<h:outputText value="#{configurationBean.registrationEndDate}" converter="javax.faces.DateTime"/>
+							<h:outputText value="#{sessionBean.registrationEndDate}" converter="javax.faces.DateTime"/>
 						</h:panelGroup>
 						</li>
 					</ul>
