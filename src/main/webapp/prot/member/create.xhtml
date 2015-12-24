@@ -170,9 +170,9 @@
 				<h:outputText/>
 				<h:outputLabel for="memberBeanMemberVollzahler" value="Vollzahler:"/>
 				<h:panelGroup>
-					<rich:select converter="#{memberBean.converter}" id="memberBeanMemberVollzahler" enableManualInput="true" styleClass="fullwidth" value="#{memberBean.member.vollzahler}" p:placeholder="suche nach Name, Vorname..." clientFilterFunction="autoFilter" title="Bei Geschwister-Pfadis bitte hier auswählen..">
+					<rich:select converter="#{memberBean.converter}" id="memberBeanMemberVollzahler" enableManualInput="true" styleClass="fullwidth" value="#{memberBean.member.vollzahler}" p:placeholder="Geschwisterkind, Suche nach Name, Vorname..." clientFilterFunction="autoFilter" title="Das aktive(!) Geschwisterkind bitte hier auswählen..">
 						<f:selectItem/>
-						<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{memberBean.active}" var="_item"/>
+						<f:selectItems value="#{memberBean.activeNoVollzahler}"/>
 					</rich:select>
 					<h:message for="memberBeanMemberVollzahler" styleClass="error"/>
 				</h:panelGroup>

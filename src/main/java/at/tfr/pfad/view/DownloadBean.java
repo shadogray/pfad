@@ -188,7 +188,7 @@ public class DownloadBean implements Serializable {
 			row.createCell(cCount++).setCellValue(m.getOrt());
 			row.createCell(cCount++).setCellValue(m.getGeschlecht() != null ? m.getGeschlecht().name() : "");
 			row.createCell(cCount++).setCellValue(m.isAktiv() ? "J" : "N");
-			row.createCell(cCount++).setCellValue(m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "");
+			row.createCell(cCount++).setCellValue(m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "N");
 			row.createCell(cCount++).setCellValue(m.getEmail());
 			row.createCell(cCount++).setCellValue(withLocal ? m.getReligion() : ""); // do not return Religion 
 			row.createCell(cCount++).setCellValue(m.getTelefon());

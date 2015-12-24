@@ -335,6 +335,17 @@ public class MemberBean extends BaseBean implements Serializable {
 				.filter(m -> m.isAktiv() || m.isAktivExtern()).sorted().collect(Collectors.toList());
 	}
 
+	public List<Member> getActiveNoVollzahler() {
+
+		CriteriaQuery<Member> criteria = this.entityManager.getCriteriaBuilder().createQuery(Member.class);
+		List<Member> resultList = this.entityManager.createQuery(criteria.select(criteria.from(Member.class))).getResultList();
+		if (isAdmin()) {
+			return resultList;
+		}
+		return resultList.stream()
+				.filter(m -> (m.isAktiv() || m.isAktivExtern()) && m.getVollzahler() == null).sorted().collect(Collectors.toList());
+	}
+
 	public Converter getConverter() {
 
 		final MemberBean ejbProxy = this.sessionContext.getBusinessObject(MemberBean.class);
