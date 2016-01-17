@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:cc="http://java.sun.com/jsf/composite">
+
+<cc:interface>
+	<cc:attribute name="bean" required="true" shortDescription="TableBean" />
+	<cc:attribute name="record" required="true" shortDescription="Element der Liste" />
+	<cc:attribute name="property" required="true" shortDescription="Attribut der Spalte" />
+	<cc:attribute name="link" required="false" shortDescription="Link zur Resource" />
+	<cc:attribute name="extLink" required="false" shortDescription="ExternalLink zu Resource" />
+	<cc:attribute name="width" required="false" shortDescription="Breite der Spalte, siehe CSS:width" default="10em" />
+	<cc:attribute name="columnConverterBean" shortDescription="Converter für record.property" />
+	<cc:attribute name="toolTip" shortDescription="ToolTip für Zeile" />
+</cc:interface>
+
+<cc:implementation>
+	<rich:column sortBy="#{cc.attrs.property}" sortOrder="#{cc.attrs.bean.sortOrders[cc.attrs.property]}" sortType="custom"
+		filterValue="#{cc.attrs.bean.filterValues[cc.attrs.property]}" filterExpression="#{cc.attrs.property}"
+		filterType="custom" width="#{width}">
+
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:panelGroup layout="block" style="white-space:nowrap;">
+					<h:commandLink value="#{cc.attrs.bean.columnHeaders[property]}" action="#{cc.attrs.bean.toggleSort}">
+						<f:ajax render="@form" />
+						<f:setPropertyActionListener target="#{cc.attrs.bean.sortProperty}" value="#{cc.attrs.property}" />
+					</h:commandLink>
+					<h:graphicImage value="/images/down.gif" rendered="#{cc.attrs.bean.sortOrders[cc.attrs.property]=='descending'}" />
+					<h:graphicImage value="/images/up.gif" rendered="#{cc.attrs.bean.sortOrders[cc.attrs.property]=='ascending'}" />
+				</h:panelGroup>
+				<h:panelGroup layout="block">
+					<h:inputText value="#{cc.attrs.bean.filterValues[cc.attrs.property]}" tabindex="#{tabIndex}">
+						<f:ajax render="@form" event="valueChange" />
+					</h:inputText>
+				</h:panelGroup>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:outputPanel layout="block">
+			<rich:tooltip showDelay="200" rendered="#{cc.attrs.toolTip != null}">
+				<h:outputText value="#{cc.attrs.toolTip}"/>
+			</rich:tooltip>
+			<c:choose>
+				<c:when test="#{not empty cc.attrs.link}">
+					<h:link outcome="#{cc.attrs.link}">
+						<f:param name="id" value="#{cc.attrs.record.id}" />
+						<h:outputText value="#{cc.attrs.record[cc.attrs.property]}" converter="#{cc.attrs.columnConverterBean}" />
+					</h:link>
+				</c:when>
+				<c:when test="#{not empty cc.attrs.extLink and not empty cc.attrs.record[cc.attrs.property]}">
+					<h:link outcome="#{cc.attrs.extLink}">
+						<f:param name="id" value="#{cc.attrs.record[cc.attrs.property]}" />
+						<h:outputText value="#{cc.attrs.record[cc.attrs.property]}" converter="#{cc.attrs.columnConverterBean}" />
+					</h:link>
+				</c:when>
+				<c:otherwise>
+					<h:outputText value="#{cc.attrs.record[cc.attrs.property]}" converter="#{cc.attrs.columnConverterBean}" />
+				</c:otherwise>
+			</c:choose>
+		</a4j:outputPanel>
+	</rich:column>
+
+</cc:implementation>
+</html>

@@ -38,21 +38,28 @@ public abstract class BaseBean implements Serializable {
 	}
 
 	public boolean isAdmin() {
-		return sessionContext.isCallerInRole(Roles.admin.name());
+		return sessionContext.isCallerInRole(Role.admin.name());
 	}
 	
 	public boolean isGruppe() {
-		return sessionContext.isCallerInRole(Roles.gruppe.name());
+		return sessionContext.isCallerInRole(Role.gruppe.name());
 	}
 
 	public boolean isLeiter() {
-		return sessionContext.isCallerInRole(Roles.leiter.name());
+		return sessionContext.isCallerInRole(Role.leiter.name());
+	}
+
+	public boolean isKassier() {
+		return sessionContext.isCallerInRole(Role.kassier.name());
 	}
 
 	public SessionContext getSessionContext() {
 		return sessionContext;
 	}
 	
+	public boolean isViewAllowed() {
+		return true;
+	}
 	public abstract boolean isUpdateAllowed();
 	public boolean isDeleteAllowed() {
 		return isAdmin();

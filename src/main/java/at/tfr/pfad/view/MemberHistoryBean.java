@@ -35,13 +35,13 @@ public class MemberHistoryBean implements Serializable {
 		AuditQuery q = auditReader.createQuery().forRevisionsOfEntity(Member.class, false, false);
 
 		if (StringUtils.isNotBlank(example.getBVKey())) {
-			q.add(AuditEntity.property(Member_.BVKey.getName()).eq(example.getBVKey()));
+			q.add(AuditEntity.property(Member_.bvKey.getName()).eq(example.getBVKey()));
 		}
 		if (StringUtils.isNotBlank(example.getName())) {
-			q.add(AuditEntity.property(Member_.Name.getName()).eq(example.getName()));
+			q.add(AuditEntity.property(Member_.name.getName()).eq(example.getName()));
 		}
 		if (StringUtils.isNotBlank(example.getVorname())) {
-			q.add(AuditEntity.property(Member_.Vorname.getName()).eq(example.getVorname()));
+			q.add(AuditEntity.property(Member_.vorname.getName()).eq(example.getVorname()));
 		}
 		List<Object[]> res = q.addOrder(AuditEntity.id().desc()).setMaxResults(maxResults).getResultList();
 

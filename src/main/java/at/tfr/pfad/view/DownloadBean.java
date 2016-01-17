@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -45,9 +46,11 @@ import org.joda.time.DateTime;
 
 import com.google.common.net.HttpHeaders;
 
+import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
+import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 
@@ -56,13 +59,13 @@ import at.tfr.pfad.model.Squad;
 public class DownloadBean implements Serializable {
 
 	private Logger log = Logger.getLogger(getClass());
-	
+
 	enum HeaderRegistrierung {
 		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Religion, Telefon, Funktionen,
 	}
-	
+
 	enum HeaderGruppe {
-		Key, Name, Heim1, Straße1, Plz1, Ort1, Heim2, Straße2, Plz2, Ort2, BIC, IBAN, Bezirk, Web, Mail, Gruendungsjahr_Verein, Letzte_Wahl_GFm, Letzte_Wahl_GFw,Letzte_Wahl_ER, ZVR, BLZ, KontoNr;
+		Key, Name, Heim1, Straße1, Plz1, Ort1, Heim2, Straße2, Plz2, Ort2, BIC, IBAN, Bezirk, Web, Mail, Gruendungsjahr_Verein, Letzte_Wahl_GFm, Letzte_Wahl_GFw, Letzte_Wahl_ER, ZVR, BLZ, KontoNr;
 	}
 
 	enum HeaderLocal {
@@ -99,23 +102,23 @@ public class DownloadBean implements Serializable {
 	public String downloadAll() throws Exception {
 		return downloadData(true);
 	}
-	
+
 	public String downloadSquad(Squad squad) throws Exception {
 		return downloadData(true, squad);
 	}
 
 	public boolean isDownloadAllowed() {
-		return isDownloadAllowed(new Squad[]{});
+		return isDownloadAllowed(new Squad[] {});
 	}
 
-	public boolean isDownloadAllowed(Squad...squads) {
-		if (memberBean.isAdmin() || memberBean.isGruppe() || 
-				(memberBean.isLeiter() && squads != null && Stream.of(squads).allMatch(s -> squadBean.isUpdateAllowed(s))))
+	public boolean isDownloadAllowed(Squad... squads) {
+		if (memberBean.isAdmin() || memberBean.isGruppe() || (memberBean.isLeiter() && squads != null
+				&& Stream.of(squads).allMatch(s -> squadBean.isUpdateAllowed(s))))
 			return true;
 		return false;
 	}
-	
-	public String downloadData(boolean withLocal, Squad...squads) throws Exception {
+
+	public String downloadData(boolean withLocal, Squad... squads) throws Exception {
 
 		if (!isDownloadAllowed(squads))
 			throw new SecurityException(
@@ -131,9 +134,9 @@ public class DownloadBean implements Serializable {
 		return "";
 	}
 
-	private HSSFWorkbook generateData(boolean withLocal, Squad...squads) {
+	private HSSFWorkbook generateData(boolean withLocal, Squad... squads) {
 		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet("Personen"); 
+		HSSFSheet sheet = wb.createSheet("Personen");
 		CellStyle red = wb.createCellStyle();
 		red.setFillForegroundColor(HSSFColor.RED.index);
 		red.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
@@ -161,9 +164,9 @@ public class DownloadBean implements Serializable {
 			if (!withLocal && !(m.isAktiv() || leaders.contains(m)
 					|| m.getFunktionen().stream().filter(f -> f.isExportReg()).count() > 0))
 				continue;
-			
+
 			if (squads != null && squads.length > 0) {
-				if (!Stream.of(squads).anyMatch(s->s.equals(m.getTrupp()))) {
+				if (!Stream.of(squads).anyMatch(s -> s.equals(m.getTrupp()))) {
 					continue;
 				}
 			}
@@ -190,7 +193,10 @@ public class DownloadBean implements Serializable {
 			row.createCell(cCount++).setCellValue(m.isAktiv() ? "J" : "N");
 			row.createCell(cCount++).setCellValue(m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "N");
 			row.createCell(cCount++).setCellValue(m.getEmail());
-			row.createCell(cCount++).setCellValue(withLocal ? m.getReligion() : ""); // do not return Religion 
+			row.createCell(cCount++).setCellValue(withLocal ? m.getReligion() : ""); // do
+																						// not
+																						// return
+																						// Religion
 			row.createCell(cCount++).setCellValue(m.getTelefon());
 			row.createCell(cCount++).setCellValue(getFunktionen(m));
 
@@ -213,33 +219,39 @@ public class DownloadBean implements Serializable {
 				row.createCell(cCount++).setCellValue(m.isSupport() ? "X" : "");
 				// Eltern, Kinder, KinderTrupps
 				row.createCell(cCount++).setCellValue(!m.getSiblings().isEmpty() ? "X" : "");
-				row.createCell(cCount++).setCellValue(m.getSiblings().stream().map(s->s.toString()).collect(Collectors.joining(",")));
-				row.createCell(cCount++).setCellValue(m.getSiblings().stream().map(s->s.getTrupp()!=null ? s.getTrupp().getName() : "").collect(Collectors.joining(",")));
+				row.createCell(cCount++)
+						.setCellValue(m.getSiblings().stream().map(s -> s.toString()).collect(Collectors.joining(",")));
+				row.createCell(cCount++).setCellValue(m.getSiblings().stream()
+						.map(s -> s.getTrupp() != null ? s.getTrupp().getName() : "").collect(Collectors.joining(",")));
 			}
 
 		}
-		
+
 		formatGruppeSheet(wb.createSheet("Gruppe"));
 		formatStatusSheet(wb.createSheet("Status"));
-		
+
 		return wb;
 	}
 
 	private HSSFSheet formatGruppeSheet(HSSFSheet sheet) {
-		//Key	Name	Heim1	Straße1	Plz1	Ort1	Heim2	Straße2	Plz2	Ort2	BIC	IBAN	Bezirk	Web	Mail	
-		//	Gründungsjahr	Verein	Letzte Wahl GFm	Letzte Wahl GFw	Letzte Wahl ER	ZVR	BLZ	KontoNr
-		//BAD	Baden		Marchetstraße 7	2500	Baden					0	0		www.ontrail.at	vorstand@ontrail.at			
-		//	22.06.14	22.06.14	2015-11-18		0	0
+		// Key Name Heim1 Straße1 Plz1 Ort1 Heim2 Straße2 Plz2 Ort2 BIC IBAN
+		// Bezirk Web Mail
+		// Gründungsjahr Verein Letzte Wahl GFm Letzte Wahl GFw Letzte Wahl ER
+		// ZVR BLZ KontoNr
+		// BAD Baden Marchetstraße 7 2500 Baden 0 0 www.ontrail.at
+		// vorstand@ontrail.at
+		// 22.06.14 22.06.14 2015-11-18 0 0
 		List<String> headers = transformGruppeHeaders();
 		HSSFRow row = sheet.createRow(0);
-		for (int i=0; i<headers.size(); i++) {
+		for (int i = 0; i < headers.size(); i++) {
 			row.createCell(i).setCellValue(headers.get(i));
 		}
 		row = sheet.createRow(1);
 		int cCount = 0;
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Key.name(), "BAD"));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Name.name(), "Baden"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Heim1.name(), "Fritz Fangl Pfadfinderheim"));
+		row.createCell(cCount++)
+				.setCellValue(configRepo.getValue(HeaderGruppe.Heim1.name(), "Fritz Fangl Pfadfinderheim"));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Straße1.name(), "Marchetstraße 7"));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Plz1.name(), "2500"));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Ort1.name(), "Baden"));
@@ -260,47 +272,47 @@ public class DownloadBean implements Serializable {
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.BLZ.name(), "20205"));
 		return sheet;
 	}
-	
+
 	private HSSFSheet formatStatusSheet(HSSFSheet sheet) {
-		int rCount=0;
-		//"Export_" + DateTime.now().toString("yyyy.mm.dd"));
-		//Die Auswertung wurde mit folgenden Optionen erstellt:
+		int rCount = 0;
+		// "Export_" + DateTime.now().toString("yyyy.mm.dd"));
+		// Die Auswertung wurde mit folgenden Optionen erstellt:
 		HSSFRow row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("Die Auswertung wurde mit folgenden Optionen erstellt:");
-		//	Gruppenkürzel	BAD
+		// Gruppenkürzel BAD
 		row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("Gruppenkürzel");
 		row.createCell(1).setCellValue(configRepo.getValue(HeaderGruppe.Key.name(), "BAD"));
-		//	Auswertung vom	23.12.2015 10:22
+		// Auswertung vom 23.12.2015 10:22
 		row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("Auswertung vom");
 		row.createCell(1).setCellValue(DateTime.now().toString("dd.MM.yyyy HH:mm"));
-		//	GRINS Art	HR
+		// GRINS Art HR
 		row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("GRINS Art");
 		row.createCell(1).setCellValue(configRepo.getValue("GRINS_Art", "HR"));
-		//	Benutzer	reg
+		// Benutzer reg
 		row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("Benutzer");
 		row.createCell(1).setCellValue(sessionBean.getUser().getName());
-		//	Akzeptierte Fehler
+		// Akzeptierte Fehler
 		row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("Akzeptierte Fehler");
 		row.createCell(1).setCellValue("");
-		
+
 		return sheet;
 	}
-	
+
 	private List<String> transformGruppeHeaders() {
 		return Stream.of(HeaderGruppe.values())
-				.map(h->h.name().replaceAll("_", " ").replaceAll("ue", "ü").replaceAll("oe", "ö"))
+				.map(h -> h.name().replaceAll("_", " ").replaceAll("ue", "ü").replaceAll("oe", "ö"))
 				.collect(Collectors.toList());
 	}
-	
+
 	private String transformHeaders(List<String> headers, int i) {
 		String h = headers.get(i);
 		switch (h) {
-		case "Vollzahler": 
+		case "Vollzahler":
 			h = "Ermäßigt";
 			break;
 		case "BVKey":
@@ -319,12 +331,11 @@ public class DownloadBean implements Serializable {
 	private List<Member> getMembers() {
 		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
 		SessionContext ctx = memberBean.getSessionContext();
-		if (ctx.isCallerInRole(Roles.admin.name()) || ctx.isCallerInRole(Roles.gruppe.name()))
+		if (ctx.isCallerInRole(Role.admin.name()) || ctx.isCallerInRole(Role.gruppe.name()))
 			return members;
-		if (ctx.isCallerInRole(Roles.leiter.name())) {
+		if (ctx.isCallerInRole(Role.leiter.name())) {
 			List<Squad> squads = squadRepo.findByName(ctx.getCallerPrincipal().getName());
-			members = members.stream()
-					.filter(m -> m.getTrupp() != null && squads.contains(m.getTrupp()))
+			members = members.stream().filter(m -> m.getTrupp() != null && squads.contains(m.getTrupp()))
 					.collect(Collectors.toList());
 		}
 		return members;
@@ -353,28 +364,27 @@ public class DownloadBean implements Serializable {
 		if (m.getTrupp() != null) {
 			functions.add(m.getTrupp().getType().getKey(m.getGeschlecht()));
 		}
-		
+
 		List<String> toLead = squadRepo.findByLeaderFemaleEqualOrLeaderMaleEqual(m).stream()
 				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
 		functions.addAll(toLead);
-		
+
 		List<String> toAss = squadRepo.findByAssistant(m).stream()
 				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
 		functions.addAll(toAss);
-		
+
 		if (!m.getFunktionen().isEmpty()) {
 			functions.addAll(m.getFunktionen().stream().map(f -> f.getKey()).collect(Collectors.toList()));
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(functions.stream().distinct().collect(Collectors.joining(",")));
 		return sb.toString().trim();
 	}
 
 	public ValidationResult validate(Member member) {
-		if (member.isAktiv() && member.getVollzahler() != null
-				&& !member.equals(member.getVollzahler()) 
-				&&	!(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
+		if (member.isAktiv() && member.getVollzahler() != null && !member.equals(member.getVollzahler())
+				&& !(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
 			return new ValidationResult(false, "Vollzahler INAKTIV");
 		}
 		return new ValidationResult(true, "");
@@ -413,9 +423,25 @@ public class DownloadBean implements Serializable {
 	public List<List<?>> getResults() {
 		return results;
 	}
-	
+
 	public List<Integer> getResultIndexes() {
 		return IntStream.range(0, results.size()).boxed().collect(Collectors.toList());
+	}
+
+	public List<Configuration> getQueries() {
+		return configRepo.findByTypeOrderByCkeyAsc(ConfigurationType.query).stream()
+				.filter(q -> memberBean.isAdmin() || Role.none.equals(q.getRole())
+						|| memberBean.getSessionContext().isCallerInRole(q.getRole().name()))
+				.collect(Collectors.toList());
+	}
+	
+	public void executeQuery(Long configurationId) {
+		Optional<Configuration> confOpt = getQueries().stream().filter(q->configurationId.equals(q.getId())).findFirst();
+		if (confOpt.isPresent()) {
+			query = confOpt.get().getCvalue();
+			nativeQuery = ConfigurationType.nativeQuery.equals(confOpt.get().getType());
+			query();
+		}
 	}
 
 	public String query() {
@@ -434,11 +460,11 @@ public class DownloadBean implements Serializable {
 			}
 			if (res.size() > 0) {
 				if (res.get(0) instanceof Tuple) {
-					results = ((List<Tuple>)res).stream().map(r->r.getElements()).collect(Collectors.toList());
+					results = ((List<Tuple>) res).stream().map(r -> r.getElements()).collect(Collectors.toList());
 				} else if (res.get(0) instanceof Object[]) {
-					results = res.stream().map(r->Arrays.asList((Object[])r)).collect(Collectors.toList());
+					results = res.stream().map(r -> Arrays.asList((Object[]) r)).collect(Collectors.toList());
 				} else {
-					results = res.stream().map(r->Arrays.asList(new Object[]{r})).collect(Collectors.toList());
+					results = res.stream().map(r -> Arrays.asList(new Object[] { r })).collect(Collectors.toList());
 				}
 			}
 			if (dataTableGroup != null && results != null && results.size() > 0) {
@@ -446,13 +472,13 @@ public class DownloadBean implements Serializable {
 				dataTableGroup = null;
 			}
 		} catch (Exception e) {
-			log.info("cannot execute: "+q+" : "+e, e);
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, 
-					getMessage(e), e.getLocalizedMessage()));
+			log.info("cannot execute: " + q + " : " + e, e);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, getMessage(e), e.getLocalizedMessage()));
 		}
 		return "";
 	}
-	
+
 	String getMessage(Throwable e) {
 		String m = "";
 		if (e != null && e.getCause() != null) {
@@ -460,48 +486,51 @@ public class DownloadBean implements Serializable {
 		}
 		return m + e.getMessage();
 	}
-	
+
 	public HtmlPanelGroup getDataTableGroup() {
-		if (dataTableGroup != null && (results == null || results.isEmpty()))
+		if (dataTableGroup != null)
 			dataTableGroup.getChildren().clear();
 		return dataTableGroup;
 	}
-	
+
 	public void setDataTableGroup(HtmlPanelGroup panel) {
 		this.dataTableGroup = panel;
 	}
-	
+
 	private HtmlDataTable populateDataTable(List<List<?>> list) {
-	    HtmlDataTable dynamicDataTable = new HtmlDataTable();
-	    dynamicDataTable.setId("dynamicDataTable_"+System.currentTimeMillis());
-        dynamicDataTable.setValueExpression("value",createValueExpression("#{downloadBean.results}", List.class));
-        dynamicDataTable.setVar("line");
-        dynamicDataTable.setStyleClass("table table-striped table-bordered table-hover");
+		HtmlDataTable dynamicDataTable = new HtmlDataTable();
+		dynamicDataTable.setId("dynamicDataTable_" + System.currentTimeMillis());
+		dynamicDataTable.setValueExpression("value", createValueExpression("#{downloadBean.results}", List.class));
+		dynamicDataTable.setVar("line");
+		dynamicDataTable.setStyleClass("table table-striped table-bordered table-hover");
 
-        // Iterate over columns.
-        for (int idx = 0; idx < list.get(0).size(); idx++) {
+		// Iterate over columns.
+		for (int idx = 0; idx < list.get(0).size(); idx++) {
 
-            // Create <h:column>.
-            HtmlColumn column = new HtmlColumn();
-            dynamicDataTable.getChildren().add(column);
+			// Create <h:column>.
+			HtmlColumn column = new HtmlColumn();
+			dynamicDataTable.getChildren().add(column);
 
-            // Create <h:outputText value="dynamicHeaders[i]"> for <f:facet name="header"> of column.
-            HtmlOutputText header = new HtmlOutputText();
-            header.setValue(""+idx);
-            column.setHeader(header);
+			// Create <h:outputText value="dynamicHeaders[i]"> for <f:facet
+			// name="header"> of column.
+			HtmlOutputText header = new HtmlOutputText();
+			header.setValue("" + idx);
+			column.setHeader(header);
 
-            // Create <h:outputText value="#{dynamicItem[" + i + "]}"> for the body of column.
-            HtmlOutputText output = new HtmlOutputText();
-            output.setValueExpression("value",
-                createValueExpression("#{line[" + idx + "]}", String.class));
-            column.getChildren().add(output);
-        }
-        return dynamicDataTable;
+			// Create <h:outputText value="#{dynamicItem[" + i + "]}"> for the
+			// body of column.
+			HtmlOutputText output = new HtmlOutputText();
+			output.setValueExpression("value", createValueExpression("#{line[" + idx + "]}", String.class));
+			column.getChildren().add(output);
+		}
+		return dynamicDataTable;
 	}
-    // Helpers -----------------------------------------------------------------------------------
+	// Helpers
+	// -----------------------------------------------------------------------------------
 
-    private ValueExpression createValueExpression(String valueExpression, Class<?> valueType) {
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        return facesContext.getApplication().getExpressionFactory().createValueExpression(
-            facesContext.getELContext(), valueExpression, valueType);
-    }}
+	private ValueExpression createValueExpression(String valueExpression, Class<?> valueType) {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		return facesContext.getApplication().getExpressionFactory().createValueExpression(facesContext.getELContext(),
+				valueExpression, valueType);
+	}
+}

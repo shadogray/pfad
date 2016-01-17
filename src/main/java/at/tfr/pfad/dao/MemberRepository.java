@@ -23,18 +23,18 @@ import at.tfr.pfad.model.Squad_;
 public abstract class MemberRepository implements EntityRepository<Member, Long>, CriteriaSupport<Member> {
 
 	public List<Member> findAll() {
-		return criteria().orderAsc(Member_.Name).orderAsc(Member_.Vorname)
-				.orderAsc(Member_.GebJahr).orderAsc(Member_.GebMonat).getResultList();
+		return criteria().orderAsc(Member_.name).orderAsc(Member_.vorname)
+				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat).getResultList();
 	}
 	
 	public List<Member> findActive() {
-		return criteria().eq(Member_.Aktiv, true).orderAsc(Member_.Name).orderAsc(Member_.Vorname)
-				.orderAsc(Member_.GebJahr).orderAsc(Member_.GebMonat).getResultList();
+		return criteria().eq(Member_.aktiv, true).orderAsc(Member_.name).orderAsc(Member_.vorname)
+				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat).getResultList();
 	}
 
 	public List<Member> findAccessible(Member member) {
 		return criteria()
-				.join(Member_.Trupp,
+				.join(Member_.trupp,
 						where(Squad.class).join(Squad_.leaderFemale, where(Member.class).eq(Member_.id, member.getId())))
 				.getResultList();
 	}

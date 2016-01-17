@@ -2,12 +2,7 @@ package at.tfr.pfad.dao;
 
 import java.util.Date;
 
-import javax.annotation.Resource;
 import javax.ejb.SessionContext;
-import javax.ejb.Stateful;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import javax.naming.InitialContext;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;

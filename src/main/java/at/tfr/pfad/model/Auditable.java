@@ -2,10 +2,8 @@ package at.tfr.pfad.model;
 
 import java.util.Date;
 
-public interface Auditable {
+public interface Auditable extends PrimaryKeyHolder {
 
-	Long getId();
-	
 	Date getChanged();
 
 	void setChanged(Date changed);

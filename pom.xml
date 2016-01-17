@@ -109,6 +109,13 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-impl</artifactId>
+			<version>2.2.12-jbossorg-2</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>pfad</finalName>
@@ -131,6 +138,7 @@
 							<processors>
 								<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
 							</processors>
+							<outputDirectory>${basedir}/target/generated-sources/annotations/</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>

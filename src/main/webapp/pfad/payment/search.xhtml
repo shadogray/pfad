@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
+	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+
+	<f:metadata>
+		<f:viewParam name="page" value='#{paymentBean.page}' />
+		<f:event type="preRenderView" listener='#{paymentBean.paginate}' />
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Search Payment entities" />
+
+	<ui:define name="header">
+		Zahlungen
+	</ui:define>
+
+	<ui:define name="subheader">
+	</ui:define>
+
+	<ui:define name="footer" />
+
+	<ui:define name="main">
+		<h:form id="search" rendered="#{paymentBean.viewAllowed}">
+			<rich:focus />
+			<f:validateBean disabled="true">
+				<h:panelGroup styleClass="search">
+
+					<h:panelGrid columnClasses="label,component,required" columns="3">
+
+						<h:outputLabel for="paymentBeanExampleType" value="Typ:" />
+						<h:panelGroup>
+							<h:selectOneMenu id="paymentBeanExampleType" value="#{paymentBean.example.type}">
+								<f:selectItem />
+								<f:selectItems value="#{paymentBean.types}" />
+							</h:selectOneMenu>
+							<h:message for="paymentBeanExampleType" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanExamplePayer" value="Zahler:" />
+						<h:panelGroup>
+							<rich:select converter="#{memberBean.converter}" id="paymentBeanPayer" enableManualInput="true"
+								styleClass="fullwidth" value="#{paymentBean.example.payer}" p:placeholder="Zahler oder Mitglied.."
+								clientFilterFunction="autoFilter" title="Der Zahler oder das Mitglied.." listWidth="35em">
+								<f:selectItem />
+								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{memberBean.all}"
+									var="_item" />
+							</rich:select>
+							<h:message for="paymentBeanPayer" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
+						<h:panelGroup>
+							<rich:calendar id="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}" 
+								datePattern="dd.MM.yyyy" />
+							<rich:calendar id="paymentBeanPaymentPaymentDateEnd" value="#{paymentBean.examplePaymentDateEnd}" 
+								datePattern="dd.MM.yyyy" />
+						</h:panelGroup>
+						<h:outputText />
+				
+						<h:outputLabel for="paymentBeanExampleActivity" value="Aktivität:" />
+						<h:panelGroup>
+							<rich:select converter="#{activityBean.converter}" id="paymentBeanExampleActivity" enableManualInput="true"
+								styleClass="fullwidth" value="#{paymentBean.exampleActivity}" p:placeholder="Aktivität.."
+								clientFilterFunction="autoFilter" title="Aktivität.." listWidth="35em">
+								<f:selectItem />
+								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{activityBean.all}"
+									var="_item" />
+							</rich:select>
+							<h:message for="paymentBeanExampleActivity" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanExampleBooking" value="Buchung:" />
+						<h:panelGroup>
+							<rich:select converter="#{bookingBean.converter}" id="paymentBeanExampleBooking" enableManualInput="true"
+								styleClass="fullwidth" value="#{paymentBean.exampleBooking}" p:placeholder="Buchung.."
+								clientFilterFunction="autoFilter" title="Buchung.." listWidth="35em">
+								<f:selectItem />
+								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{bookingBean.all}"
+									var="_item" />
+							</rich:select>
+							<h:message for="paymentBeanExampleBooking" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanExampleComment" value="Comment:" />
+						<h:panelGroup>
+							<h:inputText id="paymentBeanExampleComment" value="#{paymentBean.example.comment}" />
+							<h:message for="paymentBeanExampleComment" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanExampleFinished" value="Erledigt:" />
+						<h:selectBooleanCheckbox id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}" />
+						<h:outputText />
+				
+					</h:panelGrid>
+					<h:panelGroup styleClass="buttons">
+						<h:commandLink value="Suchen" action='#{paymentBean.search}' styleClass="btn btn-primary" />
+						<h:link value="Liste" outcome="list" styleClass="btn btn-primary" />
+						<h:commandLink value="Neu" action='#{paymentBean.create}' styleClass="btn btn-primary" />
+					</h:panelGroup>
+				</h:panelGroup>
+			</f:validateBean>
+
+			<h:dataTable id="paymentBeanPageItems" styleClass="data-table" value="#{paymentBean.pageItems}" var="_item">
+
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Typ" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemPaymentType" value="#{_item.type}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Zahler" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemPaymentPayer" value="#{_item.payer}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Datum" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemPaymentPaymentDate" value="#{_item.paymentDate}" converter="javax.faces.DateTime" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Comment" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemPaymentComment" value="#{_item.comment}" />
+					</h:link>
+				</h:column>
+			</h:dataTable>
+			<ui:include src="/resources/scaffold/paginator.xhtml">
+				<ui:param name="paginatorBean" value='#{paymentBean}' />
+			</ui:include>
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

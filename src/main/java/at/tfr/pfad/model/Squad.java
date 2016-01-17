@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -30,7 +31,10 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
+import org.hibernate.envers.Audited;
+
 import at.tfr.pfad.SquadType;
+import at.tfr.pfad.dao.AuditListener;
 
 @NamedQueries({
 	@NamedQuery(name="Squad.leadersFemale", query="select s.leaderFemale from Squad s"),
@@ -38,8 +42,10 @@ import at.tfr.pfad.SquadType;
 	@NamedQuery(name="Squad.assistants", query="select a from Squad s inner join s.assistants a"),
 })
 
+@Audited(withModifiedFlag = true)
 @Entity
-public class Squad implements Serializable, Comparable<Squad>, Auditable {
+@EntityListeners({AuditListener.class})
+public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "squad_seq")
@@ -50,6 +56,7 @@ public class Squad implements Serializable, Comparable<Squad>, Auditable {
 	@Column(name = "version")
 	private int version;
 
+	@Column(nullable=false)
 	@Enumerated(EnumType.STRING)
 	private SquadType type;
 
@@ -82,7 +89,7 @@ public class Squad implements Serializable, Comparable<Squad>, Auditable {
 	@JoinTable(name = "squad_member", joinColumns=@JoinColumn(name="squad_id"), inverseJoinColumns=@JoinColumn(name="assistants_id"))
 	private Set<Member> assistants = new HashSet<Member>();
 	
-	@OneToMany(mappedBy="Trupp")
+	@OneToMany(mappedBy="trupp")
 	@OrderBy("Name, Vorname")
 	private Set<Member> scouts = new HashSet<Member>();
 

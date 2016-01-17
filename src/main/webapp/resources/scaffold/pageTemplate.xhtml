@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:ds="http://deltaspike.apache.org/jsf">
 
 <h:head>
 	<title>#{empty pageTitle ? 'Page Title' : pageTitle}</title>
@@ -12,11 +13,12 @@
 </h:head>
 
 <h:body>
+	<ds:windowId/>
 	<ui:debug rendered="#{facesContext.application.projectStage == 'Development'}" />
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
-				<h:link id="brandLink" outcome="/prot/index.xhtml" styleClass="brand">
+				<h:link id="brandLink" outcome="/pfad/index.xhtml" styleClass="brand">
 					<h:outputText value="Welcome to " rendered=" #{request.userPrincipal !=null} "/>
                     Pfad
                     <h:outputText value=",  #{request.userPrincipal.name}" rendered="#{request.userPrincipal !=null} "/>
@@ -24,8 +26,8 @@
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li>
-						<h:panelGroup rendered="#{sessionBean.registrationEndDate != null}">
-							<h:outputLabel value="Registrierung Ende:" />
+						<h:panelGroup rendered="#{sessionBean.registrationEndDate != null}" style="white-space: nowrap;">
+							<h:outputText value="Registrierung Ende: " />
 							<h:outputText value="#{sessionBean.registrationEndDate}" converter="javax.faces.DateTime"/>
 						</h:panelGroup>
 						</li>
@@ -37,25 +39,34 @@
 
 	<div class="container forgecontainer">
 		<h:panelGroup id="navigation" rendered="#{memberBean.sessionContext.callerPrincipal != 'anonymous'}">
-			<h:link id="homeLink" outcome="/prot/index.xhtml">
+			<h:link id="homeLink" outcome="/pfad/index.xhtml">
 				<img style="max-width: 10em;" src='#{resource["forge-logo.png"]}' alt="Forge... get hammered" border="0" />
 			</h:link>
 			<h:form>
 				<ul>
 					<li>
-						<h:link outcome="/prot/member/search" value="Personen"/>
+						<h:link outcome="/pfad/member/search" value="Personen"/>
 					</li>
 					<li>
-						<h:link outcome="/prot/squad/search" value="Trupps"/>
+						<h:link outcome="/pfad/squad/search" value="Trupps"/>
 					</li>
 					<li>
-						<h:link outcome="/prot/function/search" value="Funktionen"/>
+						<h:link outcome="/pfad/activity/search" value="Aktivitäten"/>
 					</li>
 					<li>
-						<h:link outcome="/prot/configuration/search" value="Konfig"/>
+						<h:link outcome="/pfad/booking/search" value="Buchungen"/>
 					</li>
 					<li>
-						<h:link outcome="/prot/actions" value="Aktionen"/>
+						<h:link outcome="/pfad/payment/search" value="Zahlungen"/>
+					</li>
+					<li>
+						<h:link outcome="/pfad/function/search" value="Funktionen"/>
+					</li>
+					<li>
+						<h:link outcome="/pfad/configuration/search" value="Konfig"/>
+					</li>
+					<li>
+						<h:link outcome="/pfad/actions" value="Aktionen"/>
 					</li>
 					<li>
 						<h:commandLink action="#{loginBean.logout()}" value="Beenden"/>
@@ -65,12 +76,12 @@
 		</h:panelGroup>
 
 		<div id="content">
-			<h1>
-				<ui:insert name="header" />
-			</h1>
 			<h2>
-				<ui:insert name="subheader" />
+				<ui:insert name="header" />
 			</h2>
+			<h3>
+				<ui:insert name="subheader" />
+			</h3>
 
 			<ui:insert name="main" />
 		</div>

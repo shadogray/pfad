@@ -29,7 +29,7 @@ public abstract class SquadRepository implements EntityRepository<Squad, Long>, 
 	public abstract List<Squad> findByLeaderMaleEqual(Member leader);
 
 	public abstract List<Squad> findByLeaderFemaleEqualOrLeaderMaleEqual(Member female, Member male);
-
+	
 	public List<Squad> findByLeaderFemaleEqualOrLeaderMaleEqual(Member leader) {
 		return findByLeaderFemaleEqualOrLeaderMaleEqual(leader, leader);
 	}

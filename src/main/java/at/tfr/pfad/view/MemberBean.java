@@ -67,7 +67,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	private MemberRepository memberRepo;
 
 	/*
-	 * Support creating and retrieving Member entities
+	 * support creating and retrieving Member entities
 	 */
 
 	private Long id;
@@ -129,7 +129,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	/*
-	 * Support updating and deleting Member entities
+	 * support updating and deleting Member entities
 	 */
 
 	@Transactional
@@ -190,7 +190,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	/*
-	 * Support searching Member entities with pagination
+	 * support searching Member entities with pagination
 	 */
 
 	private int page;
@@ -240,8 +240,8 @@ public class MemberBean extends BaseBean implements Serializable {
 		CriteriaQuery<Member> criteria = builder.createQuery(Member.class);
 		root = criteria.from(Member.class);
 		TypedQuery<Member> query = this.entityManager.createQuery(
-				criteria.select(root).where(getSearchPredicates(root)).orderBy(builder.asc(root.get(Member_.Name)),
-						builder.asc(root.get(Member_.Vorname)), builder.asc(root.get(Member_.id))));
+				criteria.select(root).where(getSearchPredicates(root)).orderBy(builder.asc(root.get(Member_.name)),
+						builder.asc(root.get(Member_.vorname)), builder.asc(root.get(Member_.id))));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
 	}
@@ -254,44 +254,44 @@ public class MemberBean extends BaseBean implements Serializable {
 		String BVKey = this.example.getBVKey();
 		if (BVKey != null && !"".equals(BVKey)) {
 			predicatesList
-					.add(builder.like(builder.lower(root.<String> get("BVKey")), '%' + BVKey.toLowerCase() + '%'));
+					.add(builder.like(builder.lower(root.get(Member_.bvKey)), '%' + BVKey.toLowerCase() + '%'));
 		}
 		long PersonenKey = this.example.getPersonenKey();
 		if (PersonenKey != 0) {
-			predicatesList.add(builder.equal(root.get("PersonenKey"), PersonenKey));
+			predicatesList.add(builder.equal(root.get(Member_.personenKey), PersonenKey));
 		}
 		String Titel = this.example.getTitel();
 		if (Titel != null && !"".equals(Titel)) {
 			predicatesList
-					.add(builder.like(builder.lower(root.<String> get("Titel")), '%' + Titel.toLowerCase() + '%'));
+					.add(builder.like(builder.lower(root.get(Member_.titel)), '%' + Titel.toLowerCase() + '%'));
 		}
 		String Name = this.example.getName();
 		if (Name != null && !"".equals(Name)) {
-			predicatesList.add(builder.like(builder.lower(root.<String> get("Name")), '%' + Name.toLowerCase() + '%'));
+			predicatesList.add(builder.like(builder.lower(root.get(Member_.name)), '%' + Name.toLowerCase() + '%'));
 		}
 
 		String Vorname = this.example.getVorname();
 		if (Vorname != null && !"".equals(Vorname)) {
 			predicatesList
-					.add(builder.like(builder.lower(root.<String> get("Vorname")), '%' + Vorname.toLowerCase() + '%'));
+					.add(builder.like(builder.lower(root.get(Member_.vorname)), '%' + Vorname.toLowerCase() + '%'));
 		}
 		String Telefon = this.example.getTelefon();
 		if (Telefon != null && !"".equals(Telefon)) {
 			predicatesList
-					.add(builder.like(builder.lower(root.<String> get("Telefon")), '%' + Telefon.toLowerCase() + '%'));
+					.add(builder.like(builder.lower(root.get(Member_.telefon)), '%' + Telefon.toLowerCase() + '%'));
 		}
 		if (this.example.isAktiv()) {
-			predicatesList.add(builder.equal(root.get(Member_.Aktiv), this.example.isAktiv()));
+			predicatesList.add(builder.equal(root.get(Member_.aktiv), this.example.isAktiv()));
 		}
 
 		Squad trupp = this.example.getTrupp();
 		if (trupp != null) {
-			predicatesList.add(builder.equal(root.get("Trupp"), trupp));
+			predicatesList.add(builder.equal(root.get(Member_.trupp), trupp));
 		}
 
 		if (this.example.getFunktionen() != null && !this.example.getFunktionen().isEmpty()
 				&& this.example.getFunktionen().iterator().next() != null) {
-			predicatesList.add(root.join(Member_.Funktionen).in(this.example.getFunktionen()));
+			predicatesList.add(root.join(Member_.funktionen).in(this.example.getFunktionen()));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -306,7 +306,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	/*
-	 * Support listing and POSTing back Member entities (e.g. from inside an
+	 * support listing and POSTing back Member entities (e.g. from inside an
 	 * HtmlSelectOneMenu)
 	 */
 
@@ -371,7 +371,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	/*
-	 * Support adding children to bidirectional, one-to-many tables
+	 * support adding children to bidirectional, one-to-many tables
 	 */
 
 	private Member add = new Member();

@@ -30,6 +30,7 @@ import javax.persistence.criteria.Root;
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.model.Squad_;
 
 /**
  * Backing bean for Squad entities.
@@ -112,17 +113,17 @@ public class SquadBean extends BaseBean implements Serializable {
 	}
 
 	public boolean isUpdateAllowed(Squad squad) {
-		return isAdmin() || isGruppe() || 
-				(sessionContext.getCallerPrincipal().getName().equals(squad.getLogin()) && !isRegistrationEnd());
+		return isAdmin() || isGruppe()
+				|| (sessionContext.getCallerPrincipal().getName().equals(squad.getLogin()) && !isRegistrationEnd());
 	}
 
 	public String update() {
 		this.conversation.end();
 
 		if (!isUpdateAllowed())
-			throw new SecurityException("only admins, gruppe, "+squad.getLogin()+" may update entry");
-		
-		log.info("updated "+squad+" by "+sessionContext.getCallerPrincipal());
+			throw new SecurityException("only admins, gruppe, " + squad.getLogin() + " may update entry");
+
+		log.info("updated " + squad + " by " + sessionContext.getCallerPrincipal());
 		this.squad.setChanged(new Date());
 		this.squad.setChangedBy(sessionContext.getCallerPrincipal().getName());
 
@@ -140,8 +141,7 @@ public class SquadBean extends BaseBean implements Serializable {
 				return "view?faces-redirect=true&id=" + this.squad.getId();
 			}
 		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(e.getMessage()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
 	}
@@ -151,8 +151,8 @@ public class SquadBean extends BaseBean implements Serializable {
 
 		if (!isAdmin())
 			throw new SecurityException("only admins may delete entry");
-		
-		log.info("deleted "+squad+" by "+sessionContext.getCallerPrincipal());
+
+		log.info("deleted " + squad + " by " + sessionContext.getCallerPrincipal());
 
 		try {
 			Squad deletableEntity = findById(getId());
@@ -161,8 +161,7 @@ public class SquadBean extends BaseBean implements Serializable {
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(e.getMessage()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
 	}
@@ -210,19 +209,16 @@ public class SquadBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
 		Root<Squad> root = countCriteria.from(Squad.class);
-		countCriteria = countCriteria.select(builder.count(root)).where(
-				getSearchPredicates(root));
-		this.count = this.entityManager.createQuery(countCriteria)
-				.getSingleResult();
+		countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root));
+		this.count = this.entityManager.createQuery(countCriteria).getSingleResult();
 
 		// Populate this.pageItems
 
 		CriteriaQuery<Squad> criteria = builder.createQuery(Squad.class);
 		root = criteria.from(Squad.class);
-		TypedQuery<Squad> query = this.entityManager.createQuery(criteria
-				.select(root).where(getSearchPredicates(root)));
-		query.setFirstResult(this.page * getPageSize()).setMaxResults(
-				getPageSize());
+		TypedQuery<Squad> query = this.entityManager
+				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
+		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList().stream().sorted().collect(Collectors.toList());
 	}
 
@@ -233,21 +229,19 @@ public class SquadBean extends BaseBean implements Serializable {
 
 		SquadType type = this.example.getType();
 		if (type != null) {
-			predicatesList.add(builder.equal(root.get("type"), type));
+			predicatesList.add(builder.equal(root.get(Squad_.type), type));
 		}
 		String name = this.example.getName();
 		if (name != null && !"".equals(name)) {
-			predicatesList.add(builder.like(
-					builder.lower(root.<String> get("name")),
-					'%' + name.toLowerCase() + '%'));
+			predicatesList.add(builder.like(builder.lower(root.get(Squad_.name)), '%' + name.toLowerCase() + '%'));
 		}
 		Member leaderMale = this.example.getLeaderMale();
 		if (leaderMale != null) {
-			predicatesList.add(builder.equal(root.get("leaderMale"), leaderMale));
+			predicatesList.add(builder.equal(root.get(Squad_.leaderMale), leaderMale));
 		}
 		Member leaderFemale = this.example.getLeaderFemale();
 		if (leaderFemale != null) {
-			predicatesList.add(builder.equal(root.get("leaderFemale"), leaderFemale));
+			predicatesList.add(builder.equal(root.get(Squad_.leaderFemale), leaderFemale));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -268,30 +262,25 @@ public class SquadBean extends BaseBean implements Serializable {
 
 	public List<Squad> getAll() {
 
-		CriteriaQuery<Squad> criteria = this.entityManager.getCriteriaBuilder()
-				.createQuery(Squad.class);
-		return this.entityManager.createQuery(
-				criteria.select(criteria.from(Squad.class))).getResultList()
-				.stream().sorted().collect(Collectors.toList());
+		CriteriaQuery<Squad> criteria = this.entityManager.getCriteriaBuilder().createQuery(Squad.class);
+		return this.entityManager.createQuery(criteria.select(criteria.from(Squad.class))).getResultList().stream()
+				.sorted().collect(Collectors.toList());
 	}
-	
+
 	public Converter getConverter() {
 
-		final SquadBean ejbProxy = this.sessionContext
-				.getBusinessObject(SquadBean.class);
+		final SquadBean ejbProxy = this.sessionContext.getBusinessObject(SquadBean.class);
 
 		return new Converter() {
 
 			@Override
-			public Object getAsObject(FacesContext context,
-					UIComponent component, String value) {
+			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
 			@Override
-			public String getAsString(FacesContext context,
-					UIComponent component, Object value) {
+			public String getAsString(FacesContext context, UIComponent component, Object value) {
 
 				if (value == null) {
 					return "";
@@ -317,7 +306,7 @@ public class SquadBean extends BaseBean implements Serializable {
 		this.add = new Squad();
 		return added;
 	}
-	
+
 	public List<SquadType> getTypes() {
 		return Arrays.asList(SquadType.values());
 	}

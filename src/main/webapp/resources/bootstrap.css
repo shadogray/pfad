@@ -2614,20 +2614,11 @@ button.close {
 
 .btn:hover,
 .btn:active,
-.btn.active {
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
-}
-
+.btn.active,
 .btn.disabled,
 .btn[disabled] {
-  background-color: gray !important;
-  *background-color: gray !important;
-}
-
-.btn:disabled {
-  background-color: gray;
-  *background-color: gray;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
 }
 
 .btn:active,

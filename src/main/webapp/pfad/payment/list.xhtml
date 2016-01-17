@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
+	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+
+	<ui:param name="pageTitle" value="Zahlungen" />
+
+	<ui:define name="header">
+		<h:outputScript>
+		$(function() {
+			$('.forgecontainer').addClass('fullwidth');
+		});
+		</h:outputScript>
+	</ui:define>
+
+	<ui:define name="subheader">
+		Zahlungen
+	</ui:define>
+
+	<ui:define name="footer"/>
+
+	<ui:define name="main">
+		<h:form id="list" rendered="#{paymentBean.viewAllowed}">
+			<h:messages globalOnly="true" styleClass="error" />
+
+			<rich:focus preserve="true" />
+
+			<rich:extendedDataTable keepSaved="true" id="richTable" var="record" value="#{paymentTableBean.dataModel}"
+				rows="#{paymentTableBean.dataModel.rows}" styleClass="smsplus-management-table" frozenColumns="7">
+
+				<ui:include src="../column.xhtml" >
+					<ui:param name="bean" value="#{paymentTableBean}"/>
+					<ui:param name="record" value="#{record}"/>
+					<ui:param name="property" value="id" />
+					<ui:param name="link" value="/pfad/payment/view"/>
+					<ui:param name="width" value="4em"/>
+				</ui:include>
+				<ui:include src="../column.xhtml" >
+					<ui:param name="bean" value="#{paymentTableBean}"/>
+					<ui:param name="record" value="#{record}"/>
+					<ui:param name="property" value="payer" />
+					<ui:param name="tabIndex" value="1" />
+					<ui:param name="link" value="/pfad/payment/view"/>
+					<ui:param name="width" value="15em"/>
+				</ui:include>
+				<ui:include src="../column.xhtml" >
+					<ui:param name="bean" value="#{paymentTableBean}"/>
+					<ui:param name="record" value="#{record}"/>
+					<ui:param name="property" value="member" />
+					<ui:param name="tabIndex" value="2" />
+					<ui:param name="link" value="/pfad/payment/view"/>
+					<ui:param name="width" value="15em"/>
+				</ui:include>
+				<ui:include src="../column.xhtml" >
+					<ui:param name="bean" value="#{paymentTableBean}"/>
+					<ui:param name="record" value="#{record}"/>
+					<ui:param name="property" value="activity" />
+					<ui:param name="tabIndex" value="3" />
+					<ui:param name="link" value="/pfad/payment/view"/>
+					<ui:param name="width" value="15em"/>
+				</ui:include>
+				<ui:include src="../column.xhtml" >
+					<ui:param name="bean" value="#{paymentTableBean}"/>
+					<ui:param name="record" value="#{record}"/>
+					<ui:param name="property" value="squad" />
+					<ui:param name="tabIndex" value="4" />
+					<ui:param name="link" value="/pfad/payment/view"/>
+					<ui:param name="width" value="15em"/>
+				</ui:include>
+				<ui:include src="../column.xhtml" >
+					<ui:param name="bean" value="#{paymentTableBean}"/>
+					<ui:param name="record" value="#{record}"/>
+					<ui:param name="property" value="finished" />
+					<ui:param name="link" value="/pfad/payment/view"/>
+					<ui:param name="width" value="3em"/>
+				</ui:include>
+				<ui:include src="../column.xhtml" >
+					<ui:param name="bean" value="#{paymentTableBean}"/>
+					<ui:param name="record" value="#{record}"/>
+					<ui:param name="property" value="comment" />
+					<ui:param name="tabIndex" value="5" />
+					<ui:param name="link" value="/pfad/payment/view"/>
+					<ui:param name="width" value="20em"/>
+				</ui:include>
+
+			</rich:extendedDataTable>
+			<rich:dataScroller for="richTable" fastControls="show"/>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

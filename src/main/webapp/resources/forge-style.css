@@ -89,7 +89,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-	padding-top: 20px;
+	padding-top: 55px;
 }
 
 
@@ -101,8 +101,7 @@ span.invalid {
 }
 
 label {
-   //float: left;
-   display: inline;
+   float: left;
    width: 15%;
    margin-left: 20px;
    margin-right: 0.5em;
@@ -157,8 +156,8 @@ footer p {
  */
 #navigation {
 	float: left;
-	margin-left: 2px;
-	margin-top: 20px;
+	margin-left: 10px;
+	margin-top: 30px;
 }
 
 #navigation h3 {
@@ -233,17 +232,17 @@ footer p {
  */
  
 #content {
-	margin-left: 150px;
+	margin-left: 160px;
 	padding-left:10px;
 }
 
 #content .search {
 	display: block;
-//	background-image: url(#{request.contextPath}/resources/search.png);
-//	background-position: 30px 3px;
+	background-image: url(#{request.contextPath}/resources/search.png);
+	background-position: 30px 3px;
     background-repeat: no-repeat;
     padding-bottom: 20px;
-//    padding-left: 70px;
+    padding-left: 70px;
 }
 
 #content .search .buttons {
@@ -276,14 +275,14 @@ footer p {
 }
 
 #content .boolean-false {
-	display: inline-block;
+	display: block;
 	width: 22px;
 	height: 22px;
 	background-image: url(#{request.contextPath}/resources/false.png);
 }
 
 #content .boolean-true {
-	display: inline-block;
+	display: block;
 	width: 22px;
 	height: 22px;
 	background-image: url(#{request.contextPath}/resources/true.png);
@@ -361,8 +360,8 @@ footer p {
 }
 
 #content .data-table-footer {
-	width: 50%;
-	margin-left: 50%;
+	width: 80%;
+	margin-left: 20%;
 	margin-top: 5px;
 }
 
@@ -416,7 +415,7 @@ footer p {
 #content h1 {
 	border-bottom: 1px solid #ffffff;
     font-family: 'Open Sans', sans-serif;
-//    font-size: 49px;
+    font-size: 49px;
     font-weight: 300;
     letter-spacing: -2px;
     padding-bottom: 10px;
@@ -627,15 +626,11 @@ button::-moz-focus-inner {
 
 .btn-primary:hover,
 .btn-primary:active,
-.btn-primary.active {
-  	background-color: #979026;
-  	*background-color: #979026;
-}
-
+.btn-primary.active,
 .btn-primary.disabled,
 .btn-primary[disabled] {
-  	background-color: gray !important;
-  	*background-color: gray !important;
+  	background-color: #979026;
+  	*background-color: #979026;
 }
 
 .btn-primary:active,
@@ -696,26 +691,6 @@ h4.page-header {
 	font-size: 16px;
 }
 
-.rf-au {
-	background-color: #ffffff;
-	background-image: url("/pfad/org.richfaces.resources/rfRes/autocompleteFieldGradient.png?v=4.5.11.Final&db=eAFj!P!x3cv!QAAAIrgHxQ__&ln=org.richfaces.images");
-	background-position: left top;
-	background-repeat: repeat-x;
-	border-color: #c4c0b9;
-	border-style: solid;
-	border-width: 1px;
-	display: inline-block;
-	font-size: 1px;
-	vertical-align: middle;
-	width: 95%;
-}
-
 .fullwidth {
-	width: 95%;	
-}
-
-.rf-sel-lst-scrl {
-	width: 30em;
-  overflow-x: hidden;
-  overflow-y: auto;
+	width: 95%;
 }

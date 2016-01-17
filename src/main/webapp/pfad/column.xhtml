@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:rich="http://richfaces.org/rich"
+	xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:a4j="http://richfaces.org/a4j"
+	>
+
+	<rich:column sortBy="#{property}" sortOrder="#{bean.sortOrders[property]}" sortType="custom"
+		filterValue="#{bean.filterValues[property]}" filterExpression="#{property}"
+		filterType="custom" width="#{width}">
+
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:panelGroup layout="block" style="white-space:nowrap;">
+					<h:commandLink value="#{bean.columnHeaders[property]}" action="#{bean.toggleSort}">
+						<f:ajax render="@form" />
+						<f:setPropertyActionListener target="#{bean.sortProperty}" value="#{property}" />
+					</h:commandLink>
+					<h:graphicImage name="down.gif" rendered="#{bean.sortOrders[property]=='descending'}" />
+					<h:graphicImage name="up.gif" rendered="#{bean.sortOrders[property]=='ascending'}" />
+				</h:panelGroup>
+				<h:panelGroup layout="block">
+					<h:inputText value="#{bean.filterValues[property]}" tabindex="#{tabIndex}">
+						<f:ajax render="@form" event="valueChange" />
+					</h:inputText>
+				</h:panelGroup>
+			</h:panelGroup>
+		</f:facet>
+
+		<a4j:outputPanel layout="block">
+			<rich:tooltip showDelay="200" rendered="#{toolTip != null}">
+				<h:outputText value="#{toolTip}"/>
+			</rich:tooltip>
+			<c:choose>
+				<c:when test="#{not empty link}">
+					<h:link outcome="#{link}">
+						<f:param name="id" value="#{record.id}" />
+						<h:outputText value="#{record[property]}" converter="#{columnConverterBean}" />
+					</h:link>
+				</c:when>
+				<c:when test="#{not empty extLink and not empty record[property]}">
+					<h:link outcome="#{extLink}">
+						<f:param name="id" value="#{record[property]}" />
+						<h:outputText value="#{record[property]}" converter="#{columnConverterBean}" />
+					</h:link>
+				</c:when>
+				<c:otherwise>
+					<h:outputText value="#{record[property]}" converter="#{columnConverterBean}" />
+				</c:otherwise>
+			</c:choose>
+		</a4j:outputPanel>
+	</rich:column>
+
+</html>

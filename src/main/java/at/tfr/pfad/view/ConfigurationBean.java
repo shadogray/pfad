@@ -9,6 +9,7 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -30,8 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.model.Configuration;
+import at.tfr.pfad.model.Configuration_;
 
 /**
  * Backing bean for Configuration entities.
@@ -217,12 +220,12 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 		String ckey = this.example.getCkey();
 		if (ckey != null && !"".equals(ckey)) {
-			predicatesList.add(builder.like(builder.lower(root.<String> get("ckey")), '%' + ckey.toLowerCase() + '%'));
+			predicatesList.add(builder.like(builder.lower(root.get(Configuration_.ckey)), '%' + ckey.toLowerCase() + '%'));
 		}
 		String cvalue = this.example.getCvalue();
 		if (cvalue != null && !"".equals(cvalue)) {
 			predicatesList
-					.add(builder.like(builder.lower(root.<String> get("cvalue")), '%' + cvalue.toLowerCase() + '%'));
+					.add(builder.like(builder.lower(root.get(Configuration_.cvalue)), '%' + cvalue.toLowerCase() + '%'));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -286,5 +289,13 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 		Configuration added = this.add;
 		this.add = new Configuration();
 		return added;
+	}
+	
+	public List<ConfigurationType> getTypes() {
+		return Arrays.asList(ConfigurationType.values());
+	}
+
+	public List<Role> getRoles() {
+		return Arrays.asList(Role.values());
 	}
 }

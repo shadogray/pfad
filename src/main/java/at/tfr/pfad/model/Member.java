@@ -40,20 +40,22 @@ import org.hibernate.envers.RelationTargetAuditMode;
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.AuditListener;
+import at.tfr.pfad.model.Booking;
+import javax.persistence.CascadeType;
 
-@NamedQueries({ @NamedQuery(name = "distName", query = "select distinct m.Name from Member m order by m.Name"),
-		@NamedQuery(name = "distVorname", query = "select distinct m.Vorname from Member m order by m.Vorname"),
-		@NamedQuery(name = "distPLZ", query = "select distinct m.PLZ from Member m order by m.PLZ"),
-		@NamedQuery(name = "distOrt", query = "select distinct m.Ort from Member m order by m.Ort"),
-		@NamedQuery(name = "distStrasse", query = "select distinct m.Strasse from Member m order by m.Strasse"),
-		@NamedQuery(name = "distTitel", query = "select distinct m.Titel from Member m order by m.Titel"),
-		@NamedQuery(name = "distAnrede", query = "select distinct m.Anrede from Member m order by m.Anrede"),
-		@NamedQuery(name = "distReligion", query = "select distinct m.Religion from Member m order by m.Religion"), })
-
-@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED, withModifiedFlag = true)
+@NamedQueries({
+		@NamedQuery(name = "distName", query = "select distinct m.name from Member m order by m.name"),
+		@NamedQuery(name = "distVorname", query = "select distinct m.vorname from Member m order by m.vorname"),
+		@NamedQuery(name = "distPLZ", query = "select distinct m.plz from Member m order by m.plz"),
+		@NamedQuery(name = "distOrt", query = "select distinct m.ort from Member m order by m.ort"),
+		@NamedQuery(name = "distStrasse", query = "select distinct m.strasse from Member m order by m.strasse"),
+		@NamedQuery(name = "distTitel", query = "select distinct m.titel from Member m order by m.titel"),
+		@NamedQuery(name = "distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
+		@NamedQuery(name = "distReligion", query = "select distinct m.religion from Member m order by m.religion"),})
+@Audited(withModifiedFlag = true)
 @Entity
-@EntityListeners({ AuditListener.class })
-public class Member implements Serializable, Comparable<Member>, Auditable {
+@EntityListeners({AuditListener.class})
+public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member>, Auditable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
@@ -65,79 +67,79 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	protected int version;
 
 	@Column
-	protected String BVKey;
+	protected String bvKey;
 
 	@Column
-	protected String GruppenSchluessel;
+	protected String gruppenSchluessel;
 
 	@Column
-	protected long PersonenKey;
+	protected long personenKey;
 
 	@Column
-	protected String Titel;
+	protected String titel;
 
 	@Column
-	protected String Name;
+	protected String name;
 
 	@Column
-	protected String Vorname;
+	protected String vorname;
 
 	@Column
-	protected String Anrede;
+	protected String anrede;
 
 	@Column
-	protected int GebTag;
+	protected int gebTag;
 
 	@Column
-	protected int GebMonat;
+	protected int gebMonat;
 
 	@Column
-	protected int GebJahr;
+	protected int gebJahr;
 
 	@Column
-	protected String Strasse;
+	protected String strasse;
 
 	@Column
-	protected String PLZ;
+	protected String plz;
 
 	@Column
-	protected String Ort;
+	protected String ort;
 
 	@Enumerated(EnumType.STRING)
-	protected Sex Geschlecht;
+	protected Sex geschlecht;
 
 	@Column
-	protected boolean Aktiv;
+	protected boolean aktiv;
 
 	@Column
-	protected boolean AktivExtern;
+	protected boolean aktivExtern;
 
 	@Column
-	protected String Email;
+	protected String email;
 
 	@Column
-	protected String Religion;
+	protected String religion;
 
 	@Column
-	protected String Telefon;
+	protected String telefon;
 
 	@Column
-	protected boolean Trail;
+	protected boolean trail;
 
 	@Column
-	protected boolean Gilde;
+	protected boolean gilde;
 
 	@Column
-	protected boolean AltER;
+	protected boolean altER;
 
 	@Column
-	protected boolean Support;
+	protected boolean support;
 
 	@Column
-	protected boolean InfoMail;
+	protected boolean infoMail;
 
 	@Enumerated(EnumType.STRING)
-	protected ScoutRole Rolle;
+	protected ScoutRole rolle;
 
 	@Column
 	protected Date changed;
@@ -153,24 +155,24 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 
 	@ManyToOne
 	@OrderBy("name")
-	protected Squad Trupp;
+	protected Squad trupp;
 
 	@NotAudited
 	@Column(insertable = false, updatable = false, name = "Trupp_id")
-	protected Long TruppId;
-	
+	protected Long truppId;
+
 	@NotAudited
-	@ManyToMany(mappedBy="assistants")
+	@ManyToMany(mappedBy = "assistants")
 	protected Set<Squad> squads;
 
 	@NotAudited
-	@OneToMany(mappedBy="leaderFemale")
+	@OneToMany(mappedBy = "leaderFemale")
 	protected Set<Squad> femaleGuided;
-	
+
 	@NotAudited
-	@OneToMany(mappedBy="leaderMale")
+	@OneToMany(mappedBy = "leaderMale")
 	protected Set<Squad> maleGuided;
-	
+
 	@ManyToOne
 	protected Member Vollzahler;
 
@@ -183,18 +185,24 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	protected Long VollzahlerId;
 
 	@ManyToMany
-	protected Set<Function> Funktionen = new HashSet<>();
+	protected Set<Function> funktionen = new HashSet<>();
 
-	@NotAudited
 	@ManyToMany
-	@JoinTable(name = "member_member", joinColumns = @JoinColumn(name = "member_id") , inverseJoinColumns = @JoinColumn(name = "siblings_id") )
+	@JoinTable(name = "member_member", joinColumns = @JoinColumn(name = "member_id"), inverseJoinColumns = @JoinColumn(name = "siblings_id"))
 	@OrderBy("Name, Vorname")
 	protected Set<Member> siblings = new HashSet<>();
 
-	@NotAudited
 	@ManyToMany(mappedBy = "siblings")
 	@OrderBy("Name, Vorname")
 	protected Set<Member> parents = new HashSet<>();
+
+	@OneToMany(mappedBy = "payer")
+	@OrderBy(value="id DESC")
+	private Set<Payment> payments;
+
+	@OneToMany(mappedBy = "member")
+	@OrderBy(value="id DESC")
+	private Set<Booking> bookings = new HashSet<Booking>();
 
 	public Long getId() {
 		return this.id;
@@ -239,207 +247,211 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 
 	public String getBVKey() {
 		if (id == null) {
-			return BVKey;
+			return bvKey;
 		}
-		return StringUtils.isEmpty(BVKey) ? Configuration.BADEN_KEYPFX + id : BVKey;
+		return StringUtils.isEmpty(bvKey)
+				? Configuration.BADEN_KEYPFX + id
+				: bvKey;
 	}
 
 	public void setBVKey(String BVKey) {
-		this.BVKey = BVKey;
+		this.bvKey = BVKey;
 	}
 
 	public String getGruppenSchluessel() {
-		return StringUtils.isEmpty(GruppenSchluessel) ? Configuration.BADEN_KEY : GruppenSchluessel;
+		return StringUtils.isEmpty(gruppenSchluessel)
+				? Configuration.BADEN_KEY
+				: gruppenSchluessel;
 	}
 
 	public void setGruppenSchluessel(String GruppenSchluessel) {
-		if (Configuration.BADEN_KEY.equals(BVKey))
+		if (Configuration.BADEN_KEY.equals(bvKey))
 			return;
-		this.GruppenSchluessel = GruppenSchluessel;
+		this.gruppenSchluessel = GruppenSchluessel;
 	}
 
 	public long getPersonenKey() {
-		return (PersonenKey == 0 && id != null) ? id : PersonenKey;
+		return (personenKey == 0 && id != null) ? id : personenKey;
 	}
 
 	public void setPersonenKey(long PersonenKey) {
-		this.PersonenKey = PersonenKey;
+		this.personenKey = PersonenKey;
 	}
 
 	public String getTitel() {
-		return Titel;
+		return titel;
 	}
 
 	public void setTitel(String Titel) {
-		this.Titel = Titel;
+		this.titel = Titel;
 	}
 
 	public String getName() {
-		return Name;
+		return name;
 	}
 
 	public void setName(String Name) {
-		this.Name = Name;
+		this.name = Name;
 	}
 
 	public String getVorname() {
-		return Vorname;
+		return vorname;
 	}
 
 	public void setVorname(String Vorname) {
-		this.Vorname = Vorname;
+		this.vorname = Vorname;
 	}
 
 	public String getAnrede() {
-		return Anrede;
+		return anrede;
 	}
 
 	public void setAnrede(String Anrede) {
-		this.Anrede = Anrede;
+		this.anrede = Anrede;
 	}
 
 	public int getGebTag() {
-		return GebTag;
+		return gebTag;
 	}
 
 	public void setGebTag(int GebTag) {
-		this.GebTag = GebTag;
+		this.gebTag = GebTag;
 	}
 
 	public int getGebMonat() {
-		return GebMonat;
+		return gebMonat;
 	}
 
 	public void setGebMonat(int GebMonat) {
-		this.GebMonat = GebMonat;
+		this.gebMonat = GebMonat;
 	}
 
 	public int getGebJahr() {
-		return GebJahr;
+		return gebJahr;
 	}
 
 	public void setGebJahr(int GebJahr) {
-		this.GebJahr = GebJahr;
+		this.gebJahr = GebJahr;
 	}
 
 	public String getStrasse() {
-		return Strasse;
+		return strasse;
 	}
 
 	public void setStrasse(String Strasse) {
-		this.Strasse = Strasse;
+		this.strasse = Strasse;
 	}
 
 	public String getPLZ() {
-		return PLZ;
+		return plz;
 	}
 
 	public void setPLZ(String PLZ) {
-		this.PLZ = PLZ;
+		this.plz = PLZ;
 	}
 
 	public String getOrt() {
-		return Ort;
+		return ort;
 	}
 
 	public void setOrt(String Ort) {
-		this.Ort = Ort;
+		this.ort = Ort;
 	}
 
 	public Sex getGeschlecht() {
-		return Geschlecht;
+		return geschlecht;
 	}
 
 	public void setGeschlecht(Sex Geschlecht) {
-		this.Geschlecht = Geschlecht;
+		this.geschlecht = Geschlecht;
 	}
 
 	public boolean isAktiv() {
-		return Aktiv;
+		return aktiv;
 	}
 
 	public void setAktiv(boolean Aktiv) {
-		this.Aktiv = Aktiv;
+		this.aktiv = Aktiv;
 	}
 
 	public boolean isAktivExtern() {
-		return AktivExtern;
+		return aktivExtern;
 	}
 
 	public void setAktivExtern(boolean aktivExtern) {
-		AktivExtern = aktivExtern;
+		this.aktivExtern = aktivExtern;
 	}
 
 	public String getEmail() {
-		return Email;
+		return email;
 	}
 
 	public void setEmail(String Email) {
-		this.Email = Email;
+		this.email = Email;
 	}
 
 	public String getReligion() {
-		return Religion;
+		return religion;
 	}
 
 	public void setReligion(String Religion) {
-		this.Religion = Religion;
+		this.religion = Religion;
 	}
 
 	public String getTelefon() {
-		return Telefon;
+		return telefon;
 	}
 
 	public void setTelefon(String Telefon) {
-		this.Telefon = Telefon;
+		this.telefon = Telefon;
 	}
 
 	public boolean isTrail() {
-		return Trail;
+		return trail;
 	}
 
 	public void setTrail(boolean Trail) {
-		this.Trail = Trail;
+		this.trail = Trail;
 	}
 
 	public boolean isGilde() {
-		return Gilde;
+		return gilde;
 	}
 
 	public void setGilde(boolean Gilde) {
-		this.Gilde = Gilde;
+		this.gilde = Gilde;
 	}
 
 	public boolean isAltER() {
-		return AltER;
+		return altER;
 	}
 
 	public void setAltER(boolean AltER) {
-		this.AltER = AltER;
+		this.altER = AltER;
 	}
 
 	public ScoutRole getRolle() {
-		return Rolle;
+		return rolle;
 	}
 
 	public void setRolle(ScoutRole Rolle) {
-		this.Rolle = Rolle;
+		this.rolle = Rolle;
 	}
 
 	public boolean isInfoMail() {
-		return InfoMail;
+		return infoMail;
 	}
 
 	public void setInfoMail(boolean infoMail) {
-		InfoMail = infoMail;
+		this.infoMail = infoMail;
 	}
 
 	public boolean isSupport() {
-		return Support;
+		return support;
 	}
 
 	public void setSupport(boolean support) {
-		Support = support;
+		this.support = support;
 	}
 
 	@Override
@@ -482,26 +494,12 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 		this.createdBy = createdBy;
 	}
 
-	@Override
-	public String toString() {
-		String result = "";
-		if (BVKey != null && !BVKey.trim().isEmpty())
-			result += "" + BVKey;
-		if (Name != null && !Name.trim().isEmpty())
-			result += ", " + Name;
-		if (Vorname != null && !Vorname.trim().isEmpty())
-			result += ", " + Vorname;
-		result += ", " + GebJahr;
-		result += ", Aktiv: " + Aktiv;
-		return result;
-	}
-
 	public Squad getTrupp() {
-		return this.Trupp;
+		return this.trupp;
 	}
 
 	public void setTrupp(final Squad Trupp) {
-		this.Trupp = Trupp;
+		this.trupp = Trupp;
 	}
 
 	public Member getVollzahler() {
@@ -513,17 +511,17 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	}
 
 	public Set<Function> getFunktionen() {
-		Iterator<Function> fi = this.Funktionen.iterator();
+		Iterator<Function> fi = this.funktionen.iterator();
 		while (fi.hasNext()) {
 			Function f = fi.next();
 			if (f != null && f.getId() == null)
 				fi.remove();
 		}
-		return this.Funktionen;
+		return this.funktionen;
 	}
 
 	public void setFunktionen(final Set<Function> Funktionen) {
-		this.Funktionen = Funktionen;
+		this.funktionen = Funktionen;
 	}
 
 	public Set<Member> getSiblings() {
@@ -540,14 +538,94 @@ public class Member implements Serializable, Comparable<Member>, Auditable {
 	}
 
 	public String getCompareString() {
-		return (("" + Name) + Vorname) + id;
+		return (("" + name) + vorname) + id;
 	}
 
 	public Long getTruppId() {
-		return TruppId;
+		return truppId;
 	}
 
 	public Long getVollzahlerId() {
 		return VollzahlerId;
+	}
+
+	public Set<Payment> getPayments() {
+		return payments;
+	}
+
+	public String toShortString() {
+		String result = "";
+		if (name != null && !name.trim().isEmpty())
+			result += ", " + name;
+		if (vorname != null && !vorname.trim().isEmpty())
+			result += ", " + vorname;
+		result += ", " + gebTag + "." + gebMonat + "." + gebJahr;
+		if (ort != null && !ort.trim().isEmpty())
+			result += " " + ort;
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		String result = "";
+		if (bvKey != null && !bvKey.trim().isEmpty())
+			result += bvKey;
+		if (titel != null && !titel.trim().isEmpty())
+			result += ", " + titel;
+		if (name != null && !name.trim().isEmpty())
+			result += ", " + name;
+		if (vorname != null && !vorname.trim().isEmpty())
+			result += ", " + vorname;
+		result += ", " + gebTag + "." + gebMonat + "." + gebJahr;
+		if (plz != null && !plz.trim().isEmpty())
+			result += ", " + plz;
+		if (ort != null && !ort.trim().isEmpty())
+			result += " " + ort;
+		result += ", " + (aktiv ? "aktiv" : "inaktiv");
+		return result;
+	}
+
+	public String toFullString() {
+		String result = getClass().getSimpleName() + " ";
+		if (bvKey != null && !bvKey.trim().isEmpty())
+			result += "bvKey: " + bvKey;
+		if (titel != null && !titel.trim().isEmpty())
+			result += ", titel: " + titel;
+		if (name != null && !name.trim().isEmpty())
+			result += ", name: " + name;
+		if (vorname != null && !vorname.trim().isEmpty())
+			result += ", vorname: " + vorname;
+		if (anrede != null && !anrede.trim().isEmpty())
+			result += ", anrede: " + anrede;
+		result += ", gebTag: " + gebTag;
+		result += ", gebMonat: " + gebMonat;
+		result += ", gebJahr: " + gebJahr;
+		if (strasse != null && !strasse.trim().isEmpty())
+			result += ", strasse: " + strasse;
+		if (plz != null && !plz.trim().isEmpty())
+			result += ", plz: " + plz;
+		if (ort != null && !ort.trim().isEmpty())
+			result += ", ort: " + ort;
+		result += ", aktiv: " + aktiv;
+		result += ", aktivExtern: " + aktivExtern;
+		if (email != null && !email.trim().isEmpty())
+			result += ", email: " + email;
+		if (religion != null && !religion.trim().isEmpty())
+			result += ", religion: " + religion;
+		if (telefon != null && !telefon.trim().isEmpty())
+			result += ", telefon: " + telefon;
+		if (truppId != null)
+			result += ", truppId: " + truppId;
+		if (VollzahlerId != null)
+			result += ", VollzahlerId: " + VollzahlerId;
+		return result;
+	}
+
+	public Set<Booking> getBookings() {
+		return this.bookings;
+	}
+
+	public void setBookings(final Set<Booking> bookings) {
+		this.bookings = bookings;
 	}
 }

@@ -7,17 +7,21 @@
 
 package at.tfr.pfad.model;
 
-import javax.persistence.Entity;
 import java.io.Serializable;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
+import org.hibernate.envers.Audited;
+
+@Audited(withModifiedFlag = true)
 @Entity
-public class Function implements Serializable {
+public class Function implements PrimaryKeyHolder, Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "function_seq")

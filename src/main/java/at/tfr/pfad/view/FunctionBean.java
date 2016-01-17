@@ -27,6 +27,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.model.Function;
+import at.tfr.pfad.model.Function_;
 
 /**
  * Backing bean for Function entities.
@@ -107,14 +108,14 @@ public class FunctionBean extends BaseBean implements Serializable {
 	public boolean isUpdateAllowed() {
 		return isAdmin() || isGruppe();
 	}
-	
+
 	public String update() {
 		this.conversation.end();
 
 		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe may update entry");
-		
-		log.info("updated "+function+" by "+sessionContext.getCallerPrincipal());
+
+		log.info("updated " + function + " by " + sessionContext.getCallerPrincipal());
 
 		try {
 			if (this.id == null) {
@@ -125,8 +126,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 				return "view?faces-redirect=true&id=" + this.function.getId();
 			}
 		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(e.getMessage()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
 	}
@@ -136,8 +136,8 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");
-		
-		log.info("deleted "+function+" by "+sessionContext.getCallerPrincipal());
+
+		log.info("deleted " + function + " by " + sessionContext.getCallerPrincipal());
 
 		try {
 			Function deletableEntity = findById(getId());
@@ -146,8 +146,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(e.getMessage()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
 	}
@@ -195,19 +194,16 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
 		Root<Function> root = countCriteria.from(Function.class);
-		countCriteria = countCriteria.select(builder.count(root)).where(
-				getSearchPredicates(root));
-		this.count = this.entityManager.createQuery(countCriteria)
-				.getSingleResult();
+		countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root));
+		this.count = this.entityManager.createQuery(countCriteria).getSingleResult();
 
 		// Populate this.pageItems
 
 		CriteriaQuery<Function> criteria = builder.createQuery(Function.class);
 		root = criteria.from(Function.class);
-		TypedQuery<Function> query = this.entityManager.createQuery(criteria
-				.select(root).where(getSearchPredicates(root)));
-		query.setFirstResult(this.page * getPageSize()).setMaxResults(
-				getPageSize());
+		TypedQuery<Function> query = this.entityManager
+				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
+		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
 	}
 
@@ -218,15 +214,12 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 		String function = this.example.getFunction();
 		if (function != null && !"".equals(function)) {
-			predicatesList.add(builder.like(
-					builder.lower(root.<String> get("function")),
-					'%' + function.toLowerCase() + '%'));
+			predicatesList
+					.add(builder.like(builder.lower(root.get(Function_.function)), '%' + function.toLowerCase() + '%'));
 		}
 		String key = this.example.getKey();
 		if (key != null && !"".equals(key)) {
-			predicatesList.add(builder.like(
-					builder.lower(root.<String> get("key")),
-					'%' + key.toLowerCase() + '%'));
+			predicatesList.add(builder.like(builder.lower(root.get(Function_.key)), '%' + key.toLowerCase() + '%'));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -247,32 +240,27 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 	public List<Function> getAll() {
 
-		CriteriaQuery<Function> criteria = this.entityManager
-				.getCriteriaBuilder().createQuery(Function.class);
-		return this.entityManager.createQuery(
-				criteria.select(criteria.from(Function.class))).getResultList();
+		CriteriaQuery<Function> criteria = this.entityManager.getCriteriaBuilder().createQuery(Function.class);
+		return this.entityManager.createQuery(criteria.select(criteria.from(Function.class))).getResultList();
 	}
 
 	public Converter getConverter() {
 
-		final FunctionBean ejbProxy = this.sessionContext
-				.getBusinessObject(FunctionBean.class);
+		final FunctionBean ejbProxy = this.sessionContext.getBusinessObject(FunctionBean.class);
 
 		return new Converter() {
 
 			@Override
-			public Object getAsObject(FacesContext context,
-					UIComponent component, String value) {
+			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 
-				if (StringUtils.isBlank(value)) 
+				if (StringUtils.isBlank(value))
 					return null;
-				
+
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
 			@Override
-			public String getAsString(FacesContext context,
-					UIComponent component, Object value) {
+			public String getAsString(FacesContext context, UIComponent component, Object value) {
 
 				if (value == null) {
 					return "";

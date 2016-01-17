@@ -54,6 +54,18 @@ public class SessionBean implements Serializable {
 		return memberBean.getSessionContext().getCallerPrincipal();
 	}
 
+	public boolean isAdmin() {
+		return configurationBean.isAdmin();
+	}
+	
+	public boolean isGruppe() {
+		return configurationBean.isGruppe();
+	}
+
+	public boolean isLeiter() {
+		return configurationBean.isLeiter();
+	}
+
 	public void setRegistrationEndDate(Date registrationEndDate) {
 		this.registrationEndDate = registrationEndDate;
 	}
