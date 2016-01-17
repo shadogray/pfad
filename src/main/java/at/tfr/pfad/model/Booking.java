@@ -43,8 +43,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 	@ManyToMany(mappedBy="bookings")
 	private Set<Payment> payments = new HashSet<Payment>();
 
-	@Column(nullable=false)
-	@ManyToOne
+	@ManyToOne(optional=false)
 	private Member member;
 
 	@ManyToOne
