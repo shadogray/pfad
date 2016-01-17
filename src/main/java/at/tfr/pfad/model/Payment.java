@@ -41,7 +41,7 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	@Column(name = "version")
 	private int version;
 	
-	@Column(nullable=false)
+	@Column(nullable=false, columnDefinition="varchar2(16) default 'Membership' not null")
 	@Enumerated(EnumType.STRING)
 	private PaymentType type;
 

@@ -56,7 +56,7 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 	@Column(name = "version")
 	private int version;
 
-	@Column(nullable=false)
+	@Column(nullable=false, columnDefinition="varchar2(8) default 'WIWO' not null")
 	@Enumerated(EnumType.STRING)
 	private SquadType type;
 

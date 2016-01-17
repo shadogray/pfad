@@ -57,11 +57,11 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 	@Column
 	private String name;
 
-	@Column(nullable=false)
+	@Column(nullable=false, columnDefinition="varchar2(16) default 'Membership' not null")
 	@Enumerated(EnumType.STRING)
 	private ActivityType type;
 	
-	@Column(nullable=false)
+	@Column(nullable=false, columnDefinition="varchar2(16) default 'planned' not null")
 	@Enumerated(EnumType.STRING)
 	private ActivityStatus status;
 	
