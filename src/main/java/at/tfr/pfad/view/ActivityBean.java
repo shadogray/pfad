@@ -37,7 +37,6 @@ import at.tfr.pfad.model.Activity_;
 
 /**
  * Backing bean for Activity entities.
- * <p/>
  * This class provides CRUD functionality for all Activity entities. It
  * focuses purely on Java EE 6 standards (e.g. <tt>&#64;ConversationScoped</tt>
  * for state management, <tt>PersistenceContext</tt> for persistence,
@@ -115,7 +114,7 @@ public class ActivityBean extends BaseBean implements Serializable {
 
 	@Override
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isGruppe();
+		return isAdmin() || isGruppe() || isVorstand();
 	}
 
 	public String update() {
@@ -220,6 +219,10 @@ public class ActivityBean extends BaseBean implements Serializable {
 		String name = this.example.getName();
 		if (StringUtils.isNoneBlank(name)) {
 			predicatesList.add(builder.like(builder.lower(root.get(Activity_.name)), '%' + name.toLowerCase() + '%'));
+		}
+		
+		if (example.getType() != null) {
+			predicatesList.add(builder.equal(root.get(Activity_.type), example.getType()));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);

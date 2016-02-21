@@ -65,14 +65,8 @@
 			<artifactId>richfaces</artifactId>
 			<version>4.5.11.Final</version>
 		</dependency>
-<!--
- 		<dependency>
-			<groupId>org.primefaces</groupId>
-			<artifactId>primefaces</artifactId>
-			<version>5.3</version>
-		</dependency>
- -->
- 		<dependency>
+		<!-- <dependency> <groupId>org.primefaces</groupId> <artifactId>primefaces</artifactId> <version>5.3</version> </dependency> -->
+		<dependency>
 			<groupId>org.apache.deltaspike.modules</groupId>
 			<artifactId>deltaspike-jsf-module-api</artifactId>
 			<version>${deltaspike.version}</version>
@@ -109,7 +103,7 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-impl</artifactId>
@@ -165,7 +159,25 @@
 				<version>2.4</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<includes></includes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<configuration>
+							<show>private</show>
+							<reportOutputDirectory>${project.build.directory}/pfad/</reportOutputDirectory>
+						</configuration>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -53,6 +53,10 @@ public abstract class BaseBean implements Serializable {
 		return sessionContext.isCallerInRole(Role.kassier.name());
 	}
 
+	public boolean isVorstand() {
+		return sessionContext.isCallerInRole(Role.vorstand.name());
+	}
+
 	public SessionContext getSessionContext() {
 		return sessionContext;
 	}
@@ -69,4 +73,7 @@ public abstract class BaseBean implements Serializable {
 		return sessionBean.getRegistrationEndDate() != null && sessionBean.getRegistrationEndDate().before(new Date());
 	}
 	
+	public Conversation getConversation() {
+		return conversation;
+	}
 }

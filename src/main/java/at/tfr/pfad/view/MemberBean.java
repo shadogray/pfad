@@ -45,7 +45,6 @@ import at.tfr.pfad.model.Squad;
 
 /**
  * Backing bean for Member entities.
- * <p/>
  * This class provides CRUD functionality for all Member entities. It focuses
  * purely on Java EE 6 standards (e.g. <tt>&#64;ConversationScoped</tt> for
  * state management, <tt>PersistenceContext</tt> for persistence,
@@ -165,7 +164,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isGruppe() || (isLeiter() && !isRegistrationEnd());
+		return isAdmin() || isGruppe() || isVorstand() || (isLeiter() && !isRegistrationEnd());
 	}
 
 	@Transactional

@@ -24,58 +24,103 @@
 	<ui:define name="footer" />
 
 	<ui:define name="main">
-	
-		<h:messages globalOnly="true" styleClass="error" />
 
 		<h:form id="createBookings">
-			<h:panelGrid columnClasses="label,component,required" columns="3">
+			<rich:collapsiblePanel header="Trupps Buchen Auf Aktivität" switchType="ajax"
+				expanded="#{bookingBean.squadBookingVisible}" immediate="true">
+				<h:messages styleClass="error" />
+				<h:panelGrid columnClasses="label,component,required" columns="3">
 
-				<h:outputLabel for="bookingBeanBookingActivity" value="Aktivität:" />
-				<h:panelGroup>
-					<h:selectOneListbox id="bookingBeanBookingActivity" value="#{bookingBean.activity}"
-						converter="#{activityBean.converter}" required="true">
-						<f:selectItems value="#{activityBean.active}" var="item" itemLabel="#{item.name}" itemValue="#{item}" />
-					</h:selectOneListbox>
-				</h:panelGroup>
-				<h:message for="bookingBeanBookingActivity" styleClass="error" />
+					<h:outputLabel for="bookingBeanBookingActivity" value="Aktivität:" />
+					<h:panelGroup>
+						<h:selectOneListbox id="bookingBeanBookingActivity" value="#{bookingBean.activity}"
+							converter="#{activityBean.converter}" required="true">
+							<f:selectItems value="#{activityBean.active}" var="item" itemLabel="#{item.name}" itemValue="#{item}" />
+						</h:selectOneListbox>
+					</h:panelGroup>
+					<h:message for="bookingBeanBookingActivity" styleClass="error" />
 
-				<h:outputLabel for="bookingBeanBookingSquads" value="Trupp:" />
-				<h:panelGroup>
-					<h:selectManyListbox id="bookingBeanBookingSquads" value="#{bookingBean.squads}" converter="#{squadBean.converter}"
-						required="true" size="4">
-						<f:selectItems value="#{squadBean.all}" var="item" itemLabel="#{item.name}" itemValue="#{item}" />
-					</h:selectManyListbox>
-				</h:panelGroup>
-				<h:message for="bookingBeanBookingSquads" styleClass="error" />
+					<h:outputLabel for="bookingBeanBookingSquads" value="Trupp:" />
+					<h:panelGroup>
+						<h:selectManyListbox id="bookingBeanBookingSquads" value="#{bookingBean.squads}"
+							converter="#{squadBean.converter}" required="true" size="4">
+							<f:selectItems value="#{squadBean.all}" var="item" itemLabel="#{item.name}" itemValue="#{item}" />
+						</h:selectManyListbox>
+					</h:panelGroup>
+					<h:message for="bookingBeanBookingSquads" styleClass="error" />
 
-				<h:outputLabel for="bookingBeanBookingWithAssistants" value="Mit Assistenten:" />
-				<h:selectBooleanCheckbox id="bookingBeanBookingWithAssistants" value="#{bookingBean.withAssistants}"/>
-				<h:message for="bookingBeanBookingWithAssistants" styleClass="error" />
+					<h:outputLabel for="bookingBeanBookingWithAssistants" value="Mit Assistenten:" />
+					<h:selectBooleanCheckbox id="bookingBeanBookingWithAssistants" value="#{bookingBean.withAssistants}" />
+					<h:message for="bookingBeanBookingWithAssistants" styleClass="error" />
 
-				<h:outputLabel value="Buchung durchführen:" />
-				<h:commandButton id="bookingBeanCreateBookings" action="#{bookingBean.createBookings()}" value="Buchen" disabled="#{!bookingBean.updateAllowed}"/>
-				<h:messages for="bookingBeanCreateBookings" />
+					<h:outputLabel value="Buchung durchführen:" />
+					<h:commandButton id="bookingBeanCreateBookings" action="#{bookingBean.createBookings()}" value="Buchen"
+						disabled="#{!bookingBean.updateAllowed}" />
+					<h:messages for="bookingBeanCreateBookings" />
 
-			</h:panelGrid>
+				</h:panelGrid>
+			</rich:collapsiblePanel>
 		</h:form>
 
 		<h:form id="createBookingsForAllActive">
-			<h:panelGrid columnClasses="label,component,required" columns="3">
+			<rich:collapsiblePanel header="Alle Aktiven Auf Aktivität Buchen" switchType="ajax"
+				expanded="#{bookingBean.allBookingVisible}" immediate="true">
+				<h:messages styleClass="error" />
+				<h:panelGrid columnClasses="label,component,required" columns="3">
 
-				<h:outputLabel for="bookingBeanBookingActivityAllActive" value="Aktivität:" />
-				<h:panelGroup>
-					<h:selectOneListbox id="bookingBeanBookingActivityAllActive" value="#{bookingBean.activity}"
-						converter="#{activityBean.converter}" required="true">
-						<f:selectItems value="#{activityBean.active}" var="item" itemLabel="#{item.name}" itemValue="#{item}" />
-					</h:selectOneListbox>
-				</h:panelGroup>
-				<h:message for="bookingBeanBookingActivityAllActive" styleClass="error" />
+					<h:outputLabel for="bookingBeanBookingActivityAllActive" value="Aktivität:" />
+					<h:panelGroup>
+						<h:selectOneListbox id="bookingBeanBookingActivityAllActive" value="#{bookingBean.activity}"
+							converter="#{activityBean.converter}" required="true">
+							<f:selectItems value="#{activityBean.active}" var="item" itemLabel="#{item.name}" itemValue="#{item}" />
+						</h:selectOneListbox>
+					</h:panelGroup>
+					<h:message for="bookingBeanBookingActivityAllActive" styleClass="error" />
 
-				<h:outputLabel value="Buchung durchführen:" />
-				<h:commandButton id="bookingBeanCreateBookingsAllActive" action="#{bookingBean.createBookingsForAllActive()}" value="Alle Aktiven Pfadfinder Buchen" disabled="#{!bookingBean.createAllAllowed}"/>
-				<h:messages for="bookingBeanCreateBookingsAllActive" />
+					<h:outputLabel value="Buchung durchführen:" />
+					<h:commandButton id="bookingBeanCreateBookingsAllActive" action="#{bookingBean.createBookingsForAllActive()}"
+						value="Alle Aktiven Pfadfinder Buchen" disabled="#{!bookingBean.createAllAllowed}" />
+					<h:messages for="bookingBeanCreateBookingsAllActive" />
 
-			</h:panelGrid>
+				</h:panelGrid>
+			</rich:collapsiblePanel>
+		</h:form>
+
+		<h:form id="createBookingsFromSource">
+			<rich:collapsiblePanel header="Neu Buchen Von/Auf Aktivität" switchType="ajax"
+				expanded="#{bookingBean.fromToVisible}" immediate="true">
+				<h:messages styleClass="error" />
+				<h:panelGrid columnClasses="label,component,required" columns="3">
+
+					<h:outputLabel for="bookingBeanBookingActivitySource" value="Quell-Aktivität:" />
+					<h:panelGroup>
+						<h:selectOneListbox id="bookingBeanBookingActivitySource" value="#{bookingBean.sourceActivity}"
+							converter="#{activityBean.converter}" required="true">
+							<f:selectItems value="#{activityBean.all}" var="item" itemLabel="#{item.name}" itemValue="#{item}" />
+							<f:ajax render="createBookingsFromSource" />
+						</h:selectOneListbox>
+					</h:panelGroup>
+					<h:message for="bookingBeanBookingActivitySource" styleClass="error" />
+
+					<h:outputLabel for="bookingBeanBookingActivityTarget" value="Ziel-Aktivität:" />
+					<h:panelGroup>
+						<h:selectOneListbox id="bookingBeanBookingActivityTarget" value="#{bookingBean.targetActivity}"
+							converter="#{activityBean.converter}" required="true">
+							<f:selectItems value="#{activityBean.active}" var="item" itemLabel="#{item.name}" itemValue="#{item}" />
+							<f:ajax render="createBookingsFromSource" />
+						</h:selectOneListbox>
+					</h:panelGroup>
+					<h:message for="bookingBeanBookingActivityTarget" styleClass="error" />
+
+					<h:outputLabel value="Buchung Neu:" />
+					<h:commandButton id="bookingBeanCreateBookingsSource" action="#{bookingBean.createBookingsFromSource()}"
+						value="Von #{bookingBean.sourceActivity.name} auf #{bookingBean.targetActivity.name} Neu Buchen"
+						disabled="#{!bookingBean.createAllAllowed}"
+						rendered="#{bookingBean.sourceActivity != null and bookingBean.targetActivity != null}" />
+					<h:messages for="bookingBeanCreateBookingsSource" />
+
+				</h:panelGrid>
+			</rich:collapsiblePanel>
 		</h:form>
 
 	</ui:define>

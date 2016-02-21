@@ -36,7 +36,6 @@ import at.tfr.pfad.model.Payment_;
 
 /**
  * Backing bean for Payment entities.
- * <p/>
  * This class provides CRUD functionality for all Payment entities. It
  * focuses purely on Java EE 6 standards (e.g. <tt>&#64;ConversationScoped</tt>
  * for state management, <tt>PersistenceContext</tt> for persistence,
@@ -84,7 +83,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	public void retrieve() {
 
-		if (FacesContext.getCurrentInstance().isPostback()) {
+		FacesContext ctx = FacesContext.getCurrentInstance();
+		if (ctx.isPostback() && !ctx.getPartialViewContext().isAjaxRequest()) {
 			return;
 		}
 
@@ -111,11 +111,11 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	@Override
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isKassier();
+		return isAdmin() || isKassier() || isVorstand();
 	}
 
 	public boolean isViewAllowed() {
-		return isAdmin() || isKassier() || isGruppe();
+		return isAdmin() || isKassier() || isVorstand() || isGruppe();
 	}
 
 	public String update() {

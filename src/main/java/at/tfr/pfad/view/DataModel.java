@@ -7,7 +7,6 @@
 
 package at.tfr.pfad.view;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
@@ -224,6 +223,9 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
                 } else if (Long.class.isAssignableFrom(method.getReturnType())) {
                     return cb.equal(getPathForOrder(propertyName), Long.parseLong(filterValue.toString()));
+
+                } else if (Boolean.class.isAssignableFrom(method.getReturnType())) {
+                    return cb.equal(getPathForOrder(propertyName), Boolean.parseBoolean(filterValue.toString()));
 
                 } else if (filterValue instanceof String) {
                     String stringValue = (String) filterValue;

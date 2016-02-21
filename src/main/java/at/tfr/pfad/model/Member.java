@@ -18,6 +18,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -153,7 +154,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column
 	protected String createdBy;
 
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@OrderBy("name")
 	protected Squad trupp;
 
@@ -173,7 +174,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@OneToMany(mappedBy = "leaderMale")
 	protected Set<Squad> maleGuided;
 
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	protected Member Vollzahler;
 
 	@OneToMany(mappedBy = "Vollzahler")

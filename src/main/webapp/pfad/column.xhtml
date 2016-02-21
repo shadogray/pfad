@@ -11,12 +11,12 @@
 		<f:facet name="header">
 			<h:panelGroup>
 				<h:panelGroup layout="block" style="white-space:nowrap;">
-					<h:commandLink value="#{bean.columnHeaders[property]}" action="#{bean.toggleSort}">
+					<h:commandLink value="#{bean.columnHeaders[property]}" actionListener="#{bean.toggleSort}">
 						<f:ajax render="@form" />
 						<f:setPropertyActionListener target="#{bean.sortProperty}" value="#{property}" />
 					</h:commandLink>
-					<h:graphicImage name="down.gif" rendered="#{bean.sortOrders[property]=='descending'}" />
-					<h:graphicImage name="up.gif" rendered="#{bean.sortOrders[property]=='ascending'}" />
+					<h:graphicImage name="down.gif" rendered="#{bean.sortOrders[property]=='descending'}" alt="UP"/>
+					<h:graphicImage name="up.gif" rendered="#{bean.sortOrders[property]=='ascending'}" alt="DWN"/>
 				</h:panelGroup>
 				<h:panelGroup layout="block">
 					<h:inputText value="#{bean.filterValues[property]}" tabindex="#{tabIndex}">

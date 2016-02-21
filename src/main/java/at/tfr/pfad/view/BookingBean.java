@@ -43,7 +43,6 @@ import at.tfr.pfad.model.Squad;
 
 /**
  * Backing bean for Booking entities.
- * <p/>
  * This class provides CRUD functionality for all Booking entities. It
  * focuses purely on Java EE 6 standards (e.g. <tt>&#64;ConversationScoped</tt>
  * for state management, <tt>PersistenceContext</tt> for persistence,
@@ -72,6 +71,13 @@ public class BookingBean extends BaseBean implements Serializable {
 	private ActivityRepository activityRepo;
 
 	private Long id;
+	private Booking booking;
+	private boolean showFinished;
+	private boolean squadBookingVisible;
+	private boolean allBookingVisible;
+	private boolean fromToVisible;
+	private Activity sourceActivity;
+	private Activity targetActivity;
 
 	public Long getId() {
 		return this.id;
@@ -81,8 +87,6 @@ public class BookingBean extends BaseBean implements Serializable {
 		this.id = id;
 	}
 
-	private Booking booking;
-
 	public Booking getBooking() {
 		return this.booking;
 	}
@@ -91,6 +95,62 @@ public class BookingBean extends BaseBean implements Serializable {
 		this.booking = Booking;
 	}
 
+	public boolean isSquadBookingVisible() {
+		return squadBookingVisible;
+	}
+
+	public void setSquadBookingVisible(boolean squadBookingVisible) {
+		this.squadBookingVisible = squadBookingVisible;
+	}
+
+	public boolean isAllBookingVisible() {
+		return allBookingVisible;
+	}
+
+	public void setAllBookingVisible(boolean allBookingVisible) {
+		this.allBookingVisible = allBookingVisible;
+	}
+
+	public boolean isShowFinished() {
+		return showFinished;
+	}
+	
+	public void setShowFinished(boolean showFinished) {
+		this.showFinished = showFinished;
+	}
+	
+	public List<Activity> getActivities() {
+		if (showFinished) {
+			return activityRepo.findAll();
+		} else {
+			return activityRepo.findActive();
+		}
+	}
+	
+	public Activity getSourceActivity() {
+		return sourceActivity;
+	}
+
+	public void setSourceActivity(Activity sourceActivity) {
+		this.sourceActivity = sourceActivity;
+	}
+
+	public Activity getTargetActivity() {
+		return targetActivity;
+	}
+
+	public void setTargetActivity(Activity targetActivity) {
+		this.targetActivity = targetActivity;
+	}
+
+	public boolean isFromToVisible() {
+		return fromToVisible;
+	}
+	
+	public void setFromToVisible(boolean fromToVisible) {
+		this.fromToVisible = fromToVisible;
+	}
+	
 	public String create() {
 
 		this.conversation.begin();
@@ -100,7 +160,8 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	public void retrieve() {
 
-		if (FacesContext.getCurrentInstance().isPostback()) {
+		FacesContext ctx = FacesContext.getCurrentInstance();
+		if (ctx.isPostback() && !ctx.getPartialViewContext().isAjaxRequest()) {
 			return;
 		}
 
@@ -127,7 +188,7 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	@Override
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isGruppe();
+		return isAdmin() || isGruppe() || isVorstand();
 	}
 
 	public String update() {
@@ -138,8 +199,12 @@ public class BookingBean extends BaseBean implements Serializable {
 
 		try {
 			
-			if (booking.getMember().getBookings().stream().anyMatch(b-> booking.getActivity().equals(b.getActivity()))) {
+			if (booking.getId() == null && booking.getMember().getBookings().stream().anyMatch(b-> booking.getActivity().equals(b.getActivity()))) {
 				throw new Exception("Duplicate Booking: "+booking);
+			}
+			
+			if (booking.getMember().getTrupp() != null) {
+				booking.setSquad(booking.getMember().getTrupp());
 			}
 			
 			if (this.id == null) {
@@ -244,6 +309,10 @@ public class BookingBean extends BaseBean implements Serializable {
 		
 		if (example.getMember() != null) {
 			predicatesList.add(builder.equal(root.get(Booking_.member), example.getMember()));
+		}
+		
+		if (example.getSquad() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.squad), example.getSquad()));
 		}
 		
 		if (example.getStatus() != null) {
@@ -352,20 +421,19 @@ public class BookingBean extends BaseBean implements Serializable {
 	public String createBookings() {
 		
 		int created = 0;
-		conversation.end();
 		
 		try {
 			for (Squad squad : squads) {
 				for (Member scout : squad.getScouts()) {
 					if (!scout.getBookings().stream().filter(b -> activity.equals(b.getActivity())).findAny().isPresent()) {
-						createBooking(scout);
+						createBooking(activity, scout, BookingStatus.created);
 						created++;
 					}
 				}
 				if (withAssistants) {
 					for (Member ass : squad.getAssistants()) {
 						if (!ass.getBookings().stream().filter(b -> activity.equals(b.getActivity())).findAny().isPresent()) {
-							createBooking(ass);
+							createBooking(activity, ass, BookingStatus.created);
 							created++;
 						}
 					}
@@ -373,7 +441,7 @@ public class BookingBean extends BaseBean implements Serializable {
 			}
 		} catch (Exception e) {
 			log.info("createBookings: "+e, e);
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.toString()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "createBookings: "+e, e.toString()));
 			return "";
 		}
 		
@@ -385,18 +453,17 @@ public class BookingBean extends BaseBean implements Serializable {
 	public String createBookingsForAllActive() {
 		
 		int created = 0;
-		conversation.end();
 		
 		try {
 			for (Member scout : memberRepo.findActive()) {
 				if (!scout.getBookings().stream().filter(b -> activity.equals(b.getActivity())).findAny().isPresent()) {
-					createBooking(scout);
+					createBooking(activity, scout, BookingStatus.created);
 					created++;
 				}
 			}
 		} catch (Exception e) {
 			log.info("createBookings: "+e, e);
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), e.toString()));
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "createBookings: "+e, e.toString()));
 			return "";
 		}
 		
@@ -405,11 +472,34 @@ public class BookingBean extends BaseBean implements Serializable {
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId()+"?faces-redirect=true";
 	}
 
-	private void createBooking(Member scout) {
+	public String createBookingsFromSource() {
+		int created = 0;
+		
+		try {
+			for (Booking old : bookingRepo.findByActivity(sourceActivity)) {
+				Member member = old.getMember();
+				if (!member.getBookings().stream().filter(b -> targetActivity.equals(b.getActivity())).findAny().isPresent()) {
+					createBooking(targetActivity, member, BookingStatus.created);
+					created++;
+				}
+			}
+		} catch (Exception e) {
+			log.info("createBookingsFromSource: "+e, e);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "createBookingsFromSource: "+e, e.toString()));
+			return "";
+		}
+		
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Buchungen hergestellt: "+created, ""));
+
+		return FacesContext.getCurrentInstance().getViewRoot().getViewId()+"?faces-redirect=true";
+	}
+	
+	private void createBooking(Activity activity, Member scout, BookingStatus status) {
 		Booking booking = new Booking();
 		booking.setActivity(activity);
 		booking.setMember(scout);
-		booking.setStatus(BookingStatus.created);
+		booking.setStatus(status);
+		booking.setSquad(scout.getTrupp());
 		entityManager.persist(booking);
 		entityManager.flush();
 	}

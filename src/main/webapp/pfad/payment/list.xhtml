@@ -20,7 +20,7 @@
 		Zahlungen
 	</ui:define>
 
-	<ui:define name="footer"/>
+	<ui:define name="footer" />
 
 	<ui:define name="main">
 		<h:form id="list" rendered="#{paymentBean.viewAllowed}">
@@ -29,65 +29,168 @@
 			<rich:focus preserve="true" />
 
 			<rich:extendedDataTable keepSaved="true" id="richTable" var="record" value="#{paymentTableBean.dataModel}"
-				rows="#{paymentTableBean.dataModel.rows}" styleClass="smsplus-management-table" frozenColumns="7">
+				rows="#{paymentTableBean.dataModel.rows}" styleClass="smsplus-management-table" frozenColumns="7"
+				rowClass="height35">
 
-				<ui:include src="../column.xhtml" >
-					<ui:param name="bean" value="#{paymentTableBean}"/>
-					<ui:param name="record" value="#{record}"/>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="id" />
-					<ui:param name="link" value="/pfad/payment/view"/>
-					<ui:param name="width" value="4em"/>
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="4em" />
 				</ui:include>
-				<ui:include src="../column.xhtml" >
-					<ui:param name="bean" value="#{paymentTableBean}"/>
-					<ui:param name="record" value="#{record}"/>
+
+				<rich:column width="3em">
+					<f:facet name="header">Edit</f:facet>
+					<a4j:commandLink execute="@this" render="popupPanelEditPayment"
+						oncomplete="#{rich:component('popupPanelEditPayment')}.show(); return false;">
+						<h:graphicImage name="edit.jpeg" alt="Edit" style="width: 1.5em; height:1.5em;" />
+						<f:setPropertyActionListener target="#{paymentBean.id}" value="#{record.id}" />
+						<a4j:actionListener listener="#{paymentBean.retrieve()}" />
+					</a4j:commandLink>
+				</rich:column>
+
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="payer" />
 					<ui:param name="tabIndex" value="1" />
-					<ui:param name="link" value="/pfad/payment/view"/>
-					<ui:param name="width" value="15em"/>
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="15em" />
 				</ui:include>
-				<ui:include src="../column.xhtml" >
-					<ui:param name="bean" value="#{paymentTableBean}"/>
-					<ui:param name="record" value="#{record}"/>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="member" />
 					<ui:param name="tabIndex" value="2" />
-					<ui:param name="link" value="/pfad/payment/view"/>
-					<ui:param name="width" value="15em"/>
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="15em" />
 				</ui:include>
-				<ui:include src="../column.xhtml" >
-					<ui:param name="bean" value="#{paymentTableBean}"/>
-					<ui:param name="record" value="#{record}"/>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="activity" />
 					<ui:param name="tabIndex" value="3" />
-					<ui:param name="link" value="/pfad/payment/view"/>
-					<ui:param name="width" value="15em"/>
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="15em" />
 				</ui:include>
-				<ui:include src="../column.xhtml" >
-					<ui:param name="bean" value="#{paymentTableBean}"/>
-					<ui:param name="record" value="#{record}"/>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="squad" />
 					<ui:param name="tabIndex" value="4" />
-					<ui:param name="link" value="/pfad/payment/view"/>
-					<ui:param name="width" value="15em"/>
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="15em" />
 				</ui:include>
-				<ui:include src="../column.xhtml" >
-					<ui:param name="bean" value="#{paymentTableBean}"/>
-					<ui:param name="record" value="#{record}"/>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="finished" />
-					<ui:param name="link" value="/pfad/payment/view"/>
-					<ui:param name="width" value="3em"/>
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="3em" />
 				</ui:include>
-				<ui:include src="../column.xhtml" >
-					<ui:param name="bean" value="#{paymentTableBean}"/>
-					<ui:param name="record" value="#{record}"/>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="comment" />
 					<ui:param name="tabIndex" value="5" />
-					<ui:param name="link" value="/pfad/payment/view"/>
-					<ui:param name="width" value="20em"/>
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="20em" />
 				</ui:include>
 
 			</rich:extendedDataTable>
-			<rich:dataScroller for="richTable" fastControls="show"/>
+			<rich:dataScroller for="richTable" fastControls="show" />
+
+			<rich:popupPanel id="popupPanelEditPayment" domElementAttachment="form" resizeable="true" modal="true" height="400"
+				width="600">
+				<h:panelGroup rendered="#{paymentBean.payment != null}">
+					<h:messages />
+					<h:panelGrid id="popupPanelEditPaymentGrid" columnClasses="label,component,required" columns="3">
+
+						<h:outputLabel value="Typ:" />
+						<h:outputText value="#{paymentBean.payment.type}" />
+						<h:outputText />
+
+						<h:outputLabel value="Zahler:" />
+						<h:outputText value="#{paymentBean.payment.payer}" />
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
+						<h:outputText value="#{paymentBean.payment.paymentDate}">
+							<f:convertDateTime pattern="dd.MM.yyyy" />
+						</h:outputText>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanPaymentBookings" value="Buchungen:" />
+						<h:panelGroup>
+							<ui:param name="_collection" value="#{paymentBean.payment.bookings}" />
+							<h:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{forgeview:asList(_collection)}"
+								var="_item">
+								<h:column>
+									<f:facet name="header">
+										<h:outputText value="Aktivität" />
+									</f:facet>
+									<h:outputText id="itemActivity" value="#{_item.activity}" />
+								</h:column>
+								<h:column>
+									<f:facet name="header">
+										<h:outputText value="Name" />
+									</f:facet>
+									<h:outputText id="itemName" value="#{_item.member.name}" />
+								</h:column>
+								<h:column>
+									<f:facet name="header">
+										<h:outputText value="Vorname" />
+									</f:facet>
+									<h:outputText id="itemVorname" value="#{_item.member.vorname}" />
+								</h:column>
+								<h:column>
+									<f:facet name="header">
+										<h:outputText value="Geb.Jahr" />
+									</f:facet>
+									<h:outputText id="itemGebJahr" value="#{_item.member.gebJahr}" />
+								</h:column>
+								<h:column footerClass="remove-column" headerClass="remove-column">
+									<h:commandLink action="#{_collection.remove(_item)}" styleClass="remove-button">
+										<h:graphicImage name="remove.png" alt="Löschen" />
+									</h:commandLink>
+								</h:column>
+							</h:dataTable>
+						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanPaymentComment" value="Comment:" />
+						<h:panelGroup>
+							<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"
+								styleClass="fullwidth" />
+							<h:message for="paymentBeanPaymentComment" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanPaymentFinished" value="Erledigt:" />
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" />
+							<h:message for="paymentBeanPaymentFinished" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
+					</h:panelGrid>
+
+					<h:panelGrid columns="3" width="100%">
+						<h:commandLink value="Delete" actionListener='#{paymentBean.delete}' styleClass="btn btn-primary"
+							disabled="#{!paymentBean.deleteAllowed}">
+							<f:ajax render="@form" />
+						</h:commandLink>
+						<h:commandLink value="Save" actionListener='#{paymentBean.update}' styleClass="btn btn-primary"
+							disabled="#{!paymentBean.updateAllowed}">
+							<f:param name="cid" value="#{paymentBean.conversation.id}" />
+							<f:ajax execute="@form" render="@form" />
+						</h:commandLink>
+						<h:link value="Cancel" styleClass="btn btn-primary"
+							onclick="#{rich:component('popupPanelEditPayment')}.hide(); return false;" />
+					</h:panelGrid>
+				</h:panelGroup>
+			</rich:popupPanel>
 
 		</h:form>
 	</ui:define>

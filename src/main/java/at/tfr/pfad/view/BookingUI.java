@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Member;
@@ -76,7 +77,15 @@ public class BookingUI extends Booking {
 	public void setActivity(Activity Activity) {
 		booking.setActivity(Activity);
 	}
+	
+	public BookingStatus getStatus() {
+		return booking.getStatus();
+	}
 
+	public void setStatus(BookingStatus status) {
+		booking.setStatus(status);
+	}
+	
 	public String getComment() {
 		return booking.getComment();
 	}
@@ -121,7 +130,10 @@ public class BookingUI extends Booking {
 		return payments.stream().filter(b->b.getPayer() != null).map(Payment::getPayer).map(p->p.toString()).collect(Collectors.joining(","));
 	}
 
-	public String getSquad() {
+	public String getSquadName() {
+		if (booking.getSquad() != null) {
+			return booking.getSquad().getName();
+		}
 		return booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : "";
 	}
 }

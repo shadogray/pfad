@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 
 import java.awt.Window.Type;
 import java.io.Serializable;
@@ -48,6 +49,9 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 
 	@ManyToOne
 	private Activity activity;
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	private Squad squad;
 	
 	@Column(nullable=false)
 	@Enumerated(EnumType.STRING)
@@ -133,6 +137,14 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 		this.activity = activity;
 	}
 
+	public Squad getSquad() {
+		return squad;
+	}
+	
+	public void setSquad(Squad squad) {
+		this.squad = squad;
+	}
+	
 	public BookingStatus getStatus() {
 		return status;
 	}

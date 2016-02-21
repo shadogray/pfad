@@ -17,7 +17,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.deltaspike.core.api.scope.WindowScoped;
 import org.richfaces.component.SortOrder;
 
 @Named
@@ -38,7 +37,7 @@ public class BookingTableBean implements Serializable {
 	        sortOrders.put("id", SortOrder.unsorted);
 	        sortOrders.put("member", SortOrder.unsorted);
 	        sortOrders.put("activity", SortOrder.unsorted);
-	        sortOrders.put("squad", SortOrder.unsorted);
+	        sortOrders.put("squadName", SortOrder.unsorted);
 	        sortOrders.put("status", SortOrder.unsorted);
 	        sortOrders.put("comment", SortOrder.unsorted);
 	    }
@@ -48,7 +47,7 @@ public class BookingTableBean implements Serializable {
 	        columnHeaders.put("id", "ID");
 	        columnHeaders.put("member", "Mitglied");
 	        columnHeaders.put("activity", "Aktivität");
-	        columnHeaders.put("squad", "Trupp");
+	        columnHeaders.put("squadName", "Trupp");
 	        columnHeaders.put("status", "Status");
 	        columnHeaders.put("payed", "Bezahlt");
 	        columnHeaders.put("comment", "Bemerkung");

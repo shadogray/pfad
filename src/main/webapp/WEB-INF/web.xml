@@ -24,6 +24,7 @@
 			<role-name>gruppe</role-name>
 			<role-name>leiter</role-name>
 			<role-name>kassier</role-name>
+			<role-name>vorstand</role-name>
 		</auth-constraint>
 		<user-data-constraint>
 			<description>SSL</description>

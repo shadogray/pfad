@@ -19,6 +19,7 @@ import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member_;
+import at.tfr.pfad.model.Payment_;
 import at.tfr.pfad.model.Squad_;
 
 public class BookingDataModel extends DataModel<Booking, BookingUI> {
@@ -45,11 +46,14 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		switch(propertyName) {
 		case "member":
 			return cb.or(cb.like(cb.lower(root.join(Booking_.member).get(Member_.name)), "%"+filterValue+"%".toLowerCase()),
-					cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+filterValue+"%".toLowerCase()));
+					cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+filterValue+"%".toLowerCase()),
+					cb.like(cb.lower(root.join(Booking_.member).get(Member_.bvKey)), "%"+filterValue+"%".toLowerCase()));
 		case "activity":
 			return cb.like(cb.lower(root.join(Booking_.activity).get(Activity_.name)), "%"+filterValue+"%".toLowerCase());
-		case "squad":
+		case "squadName":
 			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.trupp).get(Squad_.name)), "%"+filterValue+"%".toLowerCase());
+		case "payed":
+			return cb.equal(root.join(Booking_.payments).get(Payment_.finished), Boolean.parseBoolean((String)filterValue));
 		}
 		return super.createFilterCriteriaForField(propertyName, filterValue);
 	}
@@ -61,8 +65,10 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			return root.join(Booking_.member).get(Member_.name);
 		case "activity":
 			return root.join(Booking_.activity).get(Activity_.name);
-		case "squad":
+		case "squadName":
 			return root.join(Booking_.member).get(Member_.trupp).get(Squad_.name);
+		case "payed":
+			return root.join(Booking_.payments).get(Payment_.finished);
 		}
 		return super.getPathForOrder(propertyName);
 	}

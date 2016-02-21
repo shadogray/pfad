@@ -34,7 +34,6 @@ import at.tfr.pfad.model.Squad_;
 
 /**
  * Backing bean for Squad entities.
- * <p/>
  * This class provides CRUD functionality for all Squad entities. It focuses
  * purely on Java EE 6 standards (e.g. <tt>&#64;ConversationScoped</tt> for
  * state management, <tt>PersistenceContext</tt> for persistence,
@@ -113,7 +112,7 @@ public class SquadBean extends BaseBean implements Serializable {
 	}
 
 	public boolean isUpdateAllowed(Squad squad) {
-		return isAdmin() || isGruppe()
+		return isAdmin() || isGruppe() || isVorstand()
 				|| (sessionContext.getCallerPrincipal().getName().equals(squad.getLogin()) && !isRegistrationEnd());
 	}
 

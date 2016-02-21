@@ -31,7 +31,6 @@ import at.tfr.pfad.model.Function_;
 
 /**
  * Backing bean for Function entities.
- * <p/>
  * This class provides CRUD functionality for all Function entities. It focuses
  * purely on Java EE 6 standards (e.g. <tt>&#64;ConversationScoped</tt> for
  * state management, <tt>PersistenceContext</tt> for persistence,
@@ -106,7 +105,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 	@Override
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isGruppe();
+		return isAdmin() || isGruppe() || isVorstand();
 	}
 
 	public String update() {
