@@ -173,10 +173,6 @@ public class ActivityBean extends BaseBean implements Serializable {
 		this.page = page;
 	}
 
-	public int getPageSize() {
-		return 10;
-	}
-
 	public Activity getExample() {
 		return this.example;
 	}

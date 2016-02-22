@@ -182,10 +182,6 @@ public class PaymentBean extends BaseBean implements Serializable {
 		this.page = page;
 	}
 
-	public int getPageSize() {
-		return 10;
-	}
-
 	public Payment getExample() {
 		return this.example;
 	}

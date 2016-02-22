@@ -168,10 +168,6 @@ public class FunctionBean extends BaseBean implements Serializable {
 		this.page = page;
 	}
 
-	public int getPageSize() {
-		return 10;
-	}
-
 	public Function getExample() {
 		return this.example;
 	}

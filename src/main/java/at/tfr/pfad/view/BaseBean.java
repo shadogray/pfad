@@ -18,6 +18,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
+import org.hibernate.hql.internal.classic.SelectPathExpressionParser;
 import org.jboss.logging.Logger;
 
 public abstract class BaseBean implements Serializable {
@@ -32,6 +33,7 @@ public abstract class BaseBean implements Serializable {
 	protected SessionContext sessionContext;
 	@Inject
 	protected SessionBean sessionBean;
+	protected int pageSize = 20;
 
 	public BaseBean() {
 		super();
@@ -75,5 +77,13 @@ public abstract class BaseBean implements Serializable {
 	
 	public Conversation getConversation() {
 		return conversation;
+	}
+	
+	public int getPageSize() {
+		return pageSize;
+	}
+	
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
 	}
 }

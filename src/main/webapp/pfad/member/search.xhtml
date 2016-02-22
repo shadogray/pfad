@@ -14,8 +14,8 @@
 
 	<ui:define name="header">
 		<h:outputText value="Personen" />
-		<h:panelGroup rendered="#{sessionBean.registrationEndDate != null}">
-			<h:outputLabel value="Registrierung-Ende:" />
+		<h:panelGroup rendered="#{sessionBean.registrationEndDate != null}" style="position: absolute; right: 0;">
+			<h:outputText value="Registrierung-Ende:" />
 			<h:outputText value="#{sessionBean.registrationEndDate}" converter="javax.faces.DateTime" />
 		</h:panelGroup>
 	</ui:define>
@@ -42,7 +42,7 @@
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
-					<h:panelGrid columnClasses="label,component,required" columns="6">
+					<h:panelGrid columnClasses="" columns="6">
 						<h:outputLabel for="memberBeanExampleName" value="Name:" />
 						<h:panelGroup>
 							<rich:autocomplete id="memberBeanExampleName" value="#{memberBean.example.name}" mode="lazyClient"
@@ -50,7 +50,7 @@
 							<h:message for="memberBeanExampleName" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
-						<h:outputLabel for="memberBeanExampleBVKey" value="BV Key:" />
+						<h:outputLabel for="memberBeanExampleBVKey" value="BVKey:" />
 						<h:panelGroup>
 							<h:inputText id="memberBeanExampleBVKey" value="#{memberBean.example.BVKey}" />
 							<h:message for="memberBeanExampleBVKey" styleClass="error" />
@@ -82,7 +82,7 @@
 						<h:outputLabel for="memberBeanExampleFunktion" value="Funktion:" />
 						<h:panelGroup>
 							<h:selectManyListbox converter="#{functionBean.converter}" id="memberBeanExampleFunktion"
-								value="#{memberBean.example.funktionen}" size="2">
+								value="#{memberBean.example.funktionen}" size="3">
 								<f:selectItem />
 								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{functionBean.all}"
 									var="_item" />

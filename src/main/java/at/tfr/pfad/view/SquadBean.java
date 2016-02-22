@@ -183,10 +183,6 @@ public class SquadBean extends BaseBean implements Serializable {
 		this.page = page;
 	}
 
-	public int getPageSize() {
-		return 10;
-	}
-
 	public Squad getExample() {
 		return this.example;
 	}

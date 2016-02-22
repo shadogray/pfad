@@ -47,7 +47,7 @@
 
 				<h:outputLabel for="paymentBeanPaymentPayer" value="Zahler:" />
 				<h:panelGroup>
-					<rich:select converter="#{memberBean.converter}" id="paymentBeanPayer" enableManualInput="true"
+					<rich:select tabindex="0" converter="#{memberBean.converter}" id="paymentBeanPayer" enableManualInput="true"
 						styleClass="fullwidth" value="#{paymentBean.payment.payer}" p:placeholder="Zahler oder Mitglied.."
 						clientFilterFunction="autoFilter" title="Der Zahler oder das Mitglied.." required="true" listWidth="35em">
 						<f:selectItem />

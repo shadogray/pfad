@@ -424,7 +424,8 @@ footer p {
 	color:#867f10;
 	line-height:46px;
 	padding-top:5px;
-	border-top:1px solid #ccc;	
+	border-top:1px solid #ccc;
+	position: relative;	
 }
 #content h2.success {
 	color:#5d8a10;

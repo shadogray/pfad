@@ -174,10 +174,6 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 		this.page = page;
 	}
 
-	public int getPageSize() {
-		return 10;
-	}
-
 	public Configuration getExample() {
 		return this.example;
 	}

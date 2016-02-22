@@ -42,9 +42,9 @@
 						</h:panelGroup>
 						<h:outputText />
 
-						<h:outputLabel for="bookingBeanExampleMember" value="Teilnemhmer:" />
+						<h:outputLabel for="bookingBeanExampleMember" value="Teilnehmer:" />
 						<h:panelGroup>
-							<rich:select converter="#{memberBean.converter}" id="bookingBeanExampleMember" enableManualInput="true"
+							<rich:select tabindex="0" converter="#{memberBean.converter}" id="bookingBeanExampleMember" enableManualInput="true"
 								styleClass="fullwidth" value="#{bookingBean.example.member}" p:placeholder="Teilnehmer.."
 								clientFilterFunction="autoFilter" title="Teilnehmer.." listWidth="35em">
 								<f:selectItem />

@@ -260,10 +260,6 @@ public class BookingBean extends BaseBean implements Serializable {
 		this.page = page;
 	}
 
-	public int getPageSize() {
-		return 10;
-	}
-
 	public Booking getExample() {
 		return this.example;
 	}
