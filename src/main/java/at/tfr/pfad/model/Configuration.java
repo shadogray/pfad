@@ -48,7 +48,7 @@ public class Configuration implements PrimaryKeyHolder, Serializable {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@Column(nullable=false, columnDefinition="varchar2(16) default 'simple' not null")
+	@Column(nullable=false, columnDefinition="varchar2(16) default 'simple'")
 	@Enumerated(EnumType.STRING)
 	private ConfigurationType type;
 
