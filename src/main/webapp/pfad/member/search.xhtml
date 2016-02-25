@@ -27,16 +27,6 @@
 
 	<ui:define name="main">
 
-		<h:outputScript>
-		$().ready(function() {
-			$('#search').keypress(function(event) {
-				if (event.which == '13') {
-					document.search.submit();
-				}
-			});
-		});
-		</h:outputScript>
-
 		<h:form id="search">
 			<rich:focus preserve="true" ajaxRendered="true" />
 			<f:validateBean disabled="true">

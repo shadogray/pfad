@@ -13,6 +13,16 @@
 </h:head>
 
 <h:body>
+	<h:outputScript>
+	$().ready(function() {
+		$('#search').keypress(function(event) {
+			if (event.which == '13') {
+				document.search.submit();
+			}
+		});
+	});
+	</h:outputScript>
+
 	<ds:windowId/>
 	<ui:debug rendered="#{facesContext.application.projectStage == 'Development'}" />
 	<div class="navbar navbar-fixed-top">
