@@ -10,19 +10,15 @@
 		<f:event type="preRenderView" listener='#{paymentBean.retrieve}' />
 	</f:metadata>
 
-	<ui:param name="pageTitle" value="Create Payment" />
+	<ui:param name="pageTitle" value="Zahlung erstellen/bearbeiten" />
 
 	<ui:define name="header">
-		Payment
-	</ui:define>
-
-	<ui:define name="subheader">
 		<c:choose>
 			<c:when test='#{!empty paymentBean.id}'>
-				Edit existing Payment
+				Zahlung bearbeiten
 			</c:when>
 			<c:otherwise>
-				Create a new Payment
+				Zahlung erstellen
 			</c:otherwise>
 		</c:choose>
 	</ui:define>
