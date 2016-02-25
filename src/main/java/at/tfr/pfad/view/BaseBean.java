@@ -18,7 +18,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 
-import org.hibernate.hql.internal.classic.SelectPathExpressionParser;
 import org.jboss.logging.Logger;
 
 public abstract class BaseBean implements Serializable {
@@ -40,29 +39,25 @@ public abstract class BaseBean implements Serializable {
 	}
 
 	public boolean isAdmin() {
-		return sessionContext.isCallerInRole(Role.admin.name());
+		return sessionBean.isAdmin();
 	}
 	
 	public boolean isGruppe() {
-		return sessionContext.isCallerInRole(Role.gruppe.name());
+		return sessionBean.isGruppe();
 	}
 
 	public boolean isLeiter() {
-		return sessionContext.isCallerInRole(Role.leiter.name());
+		return sessionBean.isLeiter();
 	}
 
 	public boolean isKassier() {
-		return sessionContext.isCallerInRole(Role.kassier.name());
+		return sessionBean.isKassier();
 	}
 
 	public boolean isVorstand() {
-		return sessionContext.isCallerInRole(Role.vorstand.name());
+		return sessionBean.isVorstand();
 	}
 
-	public SessionContext getSessionContext() {
-		return sessionContext;
-	}
-	
 	public boolean isViewAllowed() {
 		return true;
 	}

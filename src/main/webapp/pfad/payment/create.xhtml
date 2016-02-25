@@ -118,6 +118,7 @@
 							<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{bookingBean.all}" var="_item" />
 							</rich:select>
 						<h:commandLink action="#{_collection.add(requestScope['paymentBeanPaymentBookingsSelect'])}" id="paymentBeanPaymentBookingsAdd"
+							accesskey="a" title="Buchung hinzufügen [SHIFT]+[ALT]+[A]" 
 							onclick="if (document.getElementById('create:paymentBeanPaymentBookingsSelect').selectedIndex &lt; 1) { alert('Must select a Member'); return false; }"
 							styleClass="add-button" />
 					</h:panelGrid>
@@ -141,18 +142,22 @@
 			</h:panelGrid>
 
 			<div class="buttons">
-				<h:commandLink value="Save" action='#{paymentBean.update}' styleClass="btn btn-primary"
+				<h:commandLink value="Save" action='#{paymentBean.save}' accesskey="s" title="Speichern [ALT]+[S]" styleClass="btn btn-primary"
+					disabled="#{!paymentBean.updateAllowed}" />
+				<h:commandLink value="SaveAndSearch" action='#{paymentBean.update}' accesskey="r" title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary"
+					disabled="#{!paymentBean.updateAllowed}" />
+				<h:commandLink value="SaveAndNew" action='#{paymentBean.createAndNew}' accesskey="n" title="Speichern und Neueingabe [ALT]+[N]" styleClass="btn btn-primary"
 					disabled="#{!paymentBean.updateAllowed}" />
 				<c:choose>
 					<c:when test='#{!empty paymentBean.id}'>
 						<h:link value="Cancel" outcome="view" styleClass="btn btn-primary">
 							<f:param name="id" value='#{paymentBean.id}' />
 						</h:link>
-						<h:commandLink value="Delete" action='#{paymentBean.delete}' styleClass="btn btn-primary"
+						<h:commandLink value="Delete" action='#{paymentBean.delete}' onclick="return confirm('Zahlung wird gelöscht');" accesskey="n" title="Löschen und Zurück [SHIFT]+[ALT]+[D]" styleClass="btn btn-primary"
 							disabled="#{!paymentBean.deleteAllowed}" />
 					</c:when>
 					<c:otherwise>
-						<h:link value="Cancel" outcome="search" styleClass="btn btn-primary" />
+						<h:link value="Cancel" outcome="search" accesskey="c" title="Cancel [ALT]+[C]" styleClass="btn btn-primary" />
 					</c:otherwise>
 				</c:choose>
 			</div>

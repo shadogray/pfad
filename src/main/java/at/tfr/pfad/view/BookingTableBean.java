@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.Stateful;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,6 +22,7 @@ import org.richfaces.component.SortOrder;
 
 @Named
 @ViewScoped
+@Stateful
 public class BookingTableBean implements Serializable {
 
 	    private static int cnt = 0;

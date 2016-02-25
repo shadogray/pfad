@@ -48,7 +48,7 @@
 	</div>
 
 	<div class="container forgecontainer">
-		<h:panelGroup id="navigation" rendered="#{memberBean.sessionContext.callerPrincipal != 'anonymous'}">
+		<h:panelGroup id="navigation" rendered="#{sessionBean.sessionContext.callerPrincipal != 'anonymous'}">
 			<h:link id="homeLink" outcome="/pfad/index.xhtml">
 				<img style="max-width: 10em;" src='#{resource["forge-logo.png"]}' alt="Forge... get hammered" border="0" />
 			</h:link>

@@ -23,6 +23,7 @@ public class PaymentUI extends Payment {
 
 	public PaymentUI(Payment payment) {
 		this.payment = payment;
+		payment.getBookings().stream().peek(Booking::getId);
 		this.bookings = payment.getBookings();
 	}
 

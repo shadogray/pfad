@@ -119,6 +119,20 @@ public class PaymentBean extends BaseBean implements Serializable {
 	}
 
 	public String update() {
+		return update(Command.update);
+	}
+	
+	public String createAndNew() {
+		return update(Command.createAndNew);
+	}
+	
+	public String save() {
+		return update(Command.save);
+	}
+	
+	enum Command { update, createAndNew, save }
+	
+	public String update(Command command) {
 		this.conversation.end();
 
 		if (!isUpdateAllowed())
@@ -130,6 +144,12 @@ public class PaymentBean extends BaseBean implements Serializable {
 					this.payment.setPaymentDate(new Date());
 				}
 				this.entityManager.persist(this.payment);
+				switch (command) {
+				case createAndNew: 
+					return "create?faces-redirect=true";
+				case save:
+					return "create?faces-redirect=true&id="+payment.getId();
+				} 
 				return "search?faces-redirect=true";
 			} else {
 				this.entityManager.merge(this.payment);

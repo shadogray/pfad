@@ -10,20 +10,21 @@ package at.tfr.pfad.view;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.Order;
+import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.model.Activity_;
-import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
 import at.tfr.pfad.model.Squad_;
 
+@Stateful
 public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 
 	public PaymentDataModel() {

@@ -83,8 +83,6 @@ public class DownloadBean implements Serializable {
 	@Inject
 	private ConfigurationRepository configRepo;
 	@Inject
-	private MemberBean memberBean;
-	@Inject
 	private SquadBean squadBean;
 	@Inject
 	private SessionBean sessionBean;
@@ -112,7 +110,7 @@ public class DownloadBean implements Serializable {
 	}
 
 	public boolean isDownloadAllowed(Squad... squads) {
-		if (memberBean.isAdmin() || memberBean.isGruppe() || (memberBean.isLeiter() && squads != null
+		if (sessionBean.isAdmin() || sessionBean.isGruppe() || (sessionBean.isLeiter() && squads != null
 				&& Stream.of(squads).allMatch(s -> squadBean.isUpdateAllowed(s))))
 			return true;
 		return false;
@@ -122,7 +120,7 @@ public class DownloadBean implements Serializable {
 
 		if (!isDownloadAllowed(squads))
 			throw new SecurityException(
-					"user may not download: " + memberBean.getSessionContext().getCallerPrincipal());
+					"user may not download: " + sessionBean.getSessionContext().getCallerPrincipal());
 
 		ExternalContext ectx = setHeaders();
 		try (OutputStream os = ectx.getResponseOutputStream()) {
@@ -330,7 +328,7 @@ public class DownloadBean implements Serializable {
 
 	private List<Member> getMembers() {
 		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
-		SessionContext ctx = memberBean.getSessionContext();
+		SessionContext ctx = sessionBean.getSessionContext();
 		if (ctx.isCallerInRole(Role.admin.name()) || ctx.isCallerInRole(Role.gruppe.name()))
 			return members;
 		if (ctx.isCallerInRole(Role.leiter.name())) {
@@ -430,8 +428,8 @@ public class DownloadBean implements Serializable {
 
 	public List<Configuration> getQueries() {
 		return configRepo.findByTypeOrderByCkeyAsc(ConfigurationType.query).stream()
-				.filter(q -> memberBean.isAdmin() || Role.none.equals(q.getRole())
-						|| memberBean.getSessionContext().isCallerInRole(q.getRole().name()))
+				.filter(q -> sessionBean.isAdmin() || Role.none.equals(q.getRole())
+						|| sessionBean.getSessionContext().isCallerInRole(q.getRole().name()))
 				.collect(Collectors.toList());
 	}
 	

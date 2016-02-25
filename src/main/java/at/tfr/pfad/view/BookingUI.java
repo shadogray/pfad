@@ -26,6 +26,7 @@ public class BookingUI extends Booking {
 
 	public BookingUI(Booking booking) {
 		this.booking = booking;
+		booking.getPayments().stream().peek(Payment::getId);
 		this.payments = booking.getPayments();
 		this.payers = booking.getPayments().stream().map(Payment::getPayer).collect(Collectors.toSet());
 	}

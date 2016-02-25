@@ -10,6 +10,7 @@ package at.tfr.pfad.view;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ejb.Stateful;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
@@ -22,6 +23,7 @@ import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment_;
 import at.tfr.pfad.model.Squad_;
 
+@Stateful
 public class BookingDataModel extends DataModel<Booking, BookingUI> {
 
 	public BookingDataModel() {
