@@ -154,8 +154,6 @@ public class FunctionBean extends BaseBean implements Serializable {
 	 * Support searching Function entities with pagination
 	 */
 
-	private int page;
-	private long count;
 	private List<Function> pageItems;
 
 	private Function example = new Function();

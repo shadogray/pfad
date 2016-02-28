@@ -65,6 +65,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 	}
 
 	private Payment payment;
+	private Float amountFrom;
+	private Float amountTo;
 
 	public Payment getPayment() {
 		return this.payment;
@@ -183,8 +185,6 @@ public class PaymentBean extends BaseBean implements Serializable {
 	 * Support searching Payment entities with pagination
 	 */
 
-	private int page;
-	private long count;
 	private List<Payment> pageItems;
 
 	private Payment example = new Payment();
@@ -286,6 +286,14 @@ public class PaymentBean extends BaseBean implements Serializable {
 			predicatesList.add(builder.equal(root.get(Payment_.payer), payer));
 		}
 
+		if (amountFrom != null) {
+			predicatesList.add(builder.greaterThanOrEqualTo(root.get(Payment_.amount), amountFrom));
+		}
+		
+		if (amountTo != null) {
+			predicatesList.add(builder.lessThanOrEqualTo(root.get(Payment_.amount), amountTo));
+		}
+		
 		Boolean finished = this.exampleFinished;
 		if (finished != null) {
 			predicatesList.add(builder.equal(root.get(Payment_.finished), finished));
@@ -323,11 +331,27 @@ public class PaymentBean extends BaseBean implements Serializable {
 	public long getCount() {
 		return this.count;
 	}
-
+	
 	/*
 	 * Support listing and POSTing back Payment entities (e.g. from inside
 	 * an HtmlSelectOneMenu)
 	 */
+
+	public Float getAmountFrom() {
+		return amountFrom;
+	}
+
+	public void setAmountFrom(Float amountFrom) {
+		this.amountFrom = amountFrom;
+	}
+
+	public Float getAmountTo() {
+		return amountTo;
+	}
+
+	public void setAmountTo(Float amountTo) {
+		this.amountTo = amountTo;
+	}
 
 	public List<Payment> getAll() {
 

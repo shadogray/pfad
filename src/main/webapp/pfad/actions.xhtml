@@ -11,14 +11,12 @@
 	<ui:define name="header">
 		Actions
 	</ui:define>
-
-	<ui:define name="subheader">
-	</ui:define>
-
+	<ui:define name="subheader"/>
 	<ui:define name="footer" />
 
 	<ui:define name="main">
 		<h:form id="download">
+			<h:messages />
 			<h:panelGroup styleClass="buttons">
 				<h:outputLabel value="Registrierungs-Daten" />
 				<h:commandLink value="Download Registrierung" action="#{downloadBean.downloadRegistrierung()}"
@@ -33,6 +31,7 @@
 		</h:form>
 
 		<h:form id="query">
+			<h:messages />
 			<h:panelGroup id="queryPanel">
 				<f:ajax>
 					<h:panelGroup layout="block" id="actionsQueries">

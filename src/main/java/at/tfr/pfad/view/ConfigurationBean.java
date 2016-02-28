@@ -19,6 +19,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.validator.BeanValidator;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -119,17 +120,22 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 	}
 
 	public String update() {
-		this.conversation.end();
-
-		if (!isUpdateAllowed())
-			throw new SecurityException("only admins, gruppe may update entry");
 
 		try {
+			if (!isUpdateAllowed()) {
+				throw new SecurityException("only admins, gruppe may update entry");
+			}
+			validator.validate(configuration);
+
+			this.conversation.end();
+
 			if (this.id == null) {
 				this.entityManager.persist(this.configuration);
+				this.entityManager.flush();
 				return "search?faces-redirect=true";
 			} else {
 				this.entityManager.merge(this.configuration);
+				this.entityManager.flush();
 				return "view?faces-redirect=true&id=" + this.configuration.getId();
 			}
 		} catch (Exception e) {
@@ -160,8 +166,6 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 	 * Support searching Configuration entities with pagination
 	 */
 
-	private int page;
-	private long count;
 	private List<Configuration> pageItems;
 
 	private Configuration example = new Configuration();

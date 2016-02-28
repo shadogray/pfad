@@ -87,6 +87,17 @@
 					<ui:param name="link" value="/pfad/booking/view" />
 					<ui:param name="width" value="4em" />
 				</ui:include>
+
+				<rich:column width="3em">
+					<f:facet name="header">Zahlg</f:facet>
+					<a4j:commandLink execute="@this" render="popupPanelEditPayment"
+						oncomplete="#{rich:component('popupPanelEditPayment')}.show(); return false;">
+						<h:outputText value="€" style="width: 1.5em; height:1.5em;" />
+						<f:setPropertyActionListener target="#{bookingBean.id}" value="#{record.id}" />
+						<a4j:actionListener listener="#{bookingBean.retrieve()}" />
+					</a4j:commandLink>
+				</rich:column>
+
 				<ui:include src="../column.xhtml">
 					<ui:param name="bean" value="#{bookingTableBean}" />
 					<ui:param name="record" value="#{record}" />
@@ -107,11 +118,11 @@
 						<h:outputLabel value="Aktivität:" />
 						<h:outputText value="#{bookingBean.booking.activity}" />
 						<h:outputText />
-	
+
 						<h:outputLabel value="Teilnehmer:" />
 						<h:outputText value="#{bookingBean.booking.member}" />
 						<h:outputText />
-	
+
 						<h:outputLabel value="Status:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="bookingBeanBookingStatus" value="#{bookingBean.booking.status}" required="true">
@@ -120,7 +131,7 @@
 							<h:message for="bookingBeanBookingStatus" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
-	
+
 						<h:outputLabel value="Bemerkung:" />
 						<h:panelGroup>
 							<h:inputText id="bookingBeanBookingComment" value="#{bookingBean.booking.comment}" />
@@ -134,15 +145,176 @@
 							<f:ajax render="@form" />
 						</h:commandLink>
 						<h:commandLink value="Save" actionListener='#{bookingBean.update}' styleClass="btn btn-primary"
-							disabled="#{!bookingBean.updateAllowed}" >
-							<f:param name="cid" value="#{bookingBean.conversation.id}"/>
-							<f:ajax render="@form"/>
+							disabled="#{!bookingBean.updateAllowed}">
+							<f:param name="cid" value="#{bookingBean.conversation.id}" />
+							<f:ajax execute="@form" render="@form" />
 						</h:commandLink>
 						<h:link value="Cancel" onclick="#{rich:component('popupPanelEditBooking')}.hide(); return false;"
 							styleClass="btn btn-primary" />
 					</h:panelGrid>
 				</h:panelGroup>
 			</rich:popupPanel>
+
+ 			<rich:popupPanel id="popupPanelEditPayment" resizeable="true" modal="true" height="400" width="600">
+ 					<h:panelGroup rendered="#{bookingBean.booking != null}">
+					<h:messages />
+					<h:panelGrid columns="2" style="width:100%;">
+						<h:panelGroup>
+							<h:outputLabel value="Zahlungen:" />
+							<h:selectOneMenu id="bookingBeanPaymentSelect" value="#{paymentBean.id}" >
+								<f:selectItem />
+								<f:selectItems value="#{bookingBean.booking.payments}" var="p" itemLabel="#{p}" itemValue="#{p.id}" />
+								<a4j:ajax execute="@this" listener="#{paymentBean.retrieve()}" render="popupPanelEditPayment" />
+							</h:selectOneMenu>
+							<h:message for="bookingBeanPaymentSelect"/>
+						</h:panelGroup>
+					<h1>Payment: #{paymentBean.payment}</h1>
+						<h:link value="Cancel" onclick="#{rich:component('popupPanelEditPayment')}.hide(); return false;"
+							styleClass="btn btn-primary" />
+					</h:panelGrid>
+					<h:panelGroup id="popupPanelPayment" >
+					<h1>Payment2: #{paymentBean.payment}</h1>
+						<h:panelGroup rendered="#{paymentBean.payment != null}">
+							<h:panelGrid columns="3">
+								<h:outputLabel for="paymentBeanPaymentType" value="Typ:" />
+								<h:panelGroup>
+									<h:selectOneMenu id="paymentBeanPaymentType" value="#{paymentBean.payment.type}" required="true">
+										<f:selectItems value="#{paymentBean.types}" />
+									</h:selectOneMenu>
+									<h:message for="paymentBeanPaymentType" styleClass="error" />
+								</h:panelGroup>
+								<h:outputText />
+	
+								<h:outputLabel for="paymentBeanPaymentPayer" value="Zahler:" />
+								<h:panelGroup>
+									<rich:select tabindex="0" converter="#{memberBean.converter}" id="paymentBeanPayer" enableManualInput="true"
+										styleClass="fullwidth" value="#{paymentBean.payment.payer}" p:placeholder="Zahler oder Mitglied.."
+										clientFilterFunction="autoFilter" title="Der Zahler oder das Mitglied.." required="true" listWidth="35em">
+										<f:selectItem />
+										<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{memberBean.all}"
+											var="_item" />
+									</rich:select>
+									<h:message for="paymentBeanPayer" styleClass="error" />
+								</h:panelGroup>
+								<h:outputText />
+	
+								<h:outputLabel value="Betrag:" />
+								<h:inputText id="paymentBeanPaymentAmount" value="#{paymentBean.payment.amount}" required="true">
+									<f:convertNumber maxFractionDigits="2" />
+								</h:inputText>
+								<h:message for="paymentBeanPaymentAmount" />
+	
+								<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
+								<h:panelGroup>
+									<rich:calendar id="paymentBeanPaymentPaymentDate" value="#{paymentBean.payment.paymentDate}"
+										datePattern="dd.MM.yyyy" />
+									<h:message for="paymentBeanPaymentPaymentDate" styleClass="error" />
+								</h:panelGroup>
+								<h:outputText />
+	
+								<h:outputLabel for="paymentBeanPaymentBookings" value="Buchungen:" />
+								<h:panelGroup>
+									<ui:param name="_collection" value="#{paymentBean.payment.bookings}" />
+									<h:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{forgeview:asList(_collection)}"
+										var="_item">
+										<h:column>
+											<f:facet name="header">
+												<h:outputText value="Aktivität" />
+											</f:facet>
+											<h:link outcome="view">
+												<f:param name="id" value="#{_item.id}" />
+												<h:outputText id="itemActivity" value="#{_item.activity}" />
+											</h:link>
+										</h:column>
+										<h:column>
+											<f:facet name="header">
+												<h:outputText value="Name" />
+											</f:facet>
+											<h:link outcome="view">
+												<f:param name="id" value="#{_item.id}" />
+												<h:outputText id="itemName" value="#{_item.member.name}" />
+											</h:link>
+										</h:column>
+										<h:column>
+											<f:facet name="header">
+												<h:outputText value="Vorname" />
+											</f:facet>
+											<h:link outcome="view">
+												<f:param name="id" value="#{_item.id}" />
+												<h:outputText id="itemVorname" value="#{_item.member.vorname}" />
+											</h:link>
+										</h:column>
+										<h:column>
+											<f:facet name="header">
+												<h:outputText value="Geb.Jahr" />
+											</f:facet>
+											<h:link outcome="view">
+												<f:param name="id" value="#{_item.id}" />
+												<h:outputText id="itemGebJahr" value="#{_item.member.gebJahr}" />
+											</h:link>
+										</h:column>
+										<h:column footerClass="remove-column" headerClass="remove-column">
+											<h:commandLink action="#{_collection.remove(_item)}" styleClass="remove-button" />
+										</h:column>
+									</h:dataTable>
+									<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
+										<rich:select converter="#{bookingBean.converter}" id="paymentBeanPaymentBookingsSelect"
+											enableManualInput="true" styleClass="fullwidth" clientFilterFunction="autoFilter"
+											value="#{requestScope['paymentBeanPaymentBookingsSelect']}" listWidth="35em">
+											<f:selectItem />
+											<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{bookingBean.all}"
+												var="_item" />
+										</rich:select>
+										<h:commandLink action="#{_collection.add(requestScope['paymentBeanPaymentBookingsSelect'])}"
+											id="paymentBeanPaymentBookingsAdd" accesskey="a" title="Buchung hinzufügen [SHIFT]+[ALT]+[A]"
+											onclick="if (document.getElementById('create:paymentBeanPaymentBookingsSelect').selectedIndex &lt; 1) { alert('Must select a Member'); return false; }"
+											styleClass="add-button" />
+									</h:panelGrid>
+								</h:panelGroup>
+								<h:outputText />
+	
+								<h:outputLabel for="paymentBeanPaymentComment" value="Comment:" />
+								<h:panelGroup>
+									<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"
+										styleClass="fullwidth" />
+									<h:message for="paymentBeanPaymentComment" styleClass="error" />
+								</h:panelGroup>
+								<h:outputText />
+	
+								<h:outputLabel for="paymentBeanPaymentFinished" value="Erledigt:" />
+								<h:panelGroup>
+									<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" />
+									<h:message for="paymentBeanPaymentFinished" styleClass="error" />
+								</h:panelGroup>
+								<h:outputText />
+	
+							</h:panelGrid>
+	
+							<div class="buttons">
+								<h:commandLink value="Save" action='#{paymentBean.save}' accesskey="s" title="Speichern [ALT]+[S]"
+									styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
+								<h:commandLink value="SaveAndSearch" action='#{paymentBean.update}' accesskey="r"
+									title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
+								<h:commandLink value="SaveAndNew" action='#{paymentBean.createAndNew}' accesskey="n"
+									title="Speichern und Neueingabe [ALT]+[N]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
+								<c:choose>
+									<c:when test='#{!empty paymentBean.id}'>
+										<h:link value="Cancel" outcome="view" styleClass="btn btn-primary">
+											<f:param name="id" value='#{paymentBean.id}' />
+										</h:link>
+										<h:commandLink value="Delete" action='#{paymentBean.delete}' onclick="return confirm('Zahlung wird gelöscht');"
+											accesskey="n" title="Löschen und Zurück [SHIFT]+[ALT]+[D]" styleClass="btn btn-primary"
+											disabled="#{!paymentBean.deleteAllowed}" />
+									</c:when>
+									<c:otherwise>
+										<h:link value="Cancel" outcome="search" accesskey="c" title="Cancel [ALT]+[C]" styleClass="btn btn-primary" />
+									</c:otherwise>
+								</c:choose>
+							</div>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGroup>
+ 			</rich:popupPanel>
 		</h:form>
 	</ui:define>
 

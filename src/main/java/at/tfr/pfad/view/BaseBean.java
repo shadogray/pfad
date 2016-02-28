@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
+import javax.validation.Validator;
 
 import org.jboss.logging.Logger;
 
@@ -32,7 +33,12 @@ public abstract class BaseBean implements Serializable {
 	protected SessionContext sessionContext;
 	@Inject
 	protected SessionBean sessionBean;
-	protected int pageSize = 20;
+	@Inject
+	protected Validator validator;
+	@Inject
+	protected PageSizeBean pageSize;
+	protected int page;
+	protected long count;
 
 	public BaseBean() {
 		super();
@@ -75,10 +81,18 @@ public abstract class BaseBean implements Serializable {
 	}
 	
 	public int getPageSize() {
-		return pageSize;
+		return pageSize.getPageSize();
 	}
 	
-	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
+	public int getPage() {
+		return this.page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public long getCount() {
+		return this.count;
 	}
 }

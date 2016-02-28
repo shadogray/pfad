@@ -38,6 +38,7 @@ public class PaymentTableBean implements Serializable {
 	public PaymentTableBean() {
 		sortOrders.put("id", SortOrder.unsorted);
 		sortOrders.put("payer", SortOrder.unsorted);
+		sortOrders.put("amount", SortOrder.unsorted);
 		sortOrders.put("member", SortOrder.unsorted);
 		sortOrders.put("squad", SortOrder.unsorted);
 		sortOrders.put("activity", SortOrder.unsorted);
@@ -49,6 +50,7 @@ public class PaymentTableBean implements Serializable {
 	public void postConstruct() {
 		columnHeaders.put("id", "ID");
 		columnHeaders.put("payer", "Zahler");
+		columnHeaders.put("amount", "Betrag");
 		columnHeaders.put("member", "Mitglied");
 		columnHeaders.put("squad", "Trupp");
 		columnHeaders.put("activity", "Aktivität");

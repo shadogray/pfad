@@ -52,6 +52,12 @@
 					<h:message for="paymentBeanPayer" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
+				
+				<h:outputLabel value="Betrag:" />
+				<h:inputText id="paymentBeanPaymentAmount" value="#{paymentBean.payment.amount}" required="true">
+					<f:convertNumber maxFractionDigits="2"/>
+				</h:inputText>
+				<h:message for="paymentBeanPaymentAmount"/>
 
 				<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
 				<h:panelGroup>

@@ -61,6 +61,14 @@
 				<ui:include src="../column.xhtml">
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
+					<ui:param name="property" value="amount" />
+					<ui:param name="tabIndex" value="1" />
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="5em" />
+				</ui:include>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="member" />
 					<ui:param name="tabIndex" value="2" />
 					<ui:param name="link" value="/pfad/payment/view" />
@@ -113,6 +121,12 @@
 
 						<h:outputLabel value="Zahler:" />
 						<h:outputText value="#{paymentBean.payment.payer}" />
+						<h:outputText />
+
+						<h:outputLabel value="Betrag:" />
+						<h:inputText value="#{paymentBean.payment.amount}">
+							<f:convertNumber maxFractionDigits="2"/>
+						</h:inputText>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />

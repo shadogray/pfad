@@ -19,9 +19,12 @@ import javax.persistence.SynchronizationType;
 import org.hibernate.Session;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
+import org.jboss.logging.Logger;
 
 @RequestScoped
 public class Provider {
+	
+	private Logger log = Logger.getLogger(getClass());
 
 	@PersistenceUnit(unitName = "pfad")
 	private EntityManagerFactory entityManagerFactory;
@@ -39,9 +42,5 @@ public class Provider {
 	@RequestScoped
 	public AuditReader getAuditReader() {
 		return AuditReaderFactory.get(entityManagerFactory.createEntityManager(SynchronizationType.UNSYNCHRONIZED).unwrap(Session.class));
-	}
-	
-	public void close(@Disposes EntityManager em) {
-		em.close();
 	}
 }

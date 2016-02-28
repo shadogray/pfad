@@ -4,12 +4,14 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
 	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" xmlns:pfad="http://xmlns.jcp.org/jsf/composite/scaffold" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<f:viewParam name="page" value='#{bookingBean.page}' />
 		<f:event type="preRenderView" listener='#{bookingBean.paginate}' />
 	</f:metadata>
+
+	<ui:param name="pageTitle" value="Suche Buchungen" />
 
 	<ui:define name="header">
 		Buchungen
@@ -22,6 +24,7 @@
 
 	<ui:define name="main">
 		<h:form id="search">
+			<rich:focus />
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
@@ -42,9 +45,9 @@
 
 						<h:outputLabel for="bookingBeanExampleMember" value="Teilnehmer:" />
 						<h:panelGroup>
-							<rich:select tabindex="0" converter="#{memberBean.converter}" id="bookingBeanExampleMember" enableManualInput="true"
-								styleClass="fullwidth" value="#{bookingBean.example.member}" p:placeholder="Teilnehmer.."
-								clientFilterFunction="autoFilter" title="Teilnehmer.." listWidth="35em">
+							<rich:select tabindex="0" converter="#{memberBean.converter}" id="bookingBeanExampleMember"
+								enableManualInput="true" styleClass="fullwidth" value="#{bookingBean.example.member}"
+								p:placeholder="Teilnehmer.." clientFilterFunction="autoFilter" title="Teilnehmer.." listWidth="35em">
 								<f:selectItem />
 								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{memberBean.all}"
 									var="_item" />
@@ -57,19 +60,19 @@
 						<h:panelGroup>
 							<h:selectOneMenu id="bookingBeanExampleStatus" value="#{bookingBean.example.status}">
 								<f:selectItem />
-								<f:selectItems value="#{bookingBean.stati}"/>
+								<f:selectItems value="#{bookingBean.stati}" />
 							</h:selectOneMenu>
 							<h:message for="bookingBeanExampleStatus" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
-					
+
 						<h:outputLabel for="bookingBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
 							<h:inputText id="bookingBeanExampleComment" value="#{bookingBean.example.comment}" />
 							<h:message for="bookingBeanExampleComment" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
-						
+
 					</h:panelGrid>
 
 					<h:panelGroup styleClass="buttons">
@@ -113,7 +116,7 @@
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
 						<f:param name="faces-redirect" value="true" />
-						<h:outputText id="itemBookingMember" value="#{_item.member}"/>
+						<h:outputText id="itemBookingMember" value="#{_item.member}" />
 					</h:link>
 				</h:column>
 
@@ -140,6 +143,7 @@
 				</h:column>
 
 			</h:dataTable>
+			
 			<ui:include src="/resources/scaffold/paginator.xhtml">
 				<ui:param name="paginatorBean" value='#{bookingBean}' />
 			</ui:include>

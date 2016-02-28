@@ -33,6 +33,12 @@
 				</h:panelGroup>
 				<h:outputText />
 	
+				<h:outputLabel value="Betrag:" />
+				<h:outputText id="paymentBeanPaymentAmount" value="#{paymentBean.payment.amount}">
+					<f:convertNumber maxFractionDigits="2"/>
+				</h:outputText>
+				<h:outputText/>
+				
 				<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
 				<h:panelGroup>
 					<rich:calendar id="paymentBeanPaymentPaymentDate" value="#{paymentBean.payment.paymentDate}" 

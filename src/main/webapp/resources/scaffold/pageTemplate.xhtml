@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:ds="http://deltaspike.apache.org/jsf">
 
 <h:head>
@@ -24,7 +23,8 @@
 	</h:outputScript>
 
 	<ds:windowId/>
-	<ui:debug rendered="#{facesContext.application.projectStage == 'Development'}" />
+	<a4j:log level="ALL" popup="true" width="800" height="600" rendered="false"/>
+	<ui:debug rendered="#{true || facesContext.application.projectStage == 'Development'}" />
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">

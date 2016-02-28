@@ -51,6 +51,19 @@
 						</h:panelGroup>
 						<h:outputText />
 
+						<h:outputLabel for="paymentBeanAmountFrom" value="Betrag:" />
+						<h:panelGrid columns="4">
+							<h:outputLabel value="Von: "/>
+							<h:inputText value="#{paymentBean.amountFrom}" style="width: 10em;">
+								<f:convertNumber maxFractionDigits="2"/>
+							</h:inputText>
+							<h:outputLabel value="Bis: "/>
+							<h:inputText value="#{paymentBean.amountTo}"  style="width: 10em;">
+								<f:convertNumber maxFractionDigits="2"/>
+							</h:inputText>
+						</h:panelGrid>
+						<h:outputText />
+						
 						<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
 						<h:panelGroup>
 							<rich:calendar id="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}" 
@@ -59,7 +72,7 @@
 								datePattern="dd.MM.yyyy" />
 						</h:panelGroup>
 						<h:outputText />
-				
+						
 						<h:outputLabel for="paymentBeanExampleActivity" value="Aktivität:" />
 						<h:panelGroup>
 							<rich:select converter="#{activityBean.converter}" id="paymentBeanExampleActivity" enableManualInput="true"
@@ -94,7 +107,11 @@
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleFinished" value="Erledigt:" />
-						<h:selectBooleanCheckbox id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}" />
+						<h:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}" >
+							<f:selectItem />
+							<f:selectItem itemLabel="Ja" itemValue="true"/>
+							<f:selectItem itemLabel="Nein" itemValue="false"/>
+						</h:selectOneMenu>
 						<h:outputText />
 				
 					</h:panelGrid>
@@ -126,6 +143,18 @@
 						<f:param name="id" value="#{_item.id}" />
 						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemPaymentPayer" value="#{_item.payer}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Betrag" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemPaymentPaymentAmount" value="#{_item.amount}" >
+							<f:convertNumber maxFractionDigits="2"/>
+						</h:outputText>
 					</h:link>
 				</h:column>
 				<h:column>

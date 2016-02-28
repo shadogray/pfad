@@ -169,8 +169,6 @@ public class SquadBean extends BaseBean implements Serializable {
 	 * Support searching Squad entities with pagination
 	 */
 
-	private int page;
-	private long count;
 	private List<Squad> pageItems;
 
 	private Squad example = new Squad();

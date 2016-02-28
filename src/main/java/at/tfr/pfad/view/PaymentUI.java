@@ -58,6 +58,16 @@ public class PaymentUI extends Payment {
 	public void setPayer(Member Payer) {
 		payment.setPayer(Payer);
 	}
+	
+	@Override
+	public Float getAmount() {
+		return payment.getAmount();
+	}
+	
+	@Override
+	public void setAmount(Float amount) {
+		payment.setAmount(amount);
+	}
 
 	public Boolean getFinished() {
 		return payment.getFinished();

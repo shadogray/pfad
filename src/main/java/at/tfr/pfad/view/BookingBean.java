@@ -243,19 +243,9 @@ public class BookingBean extends BaseBean implements Serializable {
 	 * Support searching Booking entities with pagination
 	 */
 
-	private int page;
-	private long count;
 	private List<Booking> pageItems;
 
 	private Booking example = new Booking();
-
-	public int getPage() {
-		return this.page;
-	}
-
-	public void setPage(int page) {
-		this.page = page;
-	}
 
 	public Booking getExample() {
 		return this.example;
@@ -323,9 +313,7 @@ public class BookingBean extends BaseBean implements Serializable {
 		return this.pageItems;
 	}
 
-	public long getCount() {
-		return this.count;
-	}
+	
 
 	/*
 	 * Support listing and POSTing back Booking entities (e.g. from inside
@@ -426,5 +414,4 @@ public class BookingBean extends BaseBean implements Serializable {
 	public String createBookingsFromSource() {
 		return bookingActionBean.createBookingsFromSource(sourceActivity, targetActivity);
 	}
-	
 }

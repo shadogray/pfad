@@ -312,7 +312,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     @Override
     public U getRowData() {
         try {
-            U ud = (U)uData.stream().filter(u->u.getId().equals(rowKey)).findAny().get();
+            U ud = (U)uData.stream().filter(u->u.getId().equals(rowKey)).findAny().orElse(null);
 			return ud;
         } catch (Exception e) {
             log.info("error loading key: " + rowKey, e);

@@ -192,8 +192,6 @@ public class MemberBean extends BaseBean implements Serializable {
 	 * support searching Member entities with pagination
 	 */
 
-	private int page;
-	private long count;
 	private List<Member> pageItems;
 
 	private Member example = new Member();

@@ -19,6 +19,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import javax.ejb.SessionContext;
+import javax.ejb.Stateful;
 import javax.el.ValueExpression;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -56,6 +57,7 @@ import at.tfr.pfad.model.Squad;
 
 @Named
 @SessionScoped
+@Stateful
 public class DownloadBean implements Serializable {
 
 	private Logger log = Logger.getLogger(getClass());
@@ -117,17 +119,24 @@ public class DownloadBean implements Serializable {
 	}
 
 	public String downloadData(boolean withLocal, Squad... squads) throws Exception {
+		try {
 
-		if (!isDownloadAllowed(squads))
-			throw new SecurityException(
-					"user may not download: " + sessionBean.getSessionContext().getCallerPrincipal());
+			if (!isDownloadAllowed(squads))
+				throw new SecurityException(
+						"user may not download: " + sessionBean.getSessionContext().getCallerPrincipal());
 
-		ExternalContext ectx = setHeaders();
-		try (OutputStream os = ectx.getResponseOutputStream()) {
-			HSSFWorkbook wb = generateData(withLocal, squads);
-			wb.write(os);
+			ExternalContext ectx = setHeaders();
+			try (OutputStream os = ectx.getResponseOutputStream()) {
+				HSSFWorkbook wb = generateData(withLocal, squads);
+				wb.write(os);
+			}
+			FacesContext.getCurrentInstance().responseComplete();
+
+		} catch (Exception e) {
+			log.info("executeQuery: " + e, e);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
 		}
-		FacesContext.getCurrentInstance().responseComplete();
 
 		return "";
 	}
@@ -357,7 +366,7 @@ public class DownloadBean implements Serializable {
 		return ectx;
 	}
 
-	String getFunktionen(Member m) {
+	private String getFunktionen(Member m) {
 		List<String> functions = new ArrayList<>();
 		if (m.getTrupp() != null) {
 			functions.add(m.getTrupp().getType().getKey(m.getGeschlecht()));
@@ -432,13 +441,20 @@ public class DownloadBean implements Serializable {
 						|| sessionBean.getSessionContext().isCallerInRole(q.getRole().name()))
 				.collect(Collectors.toList());
 	}
-	
+
 	public void executeQuery(Long configurationId) {
-		Optional<Configuration> confOpt = getQueries().stream().filter(q->configurationId.equals(q.getId())).findFirst();
-		if (confOpt.isPresent()) {
-			query = confOpt.get().getCvalue();
-			nativeQuery = ConfigurationType.nativeQuery.equals(confOpt.get().getType());
-			query();
+		try {
+			Optional<Configuration> confOpt = getQueries().stream().filter(q -> configurationId.equals(q.getId()))
+					.findFirst();
+			if (confOpt.isPresent()) {
+				query = confOpt.get().getCvalue();
+				nativeQuery = ConfigurationType.nativeQuery.equals(confOpt.get().getType());
+				query();
+			}
+		} catch (Exception e) {
+			log.info("executeQuery: " + e, e);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
 		}
 	}
 

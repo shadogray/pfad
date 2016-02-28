@@ -33,6 +33,12 @@ body {
 	padding-top:50px;
 }
 
+.container {
+	width: inherit;
+    min-width: 900px;
+    max-width: 1280px;
+}
+
 #container {
    	margin: 0 auto;
    	border: 1px solid #666666;
@@ -101,7 +107,8 @@ span.invalid {
 }
 
 label {
-   float: left;
+   /*float: left; */
+   display: inline-block;
    width: 15%;
    margin-left: 20px;
    margin-right: 0.5em;

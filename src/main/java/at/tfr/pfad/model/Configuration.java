@@ -18,6 +18,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Column;
 import javax.persistence.Version;
+import javax.validation.constraints.Max;
+
+import org.hibernate.validator.constraints.Length;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.view.Role;
@@ -38,9 +41,11 @@ public class Configuration implements PrimaryKeyHolder, Serializable {
 	@Column(name = "version")
 	private int version;
 
+	@Length(max = 64)
 	@Column(length = 64)
 	private String ckey;
 
+	@Length(max = 4096)
 	@Column(length = 4096)
 	private String cvalue;
 
@@ -48,7 +53,7 @@ public class Configuration implements PrimaryKeyHolder, Serializable {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@Column(nullable=false, columnDefinition="varchar2(16) default 'simple'")
+	@Column(nullable = false, columnDefinition = "varchar2(16) default 'simple'")
 	@Enumerated(EnumType.STRING)
 	private ConfigurationType type;
 

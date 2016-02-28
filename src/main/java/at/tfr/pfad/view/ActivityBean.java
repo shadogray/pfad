@@ -159,8 +159,6 @@ public class ActivityBean extends BaseBean implements Serializable {
 	 * Support searching Activity entities with pagination
 	 */
 
-	private int page;
-	private long count;
 	private List<Activity> pageItems;
 
 	private Activity example = new Activity();

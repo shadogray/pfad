@@ -47,6 +47,8 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 
 	@ManyToOne
 	private Member payer;
+
+	private Float amount;
 	
 	@Column
 	@Temporal(TemporalType.TIMESTAMP)
@@ -120,6 +122,14 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 
 	public void setPayer(Member Payer) {
 		this.payer = Payer;
+	}
+
+	public Float getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Float amount) {
+		this.amount = amount;
 	}
 
 	public Boolean getFinished() {
@@ -203,7 +213,7 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 		if (paymentDate != null) {
 			result += ", " + new DateTime(paymentDate).toString("dd.MM.yyyy");
 		}
-		result += ", " + (finished ? "finished" : "offen");
+		result += ", " + (finished != null && finished ? "finished" : "offen");
 		if (comment != null && !comment.trim().isEmpty())
 			result += ", " + comment;
 		return result;
