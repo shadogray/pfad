@@ -41,6 +41,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.jboss.spec.javax.el</groupId>
+			<artifactId>jboss-el-api_3.0_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
 			<scope>provided</scope>
