@@ -189,10 +189,10 @@
 
 									<h:outputLabel for="paymentBeanPaymentPayer" value="Zahler:" />
 									<h:panelGroup id="paymentBeanPaymentPayerPanel">
-										<h:selectOneMenu value="#{paymentBean.payment.payer}" rendered="#{paymentBean.payment.payer != null}">
+										<h:selectOneMenu value="#{paymentBean.payment.payer.id}" rendered="#{paymentBean.payment.payer != null}">
 											<f:selectItem />
-											<f:selectItems value="#{paymentBean.filteredPayers}"/>
-											<f:ajax immediate="true" execute="@this" render="paymentBeanPaymentPayerPanel" />
+											<f:selectItems value="#{paymentBean.filteredPayers}" var="pay" itemLabel="#{pay}" itemValue="#{pay.id}"/>
+											<f:ajax immediate="true" execute="@this" render="paymentBeanPaymentPayerPanel" listener="#{paymentBean.payment.setPayer(null)}" />
 										</h:selectOneMenu>
 										<h:panelGroup rendered="#{paymentBean.payment.payer == null}">
 											<rich:select id="paymentBeanPaymentPayer" tabindex="0" styleClass="fullwidth manual"
@@ -302,8 +302,8 @@
 								<h:panelGrid columns="3" style="width: 100%;">
 									<a4j:commandLink value="Save" actionListener='#{paymentBean.update}' accesskey="s" title="Speichern [ALT]+[S]"
 										styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" execute="@form" render="@form" />
-									<a4j:commandLink value="SaveAndClose" actionListener='#{paymentBean.update}' accesskey="r"
-										title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}"
+									<a4j:commandLink value="KAPUTT!!SaveAndClose" actionListener='#{paymentBean.update}' accesskey="r"
+										title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{true || !paymentBean.updateAllowed}"
 										execute="@form" oncomplete="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;" />
 									<h:link value="Cancel" outcome="search" accesskey="c" title="Cancel [ALT]+[C]"
 										onclick="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;" styleClass="btn btn-primary" />
