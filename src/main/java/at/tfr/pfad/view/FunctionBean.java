@@ -125,6 +125,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 				return "view?faces-redirect=true&id=" + this.function.getId();
 			}
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -145,6 +146,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -254,12 +256,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
-
-				if (value == null) {
-					return "";
-				}
-
-				return String.valueOf(((Function) value).getId());
+				return ""+(value != null ? value : "");
 			}
 		};
 	}

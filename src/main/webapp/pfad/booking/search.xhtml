@@ -28,7 +28,7 @@
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
-					<h:panelGrid columnClasses="label,component,required" columns="3">
+					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
 
 						<h:outputLabel for="bookingBeanExampleActivity" value="Aktivität:" />
 						<h:panelGroup>
@@ -45,12 +45,14 @@
 
 						<h:outputLabel for="bookingBeanExampleMember" value="Teilnehmer:" />
 						<h:panelGroup>
-							<rich:select tabindex="0" converter="#{memberBean.converter}" id="bookingBeanExampleMember"
-								enableManualInput="true" styleClass="fullwidth" value="#{bookingBean.example.member}"
-								p:placeholder="Teilnehmer.." clientFilterFunction="autoFilter" title="Teilnehmer.." listWidth="35em">
+							<rich:select id="bookingBeanExampleMember" tabindex="0" styleClass="fullwidth manual" p:placeholder="Teilnehmer.." 
+								value="#{bookingBean.example.member != null ? bookingBean.example.member.id : ''}" selectFirst="false" mode="ajax" minChars="3"
+								autocompleteMethod="#{bookingBean.filterMembers}" var="b" itemValue="#{b.id}" itemLabel="#{b}" minListHeight="1"
+								maxListHeight="100" listWidth="35em" showButton="false">
 								<f:selectItem />
-								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{memberBean.all}"
-									var="_item" />
+								<f:selectItems value="#{bookingBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.id}"/>
+								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{bookingBean.selectBookingExampleMember}"
+									render="@form" />
 							</rich:select>
 							<h:message for="bookingBeanExampleMember" styleClass="error" />
 						</h:panelGroup>

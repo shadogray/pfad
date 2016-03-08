@@ -197,7 +197,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 	public String toString() {
 		String result = (activity != null ? activity.getType()+":"+activity.getName()+"/"+activity.getStartString() : getClass().getSimpleName());
 		if (member != null) {
-			result += " " +member.getName() + " " + member.getVorname() + ", " + member.getGebJahr(); 
+			result += " " +member.getName() + " " + member.getVorname() + ", " + member.getGebJahr() + ", " + member.getPLZ() + ", " + member.getStrasse(); 
 		}
 		if (comment != null && !comment.trim().isEmpty())
 			result += " " + comment;

@@ -17,7 +17,7 @@ public class ProcessorBean implements Serializable {
 	private EntityManager entityManager;
 	private Logger log = Logger.getLogger(getClass());
 
-	@Schedule(hour = "*", minute = "0", second = "0")
+	@Schedule(persistent = false, hour = "*", minute = "0", second = "0")
 	public void doBackup() {
 		try {
 			String backupName = "pfad_" + new DateTime().toString("yyyy.MM.dd_HH") + ".zip";

@@ -22,6 +22,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -33,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
@@ -55,7 +57,6 @@ import at.tfr.pfad.model.Squad;
 @Named
 @Stateful
 @ConversationScoped
-@TransactionManagement(TransactionManagementType.BEAN)
 public class MemberBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -68,26 +69,6 @@ public class MemberBean extends BaseBean implements Serializable {
 	/*
 	 * support creating and retrieving Member entities
 	 */
-
-	private Long id;
-
-	public Long getId() {
-		return this.id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	private Member member;
-
-	public Member getMember() {
-		return this.member;
-	}
-
-	public void setMember(Member member) {
-		this.member = member;
-	}
 
 	public List<Squad> getSquads() {
 		if (member != null && member.getGeschlecht() != null) {
@@ -116,9 +97,15 @@ public class MemberBean extends BaseBean implements Serializable {
 		}
 
 		if (this.id == null) {
-			this.member = this.example;
+			this.member = this.memberExample;
 		} else {
-			this.member = findById(getId());
+			if (this.member == null || !this.member.getId().equals(id)) {
+				this.member = findById(getId());
+				if (this.member.getTrupp() != null) this.member.getTrupp().getId();
+				this.member.getSiblings().size();
+				this.member.getFunktionen().size();
+				if (this.member.getVollzahler() != null) this.member.getVollzahler().getId();
+			}
 		}
 	}
 
@@ -158,6 +145,7 @@ public class MemberBean extends BaseBean implements Serializable {
 				return "view?faces-redirect=true&id=" + this.member.getId();
 			}
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -183,6 +171,7 @@ public class MemberBean extends BaseBean implements Serializable {
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -194,8 +183,6 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	private List<Member> pageItems;
 
-	private Member example = new Member();
-
 	public int getPage() {
 		return this.page;
 	}
@@ -205,11 +192,11 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public Member getExample() {
-		return this.example;
+		return this.memberExample;
 	}
 
 	public void setExample(Member example) {
-		this.example = example;
+		this.memberExample = example;
 	}
 
 	public String search() {
@@ -232,6 +219,7 @@ public class MemberBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Member> criteria = builder.createQuery(Member.class);
 		root = criteria.from(Member.class);
+		root.fetch(Member_.trupp);
 		TypedQuery<Member> query = this.entityManager.createQuery(
 				criteria.select(root).where(getSearchPredicates(root)).orderBy(builder.asc(root.get(Member_.name)),
 						builder.asc(root.get(Member_.vorname)), builder.asc(root.get(Member_.id))));
@@ -244,47 +232,47 @@ public class MemberBean extends BaseBean implements Serializable {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
-		String BVKey = this.example.getBVKey();
+		String BVKey = this.memberExample.getBVKey();
 		if (BVKey != null && !"".equals(BVKey)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.bvKey)), '%' + BVKey.toLowerCase() + '%'));
 		}
-		long PersonenKey = this.example.getPersonenKey();
+		long PersonenKey = this.memberExample.getPersonenKey();
 		if (PersonenKey != 0) {
 			predicatesList.add(builder.equal(root.get(Member_.personenKey), PersonenKey));
 		}
-		String Titel = this.example.getTitel();
+		String Titel = this.memberExample.getTitel();
 		if (Titel != null && !"".equals(Titel)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.titel)), '%' + Titel.toLowerCase() + '%'));
 		}
-		String Name = this.example.getName();
+		String Name = this.memberExample.getName();
 		if (Name != null && !"".equals(Name)) {
 			predicatesList.add(builder.like(builder.lower(root.get(Member_.name)), '%' + Name.toLowerCase() + '%'));
 		}
 
-		String Vorname = this.example.getVorname();
+		String Vorname = this.memberExample.getVorname();
 		if (Vorname != null && !"".equals(Vorname)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.vorname)), '%' + Vorname.toLowerCase() + '%'));
 		}
-		String Telefon = this.example.getTelefon();
+		String Telefon = this.memberExample.getTelefon();
 		if (Telefon != null && !"".equals(Telefon)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.telefon)), '%' + Telefon.toLowerCase() + '%'));
 		}
-		if (this.example.isAktiv()) {
-			predicatesList.add(builder.equal(root.get(Member_.aktiv), this.example.isAktiv()));
+		if (this.memberExample.isAktiv()) {
+			predicatesList.add(builder.equal(root.get(Member_.aktiv), this.memberExample.isAktiv()));
 		}
 
-		Squad trupp = this.example.getTrupp();
+		Squad trupp = this.memberExample.getTrupp();
 		if (trupp != null) {
 			predicatesList.add(builder.equal(root.get(Member_.trupp), trupp));
 		}
 
-		if (this.example.getFunktionen() != null && !this.example.getFunktionen().isEmpty()
-				&& this.example.getFunktionen().iterator().next() != null) {
-			predicatesList.add(root.join(Member_.funktionen).in(this.example.getFunktionen()));
+		if (this.memberExample.getFunktionen() != null && !this.memberExample.getFunktionen().isEmpty()
+				&& this.memberExample.getFunktionen().iterator().next() != null) {
+			predicatesList.add(root.join(Member_.funktionen).in(this.memberExample.getFunktionen()));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -353,12 +341,7 @@ public class MemberBean extends BaseBean implements Serializable {
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
-
-				if (value == null) {
-					return "";
-				}
-
-				return String.valueOf(((Member) value).getId());
+				return ""+(value != null ? value : "");
 			}
 		};
 	}
@@ -424,5 +407,16 @@ public class MemberBean extends BaseBean implements Serializable {
 	
 	public List<Sex> getSexes() {
 		return Arrays.asList(Sex.values());
+	}
+
+	public void handle(AjaxBehaviorEvent event) {
+		log.debug("handle: " + event);
+		if (event != null && event.getSource() instanceof UISelect) {
+			String val = (String)((UISelect) event.getSource()).getSubmittedValue();
+			if (StringUtils.isNotBlank(val)) {
+				setId(Long.valueOf(val));
+				retrieve();
+			}
+		}
 	}
 }

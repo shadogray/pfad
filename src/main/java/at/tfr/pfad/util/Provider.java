@@ -8,11 +8,11 @@
 package at.tfr.pfad.util;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceContextType;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.SynchronizationType;
 
@@ -32,11 +32,19 @@ public class Provider {
 	@PersistenceContext(unitName = "pfad")
 	private EntityManager entityManager;
 
+	@PersistenceContext(unitName = "pfad", type = PersistenceContextType.EXTENDED)
+	private EntityManager extendedEntityManager;
+	
 	@Produces
-	@RequestScoped
-	public EntityManager getEntityManager() {
-		return entityManager;
+	public EntityManager getExtendedEntityManager() {
+		return extendedEntityManager;
 	}
+	
+//	@Produces
+//	@RequestScoped
+//	public EntityManager getEntityManager() {
+//		return entityManager;
+//	}
 	
 	@Produces
 	@RequestScoped

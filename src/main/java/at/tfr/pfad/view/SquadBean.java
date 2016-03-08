@@ -140,6 +140,7 @@ public class SquadBean extends BaseBean implements Serializable {
 				return "view?faces-redirect=true&id=" + this.squad.getId();
 			}
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -160,6 +161,7 @@ public class SquadBean extends BaseBean implements Serializable {
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -274,12 +276,7 @@ public class SquadBean extends BaseBean implements Serializable {
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
-
-				if (value == null) {
-					return "";
-				}
-
-				return String.valueOf(((Squad) value).getId());
+				return ""+(value != null ? value : "");
 			}
 		};
 	}

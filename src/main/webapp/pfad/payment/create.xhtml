@@ -28,13 +28,12 @@
 	<ui:define name="main">
 		<h:form id="create" rendered="#{paymentBean.viewAllowed}">
 			<h:messages globalOnly="true" styleClass="error" />
-			<rich:focus />
 
 			<h:panelGrid columnClasses="label,component,required" columns="3">
 
 				<h:outputLabel for="paymentBeanPaymentType" value="Typ:" />
 				<h:panelGroup>
-					<h:selectOneMenu id="paymentBeanPaymentType" value="#{paymentBean.payment.type}" required="true">
+					<h:selectOneMenu id="paymentBeanPaymentType" tabindex="0" value="#{paymentBean.payment.type}" required="true">
 						<f:selectItems value="#{paymentBean.types}" />
 					</h:selectOneMenu>
 					<h:message for="paymentBeanPaymentType" styleClass="error" />
@@ -43,34 +42,35 @@
 
 				<h:outputLabel for="paymentBeanPaymentPayer" value="Zahler:" />
 				<h:panelGroup>
-					<rich:select tabindex="0" converter="#{memberBean.converter}" id="paymentBeanPayer" enableManualInput="true"
-						styleClass="fullwidth" value="#{paymentBean.payment.payer}" p:placeholder="Zahler oder Mitglied.."
-						clientFilterFunction="autoFilter" title="Der Zahler oder das Mitglied.." required="true" listWidth="35em">
-						<f:selectItem />
-						<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{memberBean.all}" var="_item" />
+					<rich:select id="paymentBeanPaymentPayer" tabindex="0" styleClass="fullwidth manual"
+						p:placeholder="Der Zahler oder das Mitglied.." value="#{paymentBean.payment.payer != null ? paymentBean.payment.payer.id : 0}" enableManualInput="false"
+						selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{members.filtered}" var="b" itemValue="#{b.id}"
+						itemLabel="#{b}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+						<f:selectItem itemLabel="#{paymentBean.payment.payer}" itemValue="#{paymentBean.payment.payer != null ? paymentBean.payment.payer.id : 0}" />
+						<a4j:ajax event="selectitem" immediate="true" execute="@form" listener="#{paymentBean.selectPaymentPayer}"
+							render="@form" />
 					</rich:select>
-					<h:message for="paymentBeanPayer" styleClass="error" />
+					<h:message for="paymentBeanPaymentPayer" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
-				
+
 				<h:outputLabel value="Betrag:" />
-				<h:inputText id="paymentBeanPaymentAmount" value="#{paymentBean.payment.amount}" required="true">
-					<f:convertNumber maxFractionDigits="2"/>
+				<h:inputText id="paymentBeanPaymentAmount" tabindex="0" value="#{paymentBean.payment.amount}" required="true">
+					<f:convertNumber maxFractionDigits="2" />
 				</h:inputText>
-				<h:message for="paymentBeanPaymentAmount"/>
+				<h:message for="paymentBeanPaymentAmount" />
 
 				<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
 				<h:panelGroup>
-					<rich:calendar id="paymentBeanPaymentPaymentDate" value="#{paymentBean.payment.paymentDate}" 
-						datePattern="dd.MM.yyyy"/>
+					<rich:calendar id="paymentBeanPaymentPaymentDate" tabindex="0" value="#{paymentBean.payment.paymentDate}"
+						datePattern="dd.MM.yyyy" />
 					<h:message for="paymentBeanPaymentPaymentDate" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
-				
+
 				<h:outputLabel for="paymentBeanPaymentBookings" value="Buchungen:" />
 				<h:panelGroup>
-					<ui:param name="_collection" value="#{paymentBean.payment.bookings}" />
-					<h:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{forgeview:asList(_collection)}"
+					<h:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{paymentBean.payment.bookings}"
 						var="_item">
 						<h:column>
 							<f:facet name="header">
@@ -109,53 +109,54 @@
 							</h:link>
 						</h:column>
 						<h:column footerClass="remove-column" headerClass="remove-column">
-							<h:commandLink action="#{_collection.remove(_item)}" styleClass="remove-button" />
+							<h:commandLink tabindex="0" action="#{paymentBean.payment.bookings.remove(_item)}" styleClass="remove-button" />
 						</h:column>
 					</h:dataTable>
 					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
-						<rich:select converter="#{bookingBean.converter}" id="paymentBeanPaymentBookingsSelect" 
-							enableManualInput="true" styleClass="fullwidth" clientFilterFunction="autoFilter" 
-							value="#{requestScope['paymentBeanPaymentBookingsSelect']}" listWidth="35em">
-							<f:selectItem />
-							<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{bookingBean.all}" var="_item" />
-							</rich:select>
-						<h:commandLink action="#{_collection.add(requestScope['paymentBeanPaymentBookingsSelect'])}" id="paymentBeanPaymentBookingsAdd"
-							accesskey="a" title="Buchung hinzufügen [SHIFT]+[ALT]+[A]" 
-							onclick="if (document.getElementById('create:paymentBeanPaymentBookingsSelect').selectedIndex &lt; 1) { alert('Must select a Member'); return false; }"
-							styleClass="add-button" />
+						<rich:select id="paymentBeanPaymentBookingsSelect" tabindex="1" styleClass="fullwidth manual"
+							value="#{paymentBean.bookingToAdd.id}" enableManualInput="false" selectFirst="false" mode="ajax" minChars="3"
+							autocompleteMethod="#{bookings.filtered}" var="b" itemValue="#{b.id}" itemLabel="#{b}" minListHeight="1"
+							maxListHeight="200" listWidth="35em" showButton="false" >
+							<f:selectItem itemLabel="#{paymentBean.bookingToAdd}" itemValue="#{paymentBean.bookingToAdd.id}"/>
+							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectPaymentBooking}"
+								render="@this paymentBeanPaymentBookings" />
+						</rich:select>
+						<h:message for="paymentBeanPaymentBookingsSelect" styleClass="error"/>
 					</h:panelGrid>
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="paymentBeanPaymentComment" value="Comment:" />
 				<h:panelGroup>
-					<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3" styleClass="fullwidth"/>
+					<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"
+						styleClass="fullwidth" />
 					<h:message for="paymentBeanPaymentComment" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
-				
+
 				<h:outputLabel for="paymentBeanPaymentFinished" value="Erledigt:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" />
 					<h:message for="paymentBeanPaymentFinished" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
-				
+
 			</h:panelGrid>
 
 			<div class="buttons">
-				<h:commandLink value="Save" action='#{paymentBean.save}' accesskey="s" title="Speichern [ALT]+[S]" styleClass="btn btn-primary"
-					disabled="#{!paymentBean.updateAllowed}" />
-				<h:commandLink value="SaveAndSearch" action='#{paymentBean.update}' accesskey="r" title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary"
-					disabled="#{!paymentBean.updateAllowed}" />
-				<h:commandLink value="SaveAndNew" action='#{paymentBean.createAndNew}' accesskey="n" title="Speichern und Neueingabe [ALT]+[N]" styleClass="btn btn-primary"
-					disabled="#{!paymentBean.updateAllowed}" />
+				<h:commandLink value="Save" action='#{paymentBean.save}' accesskey="s" title="Speichern [ALT]+[S]"
+					styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
+				<h:commandLink value="SaveAndSearch" action='#{paymentBean.update}' accesskey="r"
+					title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
+				<h:commandLink value="SaveAndNew" action='#{paymentBean.createAndNew}' accesskey="n"
+					title="Speichern und Neueingabe [ALT]+[N]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
 				<c:choose>
 					<c:when test='#{!empty paymentBean.id}'>
 						<h:link value="Cancel" outcome="view" styleClass="btn btn-primary">
 							<f:param name="id" value='#{paymentBean.id}' />
 						</h:link>
-						<h:commandLink value="Delete" action='#{paymentBean.delete}' onclick="return confirm('Zahlung wird gelöscht');" accesskey="n" title="Löschen und Zurück [SHIFT]+[ALT]+[D]" styleClass="btn btn-primary"
+						<h:commandLink value="Delete" action='#{paymentBean.delete}' onclick="return confirm('Zahlung wird gelöscht');"
+							accesskey="n" title="Löschen und Zurück [SHIFT]+[ALT]+[D]" styleClass="btn btn-primary"
 							disabled="#{!paymentBean.deleteAllowed}" />
 					</c:when>
 					<c:otherwise>

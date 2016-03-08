@@ -4,7 +4,7 @@
 	xmlns:ds="http://deltaspike.apache.org/jsf">
 
 <h:head>
-	<title>#{empty pageTitle ? 'Page Title' : pageTitle}</title>
+	<title>#{empty pageTitle ? 'Pfad' : pageTitle}</title>
 	<link rel="icon" href='#{resource["favicon.ico"]}' />
 	<h:outputStylesheet name="bootstrap.css" />
 	<h:outputStylesheet name="forge-style.css" />
@@ -12,15 +12,6 @@
 </h:head>
 
 <h:body>
-	<h:outputScript>
-	$().ready(function() {
-		$('#search').keypress(function(event) {
-			if (event.which == '13') {
-				document.search.submit();
-			}
-		});
-	});
-	</h:outputScript>
 
 	<ds:windowId/>
 	<a4j:log level="ALL" popup="true" width="800" height="600" rendered="false"/>

@@ -57,12 +57,13 @@
 
 				<h:outputLabel for="bookingBeanBookingMember" value="Teilnehmer:" />
 				<h:panelGroup>
-					<rich:select converter="#{memberBean.converter}" id="bookingBeanBookingMember" enableManualInput="true"
-						styleClass="fullwidth" value="#{bookingBean.booking.member}"
-						p:placeholder="aktives Mitglied, Suche nach Name, Vorname..." clientFilterFunction="autoFilter"
-						title="aktives Mitglied.." required="true" listWidth="35em">
-						<f:selectItem />
-						<f:selectItems value="#{memberBean.active}" />
+					<rich:select id="bookingBeanBookingMember" tabindex="0" styleClass="fullwidth manual" p:placeholder="Teilnehmer.." 
+						value="#{bookingBean.booking.member.id}" enableManualInput="false" selectFirst="false" mode="ajax" minChars="3"
+						autocompleteMethod="#{members.filtered}" var="b" itemValue="#{b.id}" itemLabel="#{b}" minListHeight="1"
+						maxListHeight="100" listWidth="35em" showButton="false">
+						<f:selectItem itemLabel="#{bookingBean.booking.member}" itemValue="#{bookingBean.booking.member.id}" />
+						<a4j:ajax event="selectitem" immediate="true" execute="@form" listener="#{bookingBean.selectBookingMember}"
+							render="@form" />
 					</rich:select>
 					<h:message for="bookingBeanBookingMember" styleClass="error" />
 				</h:panelGroup>

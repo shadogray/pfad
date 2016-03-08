@@ -19,6 +19,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -26,8 +27,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
+import org.richfaces.component.UISelect;
+
 import at.tfr.pfad.PaymentType;
-import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member;
@@ -35,12 +38,11 @@ import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
 
 /**
- * Backing bean for Payment entities.
- * This class provides CRUD functionality for all Payment entities. It
- * focuses purely on Java EE 6 standards (e.g. <tt>&#64;ConversationScoped</tt>
- * for state management, <tt>PersistenceContext</tt> for persistence,
- * <tt>CriteriaBuilder</tt> for searches) rather than introducing a CRUD
- * framework or custom base class.
+ * Backing bean for Payment entities. This class provides CRUD functionality for
+ * all Payment entities. It focuses purely on Java EE 6 standards (e.g.
+ * <tt>&#64;ConversationScoped</tt> for state management,
+ * <tt>PersistenceContext</tt> for persistence, <tt>CriteriaBuilder</tt> for
+ * searches) rather than introducing a CRUD framework or custom base class.
  */
 
 @Named
@@ -54,27 +56,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 	 * Support creating and retrieving Payment entities
 	 */
 
-	private Long id;
-
-	public Long getId() {
-		return this.id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	private Payment payment;
 	private Float amountFrom;
 	private Float amountTo;
-
-	public Payment getPayment() {
-		return this.payment;
-	}
-
-	public void setPayment(Payment Payment) {
-		this.payment = Payment;
-	}
 
 	public String create() {
 
@@ -90,20 +73,26 @@ public class PaymentBean extends BaseBean implements Serializable {
 			return;
 		}
 
-		if (this.conversation.isTransient()) {
-			this.conversation.begin();
-			this.conversation.setTimeout(1800000L);
+		if (conversation.isTransient()) {
+			conversation.begin();
+			conversation.setTimeout(1800000L);
 		}
 
 		if (this.id == null) {
-			this.payment = this.example;
+			this.payment = this.paymentExample;
 		} else {
-			this.payment = findById(getId());
+			if (payment == null || !this.payment.getId().equals(id)) {
+				payment = findById(getId());
+				payment.getBookings().size();
+				paymentPayer = payment.getPayer();
+				if (payment.getPayer() != null) {
+					filteredPayers.add(payment.getPayer());
+				}
+			}
 		}
 	}
 
 	public Payment findById(Long id) {
-
 		return this.entityManager.find(Payment.class, id);
 	}
 
@@ -123,46 +112,64 @@ public class PaymentBean extends BaseBean implements Serializable {
 	public String update() {
 		return update(Command.update);
 	}
-	
+
 	public String createAndNew() {
 		return update(Command.createAndNew);
 	}
-	
+
 	public String save() {
 		return update(Command.save);
 	}
-	
-	enum Command { update, createAndNew, save }
-	
+
+	enum Command {
+		update, createAndNew, save
+	}
+
 	public String update(Command command) {
 		this.conversation.end();
 
 		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe may update entry");
-
+		
+		payment.setPayer(paymentPayer);
+		
 		try {
 			if (this.id == null) {
 				if (this.payment.getPaymentDate() == null) {
 					this.payment.setPaymentDate(new Date());
 				}
 				this.entityManager.persist(this.payment);
+				this.entityManager.flush();
 				switch (command) {
-				case createAndNew: 
+				case createAndNew:
 					return "create?faces-redirect=true";
 				case save:
-					return "create?faces-redirect=true&id="+payment.getId();
-				} 
+					return "create?faces-redirect=true&id=" + payment.getId();
+				default:
+					// just fall through
+				}
 				return "search?faces-redirect=true";
 			} else {
 				this.entityManager.merge(this.payment);
+				this.entityManager.flush();
 				return "view?faces-redirect=true&id=" + this.payment.getId();
 			}
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
 	}
 
+	public void deleteBooking(Long id) {
+		try {
+			payment.getBookings().removeIf(b->b.getId().equals(id));
+		} catch (Exception e) {
+			log.info("deleteBooking: "+e, e);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
+		}
+	}
+	
 	public String delete() {
 		this.conversation.end();
 
@@ -176,6 +183,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -187,9 +195,6 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	private List<Payment> pageItems;
 
-	private Payment example = new Payment();
-	private Booking exampleBooking;
-	private Activity exampleActivity;
 	private Boolean exampleFinished;
 	private Date examplePaymentDateStart;
 	private Date examplePaymentDateEnd;
@@ -203,27 +208,11 @@ public class PaymentBean extends BaseBean implements Serializable {
 	}
 
 	public Payment getExample() {
-		return this.example;
+		return this.paymentExample;
 	}
 
 	public void setExample(Payment example) {
-		this.example = example;
-	}
-
-	public Booking getExampleBooking() {
-		return exampleBooking;
-	}
-
-	public void setExampleBooking(Booking exampleBooking) {
-		this.exampleBooking = exampleBooking;
-	}
-
-	public Activity getExampleActivity() {
-		return exampleActivity;
-	}
-
-	public void setExampleActivity(Activity exampleActivity) {
-		this.exampleActivity = exampleActivity;
+		this.paymentExample = example;
 	}
 
 	public Date getExamplePaymentDateStart() {
@@ -241,7 +230,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	public void setExamplePaymentDateEnd(Date examplePaymentDateEnd) {
 		this.examplePaymentDateEnd = examplePaymentDateEnd;
 	}
-	
+
 	public Boolean getExampleFinished() {
 		return exampleFinished;
 	}
@@ -281,35 +270,35 @@ public class PaymentBean extends BaseBean implements Serializable {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
-		Member payer = this.example.getPayer();
-		if (payer != null) {
+		Member payer = this.paymentExample.getPayer();
+		if (payer != null && payer.getId() != null) {
 			predicatesList.add(builder.equal(root.get(Payment_.payer), payer));
 		}
 
 		if (amountFrom != null) {
 			predicatesList.add(builder.greaterThanOrEqualTo(root.get(Payment_.amount), amountFrom));
 		}
-		
+
 		if (amountTo != null) {
 			predicatesList.add(builder.lessThanOrEqualTo(root.get(Payment_.amount), amountTo));
 		}
-		
+
 		Boolean finished = this.exampleFinished;
 		if (finished != null) {
 			predicatesList.add(builder.equal(root.get(Payment_.finished), finished));
 		}
 
-		PaymentType type = this.example.getType();
+		PaymentType type = this.paymentExample.getType();
 		if (type != null) {
 			predicatesList.add(builder.equal(root.get(Payment_.type), type));
 		}
 
 		Booking booking = this.exampleBooking;
-		if (booking != null) {
+		if (booking != null && booking.getId() != null) {
 			predicatesList.add(builder.isMember(booking, root.get(Payment_.bookings)));
 		}
-		
-		if (exampleActivity != null) {
+
+		if (exampleActivity != null && exampleActivity.getId() != null) {
 			predicatesList.add(builder.equal(root.join(Payment_.bookings).get(Booking_.activity), exampleActivity));
 		}
 
@@ -331,10 +320,10 @@ public class PaymentBean extends BaseBean implements Serializable {
 	public long getCount() {
 		return this.count;
 	}
-	
+
 	/*
-	 * Support listing and POSTing back Payment entities (e.g. from inside
-	 * an HtmlSelectOneMenu)
+	 * Support listing and POSTing back Payment entities (e.g. from inside an
+	 * HtmlSelectOneMenu)
 	 */
 
 	public Float getAmountFrom() {
@@ -355,8 +344,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	public List<Payment> getAll() {
 
-		CriteriaQuery<Payment> criteria = this.entityManager.getCriteriaBuilder()
-				.createQuery(Payment.class);
+		CriteriaQuery<Payment> criteria = this.entityManager.getCriteriaBuilder().createQuery(Payment.class);
 		return this.entityManager.createQuery(criteria.select(criteria.from(Payment.class))).getResultList();
 	}
 
@@ -374,12 +362,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
-
-				if (value == null) {
-					return "";
-				}
-
-				return String.valueOf(((Payment) value).getId());
+				return ""+(value != null ? value : "");
 			}
 		};
 	}
@@ -399,8 +382,20 @@ public class PaymentBean extends BaseBean implements Serializable {
 		this.add = new Payment();
 		return added;
 	}
-	
+
 	public List<PaymentType> getTypes() {
 		return Arrays.asList(PaymentType.values());
 	}
+
+	public void handle(AjaxBehaviorEvent event) {
+		log.debug("handle: " + event);
+		if (event != null && event.getSource() instanceof UISelect) {
+			String val = (String)((UISelect) event.getSource()).getSubmittedValue();
+			if (StringUtils.isNotBlank(val)) {
+				setId(Long.valueOf(val));
+				retrieve();
+			}
+		}
+	}
+	
 }

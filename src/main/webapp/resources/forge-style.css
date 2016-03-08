@@ -1,25 +1,4 @@
 @charset "UTF-8";
-/*
-  ~ JBoss, Home of Professional Open Source.
-  ~ Copyright (c) 2011, Red Hat, Inc., and individual contributors
-  ~ as indicated by the @author tags. See the copyright.txt file in the
-  ~ distribution for a full listing of individual contributors.
-  ~
-  ~ This is free software; you can redistribute it and/or modify it
-  ~ under the terms of the GNU Lesser General Public License as
-  ~ published by the Free Software Foundation; either version 2.1 of
-  ~ the License, or (at your option) any later version.
-  ~
-  ~ This software is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  ~ Lesser General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Lesser General Public
-  ~ License along with this software; if not, write to the Free
-  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-*/
 /* Core styles for the page */
 
 body {
@@ -270,11 +249,41 @@ footer p {
 	vertical-align: top;
 }
 
+#content table .label2 {
+	width: 10%;
+	text-align: left;
+	vertical-align: top;
+	white-space: nowrap;
+}
+
+#content table .component2 {
+	width: 35%;
+	text-align: left;
+	vertical-align: top;
+}
+
 #content table .component input {
 	width: 95%;	
+	padding: 5px 7px;	
 }
-#content table .component select{
-	width: 96.6%	
+
+input.rf-sel-inp  {
+    padding: 5px 7px !important;
+}
+
+.component select {
+	width: 96.6%;
+	padding: 5px 7px;	
+}
+
+#content table .component select {
+	width: 96.6%;
+	padding: 5px 7px;	
+}
+
+select.manual {
+    color: black;
+    padding: 5 7px;
 }
 
 #content table .component input[type="checkbox"], #content table .component .rf-cal-inp, #content table .component .rf-insl-inp, #content table .component .rf-insp-inp  {
@@ -303,6 +312,11 @@ footer p {
 	margin: auto;
 }
 
+.error {
+	color: red;
+	font-size: 10pt;
+}
+
 #content .error {
 	color: red;
 	font-size: 10pt;
@@ -313,7 +327,6 @@ footer p {
 	color: red;	
 	padding-top: 7pt;
 	padding-left: 4pt;
-	font-size: 20pt;
 	line-height: 8pt;
 	font-weight: bold;
 }

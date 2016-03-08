@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.ConversationScoped;
@@ -20,6 +22,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -29,6 +33,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.PaymentType;
@@ -37,18 +42,20 @@ import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity;
+import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Member_;
+import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Squad;
 
 /**
- * Backing bean for Booking entities.
- * This class provides CRUD functionality for all Booking entities. It
- * focuses purely on Java EE 6 standards (e.g. <tt>&#64;ConversationScoped</tt>
- * for state management, <tt>PersistenceContext</tt> for persistence,
- * <tt>CriteriaBuilder</tt> for searches) rather than introducing a CRUD
- * framework or custom base class.
+ * Backing bean for Booking entities. This class provides CRUD functionality for
+ * all Booking entities. It focuses purely on Java EE 6 standards (e.g.
+ * <tt>&#64;ConversationScoped</tt> for state management,
+ * <tt>PersistenceContext</tt> for persistence, <tt>CriteriaBuilder</tt> for
+ * searches) rather than introducing a CRUD framework or custom base class.
  */
 
 @Named
@@ -61,36 +68,20 @@ public class BookingBean extends BaseBean implements Serializable {
 	/*
 	 * Support creating and retrieving Booking entities
 	 */
-	
+
 	@Inject
 	private ActivityRepository activityRepo;
 	@Inject
 	private BookingActionBean bookingActionBean;
+	@Inject
+	private PaymentBean paymentBean;
 
-	private Long id;
-	private Booking booking;
 	private boolean showFinished;
 	private boolean squadBookingVisible;
 	private boolean allBookingVisible;
 	private boolean fromToVisible;
 	private Activity sourceActivity;
 	private Activity targetActivity;
-
-	public Long getId() {
-		return this.id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Booking getBooking() {
-		return this.booking;
-	}
-
-	public void setBooking(Booking Booking) {
-		this.booking = Booking;
-	}
 
 	public boolean isSquadBookingVisible() {
 		return squadBookingVisible;
@@ -111,11 +102,11 @@ public class BookingBean extends BaseBean implements Serializable {
 	public boolean isShowFinished() {
 		return showFinished;
 	}
-	
+
 	public void setShowFinished(boolean showFinished) {
 		this.showFinished = showFinished;
 	}
-	
+
 	public List<Activity> getActivities() {
 		if (showFinished) {
 			return activityRepo.findAll();
@@ -123,7 +114,7 @@ public class BookingBean extends BaseBean implements Serializable {
 			return activityRepo.findActive();
 		}
 	}
-	
+
 	public Activity getSourceActivity() {
 		return sourceActivity;
 	}
@@ -143,11 +134,11 @@ public class BookingBean extends BaseBean implements Serializable {
 	public boolean isFromToVisible() {
 		return fromToVisible;
 	}
-	
+
 	public void setFromToVisible(boolean fromToVisible) {
 		this.fromToVisible = fromToVisible;
 	}
-	
+
 	public String create() {
 
 		this.conversation.begin();
@@ -168,9 +159,11 @@ public class BookingBean extends BaseBean implements Serializable {
 		}
 
 		if (this.id == null) {
-			this.booking = this.example;
+			this.booking = this.bookingExample;
 		} else {
-			this.booking = findById(getId());
+			if (this.booking == null || !this.booking.getId().equals(id)) {
+				this.booking = findById(getId());
+			}
 		}
 	}
 
@@ -195,15 +188,17 @@ public class BookingBean extends BaseBean implements Serializable {
 			throw new SecurityException("only admins, gruppe may update entry");
 
 		try {
-			
-			if (booking.getId() == null && booking.getMember().getBookings().stream().anyMatch(b-> booking.getActivity().equals(b.getActivity()))) {
-				throw new Exception("Duplicate Booking: "+booking);
+
+			if (booking.getId() == null && booking.getMember() != null && 
+					entityManager.find(Member.class, booking.getMember().getId())
+					.getBookings().stream().anyMatch(b -> booking.getActivity().equals(b.getActivity()))) {
+				throw new Exception("Duplicate Booking: " + booking);
 			}
-			
+
 			if (booking.getMember().getTrupp() != null) {
 				booking.setSquad(booking.getMember().getTrupp());
 			}
-			
+
 			if (this.id == null) {
 				this.entityManager.persist(this.booking);
 				return "search?faces-redirect=true";
@@ -212,6 +207,7 @@ public class BookingBean extends BaseBean implements Serializable {
 				return "view?faces-redirect=true&id=" + this.booking.getId();
 			}
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -225,15 +221,16 @@ public class BookingBean extends BaseBean implements Serializable {
 
 		try {
 			Booking deletableEntity = findById(getId());
-			
+
 			if (!deletableEntity.getPayments().isEmpty()) {
-				throw new Exception("Payments exists for Booking: "+deletableEntity.getPayments());
+				throw new Exception("Payments exists for Booking: " + deletableEntity.getPayments());
 			}
 
 			this.entityManager.remove(deletableEntity);
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
+			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
@@ -245,14 +242,12 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	private List<Booking> pageItems;
 
-	private Booking example = new Booking();
-
 	public Booking getExample() {
-		return this.example;
+		return this.bookingExample;
 	}
 
 	public void setExample(Booking example) {
-		this.example = example;
+		this.bookingExample = example;
 	}
 
 	public String search() {
@@ -286,22 +281,23 @@ public class BookingBean extends BaseBean implements Serializable {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
-		if (example.getActivity() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.activity), example.getActivity()));
+		if (bookingExample.getActivity() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.activity), bookingExample.getActivity()));
 		}
-		
-		if (example.getMember() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.member), example.getMember()));
+
+		Member m = bookingExample.getMember();
+		if (m != null && m.getId() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.member), m));
 		}
-		
-		if (example.getSquad() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.squad), example.getSquad()));
+
+		if (bookingExample.getSquad() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.squad), bookingExample.getSquad()));
 		}
-		
-		if (example.getStatus() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.status), example.getStatus()));
+
+		if (bookingExample.getStatus() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.status), bookingExample.getStatus()));
 		}
-		String name = this.example.getComment();
+		String name = this.bookingExample.getComment();
 		if (StringUtils.isNoneBlank(name)) {
 			predicatesList.add(builder.like(builder.lower(root.get(Booking_.comment)), '%' + name.toLowerCase() + '%'));
 		}
@@ -313,17 +309,14 @@ public class BookingBean extends BaseBean implements Serializable {
 		return this.pageItems;
 	}
 
-	
-
 	/*
-	 * Support listing and POSTing back Booking entities (e.g. from inside
-	 * an HtmlSelectOneMenu)
+	 * Support listing and POSTing back Booking entities (e.g. from inside an
+	 * HtmlSelectOneMenu)
 	 */
 
 	public List<Booking> getAll() {
 
-		CriteriaQuery<Booking> criteria = this.entityManager.getCriteriaBuilder()
-				.createQuery(Booking.class);
+		CriteriaQuery<Booking> criteria = this.entityManager.getCriteriaBuilder().createQuery(Booking.class);
 		return this.entityManager.createQuery(criteria.select(criteria.from(Booking.class))).getResultList();
 	}
 
@@ -341,12 +334,7 @@ public class BookingBean extends BaseBean implements Serializable {
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
-
-				if (value == null) {
-					return "";
-				}
-
-				return String.valueOf(((Booking) value).getId());
+				return ""+(value != null ? value : "");
 			}
 		};
 	}
@@ -373,8 +361,8 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	private Activity activity;
 	private List<Squad> squads = new ArrayList<>();
-	private boolean withAssistants; 
-	
+	private boolean withAssistants;
+
 	public List<Squad> getSquads() {
 		return squads;
 	}
@@ -390,7 +378,7 @@ public class BookingBean extends BaseBean implements Serializable {
 	public void setActivity(Activity activity) {
 		this.activity = activity;
 	}
-	
+
 	public boolean isWithAssistants() {
 		return withAssistants;
 	}
@@ -413,5 +401,38 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	public String createBookingsFromSource() {
 		return bookingActionBean.createBookingsFromSource(sourceActivity, targetActivity);
+	}
+
+	public void retrieveAndGetPayment() {
+		retrieve();
+		if (!booking.getPayments().isEmpty()) {
+			paymentBean.setId(booking.getPayments().iterator().next().getId());
+		}
+		paymentBean.retrieve();
+		Payment pay = paymentBean.getPayment();
+		pay.getBookings().add(booking);
+
+		if (pay.getType() == null) {
+			switch (booking.getActivity().getType()) {
+			case Membership:
+				pay.setType(PaymentType.Membership);
+				break;
+			case Camp:
+				pay.setType(PaymentType.Camp);
+				break;
+			default:
+			}
+		}
+	}
+
+	public void handle(AjaxBehaviorEvent event) {
+		log.debug("handle: " + event);
+		if (event != null && event.getSource() instanceof UISelect) {
+			String val = (String) ((UISelect) event.getSource()).getSubmittedValue();
+			if (StringUtils.isNotBlank(val)) {
+				setId(Long.valueOf(val));
+				retrieve();
+			}
+		}
 	}
 }

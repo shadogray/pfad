@@ -17,6 +17,7 @@
 		<display-name>pfad</display-name>
 		<web-resource-collection>
 			<web-resource-name>pfad</web-resource-name>
+			<url-pattern>/pfad/*</url-pattern>
 			<url-pattern>/faces/pfad/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
