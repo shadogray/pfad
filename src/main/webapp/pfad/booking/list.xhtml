@@ -303,9 +303,9 @@
 									<a4j:commandLink value="KAPUTT!!SaveAndClose" actionListener='#{paymentBean.update}' accesskey="r"
 										title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{true || !paymentBean.updateAllowed}"
 										execute="@form" oncomplete="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;" />
-									<a4j:commandLink value="Save" actionListener='#{paymentBean.update}' accesskey="s" title="Speichern [ALT]+[S]"
+									<a4j:commandLink value="Speichern" actionListener='#{paymentBean.update}' accesskey="s" title="Speichern [ALT]+[S]"
 										styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" execute="@form" render="@form" />
-									<h:link value="Cancel" outcome="search" accesskey="c" title="Cancel [ALT]+[C]"
+									<h:link value="Schließen" outcome="search" accesskey="c" title="Cancel [ALT]+[C]"
 										onclick="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;" styleClass="btn btn-primary" />
 								</h:panelGrid>
 							</h:panelGroup>
