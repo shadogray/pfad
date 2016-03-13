@@ -348,10 +348,15 @@ public class BookingBean extends BaseBean implements Serializable {
 		retrieve();
 		if (!booking.getPayments().isEmpty()) {
 			paymentBean.setId(booking.getPayments().iterator().next().getId());
+		} else {
+			paymentBean.setExample(new Payment());
+			paymentBean.setId(null);
 		}
 		paymentBean.retrieve();
 		Payment pay = paymentBean.getPayment();
-		pay.getBookings().add(booking);
+		if (pay.getId() == null) {
+			pay.getBookings().add(booking);
+		}
 	}
 
 	public void handle(AjaxBehaviorEvent event) {
