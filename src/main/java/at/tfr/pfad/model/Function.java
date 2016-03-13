@@ -45,6 +45,10 @@ public class Function implements PrimaryKeyHolder, Serializable {
 		return this.id;
 	}
 
+	public String getIdStr() {
+		return id != null ? id.toString() : "";
+	}
+
 	public void setId(final Long id) {
 		this.id = id;
 	}

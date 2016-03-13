@@ -23,7 +23,9 @@
 	<ui:define name="main">
 
 		<h:form id="search">
-			<rich:focus preserve="true" ajaxRendered="true" />
+			
+			<rich:focus preserve="true" ajaxRendered="false" />
+			
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
@@ -77,7 +79,11 @@
 						<h:outputText />
 						<h:outputLabel for="memberBeanExampleAktiv" value="Aktiv:" />
 						<h:panelGroup>
-							<h:selectBooleanCheckbox id="memberBeanExampleAktiv" value="#{memberBean.example.aktiv}" />
+							<h:selectOneMenu id="memberBeanExampleAktiv" value="#{memberBean.exampleActive}" >
+								<f:selectItem />
+								<f:selectItem itemLabel="Ja" itemValue="true"/>
+								<f:selectItem itemLabel="Nein" itemValue="false"/>
+							</h:selectOneMenu>
 							<h:message for="memberBeanExampleAktiv" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />

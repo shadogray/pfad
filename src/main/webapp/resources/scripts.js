@@ -20,7 +20,16 @@ function test(elem, event, params) {
 }
 
 function submitSearch(event) {
+	//console.log("added search: " + event);
 	if (event.which == '13') {
 		document.search.submit();
 	}
 }
+
+$(function() {
+	//console.log("ready..");
+	$('#search').on('keypress', function(event) {
+		submitSearch(event);
+	});
+	//console.log("done..");
+});

@@ -97,6 +97,10 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 		return this.id;
 	}
 
+	public String getIdStr() {
+		return id != null ? id.toString() : "";
+	}
+
 	public void setId(final Long id) {
 		this.id = id;
 	}

@@ -13,17 +13,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 import org.hibernate.envers.Audited;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.dao.AuditListener;
@@ -77,6 +74,10 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 
 	public Long getId() {
 		return this.id;
+	}
+
+	public String getIdStr() {
+		return id != null ? id.toString() : "";
 	}
 
 	public void setId(final Long id) {
@@ -204,6 +205,21 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 		this.createdBy = createdBy;
 	}
 
+	public Payment updateType(Activity activity) {
+		if (type == null && activity != null && activity.getType() != null) {
+			switch (activity.getType()) {
+			case Membership:
+				type = PaymentType.Membership;
+				break;
+			case Camp:
+				type = PaymentType.Camp;
+				break;
+			default:
+			}
+		}
+		return this;
+	}
+	
 	@Override
 	public String toString() {
 		String result = getClass().getSimpleName() + " ";

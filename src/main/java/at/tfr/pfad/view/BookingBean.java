@@ -10,20 +10,15 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.ValueChangeEvent;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -33,20 +28,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.deltaspike.core.api.scope.WindowScoped;
 import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.dao.ActivityRepository;
-import at.tfr.pfad.dao.BookingRepository;
-import at.tfr.pfad.dao.MemberRepository;
-import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity;
-import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member;
-import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Squad;
 
@@ -60,7 +51,7 @@ import at.tfr.pfad.model.Squad;
 
 @Named
 @Stateful
-@ConversationScoped
+@ViewScoped
 public class BookingBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -72,16 +63,11 @@ public class BookingBean extends BaseBean implements Serializable {
 	@Inject
 	private ActivityRepository activityRepo;
 	@Inject
-	private BookingActionBean bookingActionBean;
-	@Inject
 	private PaymentBean paymentBean;
 
 	private boolean showFinished;
 	private boolean squadBookingVisible;
 	private boolean allBookingVisible;
-	private boolean fromToVisible;
-	private Activity sourceActivity;
-	private Activity targetActivity;
 
 	public boolean isSquadBookingVisible() {
 		return squadBookingVisible;
@@ -115,34 +101,7 @@ public class BookingBean extends BaseBean implements Serializable {
 		}
 	}
 
-	public Activity getSourceActivity() {
-		return sourceActivity;
-	}
-
-	public void setSourceActivity(Activity sourceActivity) {
-		this.sourceActivity = sourceActivity;
-	}
-
-	public Activity getTargetActivity() {
-		return targetActivity;
-	}
-
-	public void setTargetActivity(Activity targetActivity) {
-		this.targetActivity = targetActivity;
-	}
-
-	public boolean isFromToVisible() {
-		return fromToVisible;
-	}
-
-	public void setFromToVisible(boolean fromToVisible) {
-		this.fromToVisible = fromToVisible;
-	}
-
 	public String create() {
-
-		this.conversation.begin();
-		this.conversation.setTimeout(1800000L);
 		return "create?faces-redirect=true";
 	}
 
@@ -153,17 +112,14 @@ public class BookingBean extends BaseBean implements Serializable {
 			return;
 		}
 
-		if (this.conversation.isTransient()) {
-			this.conversation.begin();
-			this.conversation.setTimeout(1800000L);
-		}
-
-		if (this.id == null) {
-			this.booking = this.bookingExample;
+		if (id == null) {
+			booking = bookingExample;
 		} else {
-			if (this.booking == null || !this.booking.getId().equals(id)) {
-				this.booking = findById(getId());
+			if (booking == null || !booking.getId().equals(id)) {
+				booking = findById(getId());
+				booking.getPayments().size();
 			}
+			filteredMembers.add(booking.getMember());
 		}
 	}
 
@@ -182,7 +138,6 @@ public class BookingBean extends BaseBean implements Serializable {
 	}
 
 	public String update() {
-		this.conversation.end();
 
 		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe may update entry");
@@ -214,7 +169,6 @@ public class BookingBean extends BaseBean implements Serializable {
 	}
 
 	public String delete() {
-		this.conversation.end();
 
 		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");
@@ -285,9 +239,8 @@ public class BookingBean extends BaseBean implements Serializable {
 			predicatesList.add(builder.equal(root.get(Booking_.activity), bookingExample.getActivity()));
 		}
 
-		Member m = bookingExample.getMember();
-		if (m != null && m.getId() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.member), m));
+		if (exampleMember != null && exampleMember.getId() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.member), exampleMember));
 		}
 
 		if (bookingExample.getSquad() != null) {
@@ -391,18 +344,6 @@ public class BookingBean extends BaseBean implements Serializable {
 		return isAdmin() || isGruppe();
 	}
 
-	public String createBookings() {
-		return bookingActionBean.createBookings(squads, activity, withAssistants);
-	}
-
-	public String createBookingsForAllActive() {
-		return bookingActionBean.createBookingsForAllActive(activity);
-	}
-
-	public String createBookingsFromSource() {
-		return bookingActionBean.createBookingsFromSource(sourceActivity, targetActivity);
-	}
-
 	public void retrieveAndGetPayment() {
 		retrieve();
 		if (!booking.getPayments().isEmpty()) {
@@ -411,18 +352,6 @@ public class BookingBean extends BaseBean implements Serializable {
 		paymentBean.retrieve();
 		Payment pay = paymentBean.getPayment();
 		pay.getBookings().add(booking);
-
-		if (pay.getType() == null) {
-			switch (booking.getActivity().getType()) {
-			case Membership:
-				pay.setType(PaymentType.Membership);
-				break;
-			case Camp:
-				pay.setType(PaymentType.Camp);
-				break;
-			default:
-			}
-		}
 	}
 
 	public void handle(AjaxBehaviorEvent event) {

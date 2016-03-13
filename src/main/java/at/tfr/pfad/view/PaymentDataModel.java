@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.ejb.Stateless;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 

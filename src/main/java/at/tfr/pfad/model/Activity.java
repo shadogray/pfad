@@ -84,6 +84,10 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 		return this.id;
 	}
 
+	public String getIdStr() {
+		return id != null ? id.toString() : "";
+	}
+
 	public void setId(final Long id) {
 		this.id = id;
 	}
@@ -219,7 +223,7 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 
 	@Override
 	public String toString() {
-		String result = (StringUtils.isNotBlank(name) ? type + ":" + name : getClass().getSimpleName());
+		String result = (StringUtils.isNotBlank(name) ? name : getClass().getSimpleName() + ":" + type);
 		if (start != null) {
 			result += ", " + new DateTime(start).toString(format);
 		}

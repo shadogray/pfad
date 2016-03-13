@@ -10,30 +10,29 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.deltaspike.core.api.scope.WindowScoped;
 import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.ScoutRole;
@@ -56,7 +55,7 @@ import at.tfr.pfad.model.Squad;
 
 @Named
 @Stateful
-@ConversationScoped
+@ViewScoped
 public class MemberBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -65,6 +64,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	private SquadRepository squadRepo;
 	@Inject
 	private MemberRepository memberRepo;
+	private Boolean exampleActive;
 
 	/*
 	 * support creating and retrieving Member entities
@@ -79,9 +79,6 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public String create() {
-
-		this.conversation.begin();
-		this.conversation.setTimeout(1800000L);
 		return "create?faces-redirect=true";
 	}
 
@@ -91,20 +88,18 @@ public class MemberBean extends BaseBean implements Serializable {
 			return;
 		}
 
-		if (this.conversation.isTransient()) {
-			this.conversation.begin();
-			this.conversation.setTimeout(1800000L);
-		}
-
 		if (this.id == null) {
-			this.member = this.memberExample;
+			this.member = memberExample;
 		} else {
 			if (this.member == null || !this.member.getId().equals(id)) {
 				this.member = findById(getId());
 				if (this.member.getTrupp() != null) this.member.getTrupp().getId();
 				this.member.getSiblings().size();
 				this.member.getFunktionen().size();
-				if (this.member.getVollzahler() != null) this.member.getVollzahler().getId();
+				if (this.member.getVollzahler() != null) {
+					this.member.getVollzahler().getId();
+					filteredMembers.add(member.getVollzahler());
+				}
 			}
 		}
 	}
@@ -120,7 +115,6 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	@Transactional
 	public String update() {
-		this.conversation.end();
 
 		if (!isUpdateAllowed())
 			throw new SecurityException("only admin,gruppe,leiter may update entry");
@@ -157,7 +151,6 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	@Transactional
 	public String delete() {
-		this.conversation.end();
 
 		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");
@@ -192,11 +185,11 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public Member getExample() {
-		return this.memberExample;
+		return memberExample;
 	}
 
 	public void setExample(Member example) {
-		this.memberExample = example;
+		memberExample = example;
 	}
 
 	public String search() {
@@ -219,9 +212,9 @@ public class MemberBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Member> criteria = builder.createQuery(Member.class);
 		root = criteria.from(Member.class);
-		root.fetch(Member_.trupp);
+		root.fetch(Member_.trupp, JoinType.LEFT);
 		TypedQuery<Member> query = this.entityManager.createQuery(
-				criteria.select(root).where(getSearchPredicates(root)).orderBy(builder.asc(root.get(Member_.name)),
+				criteria.select(root).where(getSearchPredicates(root)).distinct(true).orderBy(builder.asc(root.get(Member_.name)),
 						builder.asc(root.get(Member_.vorname)), builder.asc(root.get(Member_.id))));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
@@ -232,47 +225,47 @@ public class MemberBean extends BaseBean implements Serializable {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
-		String BVKey = this.memberExample.getBVKey();
+		String BVKey = memberExample.getBVKey();
 		if (BVKey != null && !"".equals(BVKey)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.bvKey)), '%' + BVKey.toLowerCase() + '%'));
 		}
-		long PersonenKey = this.memberExample.getPersonenKey();
+		long PersonenKey = memberExample.getPersonenKey();
 		if (PersonenKey != 0) {
 			predicatesList.add(builder.equal(root.get(Member_.personenKey), PersonenKey));
 		}
-		String Titel = this.memberExample.getTitel();
+		String Titel = memberExample.getTitel();
 		if (Titel != null && !"".equals(Titel)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.titel)), '%' + Titel.toLowerCase() + '%'));
 		}
-		String Name = this.memberExample.getName();
+		String Name = memberExample.getName();
 		if (Name != null && !"".equals(Name)) {
 			predicatesList.add(builder.like(builder.lower(root.get(Member_.name)), '%' + Name.toLowerCase() + '%'));
 		}
 
-		String Vorname = this.memberExample.getVorname();
+		String Vorname = memberExample.getVorname();
 		if (Vorname != null && !"".equals(Vorname)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.vorname)), '%' + Vorname.toLowerCase() + '%'));
 		}
-		String Telefon = this.memberExample.getTelefon();
+		String Telefon = memberExample.getTelefon();
 		if (Telefon != null && !"".equals(Telefon)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.telefon)), '%' + Telefon.toLowerCase() + '%'));
 		}
-		if (this.memberExample.isAktiv()) {
-			predicatesList.add(builder.equal(root.get(Member_.aktiv), this.memberExample.isAktiv()));
+		if (exampleActive != null) {
+			predicatesList.add(builder.equal(root.get(Member_.aktiv), exampleActive));
 		}
 
-		Squad trupp = this.memberExample.getTrupp();
+		Squad trupp = memberExample.getTrupp();
 		if (trupp != null) {
 			predicatesList.add(builder.equal(root.get(Member_.trupp), trupp));
 		}
 
-		if (this.memberExample.getFunktionen() != null && !this.memberExample.getFunktionen().isEmpty()
-				&& this.memberExample.getFunktionen().iterator().next() != null) {
-			predicatesList.add(root.join(Member_.funktionen).in(this.memberExample.getFunktionen()));
+		if (memberExample.getFunktionen() != null && !memberExample.getFunktionen().isEmpty()
+				&& memberExample.getFunktionen().iterator().next() != null) {
+			predicatesList.add(root.join(Member_.funktionen).in(memberExample.getFunktionen()));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -286,6 +279,14 @@ public class MemberBean extends BaseBean implements Serializable {
 		return this.count;
 	}
 
+	public Boolean getExampleActive() {
+		return exampleActive;
+	}
+	
+	public void setExampleActive(Boolean exampleActive) {
+		this.exampleActive = exampleActive;
+	}
+	
 	/*
 	 * support listing and POSTing back Member entities (e.g. from inside an
 	 * HtmlSelectOneMenu)

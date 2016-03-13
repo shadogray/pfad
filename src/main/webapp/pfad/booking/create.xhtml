@@ -32,6 +32,9 @@
 
 	<ui:define name="main">
 		<h:form id="create">
+
+			<rich:focus ajaxRendered="false" />
+
 			<h:messages globalOnly="true" styleClass="error" />
 
 			<h:panelGrid columnClasses="label,component,required" columns="3">
@@ -44,24 +47,23 @@
 
 				<h:outputLabel for="bookingBeanBookingActivity" value="Aktivität:" />
 				<h:panelGroup>
-					<rich:select converter="#{activityBean.converter}" id="bookingBeanBookingActivity" enableManualInput="true"
-						styleClass="fullwidth" value="#{bookingBean.booking.activity}" p:placeholder="Aktivität.."
-						clientFilterFunction="autoFilter" title="Aktivität.." required="true" listWidth="35em">
+					<h:selectOneMenu id="bookingBeanBookingActivity" tabindex="0" styleClass="fullwidth"
+						value="#{bookingBean.booking.activity}" converter="#{activityBean.converter}" 
+						p:placeholder="Aktivität.." title="Aktivität.." required="true" immediate="true">
 						<f:selectItem />
-						<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{bookingBean.activities}"
-							var="_item" />
-					</rich:select>
+						<f:selectItems value="#{bookingBean.activities}" var="a" itemLabel="#{a}" itemValue="#{a.idStr}" />
+					</h:selectOneMenu>
 					<h:message for="bookingBeanBookingActivity" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="bookingBeanBookingMember" value="Teilnehmer:" />
 				<h:panelGroup>
-					<rich:select id="bookingBeanBookingMember" tabindex="0" styleClass="fullwidth manual" p:placeholder="Teilnehmer.." 
+					<rich:select id="bookingBeanBookingMember" tabindex="0" styleClass="fullwidth manual" p:placeholder="Teilnehmer.."
 						value="#{bookingBean.booking.member.id}" enableManualInput="false" selectFirst="false" mode="ajax" minChars="3"
-						autocompleteMethod="#{members.filtered}" var="b" itemValue="#{b.id}" itemLabel="#{b}" minListHeight="1"
-						maxListHeight="100" listWidth="35em" showButton="false">
-						<f:selectItem itemLabel="#{bookingBean.booking.member}" itemValue="#{bookingBean.booking.member.id}" />
+						autocompleteMethod="#{bookingBean.filterMembers}" var="m" itemValue="#{m.idStr}" itemLabel="#{m}"
+						minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+						<f:selectItems value="#{bookingBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}" />
 						<a4j:ajax event="selectitem" immediate="true" execute="@form" listener="#{bookingBean.selectBookingMember}"
 							render="@form" />
 					</rich:select>
@@ -85,6 +87,19 @@
 				</h:panelGroup>
 				<h:outputText />
 
+				<h:outputLabel for="bookingBeanBookingRevision" value="Änderung:"/>
+				<h:panelGrid id="bookingBeanBookingRevision" columns="8" >
+					<h:outputLabel value="Erstellt:" />
+					<h:outputText value="#{bookingBean.booking.created}" converter="javax.faces.DateTime" />
+					<h:outputLabel value="Von:" />
+					<h:outputText value="#{bookingBean.booking.createdBy}" />
+					<h:outputLabel value="Geändert:" />
+					<h:outputText value="#{bookingBean.booking.changed}" converter="javax.faces.DateTime" />
+					<h:outputLabel value="Von:" />
+					<h:outputText value="#{bookingBean.booking.changedBy}" />
+				</h:panelGrid>
+				<h:outputText />
+	
 			</h:panelGrid>
 
 			<div class="buttons">

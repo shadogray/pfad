@@ -25,7 +25,7 @@
 				<h:outputText />
 	
 				<h:outputLabel for="paymentBeanPaymentPayer" value="Zahler:" />
-				<h:panelGroup>
+				<h:panelGroup id="paymentBeanPaymentPayer">
 					<h:link id="paymentBeanPayer" value="#{paymentBean.payment.payer}" outcome="/member/view"
 						rendered="#{paymentBean.payment.payer != null}">
 						<f:param name="id" value="#{paymentBean.payment.payer.id}" />
@@ -92,7 +92,7 @@
 				</h:panelGroup>
 				<h:outputText />
 	
-				<h:outputLabel for="paymentBeanPaymentComment" value="Comment:" />
+				<h:outputLabel for="paymentBeanPaymentComment" value="Bemerkung:" />
 				<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3" styleClass="fullwidth" readonly="true"/>
 				<h:outputText />
 	
@@ -100,6 +100,19 @@
 				<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" disabled="true"/>
 				<h:outputText />
 					
+				<h:outputLabel for="paymentBeanPaymentRevision" value="Änderung:"/>
+				<h:panelGrid id="paymentBeanPayment" columns="8" >
+					<h:outputLabel value="Erstellt:" />
+					<h:outputText value="#{paymentBean.payment.created}" converter="javax.faces.DateTime" />
+					<h:outputLabel value="Von:" />
+					<h:outputText value="#{paymentBean.payment.createdBy}" />
+					<h:outputLabel value="Geändert:" />
+					<h:outputText value="#{paymentBean.payment.changed}" converter="javax.faces.DateTime" />
+					<h:outputLabel value="Von:" />
+					<h:outputText value="#{paymentBean.payment.changedBy}" />
+				</h:panelGrid>
+				<h:outputText />
+
 			</h:panelGrid>
 	
 			<div class="buttons">

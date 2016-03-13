@@ -36,13 +36,10 @@ import javax.persistence.Version;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.envers.RelationTargetAuditMode;
 
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.AuditListener;
-import at.tfr.pfad.model.Booking;
-import javax.persistence.CascadeType;
 
 @NamedQueries({
 		@NamedQuery(name = "distName", query = "select distinct m.name from Member m order by m.name"),
@@ -207,6 +204,10 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public Long getId() {
 		return this.id;
+	}
+	
+	public String getIdStr() {
+		return id != null ? id.toString() : "";
 	}
 
 	public void setId(final Long id) {

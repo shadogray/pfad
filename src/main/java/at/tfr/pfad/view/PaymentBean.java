@@ -14,12 +14,12 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,12 +28,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.deltaspike.core.api.scope.WindowScoped;
 import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
-import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
 
@@ -47,7 +47,7 @@ import at.tfr.pfad.model.Payment_;
 
 @Named
 @Stateful
-@ConversationScoped
+@ViewScoped
 public class PaymentBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -60,9 +60,6 @@ public class PaymentBean extends BaseBean implements Serializable {
 	private Float amountTo;
 
 	public String create() {
-
-		this.conversation.begin();
-		this.conversation.setTimeout(1800000L);
 		return "create?faces-redirect=true";
 	}
 
@@ -73,17 +70,12 @@ public class PaymentBean extends BaseBean implements Serializable {
 			return;
 		}
 
-		if (conversation.isTransient()) {
-			conversation.begin();
-			conversation.setTimeout(1800000L);
-		}
-
 		if (this.id == null) {
 			this.payment = this.paymentExample;
 		} else {
 			if (payment == null || !this.payment.getId().equals(id)) {
 				payment = findById(getId());
-				payment.getBookings().size();
+				payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b.getActivity()));
 				paymentPayer = payment.getPayer();
 				if (payment.getPayer() != null) {
 					filteredPayers.add(payment.getPayer());
@@ -126,8 +118,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	}
 
 	public String update(Command command) {
-		this.conversation.end();
-
+		
 		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe may update entry");
 		
@@ -140,20 +131,19 @@ public class PaymentBean extends BaseBean implements Serializable {
 				}
 				this.entityManager.persist(this.payment);
 				this.entityManager.flush();
-				switch (command) {
-				case createAndNew:
-					return "create?faces-redirect=true";
-				case save:
-					return "create?faces-redirect=true&id=" + payment.getId();
-				default:
-					// just fall through
-				}
-				return "search?faces-redirect=true";
 			} else {
 				this.entityManager.merge(this.payment);
 				this.entityManager.flush();
-				return "view?faces-redirect=true&id=" + this.payment.getId();
 			}
+			switch (command) {
+			case createAndNew:
+				return "create?faces-redirect=true";
+			case save:
+				return "view?faces-redirect=true&id=" + payment.getId();
+			case update:
+				return "search?faces-redirect=true";
+			}
+			return "search?faces-redirect=true";
 		} catch (Exception e) {
 			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
@@ -171,7 +161,6 @@ public class PaymentBean extends BaseBean implements Serializable {
 	}
 	
 	public String delete() {
-		this.conversation.end();
 
 		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");
@@ -270,9 +259,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
-		Member payer = this.paymentExample.getPayer();
-		if (payer != null && payer.getId() != null) {
-			predicatesList.add(builder.equal(root.get(Payment_.payer), payer));
+		if (examplePayer != null && examplePayer.getId() != null) {
+			predicatesList.add(builder.equal(root.get(Payment_.payer), examplePayer));
 		}
 
 		if (amountFrom != null) {
@@ -293,9 +281,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 			predicatesList.add(builder.equal(root.get(Payment_.type), type));
 		}
 
-		Booking booking = this.exampleBooking;
-		if (booking != null && booking.getId() != null) {
-			predicatesList.add(builder.isMember(booking, root.get(Payment_.bookings)));
+		if (exampleBooking != null && exampleBooking.getId() != null) {
+			predicatesList.add(builder.isMember(exampleBooking, root.get(Payment_.bookings)));
 		}
 
 		if (exampleActivity != null && exampleActivity.getId() != null) {

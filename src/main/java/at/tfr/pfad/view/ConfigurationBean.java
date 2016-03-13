@@ -10,16 +10,14 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.validator.BeanValidator;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -28,9 +26,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
+import org.apache.deltaspike.core.api.scope.WindowScoped;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.dao.ConfigurationRepository;
@@ -48,7 +44,7 @@ import at.tfr.pfad.model.Configuration_;
 
 @Named
 @Stateful
-@ConversationScoped
+@ViewScoped
 public class ConfigurationBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -81,9 +77,6 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 	}
 
 	public String create() {
-
-		this.conversation.begin();
-		this.conversation.setTimeout(1800000L);
 		return "create?faces-redirect=true";
 	}
 
@@ -91,11 +84,6 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 		if (FacesContext.getCurrentInstance().isPostback()) {
 			return;
-		}
-
-		if (this.conversation.isTransient()) {
-			this.conversation.begin();
-			this.conversation.setTimeout(1800000L);
 		}
 
 		if (this.id == null) {
@@ -127,8 +115,6 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 			}
 			validator.validate(configuration);
 
-			this.conversation.end();
-
 			if (this.id == null) {
 				this.entityManager.persist(this.configuration);
 				this.entityManager.flush();
@@ -146,7 +132,6 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 	}
 
 	public String delete() {
-		this.conversation.end();
 
 		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");

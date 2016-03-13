@@ -12,24 +12,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
-import javax.enterprise.event.Observes;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.PhaseEvent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.deltaspike.jsf.api.listener.phase.BeforePhase;
-import org.apache.deltaspike.jsf.api.listener.phase.JsfPhaseId;
 import org.jboss.logging.Logger;
 import org.richfaces.component.UISelect;
+import org.richfaces.resource.PostConstructResource;
 
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
@@ -41,9 +37,6 @@ public abstract class BaseBean implements Serializable {
 	protected Logger log = Logger.getLogger(getClass());
 	
 	@Inject
-	protected transient Conversation conversation;
-	@Inject
-	@ConversationScoped
 	protected transient EntityManager entityManager;
 	@Resource
 	protected SessionContext sessionContext;
@@ -65,6 +58,11 @@ public abstract class BaseBean implements Serializable {
 
 	public BaseBean() {
 		super();
+	}
+	
+	@PostConstruct
+	public void init() {
+		log.debug("creating: "+sessionContext+" : "+Thread.currentThread()+" : "+this);
 	}
 
 	public boolean isAdmin() {
@@ -97,10 +95,6 @@ public abstract class BaseBean implements Serializable {
 	
 	public boolean isRegistrationEnd() {
 		return sessionBean.getRegistrationEndDate() != null && sessionBean.getRegistrationEndDate().before(new Date());
-	}
-	
-	public Conversation getConversation() {
-		return conversation;
 	}
 	
 	public int getPageSize() {
@@ -272,24 +266,30 @@ public abstract class BaseBean implements Serializable {
 		return filteredPayments;
 	}
 
-	public void selectPaymentBooking(AjaxBehaviorEvent event) {
+	public void addPaymentBooking(AjaxBehaviorEvent event) {
 		log.debug("addPaymentBooking: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
+		UISelect uiSelect = (UISelect) event.getSource();
+		String val = (String)uiSelect.getSubmittedValue();
 		if (StringUtils.isBlank(val)) {
 			bookingToAdd = null;
 		} else {
 			bookingToAdd = findBookingById(Long.valueOf(val));
+			payment.getBookings().add(bookingToAdd);
+			payment.updateType(bookingToAdd.getActivity());
+			uiSelect.setSubmittedValue("");
+			uiSelect.setValue(null);
+			uiSelect.setLocalValueSet(false);
 		}
-		payment.getBookings().add(bookingToAdd);
 	}
 
 	public void selectExampleBooking(AjaxBehaviorEvent event) {
 		log.debug("selectExampleBooking: " + event);
 		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
 		if (StringUtils.isBlank(val)) {
-			exampleBooking = new Booking();
+			exampleBooking = null;
 		} else {
 			exampleBooking = findBookingById(Long.valueOf(val));
+			filteredBookings.add(exampleBooking);
 		}
 	}
 
@@ -304,13 +304,25 @@ public abstract class BaseBean implements Serializable {
 		}
 	}
 
-	public void selectPaymentExamplePayer(AjaxBehaviorEvent event) {
-		log.debug("selectPaymentExamplePayer: " + event);
+	public void selectExamplePayer(AjaxBehaviorEvent event) {
+		log.debug("selectExamplePayer: " + event);
 		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
 		if (StringUtils.isBlank(val)) {
-			paymentExample.setPayer(null);
+			examplePayer = null;
 		} else {
-			paymentExample.setPayer(findMemberById(Long.valueOf(val)));
+			examplePayer = findMemberById(Long.valueOf(val));
+			filteredPayers.add(examplePayer);
+		}
+	}
+
+	public void selectExampleMember(AjaxBehaviorEvent event) {
+		log.debug("selectExampleMember: " + event);
+		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
+		if (StringUtils.isBlank(val)) {
+			exampleMember = null;
+		} else {
+			exampleMember = findMemberById(Long.valueOf(val));
+			filteredMembers.add(exampleMember);
 		}
 	}
 
@@ -324,26 +336,6 @@ public abstract class BaseBean implements Serializable {
 		}
 	}
 
-	public void selectBookingExampleMember(AjaxBehaviorEvent event) {
-		log.debug("selectBookingExampleMember: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			bookingExample.setMember(null);
-		} else {
-			bookingExample.setMember(findMemberById(Long.valueOf(val)));
-		}
-	}
-
-	public void selectExampleMember(AjaxBehaviorEvent event) {
-		log.debug("selectExampleMember: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			memberExample = new Member();
-		} else {
-			memberExample = findMemberById(Long.valueOf(val));
-		}
-	}
-
 	public void selectMemberVollzahler(AjaxBehaviorEvent event) {
 		log.debug("selectMemberVollzahler: " + event);
 		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
@@ -354,15 +346,19 @@ public abstract class BaseBean implements Serializable {
 		}
 	}
 
-	public void selectMemberSibling(AjaxBehaviorEvent event) {
+	public void addMemberSibling(AjaxBehaviorEvent event) {
 		log.debug("selectMemberSibling: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
+		UISelect uiSelect = (UISelect) event.getSource();
+		String val = (String)uiSelect.getSubmittedValue();
 		if (StringUtils.isBlank(val)) {
 			memberToAdd = null;
 		} else {
 			memberToAdd = findMemberById(Long.valueOf(val));
+			member.getSiblings().add(memberToAdd);
+			uiSelect.setSubmittedValue("");
+			uiSelect.setValue(null);
+			uiSelect.setLocalValueSet(false);
 		}
-		member.getSiblings().add(memberToAdd);
 	}
 
 	public Booking findBookingById(Long id) {
@@ -374,9 +370,6 @@ public abstract class BaseBean implements Serializable {
 	}
 	
 	public Booking getBookingToAdd() {
-		if (bookingToAdd == null) {
-			bookingToAdd = new Booking();
-		}
 		return bookingToAdd;
 	}
 	public void setBookingToAdd(Booking bookingToAdd) {
@@ -403,15 +396,6 @@ public abstract class BaseBean implements Serializable {
 		this.paymentToAdd = paymentToAdd;
 	}
 	
-	public void prepareRender(@Observes @BeforePhase(JsfPhaseId.RENDER_RESPONSE) PhaseEvent event) {
-		if (payment != null && bookingToAdd != null && payment.getBookings().contains(bookingToAdd)) {
-			bookingToAdd = new Booking();
-		}
-		if (member != null && memberToAdd != null && member.getSiblings().contains(memberToAdd)) {
-			memberToAdd = new Member();
-		}
-	}
-
 	public String getNullString() {
 		return null;
 	}

@@ -36,12 +36,6 @@ public class BookingTableBean implements Serializable {
 	    private transient BookingDataModel bookingDataModel;
 
 	    public BookingTableBean() {
-	        sortOrders.put("id", SortOrder.unsorted);
-	        sortOrders.put("member", SortOrder.unsorted);
-	        sortOrders.put("activity", SortOrder.unsorted);
-	        sortOrders.put("squadName", SortOrder.unsorted);
-	        sortOrders.put("status", SortOrder.unsorted);
-	        sortOrders.put("comment", SortOrder.unsorted);
 	    }
 
 	    @PostConstruct
@@ -53,6 +47,14 @@ public class BookingTableBean implements Serializable {
 	        columnHeaders.put("status", "Status");
 	        columnHeaders.put("payed", "Bezahlt");
 	        columnHeaders.put("comment", "Bemerkung");
+
+	        sortOrders.put("id", SortOrder.unsorted);
+	        sortOrders.put("member", SortOrder.unsorted);
+	        sortOrders.put("activity", SortOrder.unsorted);
+	        sortOrders.put("squadName", SortOrder.unsorted);
+	        sortOrders.put("status", SortOrder.unsorted);
+	        sortOrders.put("comment", SortOrder.unsorted);
+	        sortOrders.put("payed", SortOrder.unsorted);
 	    }
 
 	    public Map<String, String> getColumnHeaders() {

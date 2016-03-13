@@ -24,7 +24,9 @@
 
 	<ui:define name="main">
 		<h:form id="search">
-			<rich:focus />
+		
+			<rich:focus preserve="true" ajaxRendered="false"/>
+
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
@@ -32,28 +34,31 @@
 
 						<h:outputLabel for="bookingBeanExampleActivity" value="Aktivität:" />
 						<h:panelGroup>
-							<rich:select converter="#{activityBean.converter}" id="bookingBeanExampleActivity" enableManualInput="true"
-								styleClass="fullwidth" value="#{bookingBean.example.activity}" p:placeholder="Aktivität.."
-								clientFilterFunction="autoFilter" title="Aktivität.." listWidth="35em">
+							<h:selectOneMenu id="bookingBeanExampleActivity" styleClass="fullwidth" 
+								value="#{bookingBean.example.activity}" converter="#{activityBean.converter}"
+								p:placeholder="Aktivität.." title="Aktivität.." >
 								<f:selectItem />
-								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{activityBean.all}"
-									var="_item" />
-							</rich:select>
+								<f:selectItems value="#{activityBean.all}" var="a"  itemLabel="#{a}" itemValue="#{a.idStr}" />
+							</h:selectOneMenu>
 							<h:message for="bookingBeanExampleActivity" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
-						<h:outputLabel for="bookingBeanExampleMember" value="Teilnehmer:" />
-						<h:panelGroup>
-							<rich:select id="bookingBeanExampleMember" tabindex="0" styleClass="fullwidth manual" p:placeholder="Teilnehmer.." 
-								value="#{bookingBean.example.member != null ? bookingBean.example.member.id : ''}" selectFirst="false" mode="ajax" minChars="3"
-								autocompleteMethod="#{bookingBean.filterMembers}" var="b" itemValue="#{b.id}" itemLabel="#{b}" minListHeight="1"
-								maxListHeight="100" listWidth="35em" showButton="false">
-								<f:selectItem />
-								<f:selectItems value="#{bookingBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.id}"/>
-								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{bookingBean.selectBookingExampleMember}"
-									render="@form" />
+						<h:outputLabel for="bookingBeanExampleMemberPanel" value="Teilnehmer:" />
+						<h:panelGroup id="bookingBeanExampleMemberPanel">
+							<h:selectOneMenu id="bookingBeanExampleMember" tabindex="0" value="#{bookingBean.exampleMember}" converter="#{memberBean.converter}" rendered="#{bookingBean.exampleMember != null}">
+								<f:selectItem itemLabel="löschen.." noSelectionOption="true"/>
+								<f:selectItem itemLabel="#{bookingBean.exampleMember}" itemValue="#{bookingBean.exampleMember.idStr}"/>
+								<f:ajax render="@form" />
+							</h:selectOneMenu>
+							<rich:select id="bookingBeanExampleMemberSelect" tabindex="0" styleClass="fullwidth manual" rendered="#{bookingBean.exampleMember == null}"
+								mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{bookingBean.filterPayers}" 
+								var="p" itemLabel="#{p}" itemValue="#{p.id}" converter="#{memberBean.converter}" 
+								minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+								<f:selectItems value="#{bookingBean.filteredPayers}" var="mem" itemLabel="#{mem}" itemValue="#{mem}"/>
+								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{bookingBean.selectExampleMember}" render="@form" />
 							</rich:select>
+							<h:message for="bookingBeanExampleMemberSelect" styleClass="error" />
 							<h:message for="bookingBeanExampleMember" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />

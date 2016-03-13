@@ -1,4 +1,4 @@
 package at.tfr.pfad;
 public enum PaymentType {
-	Membership, Camp, Donation
+	Membership, Camp, Donation, Advert
 }

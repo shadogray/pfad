@@ -123,8 +123,8 @@ public class BookingUI extends Booking {
 		return booking.toString();
 	}
 
-	public boolean isPayed() {
-		return payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getFinished()));
+	public String getPayed() {
+		return payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getFinished())) ? "JA" : "NEIN";
 	}
 	
 	public String getPayer() {

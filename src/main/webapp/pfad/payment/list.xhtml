@@ -90,13 +90,34 @@
 					<ui:param name="link" value="/pfad/payment/view" />
 					<ui:param name="width" value="15em" />
 				</ui:include>
-				<ui:include src="../column.xhtml">
-					<ui:param name="bean" value="#{paymentTableBean}" />
-					<ui:param name="record" value="#{record}" />
-					<ui:param name="property" value="finished" />
-					<ui:param name="link" value="/pfad/payment/view" />
-					<ui:param name="width" value="3em" />
-				</ui:include>
+
+	<rich:column id="column_payed" sortBy="#{'finished'}" sortOrder="#{paymentTableBean.sortOrders['finished']}" sortType="custom"
+		filterValue="#{paymentTableBean.filterValues['finished']}" filterExpression="#{'finished'}" filterType="custom" width="5em">
+
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:panelGroup layout="block" style="white-space:nowrap;">
+					<h:commandLink value="#{paymentTableBean.columnHeaders['finished']}" actionListener="#{paymentTableBean.toggleSort}">
+						<f:ajax render="@form" />
+						<f:setPropertyActionListener target="#{paymentTableBean.sortProperty}" value="finished" />
+					</h:commandLink>
+					<h:graphicImage name="down.gif" rendered="#{paymentTableBean.sortOrders[property]=='descending'}" alt="UP"/>
+					<h:graphicImage name="up.gif" rendered="#{paymentTableBean.sortOrders[property]=='ascending'}" alt="DWN"/>
+				</h:panelGroup>
+				<h:panelGroup layout="block">
+					<h:selectOneMenu value="#{paymentTableBean.filterValues['finished']}" tabindex="0">
+						<f:selectItem />
+						<f:selectItem itemLabel="Ja" itemValue="true"/>
+						<f:selectItem itemLabel="Nein" itemValue="false"/>
+						<f:ajax render="@form" event="valueChange" />
+					</h:selectOneMenu>
+				</h:panelGroup>
+			</h:panelGroup>
+		</f:facet>
+
+		<h:outputText value="#{record.finished ? 'JA' : 'NEIN'}"/>
+	</rich:column>
+
 				<ui:include src="../column.xhtml">
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
@@ -109,8 +130,8 @@
 			</rich:extendedDataTable>
 			<rich:dataScroller for="richTable" fastControls="show" />
 
-			<rich:popupPanel id="popupPanelEditPayment" domElementAttachment="form" resizeable="true" modal="true" height="400"
-				width="600">
+			<rich:popupPanel id="popupPanelEditPayment" domElementAttachment="form" resizeable="true" modal="true" height="600"
+				width="800">
 				<h:panelGroup rendered="#{paymentBean.payment != null}">
 					<h:messages />
 					<h:panelGrid id="popupPanelEditPaymentGrid" columnClasses="label,component,required" columns="3">
@@ -173,7 +194,7 @@
 						</h:panelGroup>
 						<h:outputText />
 
-						<h:outputLabel for="paymentBeanPaymentComment" value="Comment:" />
+						<h:outputLabel for="paymentBeanPaymentComment" value="Bemerkung:" />
 						<h:panelGroup>
 							<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"
 								styleClass="fullwidth" />
@@ -197,7 +218,6 @@
 						</h:commandLink>
 						<h:commandLink value="Save" actionListener='#{paymentBean.update}' styleClass="btn btn-primary"
 							disabled="#{!paymentBean.updateAllowed}">
-							<f:param name="cid" value="#{paymentBean.conversation.id}" />
 							<f:ajax execute="@form" render="@form" />
 						</h:commandLink>
 						<h:link value="Cancel" styleClass="btn btn-primary"

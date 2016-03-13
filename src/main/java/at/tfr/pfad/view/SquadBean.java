@@ -15,17 +15,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.apache.deltaspike.core.api.scope.WindowScoped;
 
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.model.Member;
@@ -43,7 +45,7 @@ import at.tfr.pfad.model.Squad_;
 
 @Named
 @Stateful
-@ConversationScoped
+@ViewScoped
 public class SquadBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -73,9 +75,6 @@ public class SquadBean extends BaseBean implements Serializable {
 	}
 
 	public String create() {
-
-		this.conversation.begin();
-		this.conversation.setTimeout(1800000L);
 		return "create?faces-redirect=true";
 	}
 
@@ -85,15 +84,12 @@ public class SquadBean extends BaseBean implements Serializable {
 			return;
 		}
 
-		if (this.conversation.isTransient()) {
-			this.conversation.begin();
-			this.conversation.setTimeout(1800000L);
-		}
-
 		if (this.id == null) {
 			this.squad = this.example;
 		} else {
 			this.squad = findById(getId());
+			this.squad.getScouts().size();
+			this.squad.getAssistants().size();
 		}
 	}
 
@@ -117,7 +113,6 @@ public class SquadBean extends BaseBean implements Serializable {
 	}
 
 	public String update() {
-		this.conversation.end();
 
 		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe, " + squad.getLogin() + " may update entry");
@@ -147,7 +142,6 @@ public class SquadBean extends BaseBean implements Serializable {
 	}
 
 	public String delete() {
-		this.conversation.end();
 
 		if (!isAdmin())
 			throw new SecurityException("only admins may delete entry");
@@ -211,6 +205,8 @@ public class SquadBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Squad> criteria = builder.createQuery(Squad.class);
 		root = criteria.from(Squad.class);
+		root.fetch(Squad_.assistants);
+		root.fetch(Squad_.scouts);
 		TypedQuery<Squad> query = this.entityManager
 				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());

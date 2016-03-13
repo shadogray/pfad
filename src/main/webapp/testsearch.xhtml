@@ -24,6 +24,8 @@
 		<h:form id="search" rendered="#{paymentBean.viewAllowed}">
 			<f:validateBean disabled="true">
 
+				<rich:focus preserve="true" ajaxRendered="false" />
+
 				<h:commandLink value="Init" actionListener="#{paymentBean.retrieve()}">
 					<f:ajax render="@form" />
 				</h:commandLink>
@@ -49,30 +51,79 @@
 					</h:column>
 				</h:dataTable>
 
-<!-- 				<rich:focus preserve="true"/>
- -->				<h:inputText value="#{paymentBean.example.comment}" />
+				<h:panelGrid columns="2">
+					<h:outputLabel value="Amount" />
+					<h:inputText tabindex="0" value="#{paymentBean.example.amount}" />
+				</h:panelGrid>
 
 
-				<h:panelGroup styleClass="search">
+				<h:panelGroup styleClass="search" id="bookingsSelect">
 
 					<h:messages globalOnly="true" />
 					<h:panelGrid columnClasses="label,component,required" columns="3">
+
 						<h:outputLabel value="Buchung:" />
 						<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
-							<rich:select id="paymentBeanPaymentBookingsSelect" styleClass="fullwidth" 
-								enableManualInput="false" selectFirst="false" mode="ajax" minChars="3"   
-								autocompleteMethod="#{bookings.filtered}" var="b" itemValue="#{b.id}" itemLabel="#{b}" 
-								minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-								<f:selectItem itemLabel="#{paymentBean.bookingToAdd}" itemValue="#{paymentBean.bookingToAdd.id}"/>
-								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addBooking}" render="@form" />
+							<rich:select id="paymentBeanPaymentBookingsSelect" tabindex="0" styleClass="fullwidth"
+								selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{paymentBean.filterBookings}" var="b"
+								itemLabel="#{b}" itemValue="#{b.id}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}"
+									render="@form" />
 							</rich:select>
 						</h:panelGrid>
 						<h:message for="paymentBeanPaymentBookingsSelect" />
+
+						<h:outputLabel value="Buchung-2:" />
+						<h:outputText value="#{paymentBean.exampleBooking}" />
+						<h:outputText value="#{paymentBean.filteredBookings}" />
+
+						<h:outputLabel value="Buchung-2:" />
+						<h:selectOneMenu value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}"
+							rendered="#{paymentBean.exampleBooking.id != null}">
+							<f:selectItem itemLabel="löschen.." noSelectionOption="true" />
+							<f:selectItems value="#{paymentBean.filteredBookings}" />
+							<f:ajax render="bookingsSelect" />
+						</h:selectOneMenu>
+						<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer"
+							rendered="#{paymentBean.exampleBooking.id == null}">
+							<rich:select id="paymentBeanPaymentBookingsSelect2" tabindex="0" styleClass="fullwidth"
+								converter="#{bookingBean.converter}" value="#{paymentBean.exampleBooking}" enableManualInput="false"
+								selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{paymentBean.filterBookings}" var="b"
+								itemLabel="#{b}" itemValue="#{b.id}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+								<f:selectItems value="#{paymentBean.filteredBookings}" />
+								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExampleBooking}"
+									render="bookingsSelect" />
+							</rich:select>
+						</h:panelGrid>
+						<h:message for="paymentBeanPaymentBookingsSelect2" />
+
+						<h:outputLabel value="Buchung-3" />
+						<rich:select id="paymentBeanPaymentBookingsSelect3" tabindex="0" styleClass="fullwidth"
+							converter="#{bookingBean.converter}" value="#{paymentBean.exampleBooking}" enableManualInput="false"
+							selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{paymentBean.filterBookings}" var="b"
+							itemLabel="#{b}" itemValue="#{b.id}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+							<f:selectItems value="#{paymentBean.filteredBookings}" />
+							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExampleBooking}"
+								render="bookingsSelect" />
+						</rich:select>
+						<h:message for="paymentBeanPaymentBookingsSelect3" />
 					</h:panelGrid>
 
 				</h:panelGroup>
+
+				<h:panelGrid columns="2">
+					<h:outputLabel value="Comment" />
+					<h:inputText tabindex="0" value="#{paymentBean.example.comment}" />
+				</h:panelGrid>
+
+				<h:commandButton tabindex="0" actionListener="#{paymentBean.update}" value="Save">
+					<f:ajax render="@form" />
+				</h:commandButton>
 			</f:validateBean>
 		</h:form>
+
+		<a4j:log level="debug" />
+
 
 	</ui:define>
 

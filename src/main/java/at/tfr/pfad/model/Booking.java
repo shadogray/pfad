@@ -1,32 +1,27 @@
 package at.tfr.pfad.model;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-
-import java.awt.Window.Type;
-import java.io.Serializable;
-import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Version;
 
 import org.hibernate.envers.Audited;
 
-import java.util.Set;
-import java.util.Date;
-import java.util.HashSet;
-import at.tfr.pfad.model.Payment;
-import javax.persistence.ManyToMany;
-import at.tfr.pfad.model.Member;
-import javax.persistence.ManyToOne;
-
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.AuditListener;
-import at.tfr.pfad.model.Activity;
 
 @Audited(withModifiedFlag = true)
 @Entity
@@ -74,6 +69,10 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 
 	public Long getId() {
 		return this.id;
+	}
+
+	public String getIdStr() {
+		return id != null ? id.toString() : "";
 	}
 
 	public void setId(final Long id) {

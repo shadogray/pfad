@@ -27,35 +27,47 @@
 
 	<ui:define name="main">
 		<h:form id="create" rendered="#{paymentBean.viewAllowed}">
+		
+			<rich:focus ajaxRendered="false"/>
+			
 			<h:messages globalOnly="true" styleClass="error" />
 
 			<h:panelGrid columnClasses="label,component,required" columns="3">
 
 				<h:outputLabel for="paymentBeanPaymentType" value="Typ:" />
 				<h:panelGroup>
-					<h:selectOneMenu id="paymentBeanPaymentType" tabindex="0" value="#{paymentBean.payment.type}" required="true">
+					<h:selectOneMenu id="paymentBeanPaymentType" tabindex="1" value="#{paymentBean.payment.type}" required="true">
 						<f:selectItems value="#{paymentBean.types}" />
 					</h:selectOneMenu>
 					<h:message for="paymentBeanPaymentType" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="paymentBeanPaymentPayer" value="Zahler:" />
-				<h:panelGroup>
-					<rich:select id="paymentBeanPaymentPayer" tabindex="0" styleClass="fullwidth manual"
-						p:placeholder="Der Zahler oder das Mitglied.." value="#{paymentBean.payment.payer != null ? paymentBean.payment.payer.id : 0}" enableManualInput="false"
-						selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{members.filtered}" var="b" itemValue="#{b.id}"
-						itemLabel="#{b}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-						<f:selectItem itemLabel="#{paymentBean.payment.payer}" itemValue="#{paymentBean.payment.payer != null ? paymentBean.payment.payer.id : 0}" />
-						<a4j:ajax event="selectitem" immediate="true" execute="@form" listener="#{paymentBean.selectPaymentPayer}"
-							render="@form" />
+				<h:outputLabel for="paymentBeanPaymentPayerPanel" value="Zahler:" />
+				<h:panelGroup id="paymentBeanPaymentPayerPanel">
+					<h:selectOneMenu id="paymentBeanPaymentPayer" value="#{paymentBean.payment.payer}" converter="#{memberBean.converter}" 
+						tabindex="1" rendered="#{paymentBean.payment.payer != null}">
+						<f:selectItem itemLabel="löschen.." noSelectionOption="true"/>
+						<f:selectItem itemLabel="#{paymentBean.payment.payer}" itemValue="#{paymentBean.payment.payer.idStr}" />
+						<f:ajax render="paymentBeanPaymentPayerPanel" />
+					</h:selectOneMenu>
+					<rich:select id="paymentBeanPaymentPayerSelect" rendered="#{paymentBean.payment.payer == null}" 
+						tabindex="1" styleClass="fullwidth manual" p:placeholder="Der Zahler oder das Mitglied.."  
+						mode="ajax" autocompleteMethod="#{paymentBean.filterPayers}" minChars="3" selectFirst="false"  
+						var="p" itemValue="#{p.id}" itemLabel="#{p}" converter="#{memberBean.converter}" 
+						minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+						<f:selectItems value="#{paymentBean.filteredPayers}" />
+						<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectPaymentPayer}"
+							render="paymentBeanPaymentPayerPanel" />
 					</rich:select>
 					<h:message for="paymentBeanPaymentPayer" styleClass="error" />
+					<h:message for="paymentBeanPaymentPayerSelect" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel value="Betrag:" />
-				<h:inputText id="paymentBeanPaymentAmount" tabindex="0" value="#{paymentBean.payment.amount}" required="true">
+				<h:inputText id="paymentBeanPaymentAmount" tabindex="0" value="#{paymentBean.payment.amount}" required="true"
+					 requiredMessage="Betrag fehlt!" validatorMessage="Betrag ungültig!">
 					<f:convertNumber maxFractionDigits="2" />
 				</h:inputText>
 				<h:message for="paymentBeanPaymentAmount" />
@@ -69,7 +81,7 @@
 				<h:outputText />
 
 				<h:outputLabel for="paymentBeanPaymentBookings" value="Buchungen:" />
-				<h:panelGroup>
+				<h:panelGroup id="paymentBeanPaymentBookingsPanel">
 					<h:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{paymentBean.payment.bookings}"
 						var="_item">
 						<h:column>
@@ -113,20 +125,20 @@
 						</h:column>
 					</h:dataTable>
 					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
-						<rich:select id="paymentBeanPaymentBookingsSelect" tabindex="1" styleClass="fullwidth manual"
-							value="#{paymentBean.bookingToAdd.id}" enableManualInput="false" selectFirst="false" mode="ajax" minChars="3"
-							autocompleteMethod="#{bookings.filtered}" var="b" itemValue="#{b.id}" itemLabel="#{b}" minListHeight="1"
-							maxListHeight="200" listWidth="35em" showButton="false" >
-							<f:selectItem itemLabel="#{paymentBean.bookingToAdd}" itemValue="#{paymentBean.bookingToAdd.id}"/>
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectPaymentBooking}"
-								render="@this paymentBeanPaymentBookings" />
+						<rich:select id="paymentBeanExampleBookingSelect" styleClass="fullwidth manual" 
+							mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{paymentBean.filterBookings}" 
+							var="b" itemLabel="#{b}" itemValue="#{b.id}" 
+							minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+							<f:selectItem />
+							<f:selectItems value="#{paymentBean.filteredBookings}" var="boo" itemLabel="#{boo}" itemValue="#{boo.idStr}"/>
+							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}" render="paymentBeanPaymentBookingsPanel" />
 						</rich:select>
-						<h:message for="paymentBeanPaymentBookingsSelect" styleClass="error"/>
+						<h:message for="paymentBeanExampleBookingSelect" styleClass="error" />
 					</h:panelGrid>
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="paymentBeanPaymentComment" value="Comment:" />
+				<h:outputLabel for="paymentBeanPaymentComment" value="Bemerkung:" />
 				<h:panelGroup>
 					<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"
 						styleClass="fullwidth" />
@@ -139,6 +151,19 @@
 					<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" />
 					<h:message for="paymentBeanPaymentFinished" styleClass="error" />
 				</h:panelGroup>
+				<h:outputText />
+
+				<h:outputLabel for="paymentBeanPaymentRevision" value="Änderung:"/>
+				<h:panelGrid id="paymentBeanPayment" columns="8" >
+					<h:outputLabel value="Erstellt:" />
+					<h:outputText value="#{paymentBean.payment.created}" converter="javax.faces.DateTime" />
+					<h:outputLabel value="Von:" />
+					<h:outputText value="#{paymentBean.payment.createdBy}" />
+					<h:outputLabel value="Geändert:" />
+					<h:outputText value="#{paymentBean.payment.changed}" converter="javax.faces.DateTime" />
+					<h:outputLabel value="Von:" />
+					<h:outputText value="#{paymentBean.payment.changedBy}" />
+				</h:panelGrid>
 				<h:outputText />
 
 			</h:panelGrid>

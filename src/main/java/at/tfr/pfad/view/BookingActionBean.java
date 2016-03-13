@@ -1,11 +1,13 @@
 package at.tfr.pfad.view;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 
 import org.jboss.logging.Logger;
@@ -13,11 +15,13 @@ import org.jboss.logging.Logger;
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.MemberRepository;
+import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 
+@Named
 @Stateless
 public class BookingActionBean {
 
@@ -29,11 +33,15 @@ public class BookingActionBean {
 	private MemberRepository memberRepo;
 	@Inject
 	private BookingRepository bookingRepo;
+	@Inject
+	private SquadRepository squadRepo;
 	
 	
 	public String createBookings(Collection<Squad> squads, Activity activity, boolean withAssistants) {
 		
 		int created = 0;
+		
+		squads = squads.stream().map(s -> squadRepo.findBy(s.getId())).collect(Collectors.toList());
 		
 		try {
 			for (Squad squad : squads) {

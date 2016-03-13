@@ -23,6 +23,8 @@
 	<ui:define name="main">
 		<h:form id="search" rendered="#{paymentBean.viewAllowed}">
 
+			<rich:focus preserve="true" ajaxRendered="false"/>
+
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
@@ -39,63 +41,77 @@
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExamplePayer" value="Zahler:" />
-						<h:panelGroup>
-							<rich:select id="paymentBeanPaymentPayersSelect" styleClass="fullwidth manual"
-								value="#{paymentBean.example.payer}" enableManualInput="false" selectFirst="false" mode="ajax" minChars="3"
-								autocompleteMethod="#{members.filtered}" var="b" itemValue="#{b.id}" itemLabel="#{b}" minListHeight="1"
-								maxListHeight="100" listWidth="35em" showButton="false">
-								<f:selectItem itemLabel="#{paymentBean.example.payer}" itemValue="#{paymentBean.example.payer}" />
-								<a4j:ajax event="selectitem" immediate="true" execute="@this"
-									listener="#{paymentBean.selectPaymentExamplePayer}" render="@form" />
+						<h:panelGroup id="paymentBeanExamplePayerPanel">
+							<h:selectOneMenu id="paymentBeanExamplePayer" value="#{paymentBean.examplePayer}" converter="#{memberBean.converter}" rendered="#{paymentBean.examplePayer != null}">
+								<f:selectItem itemLabel="löschen.." noSelectionOption="true"/>
+								<f:selectItem itemLabel="#{paymentBean.examplePayer}" itemValue="#{paymentBean.examplePayer.idStr}"/>
+								<f:ajax render="paymentBeanExamplePayerPanel" />
+							</h:selectOneMenu>
+							<rich:select id="paymentBeanExamplePayerSelect" styleClass="fullwidth manual" rendered="#{paymentBean.examplePayer == null}"
+								mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{paymentBean.filterPayers}" 
+								var="p" itemLabel="#{p}" itemValue="#{p.id}" converter="#{memberBean.converter}" 
+								minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+								<f:selectItems value="#{paymentBean.filteredPayers}" var="mem" itemLabel="#{mem}" itemValue="#{mem}"/>
+								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExamplePayer}" render="paymentBeanExamplePayerPanel" />
 							</rich:select>
-							<h:message for="paymentBeanPayer" styleClass="error" />
+							<h:message for="paymentBeanExamplePayerSelect" styleClass="error" />
+							<h:message for="paymentBeanExamplePayer" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanAmountFrom" value="Betrag-Von:" />
-						<h:inputText value="#{paymentBean.amountFrom}" style="width: 10em;">
+						<h:inputText id="paymentBeanAmountFrom" value="#{paymentBean.amountFrom}" style="width: 10em;">
 							<f:convertNumber maxFractionDigits="2" />
 						</h:inputText>
-						<h:outputText />
-						<h:outputLabel value="Betrag-Bis: " />
-						<h:inputText value="#{paymentBean.amountTo}" style="width: 10em;">
+						<h:message for="paymentBeanAmountFrom"/>
+						
+						<h:outputLabel for="paymentBeanAmountTo" value="Betrag-Bis: " />
+						<h:inputText id="paymentBeanAmountTo" value="#{paymentBean.amountTo}" style="width: 10em;">
 							<f:convertNumber maxFractionDigits="2" />
 						</h:inputText>
-						<h:outputText />
+						<h:message for="paymentBeanAmountTo"/>
 
-						<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Datum-Von:" />
+						<h:outputLabel for="paymentBeanPaymentPaymentDateStart" value="Datum-Von:" />
 						<rich:calendar id="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}"
 							datePattern="dd.MM.yyyy" />
 						<h:outputText />
-						<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Datum-Von:" />
+						<h:outputLabel for="paymentBeanPaymentPaymentDateEnd" value="Datum-Von:" />
 						<rich:calendar id="paymentBeanPaymentPaymentDateEnd" value="#{paymentBean.examplePaymentDateEnd}"
 							datePattern="dd.MM.yyyy" />
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleActivity" value="Aktivität:" />
 						<h:panelGroup>
-							<rich:select id="paymentBeanExampleActivity" enableManualInput="true"
-								styleClass="fullwidth" value="#{paymentBean.exampleActivity}" p:placeholder="Aktivität.."
-								clientFilterFunction="autoFilter" title="Aktivität.." listWidth="35em">
+							<h:selectOneMenu id="paymentBeanExampleActivity" styleClass="fullwidth" p:placeholder="Aktivität.." 
+								value="#{paymentBean.exampleActivity}" converter="#{activityBean.converter}" 
+								title="Aktivität..">
 								<f:selectItem />
-								<f:selectItems value="#{activityBean.all}" var="_item" itemLabel="#{_item}" itemValue="#{_item}" />
-							</rich:select>
+								<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a.idStr}" />
+							</h:selectOneMenu>
 							<h:message for="paymentBeanExampleActivity" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel value="Buchung:" />
-						<rich:select id="paymentBeanPaymentBookingsSelect" tabindex="1" styleClass="fullwidth manual"
-							value="#{paymentBean.exampleBooking}" enableManualInput="false" selectFirst="false" mode="ajax" minChars="3"
-							autocompleteMethod="#{bookings.filtered}" var="b" itemValue="#{b.id}" itemLabel="#{b}" minListHeight="1"
-							maxListHeight="100" listWidth="35em" showButton="false">
-							<f:selectItem itemLabel="#{paymentBean.exampleBooking}" itemValue="#{paymentBean.exampleBooking}" />
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExampleBooking}"
-								render="@form" />
-						</rich:select>
+						<h:panelGroup id="paymentBeanExampleBookingPanel">
+							<h:selectOneMenu id="paymentBeanExampleBooking" value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}" rendered="#{paymentBean.exampleBooking != null}">
+								<f:selectItem itemLabel="löschen.." noSelectionOption="true"/>
+								<f:selectItem itemLabel="#{paymentBean.exampleBooking}" itemValue="#{paymentBean.exampleBooking.idStr}"/>
+								<f:ajax render="paymentBeanExampleBookingPanel" />
+							</h:selectOneMenu>
+							<rich:select id="paymentBeanExampleBookingSelect" styleClass="fullwidth manual" rendered="#{paymentBean.exampleBooking == null}"
+								mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{paymentBean.filterBookings}" 
+								var="b" itemLabel="#{b}" itemValue="#{b.id}" converter="#{bookingBean.converter}" 
+								minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+								<f:selectItems value="#{paymentBean.filteredBookings}" var="boo" itemLabel="#{boo}" itemValue="#{boo}"/>
+								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExampleBooking}" render="paymentBeanExampleBookingPanel" />
+							</rich:select>
+							<h:message for="paymentBeanExampleBookingSelect" styleClass="error" />
+							<h:message for="paymentBeanExampleBooking" styleClass="error" />
+						</h:panelGroup>
 						<h:outputText />
 
-						<h:outputLabel for="paymentBeanExampleComment" value="Comment:" />
+						<h:outputLabel for="paymentBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
 							<h:inputText id="paymentBeanExampleComment" value="#{paymentBean.example.comment}" />
 							<h:message for="paymentBeanExampleComment" styleClass="error" />
@@ -138,7 +154,7 @@
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
 						<f:param name="faces-redirect" value="true" />
-						<h:outputText id="itemPaymentPayer" value="#{_item.payer}" />
+						<h:outputText id="itemPaymentPayer" value="#{_item.payer != null ? _item.payer : 'kein Zahler..'}" />
 					</h:link>
 				</h:column>
 				<h:column>
@@ -151,6 +167,16 @@
 						<h:outputText id="itemPaymentPaymentAmount" value="#{_item.amount}">
 							<f:convertNumber maxFractionDigits="2" />
 						</h:outputText>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Bezahlt" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemPaymentFinished" value="#{_item.finished ? 'JA' : 'NEIN'}" />
 					</h:link>
 				</h:column>
 				<h:column>

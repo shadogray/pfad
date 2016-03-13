@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -25,6 +25,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.deltaspike.core.api.scope.WindowScoped;
 
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Function_;
@@ -40,7 +41,7 @@ import at.tfr.pfad.model.Function_;
 
 @Named
 @Stateful
-@ConversationScoped
+@ViewScoped
 public class FunctionBean extends BaseBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -70,9 +71,6 @@ public class FunctionBean extends BaseBean implements Serializable {
 	}
 
 	public String create() {
-
-		this.conversation.begin();
-		this.conversation.setTimeout(1800000L);
 		return "create?faces-redirect=true";
 	}
 
@@ -80,11 +78,6 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 		if (FacesContext.getCurrentInstance().isPostback()) {
 			return;
-		}
-
-		if (this.conversation.isTransient()) {
-			this.conversation.begin();
-			this.conversation.setTimeout(1800000L);
 		}
 
 		if (this.id == null) {
@@ -109,7 +102,6 @@ public class FunctionBean extends BaseBean implements Serializable {
 	}
 
 	public String update() {
-		this.conversation.end();
 
 		if (!isUpdateAllowed())
 			throw new SecurityException("only admins, gruppe may update entry");
@@ -132,7 +124,6 @@ public class FunctionBean extends BaseBean implements Serializable {
 	}
 
 	public String delete() {
-		this.conversation.end();
 
 		if (!isDeleteAllowed())
 			throw new SecurityException("only admins may delete entry");

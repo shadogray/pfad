@@ -4,7 +4,7 @@
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:a4j="http://richfaces.org/a4j"
 	>
 
-	<rich:column sortBy="#{property}" sortOrder="#{bean.sortOrders[property]}" sortType="custom"
+	<rich:column id="column_#{property}" sortBy="#{property}" sortOrder="#{bean.sortOrders[property]}" sortType="custom"
 		filterValue="#{bean.filterValues[property]}" filterExpression="#{property}"
 		filterType="custom" width="#{width}">
 

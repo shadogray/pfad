@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 

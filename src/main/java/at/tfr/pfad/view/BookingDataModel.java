@@ -11,15 +11,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 
+import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member_;
+import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
 import at.tfr.pfad.model.Squad_;
 
@@ -54,10 +59,36 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			return cb.like(cb.lower(root.join(Booking_.activity).get(Activity_.name)), "%"+filterValue+"%".toLowerCase());
 		case "squadName":
 			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.trupp).get(Squad_.name)), "%"+filterValue+"%".toLowerCase());
+		case "status":
+			BookingStatus bookingStatus = getBookingStatus(filterValue);
+			if (bookingStatus != null) {
+				return cb.equal(root.get(Booking_.status), bookingStatus);
+			}
 		case "payed":
-			return cb.equal(root.join(Booking_.payments).get(Payment_.finished), Boolean.parseBoolean((String)filterValue));
+			boolean finished = Boolean.parseBoolean((String)filterValue);
+			if (finished) {
+				return cb.equal(root.join(Booking_.payments).get(Payment_.finished), finished);
+			} else {
+				Subquery<Payment> sq = query.subquery(Payment.class);
+				Root<Payment> sr = sq.from(Payment.class);
+				sq.select(sr).where(cb.isMember(root, sr.get(Payment_.bookings)), cb.equal(sr.get(Payment_.finished), !finished));
+				return cb.not(cb.exists(sq));
+			}
 		}
 		return super.createFilterCriteriaForField(propertyName, filterValue);
+	}
+
+	private BookingStatus getBookingStatus(final Object filterValue) {
+		if (!(filterValue instanceof String)) {
+			return null;
+		}
+		String val = filterValue.toString();
+		for (BookingStatus bs : BookingStatus.values()) {
+			if (bs.name().toLowerCase().contains(val.toLowerCase())) {
+				return bs;
+			}
+		}
+		return null;
 	}
 	
 	@Override

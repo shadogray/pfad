@@ -40,7 +40,7 @@
 	</h:outputScript>
 		<h:form id="create">
 			<h:messages globalOnly="true" styleClass="error" />
-			<rich:focus />
+			<rich:focus ajaxRendered="false"/>
 
 			<h:panelGrid columnClasses="label,component,required" columns="3">
 
@@ -187,23 +187,30 @@
 				<h:panelGroup>
 					<h:selectOneMenu converter="#{squadBean.converter}" id="memberBeanMemberTrupp" value="#{memberBean.member.trupp}">
 						<f:selectItem />
-						<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{squadBean.all}" var="_item" />
+						<f:selectItems itemLabel="#{s}" itemValue="#{s.idStr}" value="#{squadBean.all}" var="s" />
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberTrupp" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="memberBeanMemberVollzahler" value="Vollzahler:" />
-				<h:panelGroup>
-					<rich:select id="memberBeanMemberVollzahler" tabindex="0" styleClass="fullwidth manual"
-						p:placeholder="Geschwisterkind, Suche nach Name, Vorname..." title="Das aktive(!) Geschwisterkind bitte hier auswählen.." 
-						value="#{memberBean.member.vollzahler.id}" enableManualInput="false"
-						selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{members.filtered}" var="b" itemValue="#{b.id}"
-						itemLabel="#{b}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-						<f:selectItem itemLabel="#{memberBean.member.vollzahler}" itemValue="#{memberBean.member.vollzahler.id}" />
-						<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.selectMemberVollzahler}"
-							render="@form" />
-					</rich:select>
+				<h:outputLabel for="memberBeanMemberVollzahlerPanel" value="Vollzahler:" />
+				<h:panelGroup id="memberBeanMemberVollzahlerPanel">
+					<h:selectOneMenu value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" rendered="#{memberBean.member.vollzahler != null}">
+						<f:selectItem />
+						<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}"/>
+						<f:ajax render="memberBeanMemberVollzahlerPanel"/>
+					</h:selectOneMenu>
+					<h:panelGroup rendered="#{memberBean.member.vollzahler == null}">
+						<rich:select id="memberBeanMemberVollzahler" tabindex="0" styleClass="fullwidth manual"
+							p:placeholder="Geschwisterkind, Suche nach Name, Vorname..." title="Das aktive(!) Geschwisterkind bitte hier auswählen.." 
+							value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" enableManualInput="false"
+							selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{memberBean.filterMembers}" var="b" itemValue="#{b.idStr}"
+							itemLabel="#{b}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+							<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}" />
+							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.selectMemberVollzahler}"
+								render="memberBeanMemberVollzahlerPanel" />
+						</rich:select>
+					</h:panelGroup>
 					<h:message for="memberBeanMemberVollzahler" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
@@ -250,8 +257,8 @@
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="memberBeanMemberSiblings" value="Kinder:" />
-				<h:panelGroup>
+				<h:outputLabel for="memberBeanMemberSiblingsPanel" value="Kinder:" />
+				<h:panelGroup id="memberBeanMemberSiblingsPanel">
 					<ui:param name="_collection" value="#{memberBean.member.siblings}" />
 					<h:dataTable id="memberBeanMemberSiblings" styleClass="data-table" value="#{forgeview:asList(_collection)}"
 						var="_item">
@@ -287,19 +294,16 @@
 						</h:column>
 					</h:dataTable>
 					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
-						<rich:select id="memberBeanMemberSiblingsSelect" tabindex="0" styleClass="fullwidth manual"
-							p:placeholder="Kinder, Suche nach Name, Vorname..." title="Kinder des Erziehungsberechtigten bitte hier auswählen.." 
-							value="#{memberBean.memberToAdd.id}" enableManualInput="false"
-							selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{members.filtered}" var="b" itemValue="#{b.id}"
-							itemLabel="#{b}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-							<f:selectItem itemLabel="#{memberBean.memberToAdd}" itemValue="#{memberBean.memberToAdd.id}" />
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.selectMemberSibling}"
-								render="@form" />
+						<rich:select id="memberBeanMemberSiblingsSelect" styleClass="fullwidth manual" 
+							p:placeholder="Kinder, Suche nach Name, Vorname..." title="Kinder des Erziehungsberechtigten bitte hier auswählen.."
+							mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{memberBean.filterMembers}" 
+							var="b" itemLabel="#{b}" itemValue="#{b.id}" 
+							minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+							<f:selectItem />
+							<f:selectItems value="#{paymentBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}"/>
+							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.addMemberSibling}" render="memberBeanMemberSiblingsPanel" />
 						</rich:select>
-						<h:commandLink action="#{_collection.add(requestScope['memberBeanMemberSiblingsSelect'])}"
-							id="memberBeanMemberSiblingsAdd"
-							onclick="if (document.getElementById('create:memberBeanMemberSiblingsSelect').selectedIndex &lt; 1) { alert('Must select a Member'); return false; }"
-							styleClass="add-button" />
+						<h:message for="memberBeanMemberSiblingsSelect"/>
 					</h:panelGrid>
 				</h:panelGroup>
 				<h:outputText />

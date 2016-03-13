@@ -16,6 +16,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.logging.Logger;
 
 import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
@@ -27,10 +28,13 @@ import at.tfr.pfad.model.Payment_;
 @Model
 public class Payments {
 
+	private Logger log = Logger.getLogger(getClass());
+
 	@Inject
 	private EntityManager entityManager;
 	
 	public List<Payment> filtered(FacesContext facesContext, UIComponent component, final String filter) {
+		log.debug("filter: " + filter + " for: " + component.getId());
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Payment> cq = cb.createQuery(Payment.class);
 		Root<Payment> root = cq.from(Payment.class);

@@ -475,8 +475,9 @@ input[type="search"],
 input[type="tel"], 
 input[type="color"], 
 .uneditable-input {
-	margin-bottom: 5px;
-    margin-top: 5px;
+	margin-bottom: 3px;
+    margin-top: 3px;
+    font-size: 13px;
 }
 
 	

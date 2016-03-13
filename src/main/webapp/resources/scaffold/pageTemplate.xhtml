@@ -8,30 +8,29 @@
 	<link rel="icon" href='#{resource["favicon.ico"]}' />
 	<h:outputStylesheet name="bootstrap.css" />
 	<h:outputStylesheet name="forge-style.css" />
+	<h:outputScript name="jquery-1.12.1.min.js" />
 	<h:outputScript name="scripts.js" />
 </h:head>
 
 <h:body>
 
-	<ds:windowId/>
-	<a4j:log level="ALL" popup="true" width="800" height="600" rendered="false"/>
+	<ds:windowId />
+	<a4j:log level="ALL" popup="true" width="800" height="600" rendered="false" />
 	<ui:debug rendered="#{true || facesContext.application.projectStage == 'Development'}" />
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
 				<h:link id="brandLink" outcome="/pfad/index.xhtml" styleClass="brand">
-					<h:outputText value="Welcome to " rendered="#{request.userPrincipal !=null}"/>
+					<h:outputText value="Welcome to " rendered="#{request.userPrincipal !=null}" />
                     Pfad
-                    <h:outputText value=",  #{request.userPrincipal.name}" rendered="#{request.userPrincipal !=null} "/>
+                    <h:outputText value=",  #{request.userPrincipal.name}" rendered="#{request.userPrincipal !=null} " />
 				</h:link>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
-						<li>
-						<h:panelGroup rendered="#{sessionBean.registrationEndDate != null}" style="white-space: nowrap;">
-							<h:outputText value="Registrierung Ende: " />
-							<h:outputText value="#{sessionBean.registrationEndDate}" converter="javax.faces.DateTime"/>
-						</h:panelGroup>
-						</li>
+						<li><h:panelGroup rendered="#{sessionBean.registrationEndDate != null}" style="white-space: nowrap;">
+								<h:outputText value="Registrierung Ende: " />
+								<h:outputText value="#{sessionBean.registrationEndDate}" converter="javax.faces.DateTime" />
+							</h:panelGroup></li>
 					</ul>
 				</div>
 			</div>
@@ -45,36 +44,16 @@
 			</h:link>
 			<h:form>
 				<ul>
-					<li>
-						<h:link outcome="/pfad/member/search" value="Personen"/>
-					</li>
-					<li>
-						<h:link outcome="/pfad/squad/search" value="Trupps"/>
-					</li>
-					<li>
-						<h:link outcome="/pfad/activity/search" value="Aktivitäten"/>
-					</li>
-					<li>
-						<h:link outcome="/pfad/booking/search" value="Buchungen"/>
-					</li>
-					<li>
-						<h:link outcome="/pfad/payment/search" value="Zahlungen"/>
-					</li>
-					<li>
-						<h:link outcome="/pfad/function/search" value="Funktionen"/>
-					</li>
-					<li>
-						<h:link outcome="/pfad/configuration/search" value="Konfig"/>
-					</li>
-					<li>
-						<h:link outcome="/pfad/actions" value="Aktionen"/>
-					</li>
-					<li>
-						<h:commandLink action="#{loginBean.logout()}" value="Beenden"/>
-					</li>
-					<li>
-						<h:outputLink value="#{request.contextPath}/apidocs/" target="apidocs">API</h:outputLink>
-					</li>
+					<li><h:link outcome="/pfad/member/search" value="Personen" /></li>
+					<li><h:link outcome="/pfad/squad/search" value="Trupps" /></li>
+					<li><h:link outcome="/pfad/activity/search" value="Aktivitäten" /></li>
+					<li><h:link outcome="/pfad/booking/search" value="Buchungen" /></li>
+					<li><h:link outcome="/pfad/payment/search" value="Zahlungen" /></li>
+					<li><h:link outcome="/pfad/function/search" value="Funktionen" /></li>
+					<li><h:link outcome="/pfad/configuration/search" value="Konfig" /></li>
+					<li><h:link outcome="/pfad/actions" value="Aktionen" /></li>
+					<li><h:commandLink action="#{loginBean.logout()}" value="Beenden" /></li>
+					<li><h:outputLink value="#{request.contextPath}/apidocs/" target="apidocs">API</h:outputLink></li>
 				</ul>
 			</h:form>
 		</h:panelGroup>
@@ -93,8 +72,10 @@
 
 	<footer>
 		<div id="footer-wrapper">
-	    	<p>Powered by <a href="http://jboss.org/forge">Forge</a></p>
-	    </div>
+			<p>
+				Powered by <a href="http://jboss.org/forge">Forge</a>
+			</p>
+		</div>
 	</footer>
 
 </h:body>

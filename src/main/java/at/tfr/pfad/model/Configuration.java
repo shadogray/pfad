@@ -7,18 +7,17 @@
 
 package at.tfr.pfad.model;
 
+import java.io.Serializable;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import java.io.Serializable;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
-import javax.validation.constraints.Max;
 
 import org.hibernate.validator.constraints.Length;
 
@@ -59,6 +58,10 @@ public class Configuration implements PrimaryKeyHolder, Serializable {
 
 	public Long getId() {
 		return this.id;
+	}
+
+	public String getIdStr() {
+		return id != null ? id.toString() : "";
 	}
 
 	public void setId(final Long id) {
