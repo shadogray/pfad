@@ -283,7 +283,9 @@
 							</h:link>
 						</h:column>
 						<h:column footerClass="remove-column" headerClass="remove-column">
-							<h:commandLink tabindex="0" action="#{paymentBean.payment.bookings.remove(_item)}" styleClass="remove-button" />
+							<a4j:commandButton value="DEL" actionListener="#{paymentBean.deleteBooking(_item.id)}" styleClass="remove-button" >
+								<a4j:ajax execute="@this" render="paymentBeanPaymentBookingsPanel"/>
+							</a4j:commandButton>
 						</h:column>
 					</h:dataTable>
 					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer" style="width: 100%;">
