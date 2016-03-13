@@ -317,12 +317,13 @@
 
 								</h:panelGrid>
 
-								<h:panelGrid columns="3" style="width: 100%;">
-									<a4j:commandLink value="Speichern" actionListener='#{paymentBean.update}' accesskey="s" title="Speichern [ALT]+[S]"
-										styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" execute="@form" render="@form" />
+								<h:panelGrid columns="4" style="width: 100%;">
 									<a4j:commandLink value="SaveAndClose" actionListener='#{paymentBean.update}' accesskey="r"
 										title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}"
 										execute="@form" oncomplete="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;" />
+									<h:outputText/>
+									<a4j:commandLink value="Speichern" actionListener='#{paymentBean.update}' accesskey="s" title="Speichern [ALT]+[S]"
+										styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" execute="@form" render="@form" />
 									<h:link value="Schließen" outcome="search" accesskey="c" title="Cancel [ALT]+[C]"
 										onclick="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;" styleClass="btn btn-primary" />
 								</h:panelGrid>
