@@ -345,7 +345,9 @@ public class BookingBean extends BaseBean implements Serializable {
 	}
 
 	public void retrieveAndGetPayment() {
+		booking = null; // so much caching around :-/
 		retrieve();
+		paymentBean.setPaymentPayer(null);
 		if (!booking.getPayments().isEmpty()) {
 			paymentBean.setId(booking.getPayments().iterator().next().getId());
 		} else {

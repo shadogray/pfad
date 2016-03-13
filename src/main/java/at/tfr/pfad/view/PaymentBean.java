@@ -74,11 +74,13 @@ public class PaymentBean extends BaseBean implements Serializable {
 			this.payment = this.paymentExample;
 			this.payment.getBookings().clear();
 		} else {
-			payment = findById(getId());
-			payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b.getActivity()));
-			paymentPayer = payment.getPayer();
-			if (payment.getPayer() != null) {
-				filteredPayers.add(payment.getPayer());
+			if (payment == null || payment.getId() == null || !payment.getId().equals(id)) {
+				payment = findById(getId());
+				payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b.getActivity()));
+				paymentPayer = payment.getPayer();
+				if (payment.getPayer() != null) {
+					filteredPayers.add(payment.getPayer());
+				}
 			}
 		}
 	}

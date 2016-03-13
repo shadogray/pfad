@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
@@ -36,7 +37,8 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 	private static DateTimeFormatter format = DateTimeFormat.forPattern("dd.MM.yyyy");
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "activity_seq")
+	@SequenceGenerator(name = "activity_seq", sequenceName = "activity_seq", allocationSize = 1, initialValue = 1)
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	@Version
