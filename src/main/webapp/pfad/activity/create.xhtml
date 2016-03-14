@@ -3,29 +3,29 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
 	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
-		<f:viewParam name="id" value='#{activityBean.id}'/>
+		<o:viewParam name="id" value='#{activityBean.id}'/>
 		<f:event type="preRenderView" listener='#{activityBean.retrieve}'/>
 	</f:metadata>
 
-	<ui:param name="pageTitle" value="Create activity"/>
+	<ui:param name="pageTitle" value="Aktivität
+	"/>
 
 	<ui:define name="header">
-		activity
+		<c:choose>
+			<c:when test='#{!empty activityBean.id}'>
+				Aktivität ändern
+			</c:when>
+			<c:otherwise>
+				Aktivität anlegen
+			</c:otherwise>
+		</c:choose>
 	</ui:define>
 
 	<ui:define name="subheader">
-		<c:choose>
-			<c:when test='#{!empty activityBean.id}'>
-				Edit existing activity
-			</c:when>
-			<c:otherwise>
-				Create a new activity
-			</c:otherwise>
-		</c:choose>
 	</ui:define>
 
 	<ui:define name="footer"/>
