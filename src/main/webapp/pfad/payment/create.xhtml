@@ -122,7 +122,7 @@
 						</h:column>
 						<h:column footerClass="remove-column" headerClass="remove-column">
 							<h:commandLink tabindex="0" actionListener="#{paymentBean.deleteBooking(_item.id)}" styleClass="remove-button" >
-								<a4j:ajax execute="@this" render="@form"/>
+								<a4j:ajax execute="@this" render="paymentBeanPaymentBookingsPanel"/>
 							</h:commandLink>
 						</h:column>
 					</h:dataTable>
@@ -132,7 +132,7 @@
 							var="b" itemLabel="#{b}" itemValue="#{b.id}" converter="#{bookingBean.converter}"
 							minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
 							<f:selectItems value="#{paymentBean.filteredBookings}" var="boo" itemLabel="#{boo}" itemValue="#{boo.idStr}"/>
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}" render="@form" />
+							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}" render="paymentBeanPaymentBookingsPanel" />
 						</rich:select>
 						<h:message for="paymentBeanExampleBookingSelect" styleClass="error" />
 					</h:panelGrid>
