@@ -43,6 +43,7 @@ import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.view.ViewUtils.Month;
 
 /**
  * Backing bean for Member entities.
@@ -410,6 +411,10 @@ public class MemberBean extends BaseBean implements Serializable {
 		return Arrays.asList(Sex.values());
 	}
 
+	public List<Month> getMonths() {
+		return Arrays.asList(Month.values());
+	}
+	
 	public void handle(AjaxBehaviorEvent event) {
 		log.debug("handle: " + event);
 		if (event != null && event.getSource() instanceof UISelect) {

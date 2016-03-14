@@ -41,13 +41,17 @@
 			<h:messages globalOnly="true" styleClass="error" />
 			<rich:focus ajaxRendered="false"/>
 
-			<h:panelGrid columnClasses="label,component,required" columns="3">
+			<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
 
 				<h:outputLabel for="memberBeanMemberBVKey" value="BV Key:" />
 				<h:panelGroup>
 					<h:inputText id="memberBeanMemberBVKey" value="#{memberBean.member.BVKey}" p:placeholder="nur bei Externen!" />
 					<h:message for="memberBeanMemberBVKey" styleClass="error" />
 				</h:panelGroup>
+				<h:outputText />
+
+				<h:outputText />
+				<h:outputText />
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberAnrede" value="Anrede:" />
@@ -98,10 +102,10 @@
 
 				<h:outputLabel for="memberBeanMemberGebMonat" value="Geb Monat:" />
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberGebMonat" value="#{memberBean.member.gebMonat}" p:placeholder="numerisch"
-						title="Monat des Jahres, Zahl">
-						<f:validateLongRange minimum="0" maximum="12" />
-					</h:inputText>
+					<h:selectOneMenu id="memberBeanMemberGebMonat" value="#{memberBean.member.gebMonat}" title="Monat des Jahres, Zahl">
+						<f:selectItem itemLabel="undef.." itemValue="0"/>
+						<f:selectItems value="#{memberBean.months}" var="m" itemLabel="#{m}" itemValue="#{m.idx}"/>
+					</h:selectOneMenu>
 					<h:message for="memberBeanMemberGebMonat" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
@@ -312,52 +316,44 @@
 			<h:outputStylesheet>
 			.boolean { width: 15%; }
 			</h:outputStylesheet>
-			<h:panelGrid columns="6" style="width: 100%;" columnClasses="boolean,boolean,boolean,boolean,boolean,boolean">
+			<h:panelGrid columns="8" style="width: 100%;" columnClasses="boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean">
 				<h:outputLabel for="memberBeanMemberAktiv" value="Aktiv:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="memberBeanMemberAktiv" value="#{memberBean.member.aktiv}" />
 					<h:message for="memberBeanMemberAktiv" styleClass="error" />
 				</h:panelGroup>
-				<h:outputText />
 				<h:outputLabel for="memberBeanMemberAktivExtern" value="AktivExtern:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="memberBeanMemberAktivExtern" value="#{memberBean.member.aktivExtern}" />
 					<h:message for="memberBeanMemberAktivExtern" styleClass="error" />
 				</h:panelGroup>
-				<h:outputText />
 				<h:outputLabel for="memberBeanMemberTrail" value="Trail:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="memberBeanMemberTrail" value="#{memberBean.member.trail}" />
 					<h:message for="memberBeanMemberTrail" styleClass="error" />
 				</h:panelGroup>
-				<h:outputText />
 				<h:outputLabel for="memberBeanMemberGilde" value="Gilde:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="memberBeanMemberGilde" value="#{memberBean.member.gilde}" />
 					<h:message for="memberBeanMemberGilde" styleClass="error" />
 				</h:panelGroup>
-				<h:outputText />
 				<h:outputLabel for="memberBeanMemberAltER" value="Alt ER:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="memberBeanMemberAltER" value="#{memberBean.member.altER}" />
 					<h:message for="memberBeanMemberAltER" styleClass="error" />
 				</h:panelGroup>
-				<h:outputText />
-
 				<h:outputLabel for="memberBeanMemberInfoMail" value="InfoMail:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="memberBeanMemberInfoMail" value="#{memberBean.member.infoMail}" />
 					<h:message for="memberBeanMemberInfoMail" styleClass="error" />
 				</h:panelGroup>
-				<h:outputText />
 				<h:outputLabel for="memberBeanMemberSupport" value="Mitarb.:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="memberBeanMemberSupport" value="#{memberBean.member.support}" />
 					<h:message for="memberBeanMemberSupport" styleClass="error" />
 				</h:panelGroup>
-				<h:outputText />
 			</h:panelGrid>
-			<h:panelGrid columns="4" style="width: 100%;">
+			<h:panelGrid columns="8" style="width: 100%;">
 				<h:outputLabel value="Erstellt:" />
 				<h:outputText value="#{memberBean.member.created}" converter="javax.faces.DateTime" />
 				<h:outputLabel value="Von:" />
