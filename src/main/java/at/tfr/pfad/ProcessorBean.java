@@ -35,7 +35,7 @@ public class ProcessorBean implements Serializable {
 	public void doBackup() {
 		try {
 			Configuration test = configRepo.findOptionalByCkey("test");
-			if (!Boolean.TRUE.equals(test.getCvalue())) {
+			if (test == null || !Boolean.TRUE.equals(test.getCvalue())) {
 				String backupName = "pfad_" + new DateTime().toString("yyyy.MM.dd_HH") + ".zip";
 				int result = entityManager.createNativeQuery("backup to '" + backupName + "';").executeUpdate();
 				log.info("executed Backup to: " + backupName + ", result=" + result + " : " + sessionContext);
