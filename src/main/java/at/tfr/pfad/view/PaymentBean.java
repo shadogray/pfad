@@ -28,11 +28,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.deltaspike.core.api.scope.WindowScoped;
 import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.PaymentType;
-import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
@@ -343,12 +341,13 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Payment) 
+					return ""+((Payment)value).getId();
 				return ""+(value != null ? value : "");
 			}
 		};

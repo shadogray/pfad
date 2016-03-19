@@ -271,6 +271,10 @@ input.rf-sel-inp  {
     padding: 5px 7px !important;
 }
 
+.rf-sel-cntr {
+	border-style: none !important;
+}
+
 .component select {
 	width: 96.6%;
 	padding: 5px 7px;	
@@ -656,7 +660,7 @@ button::-moz-focus-inner {
 	font-weight:bold;
 	text-align:center;
 	color:#fff!important;
-	padding:8px 10px;
+	padding:4px 10px;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 	border-radius: 4px;
 	-moz-border-radius: 4px;
@@ -668,11 +672,15 @@ button::-moz-focus-inner {
 
 .btn-primary:hover,
 .btn-primary:active,
-.btn-primary.active,
-.btn-primary.disabled,
-.btn-primary[disabled] {
+.btn-primary.active {
   	background-color: #979026;
   	*background-color: #979026;
+}
+
+.btn-primary.disabled,
+.btn-primary[disabled] {
+  	background-color: gray;
+  	*background-color: gray;
 }
 
 .btn-primary:active,
@@ -736,6 +744,10 @@ h4.page-header {
 .fullwidth {
 	width: 95%;
 }
+
+td.component2 input {
+	width: 95%;
+} 
 
 .height25 {
 	height: 25px;

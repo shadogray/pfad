@@ -36,7 +36,7 @@ public class Members {
 		CriteriaQuery<Member> query = cq.select(root);
 		List<Predicate> preds = new ArrayList<>();
 		if (StringUtils.isNotBlank(filter) && filter.length() > 2) {
-			Stream.of(filter.split(" ")).forEach(v -> preds.add(cb.or(predicatesFor(v, cb, root))));
+			Stream.of(filter.toLowerCase().split(" ")).forEach(v -> preds.add(cb.or(predicatesFor(v, cb, root))));
 			cq.where(cb.and(preds.toArray(new Predicate[preds.size()])));
 		}
 		return this.entityManager.createQuery(query).setMaxResults(10).getResultList();

@@ -7,7 +7,7 @@
 	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" xmlns:pfad="http://xmlns.jcp.org/jsf/composite/scaffold" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
-		<o:viewParam name="page" value='#{bookingBean.page}' />
+		<f:viewParam name="page" value='#{bookingBean.page}' />
 		<f:event type="preRenderView" listener='#{bookingBean.paginate}' />
 	</f:metadata>
 

@@ -27,8 +27,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.deltaspike.core.api.scope.WindowScoped;
-
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
@@ -266,12 +264,13 @@ public class SquadBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Squad) 
+					return ""+((Squad)value).getId();
 				return ""+(value != null ? value : "");
 			}
 		};

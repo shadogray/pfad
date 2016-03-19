@@ -26,8 +26,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.deltaspike.core.api.scope.WindowScoped;
-
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.model.Configuration;
@@ -245,12 +243,13 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Configuration) 
+					return ""+((Configuration)value).getId();
 				return ""+(value != null ? value : "");
 			}
 		};

@@ -27,7 +27,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.deltaspike.core.api.scope.WindowScoped;
 
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.ActivityType;
@@ -246,12 +245,13 @@ public class ActivityBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
-
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Activity) 
+					return ""+((Activity)value).getId();
 				return ""+(value != null ? value : "");
 			}
 		};

@@ -6,7 +6,7 @@
 	xmlns:forgeview="http://jboss.org/forge/view" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
-		<o:viewParam name="page" value='#{squadBean.page}' />
+		<f:viewParam name="page" value='#{squadBean.page}' />
 		<f:event type="preRenderView" listener='#{squadBean.paginate}' />
 	</f:metadata>
 

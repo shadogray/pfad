@@ -7,7 +7,7 @@
 	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
-		<o:viewParam name="page" value='#{activityBean.page}'/>
+		<f:viewParam name="page" value='#{activityBean.page}'/>
 		<f:event type="preRenderView" listener='#{activityBean.paginate}'/>
 	</f:metadata>
 

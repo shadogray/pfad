@@ -25,7 +25,6 @@ import javax.validation.Validator;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.richfaces.component.UISelect;
-import org.richfaces.resource.PostConstructResource;
 
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;

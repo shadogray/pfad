@@ -6,7 +6,7 @@
 	xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
-		<o:viewParam name="page" value='#{memberBean.page}' />
+		<f:viewParam name="page" value='#{memberBean.page}' />
 		<f:event type="preRenderView" listener='#{memberBean.paginate}' />
 	</f:metadata>
 
@@ -29,7 +29,7 @@
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
-					<h:panelGrid columnClasses="" columns="6">
+					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
 						<h:outputLabel for="memberBeanExampleName" value="Name:" />
 						<h:panelGroup>
 							<rich:autocomplete id="memberBeanExampleName" value="#{memberBean.example.name}" mode="lazyClient"

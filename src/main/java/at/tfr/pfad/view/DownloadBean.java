@@ -198,7 +198,7 @@ public class DownloadBean implements Serializable {
 			row.createCell(cCount++).setCellValue(m.getOrt());
 			row.createCell(cCount++).setCellValue(m.getGeschlecht() != null ? m.getGeschlecht().name() : "");
 			row.createCell(cCount++).setCellValue(m.isAktiv() ? "J" : "N");
-			row.createCell(cCount++).setCellValue(m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "N");
+			row.createCell(cCount++).setCellValue(m.getFunktionen().stream().anyMatch(f->"P".equals(f.getKey())) ? "P" : (m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "N"));
 			row.createCell(cCount++).setCellValue(m.getEmail());
 			row.createCell(cCount++).setCellValue(withLocal ? m.getReligion() : ""); // do
 																						// not
@@ -372,16 +372,18 @@ public class DownloadBean implements Serializable {
 			functions.add(m.getTrupp().getType().getKey(m.getGeschlecht()));
 		}
 
-		List<String> toLead = squadRepo.findByLeaderFemaleEqualOrLeaderMaleEqual(m).stream()
-				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
-		functions.addAll(toLead);
-
-		List<String> toAss = squadRepo.findByAssistant(m).stream()
-				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
-		functions.addAll(toAss);
-
 		if (!m.getFunktionen().isEmpty()) {
 			functions.addAll(m.getFunktionen().stream().map(f -> f.getKey()).collect(Collectors.toList()));
+		}
+
+		if (!functions.stream().anyMatch(f->f.startsWith("SF"))) {
+			List<String> toLead = squadRepo.findByLeaderFemaleEqualOrLeaderMaleEqual(m).stream()
+					.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
+			functions.addAll(toLead);
+	
+			List<String> toAss = squadRepo.findByAssistant(m).stream()
+					.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
+			functions.addAll(toAss);
 		}
 
 		StringBuilder sb = new StringBuilder();
