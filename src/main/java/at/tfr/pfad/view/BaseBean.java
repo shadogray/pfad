@@ -400,4 +400,8 @@ public abstract class BaseBean implements Serializable {
 	}
 	
 	public void setNullString(String any) {}
+	
+	public SessionContext getSessionContext() {
+		return sessionContext;
+	}
 }
