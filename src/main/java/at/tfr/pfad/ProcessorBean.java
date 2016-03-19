@@ -1,20 +1,22 @@
 package at.tfr.pfad;
 
 import java.io.Serializable;
-import java.net.URL;
 
 import javax.annotation.Resource;
 import javax.ejb.Remote;
 import javax.ejb.Schedule;
 import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.hibernate.Session;
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
+
+import at.tfr.pfad.dao.ConfigurationRepository;
+import at.tfr.pfad.model.Configuration;
 
 @Named
 @Singleton
@@ -26,15 +28,19 @@ public class ProcessorBean implements Serializable {
 	private Logger log = Logger.getLogger(getClass());
 	@Resource
 	private SessionContext sessionContext;
+	@Inject
+	private ConfigurationRepository configRepo;
 
 	@Schedule(persistent = false, hour = "*", minute = "0", second = "0")
 	public void doBackup() {
 		try {
-			URL testUrl = Thread.currentThread().getContextClassLoader().getResource("/test.properties");
-			if (testUrl == null) {
+			Configuration test = configRepo.findOptionalByCkey("test");
+			if (!Boolean.TRUE.equals(test.getCvalue())) {
 				String backupName = "pfad_" + new DateTime().toString("yyyy.MM.dd_HH") + ".zip";
 				int result = entityManager.createNativeQuery("backup to '" + backupName + "';").executeUpdate();
-				log.info("executed Backup to: " + backupName + ", result=" + result);
+				log.info("executed Backup to: " + backupName + ", result=" + result + " : " + sessionContext);
+			} else {
+				log.info("Test-Mode, not dumping DB - " + sessionContext);
 			}
 		} catch (Throwable e) {
 			log.warn("cannot execute backup: " + e, e);
