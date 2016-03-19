@@ -31,16 +31,16 @@ public class ProcessorBean implements Serializable {
 	@Inject
 	private ConfigurationRepository configRepo;
 
-	@Schedule(persistent = false, hour = "*", minute = "0", second = "0")
+	@Schedule(persistent = false, hour = "*", minute = "*", second = "*/5")
 	public void doBackup() {
 		try {
 			Configuration test = configRepo.findOptionalByCkey("test");
-			if (test == null || !Boolean.TRUE.equals(test.getCvalue())) {
+			if (test == null || !Boolean.valueOf(test.getCvalue())) {
 				String backupName = "pfad_" + new DateTime().toString("yyyy.MM.dd_HH") + ".zip";
 				int result = entityManager.createNativeQuery("backup to '" + backupName + "';").executeUpdate();
-				log.info("executed Backup to: " + backupName + ", result=" + result + " : " + sessionContext);
+				log.info("executed Backup to: " + backupName + ", result=" + result);
 			} else {
-				log.info("Test-Mode, not dumping DB - " + sessionContext);
+				log.info("Test-Mode, not dumping DB: " + test);
 			}
 		} catch (Throwable e) {
 			log.warn("cannot execute backup: " + e, e);
