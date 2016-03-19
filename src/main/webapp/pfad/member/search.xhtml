@@ -13,7 +13,7 @@
 	<ui:define name="header">
 		<h:outputText value="Personen" />
 		<h:panelGroup rendered="#{sessionBean.registrationEndDate != null}" style="position: absolute; right: 0;">
-			<h:outputText value="Registrierung-Ende:" />
+			<h:outputText value="Registrierung Ende: " />
 			<h:outputText value="#{sessionBean.registrationEndDate}" converter="javax.faces.DateTime" />
 		</h:panelGroup>
 	</ui:define>

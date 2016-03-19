@@ -89,7 +89,6 @@ public class SessionBean implements Serializable {
 				}
 			} catch (Exception e) {
 				log.info("cannot parse Date: " + e, e);
-				registrationEndDate = new Date();
 			}
 		}
 		return registrationEndDate;
