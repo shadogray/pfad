@@ -118,7 +118,7 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 				this.entityManager.flush();
 				return "search?faces-redirect=true";
 			} else {
-				this.entityManager.merge(this.configuration);
+				configuration = entityManager.merge(configuration);
 				this.entityManager.flush();
 				return "view?faces-redirect=true&id=" + this.configuration.getId();
 			}

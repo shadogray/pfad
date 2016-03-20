@@ -129,7 +129,7 @@ public class SquadBean extends BaseBean implements Serializable {
 				}
 				return "search?faces-redirect=true";
 			} else {
-				this.entityManager.merge(this.squad);
+				squad = entityManager.merge(squad);
 				return "view?faces-redirect=true&id=" + this.squad.getId();
 			}
 		} catch (Exception e) {

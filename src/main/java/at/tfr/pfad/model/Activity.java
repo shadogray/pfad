@@ -225,9 +225,12 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 
 	@Override
 	public String toString() {
-		String result = (StringUtils.isNotBlank(name) ? name : getClass().getSimpleName() + ":" + type);
+		String result = (StringUtils.isNotBlank(name) ? name : getClass().getSimpleName() + ":" + type + ":" + status);
 		if (start != null) {
 			result += ", " + new DateTime(start).toString(format);
+		}
+		if (status != null) {
+			result += ", " + status;
 		}
 		return result;
 	}

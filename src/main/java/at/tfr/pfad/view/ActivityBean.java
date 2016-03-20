@@ -118,7 +118,7 @@ public class ActivityBean extends BaseBean implements Serializable {
 				this.entityManager.persist(this.activity);
 				return "search?faces-redirect=true";
 			} else {
-				this.entityManager.merge(this.activity);
+				activity = entityManager.merge(activity);
 				return "view?faces-redirect=true&id=" + this.activity.getId();
 			}
 		} catch (Exception e) {

@@ -2,15 +2,14 @@ package at.tfr.pfad;
 
 import java.io.Serializable;
 
-import javax.annotation.Resource;
-import javax.ejb.Remote;
+import javax.annotation.PostConstruct;
+import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
-import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
@@ -20,16 +19,20 @@ import at.tfr.pfad.model.Configuration;
 
 @Named
 @Singleton
-@Remote
+@Startup
+@LocalBean
 public class ProcessorBean implements Serializable {
 
-	@PersistenceContext(unitName = "pfad")
-	private EntityManager entityManager;
 	private Logger log = Logger.getLogger(getClass());
-	@Resource
-	private SessionContext sessionContext;
+	@Inject
+	private EntityManager entityManager;
 	@Inject
 	private ConfigurationRepository configRepo;
+
+	@PostConstruct
+	public void init() {
+		doBackup();
+	}
 
 	@Schedule(persistent = false, hour = "*", minute = "0", second = "0")
 	public void doBackup() {
@@ -45,9 +48,5 @@ public class ProcessorBean implements Serializable {
 		} catch (Throwable e) {
 			log.warn("cannot execute backup: " + e, e);
 		}
-	}
-
-	public SessionContext getSessionContext() {
-		return sessionContext;
 	}
 }

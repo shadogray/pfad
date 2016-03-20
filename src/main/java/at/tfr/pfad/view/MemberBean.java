@@ -135,7 +135,7 @@ public class MemberBean extends BaseBean implements Serializable {
 				if (StringUtils.isEmpty(member.getBVKey())) {
 					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
 				}
-				this.entityManager.merge(this.member);
+				member = entityManager.merge(member);
 				return "view?faces-redirect=true&id=" + this.member.getId();
 			}
 		} catch (Exception e) {

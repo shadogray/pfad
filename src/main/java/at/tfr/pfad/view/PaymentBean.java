@@ -130,7 +130,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 				this.entityManager.persist(this.payment);
 				this.entityManager.flush();
 			} else {
-				this.entityManager.merge(this.payment);
+				payment = entityManager.merge(payment);
 				this.entityManager.flush();
 			}
 			switch (command) {

@@ -112,7 +112,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 				this.entityManager.persist(this.function);
 				return "search?faces-redirect=true";
 			} else {
-				this.entityManager.merge(this.function);
+				function = entityManager.merge(function);
 				return "view?faces-redirect=true&id=" + this.function.getId();
 			}
 		} catch (Exception e) {

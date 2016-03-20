@@ -95,7 +95,11 @@ public class BookingBean extends BaseBean implements Serializable {
 		if (showFinished) {
 			return activityRepo.findAll();
 		} else {
-			return activityRepo.findActive();
+			List<Activity> active = activityRepo.findActive();
+			if (booking != null && booking.getActivity() != null) {
+				active.add(booking.getActivity());
+			}
+			return active;
 		}
 	}
 
@@ -156,7 +160,7 @@ public class BookingBean extends BaseBean implements Serializable {
 				this.entityManager.persist(this.booking);
 				return "search?faces-redirect=true";
 			} else {
-				this.entityManager.merge(this.booking);
+				booking = entityManager.merge(booking);
 				return "view?faces-redirect=true&id=" + this.booking.getId();
 			}
 		} catch (Exception e) {

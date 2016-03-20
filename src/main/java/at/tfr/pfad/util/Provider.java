@@ -7,6 +7,7 @@
 
 package at.tfr.pfad.util;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
@@ -21,7 +22,7 @@ import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.jboss.logging.Logger;
 
-@RequestScoped
+@ApplicationScoped
 public class Provider {
 	
 	private Logger log = Logger.getLogger(getClass());
@@ -35,16 +36,15 @@ public class Provider {
 	@PersistenceContext(unitName = "pfad", type = PersistenceContextType.EXTENDED)
 	private EntityManager extendedEntityManager;
 	
-	@Produces
 	public EntityManager getExtendedEntityManager() {
 		return extendedEntityManager;
 	}
 	
-//	@Produces
-//	@RequestScoped
-//	public EntityManager getEntityManager() {
-//		return entityManager;
-//	}
+	@Produces
+	@RequestScoped
+	public EntityManager getEntityManager() {
+		return entityManager;
+	}
 	
 	@Produces
 	@RequestScoped
