@@ -51,7 +51,7 @@
 				value="#{forgeview:asList(squadBean.squad.assistants)}" var="_item">
 				<h:column>
 					<f:facet name="header">
-						<h:outputText value="BV Key" />
+						<h:outputText value="BV-Key" />
 					</f:facet>
 					<h:link outcome="/pfad/member/view">
 						<f:param name="id" value="#{_item.id}" />
@@ -83,6 +83,15 @@
 					<h:link outcome="/pfad/member/view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="GebJahr" />
+					</f:facet>
+					<h:link outcome="/pfad/member/view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemGebJahr" value="#{_item.gebJahr}" />
 					</h:link>
 				</h:column>
 				<h:column>

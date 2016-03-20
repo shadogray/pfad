@@ -84,38 +84,11 @@
 						var="_item">
 						<h:column>
 							<f:facet name="header">
-								<h:outputText value="BV Key" />
+								<h:outputText value="BVKey" />
 							</f:facet>
 							<h:link outcome="/member/view">
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemBVKey" value="#{_item.BVKey}" />
-							</h:link>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="Gruppen Schluessel" />
-							</f:facet>
-							<h:link outcome="/member/view">
-								<f:param name="id" value="#{_item.id}" />
-								<h:outputText id="itemGruppenSchluessel" value="#{_item.gruppenSchluessel}" />
-							</h:link>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="Personen Key" />
-							</f:facet>
-							<h:link outcome="/member/view">
-								<f:param name="id" value="#{_item.id}" />
-								<h:outputText id="itemPersonenKey" value="#{_item.personenKey}" />
-							</h:link>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="Titel" />
-							</f:facet>
-							<h:link outcome="/member/view">
-								<f:param name="id" value="#{_item.id}" />
-								<h:outputText id="itemTitel" value="#{_item.titel}" />
 							</h:link>
 						</h:column>
 						<h:column>
@@ -125,6 +98,42 @@
 							<h:link outcome="/member/view">
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemName" value="#{_item.name}" />
+							</h:link>
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="Vorname" />
+							</f:facet>
+							<h:link outcome="/member/view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemVorname" value="#{_item.vorname}" />
+							</h:link>
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="Aktiv" />
+							</f:facet>
+							<h:link outcome="/pfad/member/view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
+							</h:link>
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="GebJahr" />
+							</f:facet>
+							<h:link outcome="/member/view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemGebJahr" value="#{_item.gebJahr}" />
+							</h:link>
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="PLZ" />
+							</f:facet>
+							<h:link outcome="/pfad/member/view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemPLZ" value="#{_item.PLZ}" />
 							</h:link>
 						</h:column>
 						<h:column footerClass="remove-column" headerClass="remove-column">
