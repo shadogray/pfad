@@ -31,14 +31,6 @@
 			<rich:extendedDataTable keepSaved="true" id="richTable" var="record" value="#{bookingTableBean.dataModel}"
 				rows="#{bookingTableBean.dataModel.rows}" styleClass="smsplus-management-table" rowClass="height30">
 
-				<ui:include src="../column.xhtml">
-					<ui:param name="bean" value="#{bookingTableBean}" />
-					<ui:param name="record" value="#{record}" />
-					<ui:param name="property" value="id" />
-					<ui:param name="link" value="/pfad/booking/view" />
-					<ui:param name="width" value="4em" />
-				</ui:include>
-
 				<rich:column width="3em">
 					<f:facet name="header">Edit</f:facet>
 					<a4j:commandLink execute="@this" render="popupPanelEditBooking"
@@ -111,7 +103,7 @@
 					<h:graphicImage name="up.gif" rendered="#{bookingTableBean.sortOrders[property]=='ascending'}" alt="DWN"/>
 				</h:panelGroup>
 				<h:panelGroup layout="block">
-					<h:selectOneMenu value="#{bookingTableBean.filterValues['payed']}" tabindex="0">
+					<h:selectOneMenu value="#{bookingTableBean.filterValues['payed']}" tabindex="6">
 						<f:selectItem />
 						<f:selectItem itemLabel="Ja" itemValue="true"/>
 						<f:selectItem itemLabel="Nein" itemValue="false"/>
@@ -137,7 +129,7 @@
 					<ui:param name="bean" value="#{bookingTableBean}" />
 					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="comment" />
-					<ui:param name="tabIndex" value="4" />
+					<ui:param name="tabIndex" value="7" />
 					<ui:param name="link" value="/pfad/booking/view" />
 					<ui:param name="width" value="20em" />
 				</ui:include>
