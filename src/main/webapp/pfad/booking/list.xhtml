@@ -55,13 +55,29 @@
 					<ui:param name="property" value="member" />
 					<ui:param name="tabIndex" value="1" />
 					<ui:param name="link" value="/pfad/booking/view" />
+					<ui:param name="width" value="20em" />
+				</ui:include>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{bookingTableBean}" />
+					<ui:param name="record" value="#{record}" />
+					<ui:param name="property" value="strasse" />
+					<ui:param name="tabIndex" value="2" />
+					<ui:param name="link" value="/pfad/booking/view" />
 					<ui:param name="width" value="15em" />
 				</ui:include>
 				<ui:include src="../column.xhtml">
 					<ui:param name="bean" value="#{bookingTableBean}" />
 					<ui:param name="record" value="#{record}" />
+					<ui:param name="property" value="ort" />
+					<ui:param name="tabIndex" value="3" />
+					<ui:param name="link" value="/pfad/booking/view" />
+					<ui:param name="width" value="6em" />
+				</ui:include>
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{bookingTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="activity" />
-					<ui:param name="tabIndex" value="2" />
+					<ui:param name="tabIndex" value="4" />
 					<ui:param name="link" value="/pfad/booking/view" />
 					<ui:param name="width" value="12em" />
 				</ui:include>
@@ -69,7 +85,7 @@
 					<ui:param name="bean" value="#{bookingTableBean}" />
 					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="squadName" />
-					<ui:param name="tabIndex" value="3" />
+					<ui:param name="tabIndex" value="5" />
 					<ui:param name="link" value="/pfad/booking/view" />
 					<ui:param name="width" value="6em" />
 				</ui:include>

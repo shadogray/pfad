@@ -137,4 +137,12 @@ public class BookingUI extends Booking {
 		}
 		return booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : "";
 	}
+	
+	public String getStrasse() {
+		return booking.getMember().getStrasse();
+	}
+	
+	public String getOrt() {
+		return booking.getMember().getOrt();
+	}
 }

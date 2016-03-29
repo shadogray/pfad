@@ -39,7 +39,7 @@ public class Members {
 			Stream.of(filter.toLowerCase().split(" ")).forEach(v -> preds.add(cb.or(predicatesFor(v, cb, root))));
 			cq.where(cb.and(preds.toArray(new Predicate[preds.size()])));
 		}
-		return this.entityManager.createQuery(query).setMaxResults(10).getResultList();
+		return this.entityManager.createQuery(query.distinct(true)).setMaxResults(10).getResultList();
 	}
 
 	Predicate[] predicatesFor(String value, CriteriaBuilder cb, Root<Member> root) {

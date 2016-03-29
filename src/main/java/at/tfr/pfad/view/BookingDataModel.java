@@ -52,8 +52,11 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		switch(propertyName) {
 		case "member":
 			return cb.or(cb.like(cb.lower(root.join(Booking_.member).get(Member_.name)), "%"+filterValue+"%".toLowerCase()),
-					cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+filterValue+"%".toLowerCase()),
-					cb.like(cb.lower(root.join(Booking_.member).get(Member_.bvKey)), "%"+filterValue+"%".toLowerCase()));
+					cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+filterValue+"%".toLowerCase()));
+		case "strasse":
+			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.strasse)), "%"+filterValue+"%".toLowerCase());
+		case "ort":
+			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.ort)), "%"+filterValue+"%".toLowerCase());
 		case "activity":
 			return cb.like(cb.lower(root.join(Booking_.activity).get(Activity_.name)), "%"+filterValue+"%".toLowerCase());
 		case "squadName":

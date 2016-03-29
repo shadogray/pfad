@@ -42,6 +42,8 @@ public class BookingTableBean implements Serializable {
 	    public void postConstruct() {
 	        columnHeaders.put("id", "ID");
 	        columnHeaders.put("member", "Mitglied");
+	        columnHeaders.put("strasse", "Strasse");
+	        columnHeaders.put("ort", "Ort");
 	        columnHeaders.put("activity", "Aktivität");
 	        columnHeaders.put("squadName", "Trupp");
 	        columnHeaders.put("status", "Status");
@@ -50,6 +52,8 @@ public class BookingTableBean implements Serializable {
 
 	        sortOrders.put("id", SortOrder.unsorted);
 	        sortOrders.put("member", SortOrder.unsorted);
+	        sortOrders.put("strasse", SortOrder.unsorted);
+	        sortOrders.put("ort", SortOrder.unsorted);
 	        sortOrders.put("activity", SortOrder.unsorted);
 	        sortOrders.put("squadName", SortOrder.unsorted);
 	        sortOrders.put("status", SortOrder.unsorted);
