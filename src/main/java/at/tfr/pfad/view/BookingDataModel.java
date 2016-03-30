@@ -49,25 +49,26 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		if (!(filterValue instanceof String) || StringUtils.isBlank((String)filterValue)) {
 			return null;
 		}
+		String val = filterValue.toString().toLowerCase();
 		switch(propertyName) {
 		case "member":
-			return cb.or(cb.like(cb.lower(root.join(Booking_.member).get(Member_.name)), "%"+filterValue+"%".toLowerCase()),
-					cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+filterValue+"%".toLowerCase()));
+			return cb.or(cb.like(cb.lower(root.join(Booking_.member).get(Member_.name)), "%"+val+"%"),
+					cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+val+"%"));
 		case "strasse":
-			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.strasse)), "%"+filterValue+"%".toLowerCase());
+			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.strasse)), "%"+val+"%");
 		case "ort":
-			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.ort)), "%"+filterValue+"%".toLowerCase());
+			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.ort)), "%"+val+"%");
 		case "activity":
-			return cb.like(cb.lower(root.join(Booking_.activity).get(Activity_.name)), "%"+filterValue+"%".toLowerCase());
+			return cb.like(cb.lower(root.join(Booking_.activity).get(Activity_.name)), "%"+val+"%");
 		case "squadName":
-			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.trupp).get(Squad_.name)), "%"+filterValue+"%".toLowerCase());
+			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.trupp).get(Squad_.name)), "%"+val+"%");
 		case "status":
-			BookingStatus bookingStatus = getBookingStatus(filterValue);
+			BookingStatus bookingStatus = getBookingStatus(val);
 			if (bookingStatus != null) {
 				return cb.equal(root.get(Booking_.status), bookingStatus);
 			}
 		case "payed":
-			boolean finished = Boolean.parseBoolean((String)filterValue);
+			boolean finished = Boolean.parseBoolean((String)val);
 			if (finished) {
 				return cb.equal(root.join(Booking_.payments).get(Payment_.finished), finished);
 			} else {
@@ -80,11 +81,7 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		return super.createFilterCriteriaForField(propertyName, filterValue);
 	}
 
-	private BookingStatus getBookingStatus(final Object filterValue) {
-		if (!(filterValue instanceof String)) {
-			return null;
-		}
-		String val = filterValue.toString();
+	private BookingStatus getBookingStatus(final String val) {
 		for (BookingStatus bs : BookingStatus.values()) {
 			if (bs.name().toLowerCase().contains(val.toLowerCase())) {
 				return bs;

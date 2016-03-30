@@ -45,22 +45,23 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 		if (!(filterValue instanceof String) || StringUtils.isBlank((String)filterValue)) {
 			return null;
 		}
+		String val = filterValue.toString().toLowerCase();
 		switch(propertyName) {
 		case "payer":
-			return cb.or(cb.like(cb.lower(root.join(Payment_.payer).get(Member_.name)), "%"+filterValue+"%".toLowerCase()),
-					cb.like(cb.lower(root.join(Payment_.payer).get(Member_.vorname)), "%"+filterValue+"%".toLowerCase()));
+			return cb.or(cb.like(cb.lower(root.join(Payment_.payer).get(Member_.name)), "%"+val+"%"),
+					cb.like(cb.lower(root.join(Payment_.payer).get(Member_.vorname)), "%"+val+"%"));
 		
 		case "member":
-			return cb.or(cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.member).get(Member_.name)), "%"+filterValue+"%".toLowerCase()),
-					cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.member).get(Member_.vorname)), "%"+filterValue+"%".toLowerCase()));
+			return cb.or(cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.member).get(Member_.name)), "%"+val+"%"),
+					cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.member).get(Member_.vorname)), "%"+val+"%"));
 		
 		case "squad":
-			return cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.member).get(Member_.trupp).get(Squad_.name)), "%"+filterValue+"%".toLowerCase());
+			return cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.member).get(Member_.trupp).get(Squad_.name)), "%"+val+"%");
 
 		case "activity":
-			return cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.activity).get(Activity_.name)), "%"+filterValue+"%".toLowerCase());
+			return cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.activity).get(Activity_.name)), "%"+val+"%");
 		}
-		return super.createFilterCriteriaForField(propertyName, filterValue);
+		return super.createFilterCriteriaForField(propertyName, val);
 	}
 
 	@Override

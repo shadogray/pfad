@@ -247,7 +247,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 		CriteriaQuery<Payment> criteria = builder.createQuery(Payment.class);
 		root = criteria.from(Payment.class);
 		TypedQuery<Payment> query = this.entityManager
-				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
+				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
 	}

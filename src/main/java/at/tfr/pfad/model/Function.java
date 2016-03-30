@@ -38,8 +38,11 @@ public class Function implements PrimaryKeyHolder, Serializable {
 	@Column
 	private String key;
 
-	@Column
+	@Column(columnDefinition="boolean default 'false' not null")
 	private boolean exportReg;
+	
+	@Column(columnDefinition="boolean default 'false' not null")
+	private boolean free;
 
 	public Long getId() {
 		return this.id;
@@ -110,6 +113,14 @@ public class Function implements PrimaryKeyHolder, Serializable {
 		this.exportReg = exportReg;
 	}
 
+	public boolean isFree() {
+		return free;
+	}
+	
+	public void setFree(boolean free) {
+		this.free = free;
+	}
+	
 	@Override
 	public String toString() {
 		String result = "" + function;

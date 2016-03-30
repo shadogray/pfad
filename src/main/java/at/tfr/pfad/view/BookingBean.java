@@ -227,7 +227,7 @@ public class BookingBean extends BaseBean implements Serializable {
 		CriteriaQuery<Booking> criteria = builder.createQuery(Booking.class);
 		root = criteria.from(Booking.class);
 		TypedQuery<Booking> query = this.entityManager
-				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
+				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
 	}

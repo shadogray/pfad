@@ -77,6 +77,16 @@
 						<h:outputText id="itemExportReg" value="#{_item.exportReg}" />
 					</h:link>
 				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Frei" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemFree" value="#{_item.free}" />
+					</h:link>
+				</h:column>
 			</h:dataTable>
 			<ui:include src="/resources/scaffold/paginator.xhtml">
 				<ui:param name="paginatorBean" value='#{functionBean}' />

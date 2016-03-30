@@ -51,6 +51,12 @@
 					<h:message for="functionBeanFunctionExportReg" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
+				<h:outputLabel for="functionBeanFunctionFree" value="Frei:" />
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="functionBeanFunctionFree" title="Zahlungsbefreit" value="#{functionBean.function.free}" />
+					<h:message for="functionBeanFunctionFree" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
 			</h:panelGrid>
 
 			<div class="buttons">
