@@ -73,14 +73,33 @@
 					<ui:param name="link" value="/pfad/booking/view" />
 					<ui:param name="width" value="12em" />
 				</ui:include>
-				<ui:include src="../column.xhtml">
-					<ui:param name="bean" value="#{bookingTableBean}" />
-					<ui:param name="record" value="#{record}" />
-					<ui:param name="property" value="squadName" />
-					<ui:param name="tabIndex" value="5" />
-					<ui:param name="link" value="/pfad/booking/view" />
-					<ui:param name="width" value="6em" />
-				</ui:include>
+
+	<rich:column id="column_squadName" sortBy="#{'squadName'}" sortOrder="#{bookingTableBean.sortOrders['squadName']}" sortType="custom"
+		filterValue="#{bookingTableBean.filterValues['squadName']}" filterExpression="#{'squadName'}" filterType="custom" width="5em">
+
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:panelGroup layout="block" style="white-space:nowrap;">
+					<h:commandLink value="#{bookingTableBean.columnHeaders['squadName']}" actionListener="#{bookingTableBean.toggleSort}">
+						<f:ajax render="@form" />
+						<f:setPropertyActionListener target="#{bookingTableBean.sortProperty}" value="squadName" />
+					</h:commandLink>
+					<h:graphicImage name="down.gif" rendered="#{bookingTableBean.sortOrders['squadName']=='descending'}" alt="UP"/>
+					<h:graphicImage name="up.gif" rendered="#{bookingTableBean.sortOrders['squadName']=='ascending'}" alt="DWN"/>
+				</h:panelGroup>
+				<h:panelGroup layout="block">
+					<h:selectOneMenu value="#{bookingTableBean.filterValues['squadName']}" tabindex="6">
+						<f:selectItem />
+						<f:selectItems value="#{squadBean.all}" var="s" itemLabel="#{s.name}" itemValue="#{s.name}"/>
+						<f:ajax render="@form" event="valueChange" />
+					</h:selectOneMenu>
+				</h:panelGroup>
+			</h:panelGroup>
+		</f:facet>
+
+		<h:outputText value="#{record.squadName}"/>
+	</rich:column>
+
 				<ui:include src="../column.xhtml">
 					<ui:param name="bean" value="#{bookingTableBean}" />
 					<ui:param name="record" value="#{record}" />
@@ -99,8 +118,8 @@
 						<f:ajax render="@form" />
 						<f:setPropertyActionListener target="#{bookingTableBean.sortProperty}" value="payed" />
 					</h:commandLink>
-					<h:graphicImage name="down.gif" rendered="#{bookingTableBean.sortOrders[property]=='descending'}" alt="UP"/>
-					<h:graphicImage name="up.gif" rendered="#{bookingTableBean.sortOrders[property]=='ascending'}" alt="DWN"/>
+					<h:graphicImage name="down.gif" rendered="#{bookingTableBean.sortOrders['payed']=='descending'}" alt="UP"/>
+					<h:graphicImage name="up.gif" rendered="#{bookingTableBean.sortOrders['payed']=='ascending'}" alt="DWN"/>
 				</h:panelGroup>
 				<h:panelGroup layout="block">
 					<h:selectOneMenu value="#{bookingTableBean.filterValues['payed']}" tabindex="6">
@@ -113,10 +132,10 @@
 			</h:panelGroup>
 		</f:facet>
 
-		<h:outputText value="#{record.payed}"/>
+		<h:outputText value="#{record.free ? 'FREI' : record.payed}"/>
 	</rich:column>
 
-				<rich:column width="3em">
+				<rich:column width="3em" rendered="#{paymentBean.viewAllowed}">
 					<f:facet name="header">Zahlg</f:facet>
 					<a4j:commandButton execute="@this" render="popupPanelEditPayment :popupPanelEditPaymentForm"
 						oncomplete="#{rich:component('popupPanelEditPaymentPopup')}.show(); return false;" value="EUR">
@@ -279,6 +298,15 @@
 							<h:link outcome="view">
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemVorname" value="#{_item.member.vorname}" />
+							</h:link>
+						</h:column>
+						<h:column>
+							<f:facet name="header">
+								<h:outputText value="Frei" />
+							</f:facet>
+							<h:link outcome="view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemFree" value="#{_item.member.anyFree ? 'FREI' : ''}" />
 							</h:link>
 						</h:column>
 						<h:column>

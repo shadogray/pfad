@@ -109,7 +109,7 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 		try {
 			if (!isUpdateAllowed()) {
-				throw new SecurityException("only admins, gruppe may update entry");
+				throw new SecurityException("Update denied for: "+sessionBean.getUser());
 			}
 			validator.validate(configuration);
 

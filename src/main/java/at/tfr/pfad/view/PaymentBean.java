@@ -63,22 +63,32 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	public void retrieve() {
 
-		FacesContext ctx = FacesContext.getCurrentInstance();
-		if (ctx.isPostback() && !ctx.getPartialViewContext().isAjaxRequest()) {
-			return;
-		}
-
-		if (this.id == null) {
-			this.payment = this.paymentExample;
-		} else {
-			if (payment == null || payment.getId() == null || !payment.getId().equals(id)) {
-				payment = findById(getId());
-				payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b.getActivity()));
-				paymentPayer = payment.getPayer();
-				if (payment.getPayer() != null) {
-					filteredPayers.add(payment.getPayer());
+		try {
+			
+			if (!isViewAllowed()) {
+				throw new SecurityException("View prohibit for: "+sessionBean.getUser());
+			}
+			
+			FacesContext ctx = FacesContext.getCurrentInstance();
+			if (ctx.isPostback() && !ctx.getPartialViewContext().isAjaxRequest()) {
+				return;
+			}
+	
+			if (this.id == null) {
+				this.payment = this.paymentExample;
+			} else {
+				if (payment == null || payment.getId() == null || !payment.getId().equals(id)) {
+					payment = findById(getId());
+					payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b.getActivity()));
+					paymentPayer = payment.getPayer();
+					if (payment.getPayer() != null) {
+						filteredPayers.add(payment.getPayer());
+					}
 				}
 			}
+		} catch (Exception e) {
+			log.info("retrieve: "+e, e);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 		}
 	}
 
@@ -118,7 +128,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	public String update(Command command) {
 		
 		if (!isUpdateAllowed())
-			throw new SecurityException("only admins, gruppe may update entry");
+			throw new SecurityException("Update disallowed for: "+sessionBean.getUser());
 		
 		payment.setPayer(paymentPayer);
 		

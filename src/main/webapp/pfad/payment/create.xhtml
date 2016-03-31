@@ -113,6 +113,15 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header">
+								<h:outputText value="Frei" />
+							</f:facet>
+							<h:link outcome="view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemFree" value="#{_item.member.anyFree ? 'FREI' : ''}" />
+							</h:link>
+						</h:column>
+						<h:column>
+							<f:facet name="header">
 								<h:outputText value="Geb.Jahr" />
 							</f:facet>
 							<h:link outcome="view">

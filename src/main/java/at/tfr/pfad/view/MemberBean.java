@@ -65,6 +65,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	@Inject
 	private MemberRepository memberRepo;
 	private Boolean exampleActive;
+	private Boolean exampleFree;
 
 	/*
 	 * support creating and retrieving Member entities
@@ -117,7 +118,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	public String update() {
 
 		if (!isUpdateAllowed())
-			throw new SecurityException("only admin,gruppe,leiter may update entry");
+			throw new SecurityException("Update denied for: "+sessionBean.getUser());
 		
 		log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
 
@@ -257,6 +258,9 @@ public class MemberBean extends BaseBean implements Serializable {
 		if (exampleActive != null) {
 			predicatesList.add(builder.equal(root.get(Member_.aktiv), exampleActive));
 		}
+		if (exampleFree != null) {
+			predicatesList.add(builder.equal(root.get(Member_.free), exampleFree));
+		}
 
 		Squad trupp = memberExample.getTrupp();
 		if (trupp != null) {
@@ -285,6 +289,14 @@ public class MemberBean extends BaseBean implements Serializable {
 	
 	public void setExampleActive(Boolean exampleActive) {
 		this.exampleActive = exampleActive;
+	}
+	
+	public Boolean getExampleFree() {
+		return exampleFree;
+	}
+	
+	public void setExampleFree(Boolean exampleFree) {
+		this.exampleFree = exampleFree;
 	}
 	
 	/*

@@ -352,6 +352,11 @@
 					<h:selectBooleanCheckbox id="memberBeanMemberSupport" value="#{memberBean.member.support}" />
 					<h:message for="memberBeanMemberSupport" styleClass="error" />
 				</h:panelGroup>
+				<h:outputLabel for="memberBeanMemberFree" value="Frei:" />
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="memberBeanMemberFree" value="#{memberBean.member.free}" title="Zahlungsbefreit"/>
+					<h:message for="memberBeanMemberFree" styleClass="error" />
+				</h:panelGroup>
 			</h:panelGrid>
 			<h:panelGrid columns="8" style="width: 100%;">
 				<h:outputLabel value="Erstellt:" />

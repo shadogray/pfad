@@ -103,7 +103,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 	public String update() {
 
 		if (!isUpdateAllowed())
-			throw new SecurityException("only admins, gruppe may update entry");
+			throw new SecurityException("Update denied for: "+sessionBean.getUser());
 
 		log.info("updated " + function + " by " + sessionContext.getCallerPrincipal());
 

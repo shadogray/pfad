@@ -10,6 +10,7 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateful;
@@ -24,15 +25,18 @@ import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.richfaces.component.UISelect;
 
+import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.model.Activity;
+import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member;
@@ -142,7 +146,7 @@ public class BookingBean extends BaseBean implements Serializable {
 	public String update() {
 
 		if (!isUpdateAllowed())
-			throw new SecurityException("only admins, gruppe may update entry");
+			throw new SecurityException("Update denied for: "+sessionBean.getUser());
 
 		try {
 
@@ -255,6 +259,14 @@ public class BookingBean extends BaseBean implements Serializable {
 		String name = this.bookingExample.getComment();
 		if (StringUtils.isNoneBlank(name)) {
 			predicatesList.add(builder.like(builder.lower(root.get(Booking_.comment)), '%' + name.toLowerCase() + '%'));
+		}
+		
+		if (!showFinished && !(bookingExample.getActivity() != null && bookingExample.getActivity().isFinished())) {
+			Join<Booking,Activity> act = root.join(Booking_.activity);
+			predicatesList.add(builder.or(
+					builder.isNull(act.get(Activity_.end)),
+					builder.greaterThan(act.get(Activity_.end), new Date())));
+			predicatesList.add(builder.notEqual(act.get(Activity_.status), ActivityStatus.cancelled));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);

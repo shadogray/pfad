@@ -38,7 +38,7 @@
 								value="#{bookingBean.example.activity}" converter="#{activityBean.converter}"
 								p:placeholder="Aktivität.." title="Aktivität.." >
 								<f:selectItem />
-								<f:selectItems value="#{activityBean.all}" var="a"  itemLabel="#{a}" itemValue="#{a.idStr}" />
+								<f:selectItems value="#{activityBean.all}" var="a"  itemLabel="#{a}" itemValue="#{a}" />
 							</h:selectOneMenu>
 							<h:message for="bookingBeanExampleActivity" styleClass="error" />
 						</h:panelGroup>
@@ -78,6 +78,10 @@
 							<h:inputText id="bookingBeanExampleComment" value="#{bookingBean.example.comment}" />
 							<h:message for="bookingBeanExampleComment" styleClass="error" />
 						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel value="Abgeschl.:" />
+							<h:selectBooleanCheckbox value="#{bookingBean.showFinished}"/>
 						<h:outputText />
 
 					</h:panelGrid>

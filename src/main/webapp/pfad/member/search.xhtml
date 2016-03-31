@@ -87,6 +87,16 @@
 							<h:message for="memberBeanExampleAktiv" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
+						<h:outputLabel for="memberBeanExampleFree" value="Frei:" />
+						<h:panelGroup>
+							<h:selectOneMenu id="memberBeanExampleFree" value="#{memberBean.exampleFree}" >
+								<f:selectItem />
+								<f:selectItem itemLabel="Ja" itemValue="true"/>
+								<f:selectItem itemLabel="Nein" itemValue="false"/>
+							</h:selectOneMenu>
+							<h:message for="memberBeanExampleFree" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
 						<h:commandLink value="Suchen" action="#{memberBean.search}" styleClass="btn btn-primary" />
@@ -135,6 +145,16 @@
 						<f:param name="id" value="#{_item.id}" />
 						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Frei" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<f:param name="faces-redirect" value="true" />
+						<h:outputText id="itemFrei" value="#{_item.free}" />
 					</h:link>
 				</h:column>
 				<h:column>

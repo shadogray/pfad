@@ -121,21 +121,24 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column
 	protected String telefon;
 
-	@Column
+	@Column(columnDefinition="boolean default 'false' not null")
 	protected boolean trail;
 
-	@Column
+	@Column(columnDefinition="boolean default 'false' not null")
 	protected boolean gilde;
 
-	@Column
+	@Column(columnDefinition="boolean default 'false' not null")
 	protected boolean altER;
 
-	@Column
+	@Column(columnDefinition="boolean default 'false' not null")
 	protected boolean support;
 
-	@Column
+	@Column(columnDefinition="boolean default 'false' not null")
 	protected boolean infoMail;
 
+	@Column(columnDefinition="boolean default 'false' not null")
+	protected boolean free;
+	
 	@Enumerated(EnumType.STRING)
 	protected ScoutRole rolle;
 
@@ -182,7 +185,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column(insertable = false, updatable = false, name = "Vollzahler_id")
 	protected Long VollzahlerId;
 
-	@ManyToMany
+	@ManyToMany(fetch=FetchType.EAGER)
 	protected Set<Function> funktionen = new HashSet<>();
 
 	@ManyToMany
@@ -584,6 +587,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		if (ort != null && !ort.trim().isEmpty())
 			result += " " + ort;
 		result += ", " + (aktiv ? "aktiv" : "inaktiv");
+		result += free ? ":FREI" : "";
 		return result;
 	}
 
@@ -629,5 +633,17 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public void setBookings(final Set<Booking> bookings) {
 		this.bookings = bookings;
+	}
+	
+	public boolean isFree() {
+		return free;
+	}
+	
+	public void setFree(boolean free) {
+		this.free = free;
+	}
+	
+	public boolean isAnyFree() {
+		return free || (funktionen != null && funktionen.stream().anyMatch(Function::isFree));
 	}
 }

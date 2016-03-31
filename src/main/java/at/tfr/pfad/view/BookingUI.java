@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 
@@ -22,6 +23,7 @@ public class BookingUI extends Booking {
 	private Booking booking;
 	private boolean isPayed;
 	private Set<Member> payers;
+	private boolean free;
 	private Set<Payment> payments;
 
 	public BookingUI(Booking booking) {
@@ -29,6 +31,9 @@ public class BookingUI extends Booking {
 		booking.getPayments().stream().peek(Payment::getId);
 		this.payments = booking.getPayments();
 		this.payers = booking.getPayments().stream().map(Payment::getPayer).collect(Collectors.toSet());
+		if (booking.getMember() != null) {
+			free = booking.getMember().isFree() || booking.getMember().getFunktionen().stream().anyMatch(Function::isFree);
+		}
 	}
 
 	public Long getId() {
@@ -144,5 +149,13 @@ public class BookingUI extends Booking {
 	
 	public String getOrt() {
 		return booking.getMember().getOrt();
+	}
+	
+	public boolean isFree() {
+		return free;
+	}
+	
+	public void setFree(boolean free) {
+		this.free = free;
 	}
 }

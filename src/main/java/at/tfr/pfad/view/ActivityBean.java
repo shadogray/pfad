@@ -105,13 +105,13 @@ public class ActivityBean extends BaseBean implements Serializable {
 
 	@Override
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isGruppe() || isVorstand();
+		return isAdmin() || isGruppe() || isVorstand() || isKassier();
 	}
 
 	public String update() {
 
 		if (!isUpdateAllowed())
-			throw new SecurityException("only admins, gruppe may update entry");
+			throw new SecurityException("Update denied for: "+sessionBean.getUser());
 
 		try {
 			if (this.id == null) {

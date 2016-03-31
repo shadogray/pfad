@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.apache.commons.lang3.StringUtils;
@@ -233,5 +234,10 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 			result += ", " + status;
 		}
 		return result;
+	}
+	
+	@Transient
+	public boolean isFinished() {
+		return ActivityStatus.cancelled.equals(status) || (end != null && new Date().after(end));
 	}
 }
