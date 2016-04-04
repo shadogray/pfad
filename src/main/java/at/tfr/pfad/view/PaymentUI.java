@@ -23,8 +23,8 @@ public class PaymentUI extends Payment {
 
 	public PaymentUI(Payment payment) {
 		this.payment = payment;
-		payment.getBookings().stream().peek(Booking::getId);
 		this.bookings = payment.getBookings();
+		bookings.size();
 	}
 
 	public Long getId() {
@@ -57,6 +57,10 @@ public class PaymentUI extends Payment {
 
 	public void setPayer(Member Payer) {
 		payment.setPayer(Payer);
+	}
+	
+	public String getPayerName() {
+		return payment.getPayer() != null ? payment.getPayer().getName()+","+payment.getPayer().getVorname() : ""; 
 	}
 	
 	@Override
@@ -159,5 +163,9 @@ public class PaymentUI extends Payment {
 
 	public String getActivity() {
 		return bookings.stream().filter(b->b.getActivity() != null).map(Booking::getActivity).map(a->a.toString()).collect(Collectors.joining(","));
+	}
+	
+	public String getActivitiesLines() {
+		return bookings.stream().filter(b->b.getActivity() != null).map(b -> b.getActivity().toString()).collect(Collectors.joining("<br>"));
 	}
 }

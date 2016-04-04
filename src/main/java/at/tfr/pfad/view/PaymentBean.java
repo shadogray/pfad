@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
@@ -190,7 +191,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	 * Support searching Payment entities with pagination
 	 */
 
-	private List<Payment> pageItems;
+	private List<PaymentUI> pageItems;
 
 	private Boolean exampleFinished;
 	private Date examplePaymentDateStart;
@@ -259,7 +260,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 		TypedQuery<Payment> query = this.entityManager
 				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
-		this.pageItems = query.getResultList();
+		this.pageItems = query.getResultList().stream().map(p -> new PaymentUI(p)).collect(Collectors.toList());
 	}
 
 	private Predicate[] getSearchPredicates(Root<Payment> root) {
@@ -308,7 +309,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
 	}
 
-	public List<Payment> getPageItems() {
+	public List<PaymentUI> getPageItems() {
 		return this.pageItems;
 	}
 

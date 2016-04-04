@@ -140,7 +140,7 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	@Override
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isGruppe() || isVorstand();
+		return isAdmin() || isGruppe() || isVorstand() || isKassier();
 	}
 
 	public String update() {

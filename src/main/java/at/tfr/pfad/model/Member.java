@@ -573,20 +573,20 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Override
 	public String toString() {
 		String result = "";
-		if (bvKey != null && !bvKey.trim().isEmpty())
-			result += bvKey;
+//		if (bvKey != null && !bvKey.trim().isEmpty())
+//			result += bvKey;
 		if (titel != null && !titel.trim().isEmpty())
-			result += ", " + titel;
+			result += (result.length()>0?", ":"") + titel;
 		if (name != null && !name.trim().isEmpty())
-			result += ", " + name;
+			result += (result.length()>0?", ":"") + name;
 		if (vorname != null && !vorname.trim().isEmpty())
-			result += ", " + vorname;
-		result += ", " + gebTag + "." + gebMonat + "." + gebJahr;
+			result += (result.length()>0?", ":"") + vorname;
+		result += (result.length()>0?", ":"") + gebTag + "." + gebMonat + "." + gebJahr;
 		if (plz != null && !plz.trim().isEmpty())
-			result += ", " + plz;
+			result += (result.length()>0?", ":"") + plz;
 		if (ort != null && !ort.trim().isEmpty())
 			result += " " + ort;
-		result += ", " + (aktiv ? "aktiv" : "inaktiv");
+		result += (result.length()>0?", ":"") + (aktiv ? "aktiv" : "inaktiv");
 		result += free ? ":FREI" : "";
 		return result;
 	}
