@@ -8,6 +8,21 @@
 
 	<f:metadata>
 		<f:viewParam name="page" value='#{paymentBean.page}' />
+		<f:viewParam name="paymentBeanExampleType" value="#{paymentBean.example.type}"/>
+		<f:viewParam name="paymentBeanExamplePayer" value="#{paymentBean.examplePayer}" converter="#{memberBean.converter}"/>
+		<f:viewParam name="paymentBeanAmountFrom" value="#{paymentBean.amountFrom}"/>
+		<f:viewParam name="paymentBeanAmountTo" value="#{paymentBean.amountTo}"/>
+		<f:viewParam name="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}" >
+			<f:convertDateTime pattern="dd.MM.yyyy"/>
+		</f:viewParam>
+		<f:viewParam name="paymentBeanPaymentPaymentDateEnd" value="#{paymentBean.examplePaymentDateEnd}" >
+			<f:convertDateTime pattern="dd.MM.yyyy"/>
+		</f:viewParam>
+		<f:viewParam name="paymentBeanExampleActivity" value="#{paymentBean.exampleActivity}" converter="#{activityBean.converter}"/>
+		<f:viewParam name="paymentBeanExampleBooking" value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}"/>
+		<f:viewParam name="paymentBeanExampleComment" value="#{paymentBean.example.comment}"/>
+		<f:viewParam name="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}"/>
+		<f:viewParam name="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}"/>
 		<f:event type="preRenderView" listener='#{paymentBean.paginate}' />
 	</f:metadata>
 
@@ -118,12 +133,22 @@
 						</h:panelGroup>
 						<h:outputText />
 
+						<h:outputText />
+						<h:panelGroup>
 						<h:outputLabel for="paymentBeanExampleFinished" value="Erledigt:" />
 						<h:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}">
 							<f:selectItem />
 							<f:selectItem itemLabel="Ja" itemValue="true" />
 							<f:selectItem itemLabel="Nein" itemValue="false" />
 						</h:selectOneMenu>
+
+						<h:outputLabel for="paymentBeanExampleAconto" value="Akonto:" />
+						<h:selectOneMenu id="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}">
+							<f:selectItem />
+							<f:selectItem itemLabel="Ja" itemValue="true" />
+							<f:selectItem itemLabel="Nein" itemValue="false" />
+						</h:selectOneMenu>
+						</h:panelGroup>
 						<h:outputText />
 
 					</h:panelGrid>
@@ -143,7 +168,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemPaymentType" value="#{_item.type}" />
 					</h:link>
 				</h:column>
@@ -153,7 +177,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemPaymentPayer" value="#{_item.payer != null ? _item.payerName : 'kein Zahler..'}" />
 					</h:link>
 				</h:column>
@@ -163,7 +186,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemPaymentActivities" value="#{_item.activitiesLines}" escape="false"/>
 					</h:link>
 				</h:column>
@@ -173,10 +195,18 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemPaymentPaymentAmount" value="#{_item.amount}">
 							<f:convertNumber maxFractionDigits="2" />
 						</h:outputText>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Akonto" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemPaymentAconto" value="#{_item.aconto ? 'JA' : 'NEIN'}" />
 					</h:link>
 				</h:column>
 				<h:column>
@@ -185,7 +215,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemPaymentFinished" value="#{_item.finished ? 'JA' : 'NEIN'}" />
 					</h:link>
 				</h:column>
@@ -195,7 +224,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemPaymentPaymentDate" value="#{_item.paymentDate}" converter="javax.faces.DateTime" />
 					</h:link>
 				</h:column>
@@ -205,7 +233,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemPaymentComment" value="#{_item.comment}" />
 					</h:link>
 				</h:column>

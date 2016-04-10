@@ -59,6 +59,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     
     protected int rows = 20;
     protected int currentRows;
+    protected Integer rowCount;
     protected List<U> uData;
     protected boolean useUniquResultTransformer = false;
     protected SequenceRange sequenceRange;
@@ -66,8 +67,8 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     private boolean rowsSetToUnlimited;
     protected CriteriaBuilder cb;
     protected Root<T> root;
-    protected CriteriaQuery<T> query;
-    protected CriteriaQuery<Long> countQuery;
+    private CriteriaQuery<T> query;
+    private CriteriaQuery<Long> countQuery;
 
     public DataModel() {
     }
@@ -127,7 +128,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         
         countQuery.select(cb.countDistinct(root));
         
-        final List<Predicate> filterCriteria = createFilterCriteria();
+        final List<Predicate> filterCriteria = createFilterCriteria(countQuery);
         if (filterCriteria != null) {
             countQuery.where(filterCriteria.toArray(new Predicate[]{}));
         }
@@ -143,7 +144,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
             criteria.orderBy(orders);
         }
 
-        final List<Predicate> filterCriteria = createFilterCriteria();
+        final List<Predicate> filterCriteria = createFilterCriteria(criteria);
         if (filterCriteria != null) {
             criteria.where(filterCriteria.toArray(new Predicate[]{}));
         }
@@ -200,7 +201,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         return uiClass;
     }
 
-    protected Predicate createFilterCriteriaForField(final String propertyName, final Object filterValue) {
+    protected Predicate createFilterCriteriaForField(final String propertyName, final Object filterValue, CriteriaQuery<?> q) {
         if (filterValue == null || (filterValue instanceof String && Strings.isEmpty((String) filterValue))) {
             return null;
         }
@@ -224,6 +225,12 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
                 } else if (Long.class.isAssignableFrom(method.getReturnType())) {
                     return cb.equal(getPathForOrder(propertyName), Long.parseLong(filterValue.toString()));
 
+                } else if (Float.class.isAssignableFrom(method.getReturnType())) {
+                    return cb.equal(getPathForOrder(propertyName), Float.parseFloat(filterValue.toString()));
+
+                } else if (Double.class.isAssignableFrom(method.getReturnType())) {
+                    return cb.equal(getPathForOrder(propertyName), Double.parseDouble(filterValue.toString()));
+
                 } else if (Boolean.class.isAssignableFrom(method.getReturnType())) {
                     return cb.equal(getPathForOrder(propertyName), Boolean.parseBoolean(filterValue.toString()));
 
@@ -240,7 +247,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         return cb.like(root.get(propertyName), filterValue.toString());
     }
     
-    private List<Predicate> createFilterCriteria() {
+    private List<Predicate> createFilterCriteria(CriteriaQuery<?> criteriaQuery) {
         List<Predicate> filterCriteria = new ArrayList<>();
 
         if (sessionBean.isLeiter()) {
@@ -260,7 +267,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
                 final String propertyName = (String) filterField.getFilterExpression().getValue(facesContext.getELContext());
                 final Object filterValue = filterField.getFilterValue();
 
-                final Predicate crit = createFilterCriteriaForField(propertyName, filterValue);
+                final Predicate crit = createFilterCriteriaForField(propertyName, filterValue, criteriaQuery);
 
                 if (crit == null) {
                     continue;
@@ -282,7 +289,14 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     }
 
     protected List<U> getRowData(final Range range) {
-        final CriteriaQuery<T> criteria = createSelectCriteriaQuery();
+    	if (uData == null) {
+    		uData = getRowDataInternal(range);
+    	}
+    	return uData;
+    }
+
+	private List<U> getRowDataInternal(final Range range) {
+		final CriteriaQuery<T> criteria = createSelectCriteriaQuery();
 
         TypedQuery<T> query = entityManager.createQuery(criteria);
         sequenceRange = (SequenceRange) range;
@@ -295,7 +309,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         currentRows = data.size();
         uData = convertToUiBean(data);
         return uData;
-    }
+	}
 
     @Override
     public boolean isRowAvailable() {
@@ -304,10 +318,17 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
     @Override
     public int getRowCount() {
-        final CriteriaQuery<Long> criteria = createCountCriteriaQuery();
+    	if (rowCount == null) {	
+    		rowCount = getRowCountInternal();
+    	}
+    	return rowCount;
+    }
+
+	private int getRowCountInternal() {
+		final CriteriaQuery<Long> criteria = createCountCriteriaQuery();
         final Long count = entityManager.createQuery(criteria).getSingleResult();
         return count.intValue();
-    }
+	}
 
     @Override
     public U getRowData() {

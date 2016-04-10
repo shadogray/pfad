@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -46,7 +47,7 @@ public class MemberHistoryBean implements Serializable {
 
 		pageItems = res.stream().map(a -> new Result((Member) a[0], (DefaultRevisionEntity) a[1], (RevisionType) a[2]))
 				.collect(Collectors.toList());
-		return "";
+		return null;
 	}
 
 	public List<Result> getPageItems() {

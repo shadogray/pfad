@@ -1,9 +1,13 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -53,8 +57,11 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date paymentDate;
 
-	@Column
+	@Column(columnDefinition="boolean default false not null")
 	private Boolean finished;
+
+	@Column(columnDefinition="boolean default false not null")
+	private Boolean aconto;
 
 	@Column
 	private String comment;
@@ -143,6 +150,14 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 		this.finished = finished;
 	}
 
+	public Boolean getAconto() {
+		return aconto;
+	}
+	
+	public void setAconto(Boolean aconto) {
+		this.aconto = aconto;
+	}
+	
 	public String getComment() {
 		return comment;
 	}
@@ -155,10 +170,18 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 		return this.bookings;
 	}
 
+	public List<Long> getBookingsIds() {
+		return bookings.stream().map(Booking::getId).collect(Collectors.toList());
+	}
+
 	public void setBookings(final Set<Booking> bookings) {
 		this.bookings = bookings;
 	}
 
+	public List<Booking> getSortedBookings() {
+		return bookings.stream().sorted(new PkComparator<Booking>()).collect(Collectors.toList());
+	}
+	
 	public PaymentType getType() {
 		return type;
 	}
@@ -207,6 +230,13 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 		this.createdBy = createdBy;
 	}
 
+	public Payment updateType(Booking booking) {
+		if (booking.getActivity() != null) {
+			updateType(booking.getActivity());
+		}
+		return this;
+	}
+	
 	public Payment updateType(Activity activity) {
 		if (type == null && activity != null && activity.getType() != null) {
 			switch (activity.getType()) {
@@ -230,6 +260,9 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 		}
 		if (paymentDate != null) {
 			result += ", " + new DateTime(paymentDate).toString("dd.MM.yyyy");
+		}
+		if (aconto != null && aconto) {
+			result += ", ANZ";
 		}
 		result += ", " + (finished != null && finished ? "finished" : "offen");
 		if (comment != null && !comment.trim().isEmpty())

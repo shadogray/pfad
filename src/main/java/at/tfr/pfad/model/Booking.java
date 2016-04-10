@@ -1,9 +1,12 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -118,10 +121,18 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 		return this.payments;
 	}
 
+	public List<Long> getPaymentsIds() {
+		return payments.stream().map(Payment::getId).collect(Collectors.toList());
+	}
+
 	public void setPayments(final Set<Payment> payments) {
 		this.payments = payments;
 	}
 
+	public List<Payment> getSortedPayments() {
+		return payments.stream().sorted(new PkComparator<Payment>()).collect(Collectors.toList());
+	}
+	
 	public Member getMember() {
 		return this.member;
 	}

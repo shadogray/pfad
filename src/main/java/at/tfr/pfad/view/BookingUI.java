@@ -129,7 +129,15 @@ public class BookingUI extends Booking {
 	}
 
 	public String getPayed() {
-		return payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getFinished())) ? "JA" : "NEIN";
+		boolean finished = payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getFinished()));
+		if (finished) {
+			return "JA";
+		}
+		boolean aconto = payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getAconto()));
+		if (aconto) {
+			return "ANZ";
+		}
+		return "NEIN";
 	}
 	
 	public String getPayer() {

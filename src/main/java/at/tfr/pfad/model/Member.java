@@ -11,7 +11,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -524,6 +526,10 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		}
 		return this.funktionen;
 	}
+	
+	public List<Long> getFunktionenIds() {
+		return funktionen.stream().map(Function::getId).collect(Collectors.toList());
+	}
 
 	public void setFunktionen(final Set<Function> Funktionen) {
 		this.funktionen = Funktionen;
@@ -531,6 +537,10 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public Set<Member> getSiblings() {
 		return siblings;
+	}
+
+	public List<Long> getSiblingIds() {
+		return siblings.stream().map(Member::getId).collect(Collectors.toList());
 	}
 
 	public void setSiblings(Set<Member> siblings) {
@@ -556,6 +566,10 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public Set<Payment> getPayments() {
 		return payments;
+	}
+
+	public List<Long> getPaymentsIds() {
+		return payments.stream().map(Payment::getId).collect(Collectors.toList());
 	}
 
 	public String toShortString() {
@@ -629,6 +643,10 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public Set<Booking> getBookings() {
 		return this.bookings;
+	}
+
+	public List<Long> getBookingsIds() {
+		return bookings.stream().map(Booking::getId).collect(Collectors.toList());
 	}
 
 	public void setBookings(final Set<Booking> bookings) {

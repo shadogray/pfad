@@ -26,6 +26,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
+
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.model.Configuration;
@@ -243,6 +245,8 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isBlank(value))
+					return null;
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 

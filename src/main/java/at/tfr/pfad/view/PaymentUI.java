@@ -8,6 +8,7 @@
 package at.tfr.pfad.view;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,11 +21,12 @@ public class PaymentUI extends Payment {
 
 	private Payment payment;
 	private Set<Booking> bookings;
+	private List<String> truppNames;
 
 	public PaymentUI(Payment payment) {
 		this.payment = payment;
 		this.bookings = payment.getBookings();
-		bookings.size();
+		truppNames = bookings.stream().filter(b-> b.getMember() != null && b.getMember().getTrupp() != null).map(b->b.getMember().getTrupp().getName()).collect(Collectors.toList());
 	}
 
 	public Long getId() {
@@ -79,6 +81,14 @@ public class PaymentUI extends Payment {
 
 	public void setFinished(Boolean finished) {
 		payment.setFinished(finished);
+	}
+	
+	public Boolean getAconto() {
+		return payment.getAconto();
+	}
+	
+	public void setAconto(Boolean aconto) {
+		payment.setAconto(aconto);
 	}
 
 	public String getComment() {

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
+import javax.enterprise.context.RequestScoped;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -27,6 +29,7 @@ import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
 import at.tfr.pfad.model.Squad_;
 
+@RequestScoped
 @Stateful
 public class BookingDataModel extends DataModel<Booking, BookingUI> {
 
@@ -45,7 +48,7 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 	}
 	
 	@Override
-	protected Predicate createFilterCriteriaForField(final String propertyName, final Object filterValue) {
+	protected Predicate createFilterCriteriaForField(final String propertyName, final Object filterValue, CriteriaQuery<?> criteriaQuery) {
 		if (!(filterValue instanceof String) || StringUtils.isBlank((String)filterValue)) {
 			return null;
 		}
@@ -67,18 +70,23 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			if (bookingStatus != null) {
 				return cb.equal(root.get(Booking_.status), bookingStatus);
 			}
+			return null;
 		case "payed":
 			boolean finished = Boolean.parseBoolean((String)val);
 			if (finished) {
 				return cb.equal(root.join(Booking_.payments).get(Payment_.finished), finished);
 			} else {
-				Subquery<Payment> sq = query.subquery(Payment.class);
+				Subquery<Payment> sq = criteriaQuery.subquery(Payment.class);
 				Root<Payment> sr = sq.from(Payment.class);
 				sq.select(sr).where(cb.isMember(root, sr.get(Payment_.bookings)), cb.equal(sr.get(Payment_.finished), !finished));
-				return cb.not(cb.exists(sq));
+				Predicate notFin = cb.not(cb.exists(sq));
+				if ("anz".equalsIgnoreCase(val)) {
+					notFin = cb.and(notFin, cb.equal(root.join(Booking_.payments).get(Payment_.aconto), true));
+				}
+				return notFin;
 			}
 		}
-		return super.createFilterCriteriaForField(propertyName, filterValue);
+		return super.createFilterCriteriaForField(propertyName, filterValue, criteriaQuery);
 	}
 
 	private BookingStatus getBookingStatus(final String val) {

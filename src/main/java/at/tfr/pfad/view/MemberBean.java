@@ -10,8 +10,10 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
@@ -36,9 +38,11 @@ import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
+import at.tfr.pfad.dao.FunctionRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Configuration;
+import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
@@ -64,6 +68,8 @@ public class MemberBean extends BaseBean implements Serializable {
 	private SquadRepository squadRepo;
 	@Inject
 	private MemberRepository memberRepo;
+	@Inject
+	private FunctionRepository functionRepo;
 	private Boolean exampleActive;
 	private Boolean exampleFree;
 
@@ -90,7 +96,7 @@ public class MemberBean extends BaseBean implements Serializable {
 		}
 
 		if (this.id == null) {
-			this.member = memberExample;
+			this.member = getMemberExample();
 		} else {
 			if (this.member == null || !this.member.getId().equals(id)) {
 				this.member = findById(getId());
@@ -123,13 +129,14 @@ public class MemberBean extends BaseBean implements Serializable {
 		log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
 
 		try {
-			if (this.id == null) {
-				this.entityManager.persist(this.member);
+			if (id == null) {
+				entityManager.persist(member);
+				id = member.getId();
 				if (StringUtils.isEmpty(member.getBVKey())) {
 					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
 				}
-				if (this.member.getId() != null) {
-					return "view?faces-redirect=true&id=" + this.member.getId();
+				if (member.getId() != null) {
+					return "view?faces-redirect=true&id=" + member.getId();
 				}
 				return "search?faces-redirect=true";
 			} else {
@@ -137,7 +144,7 @@ public class MemberBean extends BaseBean implements Serializable {
 					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
 				}
 				member = entityManager.merge(member);
-				return "view?faces-redirect=true&id=" + this.member.getId();
+				return "view?faces-redirect=true&id=" + member.getId();
 			}
 		} catch (Exception e) {
 			log.info("update: "+e, e);
@@ -186,19 +193,34 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public Member getExample() {
-		return memberExample;
+		return getMemberExample();
 	}
 
 	public void setExample(Member example) {
-		memberExample = example;
+		setMemberExample(example);
+	}
+	
+	public String getFunctionIds() {
+		return getExample().getFunktionen().stream().map(f->f.getId().toString()).collect(Collectors.joining(","));
+	}
+	
+	public void setFunctionIds(String value) {
+		if (StringUtils.isNotBlank(value)) {
+			List<Long> functionIds = Stream.of(value.split(",")).map(Long::valueOf).collect(Collectors.toList());
+			getExample().setFunktionen(new HashSet<Function>(functionRepo.findByIds(functionIds)));
+		}
 	}
 
 	public String search() {
 		this.page = 0;
-		return "";
+		return FacesContext.getCurrentInstance().getViewRoot().getViewId()+"?faces-redirect=true&includeViewParams=true";
 	}
 
 	public void paginate() {
+
+		if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
+			return;
+		}
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 
@@ -226,31 +248,31 @@ public class MemberBean extends BaseBean implements Serializable {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
-		String BVKey = memberExample.getBVKey();
+		String BVKey = getMemberExample().getBVKey();
 		if (BVKey != null && !"".equals(BVKey)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.bvKey)), '%' + BVKey.toLowerCase() + '%'));
 		}
-		long PersonenKey = memberExample.getPersonenKey();
+		long PersonenKey = getMemberExample().getPersonenKey();
 		if (PersonenKey != 0) {
 			predicatesList.add(builder.equal(root.get(Member_.personenKey), PersonenKey));
 		}
-		String Titel = memberExample.getTitel();
+		String Titel = getMemberExample().getTitel();
 		if (Titel != null && !"".equals(Titel)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.titel)), '%' + Titel.toLowerCase() + '%'));
 		}
-		String Name = memberExample.getName();
+		String Name = getMemberExample().getName();
 		if (Name != null && !"".equals(Name)) {
 			predicatesList.add(builder.like(builder.lower(root.get(Member_.name)), '%' + Name.toLowerCase() + '%'));
 		}
 
-		String Vorname = memberExample.getVorname();
+		String Vorname = getMemberExample().getVorname();
 		if (Vorname != null && !"".equals(Vorname)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.vorname)), '%' + Vorname.toLowerCase() + '%'));
 		}
-		String Telefon = memberExample.getTelefon();
+		String Telefon = getMemberExample().getTelefon();
 		if (Telefon != null && !"".equals(Telefon)) {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.telefon)), '%' + Telefon.toLowerCase() + '%'));
@@ -262,14 +284,14 @@ public class MemberBean extends BaseBean implements Serializable {
 			predicatesList.add(builder.equal(root.get(Member_.free), exampleFree));
 		}
 
-		Squad trupp = memberExample.getTrupp();
+		Squad trupp = getMemberExample().getTrupp();
 		if (trupp != null) {
 			predicatesList.add(builder.equal(root.get(Member_.trupp), trupp));
 		}
 
-		if (memberExample.getFunktionen() != null && !memberExample.getFunktionen().isEmpty()
-				&& memberExample.getFunktionen().iterator().next() != null) {
-			predicatesList.add(root.join(Member_.funktionen).in(memberExample.getFunktionen()));
+		if (getMemberExample().getFunktionen() != null && !getMemberExample().getFunktionen().isEmpty()
+				&& getMemberExample().getFunktionen().iterator().next() != null) {
+			predicatesList.add(root.join(Member_.funktionen).in(getMemberExample().getFunktionen()));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -348,6 +370,8 @@ public class MemberBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isBlank(value))
+					return null;
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 

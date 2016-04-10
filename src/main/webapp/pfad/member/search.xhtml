@@ -7,6 +7,14 @@
 
 	<f:metadata>
 		<f:viewParam name="page" value='#{memberBean.page}' />
+		<f:viewParam name="memberBeanExampleName" value="#{memberBean.example.name}"/>
+		<f:viewParam name="memberBeanExampleVorname" value="#{memberBean.example.vorname}"/>
+		<f:viewParam name="memberBeanExampleBVKey" value="#{memberBean.example.BVKey}"/>
+		<f:viewParam name="memberBeanExampleTelefon" value="#{memberBean.example.telefon}"/>
+		<f:viewParam name="memberBeanExampleTrupp" value="#{memberBean.example.trupp}" converter="#{squadBean.converter}"/>
+		<f:viewParam name="memberBeanExampleFunktionen" value="#{memberBean.functionIds}" />
+		<f:viewParam name="memberBeanExampleAktiv" value="#{memberBean.exampleActive}"/>
+		<f:viewParam name="memberBeanExampleFree" value="#{memberBean.exampleFree}"/>
 		<f:event type="preRenderView" listener='#{memberBean.paginate}' />
 	</f:metadata>
 
@@ -27,7 +35,7 @@
 			<rich:focus preserve="true" ajaxRendered="false" />
 			
 			<f:validateBean disabled="true">
-				<h:panelGroup styleClass="search">
+				<h:panelGroup id="searchPanel" styleClass="search">
 
 					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
 						<h:outputLabel for="memberBeanExampleName" value="Name:" />
@@ -66,15 +74,15 @@
 							<h:message for="squadBeanExampleTrupp" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
-						<h:outputLabel for="memberBeanExampleFunktion" value="Funktion:" />
+						<h:outputLabel for="memberBeanExampleFunktionen" value="Funktion:" />
 						<h:panelGroup>
-							<h:selectManyListbox converter="#{functionBean.converter}" id="memberBeanExampleFunktion"
+							<h:selectManyListbox converter="#{functionBean.converter}" id="memberBeanExampleFunktionen"
 								value="#{memberBean.example.funktionen}" size="3">
 								<f:selectItem />
 								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{functionBean.all}"
 									var="_item" />
 							</h:selectManyListbox>
-							<h:message for="memberBeanExampleFunktion" styleClass="error" />
+							<h:message for="memberBeanExampleFunktionen" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 						<h:outputLabel for="memberBeanExampleAktiv" value="Aktiv:" />
@@ -113,7 +121,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemBVKey" value="#{_item.BVKey}" />
 					</h:link>
 				</h:column>
@@ -123,7 +130,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemName" value="#{_item.name}" />
 					</h:link>
 				</h:column>
@@ -133,7 +139,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemVorname" value="#{_item.vorname}" />
 					</h:link>
 				</h:column>
@@ -143,7 +148,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
 					</h:link>
 				</h:column>
@@ -153,7 +157,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemFrei" value="#{_item.free}" />
 					</h:link>
 				</h:column>
@@ -163,7 +166,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemTrupp" value="#{_item.trupp.name}" />
 					</h:link>
 				</h:column>
@@ -173,7 +175,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemJahr" value="#{_item.gebJahr}" />
 					</h:link>
 				</h:column>

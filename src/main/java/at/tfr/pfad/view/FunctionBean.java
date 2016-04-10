@@ -231,15 +231,13 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 	public Converter getConverter() {
 
-		final FunctionBean ejbProxy = this.sessionContext.getBusinessObject(FunctionBean.class);
-
 		return new Converter() {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
-				if (StringUtils.isBlank(value))
+				if (StringUtils.isBlank(value) || "[]".equals(value))
 					return null;
-				return ejbProxy.findById(Long.valueOf(value));
+				return entityManager.find(Function.class, Long.valueOf(value));
 			}
 
 			@Override

@@ -8,6 +8,11 @@
 
 	<f:metadata>
 		<f:viewParam name="page" value='#{bookingBean.page}' />
+		<f:viewParam name="bookingBeanExampleActivity" value="#{bookingBean.example.activity}" converter="#{activityBean.converter}" />
+		<f:viewParam name="bookingBeanExampleMember" value="#{bookingBean.exampleMember}" converter="#{memberBean.converter}"/>
+		<f:viewParam name="bookingBeanExampleStatus" value="#{bookingBean.example.status}"/>
+		<f:viewParam name="bookingBeanExampleComment" value="#{bookingBean.example.comment}"/>
+		<f:viewParam name="bookingBeanShowFinished" value="#{bookingBean.showFinished}"/>
 		<f:event type="preRenderView" listener='#{bookingBean.paginate}' />
 	</f:metadata>
 
@@ -81,7 +86,7 @@
 						<h:outputText />
 
 						<h:outputLabel value="Abgeschl.:" />
-							<h:selectBooleanCheckbox value="#{bookingBean.showFinished}"/>
+							<h:selectBooleanCheckbox id="bookingBeanShowFinished" value="#{bookingBean.showFinished}"/>
 						<h:outputText />
 
 					</h:panelGrid>
@@ -104,7 +109,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemBookingActivity" value="#{_item.activity.name}" />
 					</h:link>
 				</h:column>
@@ -115,7 +119,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemBookingActivityStart" value="#{_item.activity.start}" />
 					</h:link>
 				</h:column>
@@ -126,7 +129,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemBookingMember" value="#{_item.member}" />
 					</h:link>
 				</h:column>
@@ -137,7 +139,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemBookingStatus" value="#{_item.status}" />
 					</h:link>
 				</h:column>
@@ -148,7 +149,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemBookingComment" value="#{_item.comment}" />
 					</h:link>
 				</h:column>

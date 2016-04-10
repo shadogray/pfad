@@ -53,14 +53,6 @@
 				<ui:include src="../column.xhtml">
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
-					<ui:param name="property" value="payer" />
-					<ui:param name="tabIndex" value="1" />
-					<ui:param name="link" value="/pfad/payment/view" />
-					<ui:param name="width" value="15em" />
-				</ui:include>
-				<ui:include src="../column.xhtml">
-					<ui:param name="bean" value="#{paymentTableBean}" />
-					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="amount" />
 					<ui:param name="tabIndex" value="1" />
 					<ui:param name="link" value="/pfad/payment/view" />
@@ -82,14 +74,33 @@
 					<ui:param name="link" value="/pfad/payment/view" />
 					<ui:param name="width" value="15em" />
 				</ui:include>
-				<ui:include src="../column.xhtml">
-					<ui:param name="bean" value="#{paymentTableBean}" />
-					<ui:param name="record" value="#{record}" />
-					<ui:param name="property" value="squad" />
-					<ui:param name="tabIndex" value="4" />
-					<ui:param name="link" value="/pfad/payment/view" />
-					<ui:param name="width" value="15em" />
-				</ui:include>
+
+	<rich:column id="column_aconto" sortBy="#{'aconto'}" sortOrder="#{paymentTableBean.sortOrders['aconto']}" sortType="custom"
+		filterValue="#{paymentTableBean.filterValues['aconto']}" filterExpression="#{'aconto'}" filterType="custom" width="5em">
+
+		<f:facet name="header">
+			<h:panelGroup>
+				<h:panelGroup layout="block" style="white-space:nowrap;">
+					<h:commandLink value="#{paymentTableBean.columnHeaders['aconto']}" actionListener="#{paymentTableBean.toggleSort}">
+						<f:ajax render="@form" />
+						<f:setPropertyActionListener target="#{paymentTableBean.sortProperty}" value="aconto" />
+					</h:commandLink>
+					<h:graphicImage name="down.gif" rendered="#{paymentTableBean.sortOrders[property]=='descending'}" alt="UP"/>
+					<h:graphicImage name="up.gif" rendered="#{paymentTableBean.sortOrders[property]=='ascending'}" alt="DWN"/>
+				</h:panelGroup>
+				<h:panelGroup layout="block">
+					<h:selectOneMenu value="#{paymentTableBean.filterValues['aconto']}" tabindex="0">
+						<f:selectItem />
+						<f:selectItem itemLabel="Ja" itemValue="true"/>
+						<f:selectItem itemLabel="Nein" itemValue="false"/>
+						<f:ajax render="@form" event="valueChange" />
+					</h:selectOneMenu>
+				</h:panelGroup>
+			</h:panelGroup>
+		</f:facet>
+
+		<h:outputText value="#{record.aconto ? 'JA' : 'NEIN'}"/>
+	</rich:column>
 
 	<rich:column id="column_payed" sortBy="#{'finished'}" sortOrder="#{paymentTableBean.sortOrders['finished']}" sortType="custom"
 		filterValue="#{paymentTableBean.filterValues['finished']}" filterExpression="#{'finished'}" filterType="custom" width="5em">
@@ -121,6 +132,24 @@
 				<ui:include src="../column.xhtml">
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
+					<ui:param name="property" value="squad" />
+					<ui:param name="tabIndex" value="4" />
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="15em" />
+				</ui:include>
+
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
+					<ui:param name="property" value="payer" />
+					<ui:param name="tabIndex" value="1" />
+					<ui:param name="link" value="/pfad/payment/view" />
+					<ui:param name="width" value="15em" />
+				</ui:include>
+
+				<ui:include src="../column.xhtml">
+					<ui:param name="bean" value="#{paymentTableBean}" />
+					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="comment" />
 					<ui:param name="tabIndex" value="5" />
 					<ui:param name="link" value="/pfad/payment/view" />
@@ -129,9 +158,15 @@
 
 			</rich:extendedDataTable>
 			<rich:dataScroller for="richTable" fastControls="show" />
+			<h:panelGroup>
+				<h:outputText value="Je Seite: "/>
+				<h:inputText value="#{paymentTableBean.dataModel.rows}" size="5" style="width: auto !important;">
+					<f:convertNumber />
+					<f:ajax render="@form"/>
+				</h:inputText>
+			</h:panelGroup>
 
-			<rich:popupPanel id="popupPanelEditPayment" domElementAttachment="form" resizeable="true" modal="true" height="600"
-				width="800">
+			<rich:popupPanel id="popupPanelEditPayment" domElementAttachment="form" autosized="true" modal="true">
 				<h:panelGroup rendered="#{paymentBean.payment != null}">
 					<h:messages />
 					<h:panelGrid id="popupPanelEditPaymentGrid" columnClasses="label,component,required" columns="3">
@@ -163,27 +198,27 @@
 								var="_item">
 								<h:column>
 									<f:facet name="header">
-										<h:outputText value="Aktivität" />
+										<h:outputText value="Aktivität"/>
 									</f:facet>
-									<h:outputText id="itemActivity" value="#{_item.activity}" />
+									<h:outputText id="itemActivity" value="#{_item.activity}" style="white-space: nowrap;"/>
 								</h:column>
 								<h:column>
 									<f:facet name="header">
 										<h:outputText value="Name" />
 									</f:facet>
-									<h:outputText id="itemName" value="#{_item.member.name}" />
+									<h:outputText id="itemName" value="#{_item.member.name}" style="white-space: nowrap;"/>
 								</h:column>
 								<h:column>
 									<f:facet name="header">
 										<h:outputText value="Vorname" />
 									</f:facet>
-									<h:outputText id="itemVorname" value="#{_item.member.vorname}" />
+									<h:outputText id="itemVorname" value="#{_item.member.vorname}" style="white-space: nowrap;"/>
 								</h:column>
 								<h:column>
 									<f:facet name="header">
 										<h:outputText value="Geb.Jahr" />
 									</f:facet>
-									<h:outputText id="itemGebJahr" value="#{_item.member.gebJahr}" />
+									<h:outputText id="itemGebJahr" value="#{_item.member.gebJahr}" style="white-space: nowrap;"/>
 								</h:column>
 								<h:column footerClass="remove-column" headerClass="remove-column">
 									<h:commandLink action="#{_collection.remove(_item)}" styleClass="remove-button">
@@ -199,6 +234,13 @@
 							<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"
 								styleClass="fullwidth" />
 							<h:message for="paymentBeanPaymentComment" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
+						<h:outputLabel for="paymentBeanPaymentAconto" value="Akonto:" />
+						<h:panelGroup>
+							<h:selectBooleanCheckbox id="paymentBeanPaymentAconto" value="#{paymentBean.payment.aconto}" />
+							<h:message for="paymentBeanPaymentAconto" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 

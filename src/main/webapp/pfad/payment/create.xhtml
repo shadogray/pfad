@@ -156,6 +156,13 @@
 				</h:panelGroup>
 				<h:outputText />
 
+				<h:outputLabel for="paymentBeanPaymentAconto" value="Akonto:" />
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="paymentBeanPaymentAconto" value="#{paymentBean.payment.aconto}" />
+					<h:message for="paymentBeanPaymentAconto" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+
 				<h:outputLabel for="paymentBeanPaymentFinished" value="Erledigt:" />
 				<h:panelGroup>
 					<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" />

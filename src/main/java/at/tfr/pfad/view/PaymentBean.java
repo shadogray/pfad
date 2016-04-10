@@ -75,16 +75,14 @@ public class PaymentBean extends BaseBean implements Serializable {
 				return;
 			}
 	
-			if (this.id == null) {
-				this.payment = this.paymentExample;
+			if (id == null) {
+				payment = getPaymentExample();
 			} else {
-				if (payment == null || payment.getId() == null || !payment.getId().equals(id)) {
-					payment = findById(getId());
-					payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b.getActivity()));
-					paymentPayer = payment.getPayer();
-					if (payment.getPayer() != null) {
-						filteredPayers.add(payment.getPayer());
-					}
+				payment = findById(getId());
+				payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b));
+				paymentPayer = payment.getPayer();
+				if (payment.getPayer() != null) {
+					filteredPayers.add(payment.getPayer());
 				}
 			}
 		} catch (Exception e) {
@@ -134,7 +132,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 		payment.setPayer(paymentPayer);
 		
 		try {
-			if (this.id == null) {
+			if (payment.getId() == null) {
 				if (this.payment.getPaymentDate() == null) {
 					this.payment.setPaymentDate(new Date());
 				}
@@ -144,6 +142,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 				payment = entityManager.merge(payment);
 				this.entityManager.flush();
 			}
+			payment.getBookings().stream().filter(b->b.getActivity() != null).map(b->b.getActivity()).collect(Collectors.toList()); // for lazy init exc
+			id = payment.getId();
 			switch (command) {
 			case createAndNew:
 				return "create?faces-redirect=true";
@@ -194,6 +194,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	private List<PaymentUI> pageItems;
 
 	private Boolean exampleFinished;
+	private Boolean exampleAconto;
 	private Date examplePaymentDateStart;
 	private Date examplePaymentDateEnd;
 
@@ -206,11 +207,11 @@ public class PaymentBean extends BaseBean implements Serializable {
 	}
 
 	public Payment getExample() {
-		return this.paymentExample;
+		return this.getPaymentExample();
 	}
 
 	public void setExample(Payment example) {
-		this.paymentExample = example;
+		setPaymentExample(example);
 	}
 
 	public Date getExamplePaymentDateStart() {
@@ -236,14 +237,26 @@ public class PaymentBean extends BaseBean implements Serializable {
 	public void setExampleFinished(Boolean exampleFinished) {
 		this.exampleFinished = exampleFinished;
 	}
+	
+	public Boolean getExampleAconto() {
+		return exampleAconto;
+	}
 
+	public void setExampleAconto(Boolean exampleAconto) {
+		this.exampleAconto = exampleAconto;
+	}
+	
 	public String search() {
 		this.page = 0;
-		return null;
+		return FacesContext.getCurrentInstance().getViewRoot().getViewId()+"?faces-redirect=true&includeViewParams=true";
 	}
 
 	public void paginate() {
 
+		if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
+			return;
+		}
+		
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 
 		// Populate this.count
@@ -285,7 +298,12 @@ public class PaymentBean extends BaseBean implements Serializable {
 			predicatesList.add(builder.equal(root.get(Payment_.finished), finished));
 		}
 
-		PaymentType type = this.paymentExample.getType();
+		Boolean aconto = this.exampleAconto;
+		if (aconto != null) {
+			predicatesList.add(builder.equal(root.get(Payment_.aconto), aconto));
+		}
+
+		PaymentType type = this.getPaymentExample().getType();
 		if (type != null) {
 			predicatesList.add(builder.equal(root.get(Payment_.type), type));
 		}
@@ -352,6 +370,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isBlank(value))
+					return null;
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 

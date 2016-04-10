@@ -119,9 +119,9 @@ public abstract class BaseBean implements Serializable {
 	protected Booking booking;
 	protected Member member;
 
-	protected Payment paymentExample = new Payment();
-	protected Booking bookingExample = new Booking();
-	protected Member memberExample = new Member();
+	private Payment paymentExample = new Payment();
+	private Booking bookingExample = new Booking();
+	private Member memberExample = new Member();
 	
 	protected Booking bookingToAdd;
 	protected Member memberToAdd;
@@ -138,6 +138,7 @@ public abstract class BaseBean implements Serializable {
 	protected List<Payment> filteredPayments = new ArrayList<>();
 
 	{
+		log.debug("inited");
 //		bookingExample.setMember(new Member());
 //		paymentExample.setPayer(new Member());
 	}
@@ -149,6 +150,24 @@ public abstract class BaseBean implements Serializable {
 		this.id = id;
 	}
 	
+	public Member getMemberExample() {
+		return memberExample;
+	}
+	public void setMemberExample(Member memberExample) {
+		this.memberExample = memberExample;
+	}
+	public Booking getBookingExample() {
+		return bookingExample;
+	}
+	public void setBookingExample(Booking bookingExample) {
+		this.bookingExample = bookingExample;
+	}
+	public Payment getPaymentExample() {
+		return paymentExample;
+	}
+	public void setPaymentExample(Payment paymentExample) {
+		this.paymentExample = paymentExample;
+	}
 	public Payment getPayment() {
 		return payment;
 	}

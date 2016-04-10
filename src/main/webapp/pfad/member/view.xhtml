@@ -55,7 +55,7 @@
 			<h:outputLabel for="memberBeanMemberRolle" value="Rolle:" />
 			<h:outputText id="memberBeanMemberRolle" value="#{memberBean.member.rolle}" />
 			<h:outputLabel for="memberBeanMemberTrupp" value="Trupp:" />
-			<h:link id="memberBeanMemberTrupp" outcome="/squad/view" rendered="#{!empty memberBean.member.trupp}"
+			<h:link id="memberBeanMemberTrupp" outcome="/pfad/squad/view" rendered="#{!empty memberBean.member.trupp}"
 				value="#{memberBean.member.trupp}">
 				<f:param name="id" value="#{memberBean.member.trupp.id}" />
 			</h:link>

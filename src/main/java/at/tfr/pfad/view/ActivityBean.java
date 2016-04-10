@@ -245,6 +245,8 @@ public class ActivityBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isBlank(value))
+					return null;
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 

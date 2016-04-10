@@ -64,7 +64,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemActivityName" value="#{_item.name}"/>
 					</h:link>
 				</h:column>
@@ -74,7 +73,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemActivityStatus" value="#{_item.status}"/>
 					</h:link>
 				</h:column>
@@ -84,7 +82,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemActivityStart" value="#{_item.start}" converter="javax.faces.DateTime"/>
 					</h:link>
 				</h:column>
@@ -94,7 +91,6 @@
 					</f:facet>
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}"/>
-						<f:param name="faces-redirect" value="true" />
 						<h:outputText id="itemActivityEnd" value="#{_item.end}" converter="javax.faces.DateTime"/>
 					</h:link>
 				</h:column>

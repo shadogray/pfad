@@ -19,7 +19,7 @@
 					<h:graphicImage name="up.gif" rendered="#{bean.sortOrders[property]=='ascending'}" alt="DWN"/>
 				</h:panelGroup>
 				<h:panelGroup layout="block">
-					<h:inputText value="#{bean.filterValues[property]}" tabindex="#{tabIndex}">
+					<h:inputText value="#{bean.filterValues[property]}" tabindex="#{tabIndex}" >
 						<f:ajax render="@form" event="valueChange" />
 					</h:inputText>
 				</h:panelGroup>

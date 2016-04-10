@@ -26,7 +26,7 @@
 	
 				<h:outputLabel for="paymentBeanPaymentPayer" value="Zahler:" />
 				<h:panelGroup id="paymentBeanPaymentPayer">
-					<h:link id="paymentBeanPayer" value="#{paymentBean.payment.payer}" outcome="/member/view"
+					<h:link id="paymentBeanPayer" value="#{paymentBean.payment.payer}" outcome="/pfad/member/view"
 						rendered="#{paymentBean.payment.payer != null}">
 						<f:param name="id" value="#{paymentBean.payment.payer.id}" />
 					</h:link>
@@ -105,6 +105,10 @@
 				<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3" styleClass="fullwidth" readonly="true"/>
 				<h:outputText />
 	
+				<h:outputLabel for="paymentBeanPaymentAconto" value="Akonto:" />
+				<h:selectBooleanCheckbox id="paymentBeanPaymentAconto" value="#{paymentBean.payment.aconto}" disabled="true"/>
+				<h:outputText />
+					
 				<h:outputLabel for="paymentBeanPaymentFinished" value="Erledigt:" />
 				<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" disabled="true"/>
 				<h:outputText />

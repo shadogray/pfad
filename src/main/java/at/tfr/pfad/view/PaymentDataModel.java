@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
+import javax.enterprise.context.RequestScoped;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
@@ -23,6 +25,7 @@ import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
 import at.tfr.pfad.model.Squad_;
 
+@RequestScoped
 @Stateful
 public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 
@@ -41,7 +44,7 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 	}
 	
 	@Override
-	protected Predicate createFilterCriteriaForField(final String propertyName, final Object filterValue) {
+	protected Predicate createFilterCriteriaForField(final String propertyName, final Object filterValue, CriteriaQuery<?> criteriaQuery) {
 		if (!(filterValue instanceof String) || StringUtils.isBlank((String)filterValue)) {
 			return null;
 		}
@@ -61,7 +64,7 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 		case "activity":
 			return cb.like(cb.lower(root.join(Payment_.bookings).get(Booking_.activity).get(Activity_.name)), "%"+val+"%");
 		}
-		return super.createFilterCriteriaForField(propertyName, val);
+		return super.createFilterCriteriaForField(propertyName, val, criteriaQuery);
 	}
 
 	@Override

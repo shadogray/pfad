@@ -119,12 +119,10 @@ public class BookingBean extends BaseBean implements Serializable {
 		}
 
 		if (id == null) {
-			booking = bookingExample;
+			booking = getBookingExample();
 		} else {
-			if (booking == null || !booking.getId().equals(id)) {
-				booking = findById(getId());
-				booking.getPayments().size();
-			}
+			booking = findById(getId());
+			booking.getPayments().size();
 			filteredMembers.add(booking.getMember());
 		}
 	}
@@ -160,12 +158,13 @@ public class BookingBean extends BaseBean implements Serializable {
 				booking.setSquad(booking.getMember().getTrupp());
 			}
 
-			if (this.id == null) {
-				this.entityManager.persist(this.booking);
+			if (id == null) {
+				entityManager.persist(booking);
+				id = booking.getId();
 				return "search?faces-redirect=true";
 			} else {
 				booking = entityManager.merge(booking);
-				return "view?faces-redirect=true&id=" + this.booking.getId();
+				return "view?faces-redirect=true&id=" + booking.getId();
 			}
 		} catch (Exception e) {
 			log.info("update: "+e, e);
@@ -203,19 +202,23 @@ public class BookingBean extends BaseBean implements Serializable {
 	private List<Booking> pageItems;
 
 	public Booking getExample() {
-		return this.bookingExample;
+		return this.getBookingExample();
 	}
 
 	public void setExample(Booking example) {
-		this.bookingExample = example;
+		setBookingExample(example);
 	}
 
 	public String search() {
 		this.page = 0;
-		return null;
+		return FacesContext.getCurrentInstance().getViewRoot().getViewId()+"?faces-redirect=true&includeViewParams=true";
 	}
 
 	public void paginate() {
+
+		if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
+			return;
+		}
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 
@@ -241,27 +244,27 @@ public class BookingBean extends BaseBean implements Serializable {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
-		if (bookingExample.getActivity() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.activity), bookingExample.getActivity()));
+		if (getBookingExample().getActivity() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.activity), getBookingExample().getActivity()));
 		}
 
 		if (exampleMember != null && exampleMember.getId() != null) {
 			predicatesList.add(builder.equal(root.get(Booking_.member), exampleMember));
 		}
 
-		if (bookingExample.getSquad() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.squad), bookingExample.getSquad()));
+		if (getBookingExample().getSquad() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.squad), getBookingExample().getSquad()));
 		}
 
-		if (bookingExample.getStatus() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.status), bookingExample.getStatus()));
+		if (getBookingExample().getStatus() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.status), getBookingExample().getStatus()));
 		}
-		String name = this.bookingExample.getComment();
+		String name = this.getBookingExample().getComment();
 		if (StringUtils.isNoneBlank(name)) {
 			predicatesList.add(builder.like(builder.lower(root.get(Booking_.comment)), '%' + name.toLowerCase() + '%'));
 		}
 		
-		if (!showFinished && !(bookingExample.getActivity() != null && bookingExample.getActivity().isFinished())) {
+		if (!showFinished && !(getBookingExample().getActivity() != null && getBookingExample().getActivity().isFinished())) {
 			Join<Booking,Activity> act = root.join(Booking_.activity);
 			predicatesList.add(builder.or(
 					builder.isNull(act.get(Activity_.end)),
@@ -295,6 +298,8 @@ public class BookingBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isBlank(value))
+					return null;
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
@@ -374,6 +379,17 @@ public class BookingBean extends BaseBean implements Serializable {
 		if (pay.getId() == null) {
 			pay.getBookings().add(booking);
 		}
+		pay.updateType(booking);
+	}
+
+	public void initNewPayment() {
+		paymentBean.setPaymentPayer(null);
+		paymentBean.setExample(new Payment());
+		paymentBean.setId(paymentBean.getPayment() != null ? paymentBean.getPayment().getId() : null);
+		paymentBean.retrieve();
+		Payment pay = paymentBean.getPayment();
+		pay.getBookings().add(booking);
+		pay.updateType(booking);
 	}
 
 	public void handle(AjaxBehaviorEvent event) {

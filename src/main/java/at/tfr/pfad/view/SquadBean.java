@@ -27,6 +27,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
+
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
@@ -264,6 +267,8 @@ public class SquadBean extends BaseBean implements Serializable {
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isBlank(value))
+					return null;
 				return ejbProxy.findById(Long.valueOf(value));
 			}
 
