@@ -74,6 +74,13 @@
 				</h:panelGroup>
 				<h:outputText />
 
+				<h:outputLabel for="bookingBeanBookingSquad" value="Trupp:" />
+				<h:selectOneMenu id="bookingBeanBookingSquad" value="#{bookingBean.booking.squad}" converter="#{squadBean.converter}">
+					<f:selectItem />
+					<f:selectItems value="#{squadBean.all}" var="s" itemLabel="#{s}" itemValue="#{s}"/>
+				</h:selectOneMenu>
+				<h:outputText />
+
 				<h:outputLabel for="bookingBeanBookingStatus" value="Status:" />
 				<h:panelGroup>
 					<h:selectOneMenu id="bookingBeanBookingStatus" value="#{bookingBean.booking.status}" required="true">

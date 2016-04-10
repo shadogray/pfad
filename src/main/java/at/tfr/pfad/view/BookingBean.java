@@ -123,6 +123,9 @@ public class BookingBean extends BaseBean implements Serializable {
 		} else {
 			booking = findById(getId());
 			booking.getPayments().size();
+			if (booking.getSquad() != null) {
+				booking.getSquad().getName();
+			}
 			filteredMembers.add(booking.getMember());
 		}
 	}

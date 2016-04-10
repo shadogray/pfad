@@ -145,10 +145,13 @@ public class BookingUI extends Booking {
 	}
 
 	public String getSquadName() {
-		if (booking.getSquad() != null) {
-			return booking.getSquad().getName();
+		String squad = booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : null;
+		if (squad == null) {
+			if (booking.getSquad() != null) {
+				squad = booking.getSquad().getName();
+			}
 		}
-		return booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : "";
+		return squad;
 	}
 	
 	public String getStrasse() {
