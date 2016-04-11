@@ -199,7 +199,7 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 		String result = "";
 		if (name != null && !name.trim().isEmpty())
 			result += "" + name;
-		result += ", type: "+type;
+		result += ", "+type;
 		return result;
 	}
 
