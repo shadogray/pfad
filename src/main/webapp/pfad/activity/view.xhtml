@@ -9,8 +9,6 @@
 		<f:event type="preRenderView" listener='#{activityBean.retrieve}' />
 	</f:metadata>
 
-	<ui:param name="pageTitle" value="View Activity" />
-
 	<ui:define name="header">
 		Aktivität
 	</ui:define>
@@ -41,6 +39,35 @@
 
 			<h:outputLabel for="activityBeanActivityEnd" value="Ende:" />
 			<h:outputText id="activityBeanActivityEnd" value="#{activityBean.activity.end}" converter="javax.faces.DateTime" />
+			<h:outputText />
+
+			<h:outputLabel value="Betrag:" />
+			<h:outputText id="activityBeanActivityAmount" tabindex="0" value="#{activityBean.activity.amount}" validatorMessage="Betrag ungültig!">
+				<f:convertNumber maxFractionDigits="2" />
+			</h:outputText>
+			<h:message for="activityBeanActivityAmount" />
+
+			<h:outputLabel value="Anzahlung:" />
+			<h:outputText id="activityBeanActivityAconto" tabindex="0" value="#{activityBean.activity.aconto}" validatorMessage="Betrag ungültig!">
+				<f:convertNumber maxFractionDigits="2" />
+			</h:outputText>
+			<h:message for="activityBeanActivityAconto" />
+
+			<h:outputLabel value="Bemerkung:" />
+			<h:inputTextarea id="activityBeanActivityComment" tabindex="0" value="#{activityBean.activity.comment}" rows="5" readonly="true"/>
+			<h:message for="activityBeanActivityComment" />
+
+			<h:outputLabel for="activityBeanActivityRevision" value="Änderung:" />
+			<h:panelGrid id="activityBeanActivityRevision" columns="8">
+				<h:outputLabel value="Erstellt:" />
+				<h:outputText value="#{activityBean.activity.created}" converter="javax.faces.DateTime" />
+				<h:outputLabel value="Von:" />
+				<h:outputText value="#{activityBean.activity.createdBy}" />
+				<h:outputLabel value="Geändert:" />
+				<h:outputText value="#{activityBean.activity.changed}" converter="javax.faces.DateTime" />
+				<h:outputLabel value="Von:" />
+				<h:outputText value="#{activityBean.activity.changedBy}" />
+			</h:panelGrid>
 			<h:outputText />
 
 		</h:panelGrid>

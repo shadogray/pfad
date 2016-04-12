@@ -69,8 +69,14 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 	private ActivityStatus status;
 	
 	@Column
-	private String comment;
+	private Float amount;
+	
+	@Column
+	private Float aconto;
 
+	@Column
+	private String comment;
+	
 	@Column
 	protected Date changed;
 
@@ -182,6 +188,22 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 
 	public void setStatus(ActivityStatus status) {
 		this.status = status;
+	}
+
+	public Float getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Float amount) {
+		this.amount = amount;
+	}
+
+	public Float getAconto() {
+		return aconto;
+	}
+
+	public void setAconto(Float aconto) {
+		this.aconto = aconto;
 	}
 
 	public String getComment() {
