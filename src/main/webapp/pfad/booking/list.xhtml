@@ -138,11 +138,11 @@
 
 				<rich:column width="3em" rendered="#{paymentBean.viewAllowed}">
 					<f:facet name="header">Zahlg</f:facet>
-					<a4j:commandButton execute="@this" render="popupPanelEditPayment :popupPanelEditPaymentForm"
+					<a4j:commandLink styleClass="btn-small" execute="@this" render="popupPanelEditPayment :popupPanelEditPaymentForm"
 						oncomplete="#{rich:component('popupPanelEditPaymentPopup')}.show(); return false;" value="EUR">
 						<f:setPropertyActionListener target="#{bookingBean.id}" value="#{record.id}" />
 						<a4j:actionListener listener="#{bookingBean.retrieveAndGetPayment()}" />
-					</a4j:commandButton>
+					</a4j:commandLink>
 				</rich:column>
 
 				<ui:include src="../column.xhtml">

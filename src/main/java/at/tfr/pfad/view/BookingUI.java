@@ -25,6 +25,7 @@ public class BookingUI extends Booking {
 	private Set<Member> payers;
 	private boolean free;
 	private Set<Payment> payments;
+	private String squadName;
 
 	public BookingUI(Booking booking) {
 		this.booking = booking;
@@ -33,6 +34,12 @@ public class BookingUI extends Booking {
 		this.payers = booking.getPayments().stream().map(Payment::getPayer).collect(Collectors.toSet());
 		if (booking.getMember() != null) {
 			free = booking.getMember().isFree() || booking.getMember().getFunktionen().stream().anyMatch(Function::isFree);
+		}
+		squadName = booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : null;
+		if (squadName == null) {
+			if (booking.getSquad() != null) {
+				squadName = booking.getSquad().getName();
+			}
 		}
 	}
 
@@ -145,13 +152,7 @@ public class BookingUI extends Booking {
 	}
 
 	public String getSquadName() {
-		String squad = booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : null;
-		if (squad == null) {
-			if (booking.getSquad() != null) {
-				squad = booking.getSquad().getName();
-			}
-		}
-		return squad;
+		return squadName;
 	}
 	
 	public String getStrasse() {

@@ -460,6 +460,7 @@ public class DownloadBean implements Serializable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public String query() {
 		Query q = null;
 		if (dataTableGroup != null) {
