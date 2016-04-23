@@ -30,9 +30,6 @@ $(function() {
 	$('#search').on('keypress', function(event) {
 		submitSearch(event);
 	});
-	$('input.filter').keypress(function(event) {
-		event.stopPropagation();
-	});
 	$('.stopKeyPress').keypress(function(event) {
 		event.stopPropagation();
 	});

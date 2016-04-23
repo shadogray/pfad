@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.PhaseId;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -89,6 +90,9 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
     @Override
     public void arrange(final FacesContext context, final ArrangeableState state) {
+		if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+			uData = null;
+		}
         arrangeableState = state;
     }
 
