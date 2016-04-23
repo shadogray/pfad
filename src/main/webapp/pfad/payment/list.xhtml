@@ -54,7 +54,7 @@
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="amount" />
-					<ui:param name="tabIndex" value="1" />
+					<ui:param name="tabIndex" value="9" />
 					<ui:param name="link" value="/pfad/payment/view" />
 					<ui:param name="width" value="5em" />
 				</ui:include>
@@ -62,7 +62,7 @@
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="member" />
-					<ui:param name="tabIndex" value="2" />
+					<ui:param name="tabIndex" value="1" />
 					<ui:param name="link" value="/pfad/payment/view" />
 					<ui:param name="width" value="15em" />
 				</ui:include>
@@ -70,7 +70,7 @@
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="activity" />
-					<ui:param name="tabIndex" value="3" />
+					<ui:param name="tabIndex" value="2" />
 					<ui:param name="link" value="/pfad/payment/view" />
 					<ui:param name="width" value="15em" />
 				</ui:include>
@@ -89,7 +89,7 @@
 					<h:graphicImage name="up.gif" rendered="#{paymentTableBean.sortOrders[property]=='ascending'}" alt="DWN"/>
 				</h:panelGroup>
 				<h:panelGroup layout="block">
-					<h:selectOneMenu value="#{paymentTableBean.filterValues['aconto']}" tabindex="0">
+					<h:selectOneMenu value="#{paymentTableBean.filterValues['aconto']}" tabindex="3">
 						<f:selectItem />
 						<f:selectItem itemLabel="Ja" itemValue="true"/>
 						<f:selectItem itemLabel="Nein" itemValue="false"/>
@@ -116,7 +116,7 @@
 					<h:graphicImage name="up.gif" rendered="#{paymentTableBean.sortOrders[property]=='ascending'}" alt="DWN"/>
 				</h:panelGroup>
 				<h:panelGroup layout="block">
-					<h:selectOneMenu value="#{paymentTableBean.filterValues['finished']}" tabindex="0">
+					<h:selectOneMenu value="#{paymentTableBean.filterValues['finished']}" tabindex="4">
 						<f:selectItem />
 						<f:selectItem itemLabel="Ja" itemValue="true"/>
 						<f:selectItem itemLabel="Nein" itemValue="false"/>
@@ -133,7 +133,7 @@
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="squad" />
-					<ui:param name="tabIndex" value="4" />
+					<ui:param name="tabIndex" value="5" />
 					<ui:param name="link" value="/pfad/payment/view" />
 					<ui:param name="width" value="15em" />
 				</ui:include>
@@ -142,7 +142,7 @@
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="payer" />
-					<ui:param name="tabIndex" value="1" />
+					<ui:param name="tabIndex" value="6" />
 					<ui:param name="link" value="/pfad/payment/view" />
 					<ui:param name="width" value="15em" />
 				</ui:include>
@@ -151,7 +151,7 @@
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />
 					<ui:param name="property" value="comment" />
-					<ui:param name="tabIndex" value="5" />
+					<ui:param name="tabIndex" value="7" />
 					<ui:param name="link" value="/pfad/payment/view" />
 					<ui:param name="width" value="20em" />
 				</ui:include>
