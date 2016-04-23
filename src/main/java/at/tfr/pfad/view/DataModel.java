@@ -50,6 +50,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 	private Logger log = Logger.getLogger(getClass());
     private Long rowKey;
     private ArrangeableState arrangeableState;
+    private boolean isRenderResponse;
     protected Class<T> entityClass;
     protected Class<U> uiClass;
 
@@ -90,7 +91,8 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
     @Override
     public void arrange(final FacesContext context, final ArrangeableState state) {
-		if (FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+		if (!isRenderResponse && FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+			isRenderResponse = true;
 			uData = null;
 		}
         arrangeableState = state;
