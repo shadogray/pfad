@@ -9,8 +9,10 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -26,6 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.richfaces.component.UISelect;
 
+import at.tfr.pfad.dao.BookingRepository;
+import at.tfr.pfad.dao.PaymentRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Member;
@@ -51,6 +55,10 @@ public abstract class BaseBean implements Serializable {
 	private Members members;
 	@Inject
 	private Payments payments;
+	@Inject
+	protected BookingRepository bookingRepo;
+	@Inject
+	protected PaymentRepository paymentRepo;
 	
 	protected int page;
 	protected long count;
@@ -172,6 +180,16 @@ public abstract class BaseBean implements Serializable {
 		return payment;
 	}
 	
+	public List<Payment> getPayments(Booking b) {
+		if (b == null) {
+			return Collections.emptyList();
+		}
+		if (b.getId() == null) {
+			return new ArrayList<Payment>(b.getPayments().stream().sorted((x,y) -> x.getId().compareTo(y.getId())).collect(Collectors.toList()));
+		}
+		return paymentRepo.findByBooking(b);
+	}
+	
 	public void setPayment(Payment payment) {
 		this.payment = payment;
 	}
@@ -190,6 +208,16 @@ public abstract class BaseBean implements Serializable {
 	
 	public void setBooking(Booking booking) {
 		this.booking = booking;
+	}
+	
+	public List<Booking> getBookings(Payment p) {
+		if (p == null) {
+			return Collections.emptyList();
+		}
+		if (p.getId() == null) {
+			return new ArrayList<Booking>(p.getBookings().stream().sorted((x,y) -> x.getId().compareTo(y.getId())).collect(Collectors.toList()));
+		}
+		return bookingRepo.findByPayment(p);
 	}
 	
 	public Booking getExampleBooking() {

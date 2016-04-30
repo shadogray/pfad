@@ -19,6 +19,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -31,6 +33,9 @@ import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.dao.AuditListener;
 
 @Audited(withModifiedFlag = true)
+@NamedQueries({
+	@NamedQuery(name = "PaymentsForBooking", query = "select p from Payment p where ?1 member of p.bookings order by p.id")
+})
 @Entity
 @EntityListeners({AuditListener.class})
 public class Payment implements PrimaryKeyHolder, Serializable, Auditable {

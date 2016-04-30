@@ -105,7 +105,7 @@ public class ActivityBean extends BaseBean implements Serializable {
 
 	@Override
 	public boolean isUpdateAllowed() {
-		return isAdmin() || isGruppe() || isVorstand() || isKassier();
+		return isAdmin() || isGruppe() || isVorstand() || isKassier() || isLeiter();
 	}
 
 	public String update() {

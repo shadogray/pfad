@@ -1,7 +1,6 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -19,15 +18,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
+import org.apache.deltaspike.data.api.Query;
 import org.hibernate.envers.Audited;
 
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.AuditListener;
 
 @Audited(withModifiedFlag = true)
+@NamedQueries({
+	@NamedQuery(name = "BookingsForPayment", query = "select b from Booking b where ?1 member of b.payments order by b.id")
+})
 @Entity
 @EntityListeners({AuditListener.class})
 public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
