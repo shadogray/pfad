@@ -70,6 +70,7 @@ public class BookingBean extends BaseBean implements Serializable {
 	private boolean showFinished;
 	private boolean squadBookingVisible;
 	private boolean allBookingVisible;
+	private boolean paymentPopupVisible;
 
 	public boolean isSquadBookingVisible() {
 		return squadBookingVisible;
@@ -367,6 +368,14 @@ public class BookingBean extends BaseBean implements Serializable {
 		return isAdmin() || isGruppe();
 	}
 
+	public boolean isPaymentPopupVisible() {
+		return paymentPopupVisible;
+	}
+	
+	public void setPaymentPopupVisible(boolean paymentPopupVisible) {
+		this.paymentPopupVisible = paymentPopupVisible;
+	}
+	
 	public void retrieveAndGetPayment() {
 		booking = null; // so much caching around :-/
 		retrieve();
@@ -381,6 +390,7 @@ public class BookingBean extends BaseBean implements Serializable {
 		Payment pay = paymentBean.getPayment();
 		if (pay.getId() == null) {
 			pay.getBookings().add(booking);
+			booking.getPayments().add(pay);
 		}
 		pay.updateType(booking);
 	}
@@ -392,6 +402,7 @@ public class BookingBean extends BaseBean implements Serializable {
 		paymentBean.retrieve();
 		Payment pay = paymentBean.getPayment();
 		pay.getBookings().add(booking);
+		booking.getPayments().add(pay);
 		pay.updateType(booking);
 	}
 

@@ -25,7 +25,7 @@
 	<ui:define name="main">
 		<f:validateBean disabled="true">
 			<h:form id="list">
-				<h:messages globalOnly="true" styleClass="error" />
+				<h:messages styleClass="error" />
 	
 				<rich:focus id="richFocus" preserve="true" />
 	
@@ -139,9 +139,9 @@
 
 				<rich:column width="3em" rendered="#{paymentBean.viewAllowed}">
 					<f:facet name="header">Zahlg</f:facet>
-					<a4j:commandLink styleClass="btn-small" execute="@this" render="popupPanelEditPayment :popupPanelEditPaymentForm"
-						oncomplete="#{rich:component('popupPanelEditPaymentPopup')}.show(); return false;" value="EUR">
+					<a4j:commandLink styleClass="btn-small" execute="@this" render="panelGroupEditPayment :popupPanelEditPaymentForm" value="EUR">
 						<f:setPropertyActionListener target="#{bookingBean.id}" value="#{record.id}" />
+						<f:setPropertyActionListener target="#{bookingBean.paymentPopupVisible}" value="true"/>
 						<a4j:actionListener listener="#{bookingBean.retrieveAndGetPayment()}" />
 					</a4j:commandLink>
 				</rich:column>
@@ -167,7 +167,6 @@
 
 			<rich:popupPanel id="popupPanelEditBooking" domElementAttachment="form" autosized="true" modal="true" >
 				<h:panelGroup rendered="#{bookingBean.booking != null}">
-					<h:messages />
 					<h:panelGrid columns="3">
 						<h:outputLabel value="Aktivität:" />
 						<h:outputText value="#{bookingBean.booking.activity}" />
@@ -193,6 +192,7 @@
 						</h:panelGroup>
 						<h:outputText />
 					</h:panelGrid>
+					<h:messages errorClass="error" />
 					<h:panelGrid columns="3" width="100%">
 						<h:commandLink value="Delete" actionListener='#{bookingBean.delete}' styleClass="btn btn-primary"
 							disabled="#{!bookingBean.deleteAllowed}">
@@ -210,23 +210,23 @@
 
 		</h:form>
 
-		<rich:popupPanel id="popupPanelEditPaymentPopup" domElementAttachment="form" autosized="true" modal="true">
+		<h:panelGroup id="panelGroupEditPayment">
+		<rich:popupPanel id="popupPanelEditPaymentPopup" domElementAttachment="form" autosized="true" modal="true" show="#{bookingBean.paymentPopupVisible}">
 			<h:panelGroup id="popupPanelEditPayment">
 				<h:panelGroup rendered="#{bookingBean.booking != null}">
 					<h:form id="popupPanelEditPaymentForm">
-						<h:messages errorClass="error" />
 						<h:panelGrid columns="2" style="width:100%;">
 							<h:panelGroup>
 								<h:outputLabel value="Zahlungen:" />
 								<h:selectOneMenu id="bookingBeanPaymentSelect" value="#{paymentBean.payment}" converter="#{paymentBean.converter}"  readonly="#{paymentBean.id == null}">
 									<f:selectItem itemLabel="Zahlung hinzufügen.."/>
 									<f:selectItems value="#{bookingBean.booking.sortedPayments}" var="p" itemLabel="#{p}" itemValue="#{p}" />
-									<f:ajax execute="@this" listener="#{bookingBean.initNewPayment()}" render="@form" />
+									<f:ajax execute="@this" listener="#{bookingBean.initNewPayment()}" render="panelGroupEditPayment" />
 								</h:selectOneMenu>
 								<h:message for="bookingBeanPaymentSelect" />
 							</h:panelGroup>
-							<h:link value="Cancel" onclick="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;"
-								styleClass="btn btn-primary" />
+							<a4j:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" accesskey="c" title="Cancel [ALT]+[C]"
+								render="panelGroupEditPayment" styleClass="btn btn-primary" />
 						</h:panelGrid>
 						<h:panelGroup id="popupPanelPayment">
 							<h:panelGroup rendered="#{paymentBean.payment != null}">
@@ -246,7 +246,7 @@
 						tabindex="1" rendered="#{paymentBean.payment.payer != null}">
 						<f:selectItem itemLabel="löschen.." noSelectionOption="true"/>
 						<f:selectItem itemLabel="#{paymentBean.payment.payer}" itemValue="#{paymentBean.payment.payer.idStr}" />
-						<f:ajax render="paymentBeanPaymentPayerPanel" />
+						<f:ajax render="panelGroupEditPayment" />
 					</h:selectOneMenu>
 					<rich:select id="paymentBeanPaymentPayerSelect" rendered="#{paymentBean.payment.payer == null}" 
 						tabindex="1" styleClass="fullwidth manual" p:placeholder="Der Zahler oder das Mitglied.."  
@@ -255,7 +255,7 @@
 						minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
 						<f:selectItems value="#{paymentBean.filteredPayers}" />
 						<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectPaymentPayer}"
-							render="paymentBeanPaymentPayerPanel" />
+							render="panelGroupEditPayment" />
 					</rich:select>
 					<h:message for="paymentBeanPaymentPayer" styleClass="error" />
 					<h:message for="paymentBeanPaymentPayerSelect" styleClass="error" />
@@ -282,7 +282,7 @@
 				<h:outputLabel for="paymentBeanPaymentBookings" value="Buchungen:" />
 				<h:panelGroup id="paymentBeanPaymentBookingsPanel" style="width: 100%;">
 					<h:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" style="width: 100%;" 
-						value="#{paymentBean.getBookings(paymentBean.payment)}" var="_item">
+						value="#{paymentBean.payment.bookings}" var="_item">
 						<h:column>
 							<f:facet name="header">
 								<h:outputText value="Aktivität" />
@@ -330,7 +330,7 @@
 						</h:column>
 						<h:column footerClass="remove-column" headerClass="remove-column">
 							<a4j:commandButton value="DEL" actionListener="#{paymentBean.deleteBooking(_item.id)}" styleClass="remove-button" >
-								<a4j:ajax execute="@this" render="paymentBeanPaymentBookingsPanel"/>
+								<a4j:ajax execute="@this" render="popupPanelEditPaymentPopup"/>
 							</a4j:commandButton>
 						</h:column>
 					</h:dataTable>
@@ -341,7 +341,7 @@
 							minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
 							<f:selectItem />
 							<f:selectItems value="#{paymentBean.filteredBookings}" var="boo" itemLabel="#{boo}" itemValue="#{boo.idStr}"/>
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}" render="paymentBeanPaymentBookingsPanel" />
+							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}" render="panelGroupEditPayment" />
 						</rich:select>
 						<h:message for="paymentBeanExampleBookingSelect" styleClass="error" />
 					</h:panelGrid>
@@ -372,17 +372,20 @@
 	
 									</h:panelGrid>
 	
+									<h:messages errorClass="error" />
 									<h:panelGrid columns="4" style="width: 100%;">
 										<a4j:commandLink value="SaveAndClose" actionListener='#{paymentBean.update}' accesskey="r"
 											title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}"
-											execute="@form" oncomplete="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;" />
+											execute="@form" render="panelGroupEditPayment" >
+											<f:setPropertyActionListener target="#{bookingBean.paymentPopupVisible}" value="false"/>
+										</a4j:commandLink>
 										<h:outputText/>
 										<a4j:commandLink value="Speichern" actionListener='#{paymentBean.update}' accesskey="s" title="Speichern [ALT]+[S]"
 											styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" execute="@form" render="@form" >
 											<a4j:actionListener listener="#{bookingBean.retrieve()}"/>
 										</a4j:commandLink>
-										<h:link value="Schließen" outcome="search" accesskey="c" title="Cancel [ALT]+[C]"
-											onclick="#{rich:component('popupPanelEditPaymentPopup')}.hide(); return false;" styleClass="btn btn-primary" />
+										<a4j:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" accesskey="c" title="Cancel [ALT]+[C]"
+											render="panelGroupEditPayment" styleClass="btn btn-primary" />
 									</h:panelGrid>
 								</h:panelGroup>
 							</h:panelGroup>
@@ -390,6 +393,7 @@
 					</h:panelGroup>
 				</h:panelGroup>
 			</rich:popupPanel>
+			</h:panelGroup>
 		</f:validateBean>
 	</ui:define>
 

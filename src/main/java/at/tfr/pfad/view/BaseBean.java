@@ -191,7 +191,9 @@ public abstract class BaseBean implements Serializable {
 	}
 	
 	public void setPayment(Payment payment) {
-		this.payment = payment;
+		if (this.payment == null || !this.payment.equals(payment)) {
+			this.payment = payment;
+		}
 	}
 	
 	public Member getMember() {
@@ -321,6 +323,7 @@ public abstract class BaseBean implements Serializable {
 		} else {
 			bookingToAdd = findBookingById(Long.valueOf(val));
 			payment.getBookings().add(bookingToAdd);
+			bookingToAdd.getPayments().add(payment);
 			payment.updateType(bookingToAdd.getActivity());
 			uiSelect.setSubmittedValue("");
 			uiSelect.setValue(null);

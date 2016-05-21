@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
@@ -32,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.PaymentType;
+import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
@@ -162,7 +164,11 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	public void deleteBooking(Long id) {
 		try {
-			payment.getBookings().removeIf(b->b.getId().equals(id));
+			Optional<Booking> bOpt = payment.getBookings().stream().filter(b->b.getId().equals(id)).findFirst();
+			if (bOpt.isPresent()) {
+				payment.getBookings().remove(bOpt.get());
+				//bOpt.get().getPayments().remove(payment); Not initialized - so not necessary?!
+			}
 		} catch (Exception e) {
 			log.info("deleteBooking: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));

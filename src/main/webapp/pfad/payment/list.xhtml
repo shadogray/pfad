@@ -253,6 +253,7 @@
 
 					</h:panelGrid>
 
+					<h:messages errorClass="error" />
 					<h:panelGrid columns="3" width="100%">
 						<h:commandLink value="Delete" actionListener='#{paymentBean.delete}' styleClass="btn btn-primary"
 							disabled="#{!paymentBean.deleteAllowed}">

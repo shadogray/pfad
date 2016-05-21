@@ -4,6 +4,7 @@
 
 	<factory>
 		<exception-handler-factory>at.tfr.pfad.util.FacesExceptionHandlerFactory</exception-handler-factory>
+		<partial-view-context-factory>at.tfr.pfad.util.PfadPartialViewContextFactory</partial-view-context-factory>
 	</factory>
 
 </faces-config>
