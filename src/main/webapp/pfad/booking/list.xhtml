@@ -225,7 +225,7 @@
 								</h:selectOneMenu>
 								<h:message for="bookingBeanPaymentSelect" />
 							</h:panelGroup>
-							<a4j:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" accesskey="c" title="Cancel [ALT]+[C]"
+							<a4j:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" immediate="true" accesskey="c" title="Cancel [ALT]+[C]"
 								render="panelGroupEditPayment" styleClass="btn btn-primary" />
 						</h:panelGrid>
 						<h:panelGroup id="popupPanelPayment">
@@ -384,7 +384,7 @@
 											styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" execute="@form" render="@form" >
 											<a4j:actionListener listener="#{bookingBean.retrieve()}"/>
 										</a4j:commandLink>
-										<a4j:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" accesskey="c" title="Cancel [ALT]+[C]"
+										<a4j:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" immediate="true" accesskey="c" title="Cancel [ALT]+[C]"
 											render="panelGroupEditPayment" styleClass="btn btn-primary" />
 									</h:panelGrid>
 								</h:panelGroup>
