@@ -28,12 +28,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
@@ -52,9 +57,13 @@ import at.tfr.pfad.dao.AuditListener;
 		@NamedQuery(name = "distTitel", query = "select distinct m.titel from Member m order by m.titel"),
 		@NamedQuery(name = "distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
 		@NamedQuery(name = "distReligion", query = "select distinct m.religion from Member m order by m.religion"),})
+@NamedEntityGraphs({
+	@NamedEntityGraph(attributeNodes=@NamedAttributeNode("trupp"))
+})
 @Audited(withModifiedFlag = true)
 @Entity
 @EntityListeners({AuditListener.class})
+@XmlRootElement
 public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member>, Auditable {
 
 	@Id
@@ -123,24 +132,24 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column
 	protected String telefon;
 
-	@Column(columnDefinition="boolean default 'false' not null")
+	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean trail;
 
-	@Column(columnDefinition="boolean default 'false' not null")
+	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean gilde;
 
-	@Column(columnDefinition="boolean default 'false' not null")
+	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean altER;
 
-	@Column(columnDefinition="boolean default 'false' not null")
+	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean support;
 
-	@Column(columnDefinition="boolean default 'false' not null")
+	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean infoMail;
 
-	@Column(columnDefinition="boolean default 'false' not null")
+	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean free;
-	
+
 	@Enumerated(EnumType.STRING)
 	protected ScoutRole rolle;
 
@@ -156,7 +165,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column
 	protected String createdBy;
 
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@OrderBy("name")
 	protected Squad trupp;
 
@@ -176,7 +185,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@OneToMany(mappedBy = "leaderMale")
 	protected Set<Squad> maleGuided;
 
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	protected Member Vollzahler;
 
 	@OneToMany(mappedBy = "Vollzahler")
@@ -187,7 +196,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column(insertable = false, updatable = false, name = "Vollzahler_id")
 	protected Long VollzahlerId;
 
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER)
 	protected Set<Function> funktionen = new HashSet<>();
 
 	@ManyToMany
@@ -200,17 +209,17 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	protected Set<Member> parents = new HashSet<>();
 
 	@OneToMany(mappedBy = "payer")
-	@OrderBy(value="id DESC")
+	@OrderBy(value = "id DESC")
 	private Set<Payment> payments;
 
 	@OneToMany(mappedBy = "member")
-	@OrderBy(value="id DESC")
+	@OrderBy(value = "id DESC")
 	private Set<Booking> bookings = new HashSet<Booking>();
 
 	public Long getId() {
 		return this.id;
 	}
-	
+
 	public String getIdStr() {
 		return id != null ? id.toString() : "";
 	}
@@ -509,6 +518,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.trupp = Trupp;
 	}
 
+	@XmlTransient
 	public Member getVollzahler() {
 		return this.Vollzahler;
 	}
@@ -526,21 +536,25 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		}
 		return this.funktionen;
 	}
-	
+
 	public List<Long> getFunktionenIds() {
-		return funktionen.stream().map(Function::getId).collect(Collectors.toList());
+		return funktionen.stream().map(Function::getId)
+				.collect(Collectors.toList());
 	}
 
 	public void setFunktionen(final Set<Function> Funktionen) {
 		this.funktionen = Funktionen;
 	}
 
+	@XmlTransient
 	public Set<Member> getSiblings() {
 		return siblings;
 	}
 
+	@XmlTransient
 	public List<Long> getSiblingIds() {
-		return siblings.stream().map(Member::getId).collect(Collectors.toList());
+		return siblings.stream().map(Member::getId)
+				.collect(Collectors.toList());
 	}
 
 	public void setSiblings(Set<Member> siblings) {
@@ -564,12 +578,15 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		return VollzahlerId;
 	}
 
+	@XmlTransient
 	public Set<Payment> getPayments() {
 		return payments;
 	}
 
+	@XmlTransient
 	public List<Long> getPaymentsIds() {
-		return payments.stream().map(Payment::getId).collect(Collectors.toList());
+		return payments.stream().map(Payment::getId)
+				.collect(Collectors.toList());
 	}
 
 	public String toShortString() {
@@ -587,20 +604,22 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Override
 	public String toString() {
 		String result = "";
-//		if (bvKey != null && !bvKey.trim().isEmpty())
-//			result += bvKey;
+		// if (bvKey != null && !bvKey.trim().isEmpty())
+		// result += bvKey;
 		if (titel != null && !titel.trim().isEmpty())
-			result += (result.length()>0?", ":"") + titel;
+			result += (result.length() > 0 ? ", " : "") + titel;
 		if (name != null && !name.trim().isEmpty())
-			result += (result.length()>0?", ":"") + name;
+			result += (result.length() > 0 ? ", " : "") + name;
 		if (vorname != null && !vorname.trim().isEmpty())
-			result += (result.length()>0?", ":"") + vorname;
-		result += (result.length()>0?", ":"") + gebTag + "." + gebMonat + "." + gebJahr;
+			result += (result.length() > 0 ? ", " : "") + vorname;
+		result += (result.length() > 0 ? ", " : "") + gebTag + "." + gebMonat
+				+ "." + gebJahr;
 		if (plz != null && !plz.trim().isEmpty())
-			result += (result.length()>0?", ":"") + plz;
+			result += (result.length() > 0 ? ", " : "") + plz;
 		if (ort != null && !ort.trim().isEmpty())
 			result += " " + ort;
-		result += (result.length()>0?", ":"") + (aktiv ? "aktiv" : "inaktiv");
+		result += (result.length() > 0 ? ", " : "")
+				+ (aktiv ? "aktiv" : "inaktiv");
 		result += free ? ":FREI" : "";
 		return result;
 	}
@@ -641,27 +660,32 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		return result;
 	}
 
+	@XmlTransient
 	public Set<Booking> getBookings() {
 		return this.bookings;
 	}
 
+	@XmlTransient
 	public List<Long> getBookingsIds() {
-		return bookings.stream().map(Booking::getId).collect(Collectors.toList());
+		return bookings.stream().map(Booking::getId)
+				.collect(Collectors.toList());
 	}
 
 	public void setBookings(final Set<Booking> bookings) {
 		this.bookings = bookings;
 	}
-	
+
 	public boolean isFree() {
 		return free;
 	}
-	
+
 	public void setFree(boolean free) {
 		this.free = free;
 	}
-	
+
 	public boolean isAnyFree() {
-		return free || (funktionen != null && funktionen.stream().anyMatch(Function::isFree));
+		return free
+				|| (funktionen != null && funktionen.stream().anyMatch(
+						Function::isFree));
 	}
 }

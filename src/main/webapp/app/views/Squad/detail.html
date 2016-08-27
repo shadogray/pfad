@@ -1,0 +1,113 @@
+<header ng-switch on="$location.path().indexOf('/Squads/new') > -1">
+    <h3 ng-switch-when="true">Create a new Squad</h3>
+    <h3 ng-switch-when="false">View or edit Squad</h3>
+</header>
+<form id="SquadForm" name="SquadForm" class="form-horizontal" role="form">
+    
+    <div class="form-group" ng-class="{'has-error': SquadForm.idStr.$invalid}">
+        <label for="idStr" class="col-sm-2 control-label">Id Str</label>
+        <div id="idStrControls" class="col-sm-10">
+            <input id="idStr" name="idStr" type="text" class="form-control" ng-model="squad.idStr" placeholder="Enter the Squad Id Str"></input>
+        </div>
+    </div>
+
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.type.$invalid}">
+        <label for="type" class="col-sm-2 control-label">Type</label>
+        <div id="typeControls" class="col-sm-10">
+        <select id="type" name="type" class="form-control" ng-model="squad.type" ng-options="t for t in typeList" required >
+            <option value="">Choose a Type</option>
+        </select>
+        <span class="help-block error" ng-show="SquadForm.type.$error.required">required</span> 
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.name.$invalid}">
+        <label for="name" class="col-sm-2 control-label">Name</label>
+        <div id="nameControls" class="col-sm-10">
+            <input id="name" name="name" type="text" class="form-control" ng-model="squad.name" placeholder="Enter the Squad Name"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.login.$invalid}">
+        <label for="login" class="col-sm-2 control-label">Login</label>
+        <div id="loginControls" class="col-sm-10">
+            <input id="login" name="login" type="text" class="form-control" ng-model="squad.login" placeholder="Enter the Squad Login"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.changed.$invalid}">
+        <label for="changed" class="col-sm-2 control-label">Changed</label>
+        <div id="changedControls" class="col-sm-10">
+            <datetime id="changed" name="changed" ng-model="squad.changed" placeholder="Enter the Squad Changed"></datetime>
+            <span class="help-block error" ng-show="SquadForm.changed.$error.datetimeFormat">does not match format "yyyy-MM-dd hh:mm:ss" (e.g. 2013-12-01 22:00:00)</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.created.$invalid}">
+        <label for="created" class="col-sm-2 control-label">Created</label>
+        <div id="createdControls" class="col-sm-10">
+            <datetime id="created" name="created" ng-model="squad.created" placeholder="Enter the Squad Created"></datetime>
+            <span class="help-block error" ng-show="SquadForm.created.$error.datetimeFormat">does not match format "yyyy-MM-dd hh:mm:ss" (e.g. 2013-12-01 22:00:00)</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.changedBy.$invalid}">
+        <label for="changedBy" class="col-sm-2 control-label">Changed By</label>
+        <div id="changedByControls" class="col-sm-10">
+            <input id="changedBy" name="changedBy" type="text" class="form-control" ng-model="squad.changedBy" placeholder="Enter the Squad Changed By"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.createdBy.$invalid}">
+        <label for="createdBy" class="col-sm-2 control-label">Created By</label>
+        <div id="createdByControls" class="col-sm-10">
+            <input id="createdBy" name="createdBy" type="text" class="form-control" ng-model="squad.createdBy" placeholder="Enter the Squad Created By"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.leaderMale.$invalid}">
+        <label for="leaderMale" class="col-sm-2 control-label">Leader Male</label>
+        <div id="leaderMaleControls" class="col-sm-10">
+        <select id="leaderMale" name="leaderMale" class="form-control" ng-model="leaderMaleSelection" ng-options="l.text for l in leaderMaleSelectionList"  >
+            <option value="">Choose a Leader Male</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.leaderFemale.$invalid}">
+        <label for="leaderFemale" class="col-sm-2 control-label">Leader Female</label>
+        <div id="leaderFemaleControls" class="col-sm-10">
+        <select id="leaderFemale" name="leaderFemale" class="form-control" ng-model="leaderFemaleSelection" ng-options="l.text for l in leaderFemaleSelectionList"  >
+            <option value="">Choose a Leader Female</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.assistants.$invalid}">
+        <label for="assistants" class="col-sm-2 control-label">Assistants</label>
+        <div id="assistantsControls" class="col-sm-10">
+            <select id="assistants" name="assistants" multiple class="form-control" ng-model="assistantsSelection" ng-options="a.text for a in assistantsSelectionList">
+                <option value="">Choose a Assistants</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': SquadForm.scouts.$invalid}">
+        <label for="scouts" class="col-sm-2 control-label">Scouts</label>
+        <div id="scoutsControls" class="col-sm-10">
+            <select id="scouts" name="scouts" multiple class="form-control" ng-model="scoutsSelection" ng-options="s.text for s in scoutsSelectionList">
+                <option value="">Choose a Scouts</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button id="saveSquad" name="saveSquad" class="btn btn-primary" ng-disabled="isClean() || SquadForm.$invalid" ng-click="save()"><span class="glyphicon glyphicon-ok-sign"></span> Save</button>
+            <button id="cancel" name="cancel" class="btn btn-default" ng-click="cancel()"><span class="glyphicon glyphicon-remove-sign"></span> Cancel</button>
+            <button id="deleteSquad" name="deleteSquad" class="btn btn-danger" ng-show="squad.id" ng-click="remove()"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+        </div>
+    </div>
+</form>

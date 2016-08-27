@@ -29,14 +29,18 @@ import org.joda.time.format.DateTimeFormatter;
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.ActivityType;
 import at.tfr.pfad.dao.AuditListener;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Audited(withModifiedFlag = true)
 @Entity
 @EntityListeners({AuditListener.class})
+@XmlRootElement
 public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 
-	private static DateTimeFormatter format = DateTimeFormat.forPattern("dd.MM.yyyy");
-	
+	private static DateTimeFormatter format = DateTimeFormat
+			.forPattern("dd.MM.yyyy");
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "activity_seq")
 	@SequenceGenerator(name = "activity_seq", sequenceName = "activity_seq", allocationSize = 1, initialValue = 1)
@@ -60,23 +64,23 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 	@Column
 	private String name;
 
-	@Column(nullable=false, columnDefinition="varchar2(16) default 'Membership' not null")
+	@Column(nullable = false, columnDefinition = "varchar2(16) default 'Membership' not null")
 	@Enumerated(EnumType.STRING)
 	private ActivityType type;
-	
-	@Column(nullable=false, columnDefinition="varchar2(16) default 'planned' not null")
+
+	@Column(nullable = false, columnDefinition = "varchar2(16) default 'planned' not null")
 	@Enumerated(EnumType.STRING)
 	private ActivityStatus status;
-	
+
 	@Column
 	private Float amount;
-	
+
 	@Column
 	private Float aconto;
 
 	@Column
 	private String comment;
-	
+
 	@Column
 	protected Date changed;
 
@@ -134,6 +138,7 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 		return result;
 	}
 
+	@XmlTransient
 	public Set<Booking> getBookings() {
 		return this.bookings;
 	}
@@ -149,7 +154,7 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 	public void setStart(Date start) {
 		this.start = start;
 	}
-	
+
 	public String getStartString() {
 		return start != null ? new DateTime(start).toString(format) : "";
 	}
@@ -248,7 +253,8 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 
 	@Override
 	public String toString() {
-		String result = (StringUtils.isNotBlank(name) ? name : getClass().getSimpleName() + ":" + type + ":" + status);
+		String result = (StringUtils.isNotBlank(name) ? name : getClass()
+				.getSimpleName() + ":" + type + ":" + status);
 		if (start != null) {
 			result += ", " + new DateTime(start).toString(format);
 		}
@@ -257,9 +263,10 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 		}
 		return result;
 	}
-	
+
 	@Transient
 	public boolean isFinished() {
-		return ActivityStatus.cancelled.equals(status) || (end != null && new Date().after(end));
+		return ActivityStatus.cancelled.equals(status)
+				|| (end != null && new Date().after(end));
 	}
 }

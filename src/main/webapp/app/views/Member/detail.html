@@ -1,0 +1,348 @@
+<header ng-switch on="$location.path().indexOf('/Members/new') > -1">
+    <h3 ng-switch-when="true">Create a new Member</h3>
+    <h3 ng-switch-when="false">View or edit Member</h3>
+</header>
+<form id="MemberForm" name="MemberForm" class="form-horizontal" role="form">
+    
+    <div class="form-group" ng-class="{'has-error': MemberForm.idStr.$invalid}">
+        <label for="idStr" class="col-sm-2 control-label">Id Str</label>
+        <div id="idStrControls" class="col-sm-10">
+            <input id="idStr" name="idStr" type="text" class="form-control" ng-model="member.idStr" placeholder="Enter the Member Id Str"></input>
+        </div>
+    </div>
+
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.BVKey.$invalid}">
+        <label for="BVKey" class="col-sm-2 control-label">BV Key</label>
+        <div id="BVKeyControls" class="col-sm-10">
+            <input id="BVKey" name="BVKey" type="text" class="form-control" ng-model="member.BVKey" placeholder="Enter the Member BV Key"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.gruppenSchluessel.$invalid}">
+        <label for="gruppenSchluessel" class="col-sm-2 control-label">Gruppen Schluessel</label>
+        <div id="gruppenSchluesselControls" class="col-sm-10">
+            <input id="gruppenSchluessel" name="gruppenSchluessel" type="text" class="form-control" ng-model="member.gruppenSchluessel" placeholder="Enter the Member Gruppen Schluessel"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.personenKey.$invalid}">
+        <label for="personenKey" class="col-sm-2 control-label">Personen Key</label>
+        <div id="personenKeyControls" class="col-sm-10">
+            <input id="personenKey" name="personenKey" type="number" class="form-control" ng-model="member.personenKey" placeholder="Enter the Member Personen Key"></input>
+            <span class="help-block error" ng-show="MemberForm.personenKey.$error.number">not a number</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.titel.$invalid}">
+        <label for="titel" class="col-sm-2 control-label">Titel</label>
+        <div id="titelControls" class="col-sm-10">
+            <input id="titel" name="titel" type="text" class="form-control" ng-model="member.titel" placeholder="Enter the Member Titel"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.name.$invalid}">
+        <label for="name" class="col-sm-2 control-label">Name</label>
+        <div id="nameControls" class="col-sm-10">
+            <input id="name" name="name" type="text" class="form-control" ng-model="member.name" placeholder="Enter the Member Name"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.vorname.$invalid}">
+        <label for="vorname" class="col-sm-2 control-label">Vorname</label>
+        <div id="vornameControls" class="col-sm-10">
+            <input id="vorname" name="vorname" type="text" class="form-control" ng-model="member.vorname" placeholder="Enter the Member Vorname"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.anrede.$invalid}">
+        <label for="anrede" class="col-sm-2 control-label">Anrede</label>
+        <div id="anredeControls" class="col-sm-10">
+            <input id="anrede" name="anrede" type="text" class="form-control" ng-model="member.anrede" placeholder="Enter the Member Anrede"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.gebTag.$invalid}">
+        <label for="gebTag" class="col-sm-2 control-label">Geb Tag</label>
+        <div id="gebTagControls" class="col-sm-10">
+            <input id="gebTag" name="gebTag" type="number" class="form-control" ng-model="member.gebTag" placeholder="Enter the Member Geb Tag"></input>
+            <span class="help-block error" ng-show="MemberForm.gebTag.$error.number">not a number</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.gebMonat.$invalid}">
+        <label for="gebMonat" class="col-sm-2 control-label">Geb Monat</label>
+        <div id="gebMonatControls" class="col-sm-10">
+            <input id="gebMonat" name="gebMonat" type="number" class="form-control" ng-model="member.gebMonat" placeholder="Enter the Member Geb Monat"></input>
+            <span class="help-block error" ng-show="MemberForm.gebMonat.$error.number">not a number</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.gebJahr.$invalid}">
+        <label for="gebJahr" class="col-sm-2 control-label">Geb Jahr</label>
+        <div id="gebJahrControls" class="col-sm-10">
+            <input id="gebJahr" name="gebJahr" type="number" class="form-control" ng-model="member.gebJahr" placeholder="Enter the Member Geb Jahr"></input>
+            <span class="help-block error" ng-show="MemberForm.gebJahr.$error.number">not a number</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.strasse.$invalid}">
+        <label for="strasse" class="col-sm-2 control-label">Strasse</label>
+        <div id="strasseControls" class="col-sm-10">
+            <input id="strasse" name="strasse" type="text" class="form-control" ng-model="member.strasse" placeholder="Enter the Member Strasse"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.PLZ.$invalid}">
+        <label for="PLZ" class="col-sm-2 control-label">PLZ</label>
+        <div id="PLZControls" class="col-sm-10">
+            <input id="PLZ" name="PLZ" type="text" class="form-control" ng-model="member.PLZ" placeholder="Enter the Member PLZ"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.ort.$invalid}">
+        <label for="ort" class="col-sm-2 control-label">Ort</label>
+        <div id="ortControls" class="col-sm-10">
+            <input id="ort" name="ort" type="text" class="form-control" ng-model="member.ort" placeholder="Enter the Member Ort"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.geschlecht.$invalid}">
+        <label for="geschlecht" class="col-sm-2 control-label">Geschlecht</label>
+        <div id="geschlechtControls" class="col-sm-10">
+        <select id="geschlecht" name="geschlecht" class="form-control" ng-model="member.geschlecht" ng-options="g for g in geschlechtList"  >
+            <option value="">Choose a Geschlecht</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.email.$invalid}">
+        <label for="email" class="col-sm-2 control-label">Email</label>
+        <div id="emailControls" class="col-sm-10">
+            <input id="email" name="email" type="text" class="form-control" ng-model="member.email" placeholder="Enter the Member Email"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.religion.$invalid}">
+        <label for="religion" class="col-sm-2 control-label">Religion</label>
+        <div id="religionControls" class="col-sm-10">
+            <input id="religion" name="religion" type="text" class="form-control" ng-model="member.religion" placeholder="Enter the Member Religion"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.telefon.$invalid}">
+        <label for="telefon" class="col-sm-2 control-label">Telefon</label>
+        <div id="telefonControls" class="col-sm-10">
+            <input id="telefon" name="telefon" type="text" class="form-control" ng-model="member.telefon" placeholder="Enter the Member Telefon"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.rolle.$invalid}">
+        <label for="rolle" class="col-sm-2 control-label">Rolle</label>
+        <div id="rolleControls" class="col-sm-10">
+        <select id="rolle" name="rolle" class="form-control" ng-model="member.rolle" ng-options="r for r in rolleList"  >
+            <option value="">Choose a Rolle</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.changed.$invalid}">
+        <label for="changed" class="col-sm-2 control-label">Changed</label>
+        <div id="changedControls" class="col-sm-10">
+            <datetime id="changed" name="changed" ng-model="member.changed" placeholder="Enter the Member Changed"></datetime>
+            <span class="help-block error" ng-show="MemberForm.changed.$error.datetimeFormat">does not match format "yyyy-MM-dd hh:mm:ss" (e.g. 2013-12-01 22:00:00)</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.created.$invalid}">
+        <label for="created" class="col-sm-2 control-label">Created</label>
+        <div id="createdControls" class="col-sm-10">
+            <datetime id="created" name="created" ng-model="member.created" placeholder="Enter the Member Created"></datetime>
+            <span class="help-block error" ng-show="MemberForm.created.$error.datetimeFormat">does not match format "yyyy-MM-dd hh:mm:ss" (e.g. 2013-12-01 22:00:00)</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.changedBy.$invalid}">
+        <label for="changedBy" class="col-sm-2 control-label">Changed By</label>
+        <div id="changedByControls" class="col-sm-10">
+            <input id="changedBy" name="changedBy" type="text" class="form-control" ng-model="member.changedBy" placeholder="Enter the Member Changed By"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.createdBy.$invalid}">
+        <label for="createdBy" class="col-sm-2 control-label">Created By</label>
+        <div id="createdByControls" class="col-sm-10">
+            <input id="createdBy" name="createdBy" type="text" class="form-control" ng-model="member.createdBy" placeholder="Enter the Member Created By"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.trupp.$invalid}">
+        <label for="trupp" class="col-sm-2 control-label">Trupp</label>
+        <div id="truppControls" class="col-sm-10">
+        <select id="trupp" name="trupp" class="form-control" ng-model="truppSelection" ng-options="t.text for t in truppSelectionList"  >
+            <option value="">Choose a Trupp</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.Vollzahler.$invalid}">
+        <label for="Vollzahler" class="col-sm-2 control-label">Vollzahler</label>
+        <div id="VollzahlerControls" class="col-sm-10">
+        <select id="Vollzahler" name="Vollzahler" class="form-control" ng-model="VollzahlerSelection" ng-options="V.text for V in VollzahlerSelectionList"  >
+            <option value="">Choose a Vollzahler</option>
+        </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.funktionen.$invalid}">
+        <label for="funktionen" class="col-sm-2 control-label">Funktionen</label>
+        <div id="funktionenControls" class="col-sm-10">
+            <select id="funktionen" name="funktionen" multiple class="form-control" ng-model="funktionenSelection" ng-options="f.text for f in funktionenSelectionList">
+                <option value="">Choose a Funktionen</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.funktionenIds.$invalid}">
+        <label for="funktionenIds" class="col-sm-2 control-label">Funktionen Ids</label>
+        <div id="funktionenIdsControls" class="col-sm-10">
+            <input id="funktionenIds" name="funktionenIds" type="text" class="form-control" ng-model="member.funktionenIds" placeholder="Enter the Member Funktionen Ids"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.siblings.$invalid}">
+        <label for="siblings" class="col-sm-2 control-label">Siblings</label>
+        <div id="siblingsControls" class="col-sm-10">
+            <select id="siblings" name="siblings" multiple class="form-control" ng-model="siblingsSelection" ng-options="s.text for s in siblingsSelectionList">
+                <option value="">Choose a Siblings</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.siblingIds.$invalid}">
+        <label for="siblingIds" class="col-sm-2 control-label">Sibling Ids</label>
+        <div id="siblingIdsControls" class="col-sm-10">
+            <input id="siblingIds" name="siblingIds" type="text" class="form-control" ng-model="member.siblingIds" placeholder="Enter the Member Sibling Ids"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.compareString.$invalid}">
+        <label for="compareString" class="col-sm-2 control-label">Compare String</label>
+        <div id="compareStringControls" class="col-sm-10">
+            <input id="compareString" name="compareString" type="text" class="form-control" ng-model="member.compareString" placeholder="Enter the Member Compare String"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.truppId.$invalid}">
+        <label for="truppId" class="col-sm-2 control-label">Trupp Id</label>
+        <div id="truppIdControls" class="col-sm-10">
+            <input id="truppId" name="truppId" type="number" class="form-control" ng-model="member.truppId" placeholder="Enter the Member Trupp Id"></input>
+            <span class="help-block error" ng-show="MemberForm.truppId.$error.number">not a number</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.VollzahlerId.$invalid}">
+        <label for="VollzahlerId" class="col-sm-2 control-label">Vollzahler Id</label>
+        <div id="VollzahlerIdControls" class="col-sm-10">
+            <input id="VollzahlerId" name="VollzahlerId" type="number" class="form-control" ng-model="member.VollzahlerId" placeholder="Enter the Member Vollzahler Id"></input>
+            <span class="help-block error" ng-show="MemberForm.VollzahlerId.$error.number">not a number</span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.payments.$invalid}">
+        <label for="payments" class="col-sm-2 control-label">Payments</label>
+        <div id="paymentsControls" class="col-sm-10">
+            <select id="payments" name="payments" multiple class="form-control" ng-model="paymentsSelection" ng-options="p.text for p in paymentsSelectionList">
+                <option value="">Choose a Payments</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.paymentsIds.$invalid}">
+        <label for="paymentsIds" class="col-sm-2 control-label">Payments Ids</label>
+        <div id="paymentsIdsControls" class="col-sm-10">
+            <input id="paymentsIds" name="paymentsIds" type="text" class="form-control" ng-model="member.paymentsIds" placeholder="Enter the Member Payments Ids"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.bookings.$invalid}">
+        <label for="bookings" class="col-sm-2 control-label">Bookings</label>
+        <div id="bookingsControls" class="col-sm-10">
+            <select id="bookings" name="bookings" multiple class="form-control" ng-model="bookingsSelection" ng-options="b.text for b in bookingsSelectionList">
+                <option value="">Choose a Bookings</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.bookingsIds.$invalid}">
+        <label for="bookingsIds" class="col-sm-2 control-label">Bookings Ids</label>
+        <div id="bookingsIdsControls" class="col-sm-10">
+            <input id="bookingsIds" name="bookingsIds" type="text" class="form-control" ng-model="member.bookingsIds" placeholder="Enter the Member Bookings Ids"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.aktiv.$invalid}">
+        <label for="aktiv" class="col-sm-2 control-label">Aktiv</label>
+        <div id="aktivControls" class="col-sm-10">
+            <input id="aktiv" name="aktiv" type="checkbox" class="checkbox" ng-model="member.aktiv" placeholder="Enter the Member Aktiv"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.aktivExtern.$invalid}">
+        <label for="aktivExtern" class="col-sm-2 control-label">Aktiv Extern</label>
+        <div id="aktivExternControls" class="col-sm-10">
+            <input id="aktivExtern" name="aktivExtern" type="checkbox" class="checkbox" ng-model="member.aktivExtern" placeholder="Enter the Member Aktiv Extern"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.trail.$invalid}">
+        <label for="trail" class="col-sm-2 control-label">Trail</label>
+        <div id="trailControls" class="col-sm-10">
+            <input id="trail" name="trail" type="checkbox" class="checkbox" ng-model="member.trail" placeholder="Enter the Member Trail"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.gilde.$invalid}">
+        <label for="gilde" class="col-sm-2 control-label">Gilde</label>
+        <div id="gildeControls" class="col-sm-10">
+            <input id="gilde" name="gilde" type="checkbox" class="checkbox" ng-model="member.gilde" placeholder="Enter the Member Gilde"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.altER.$invalid}">
+        <label for="altER" class="col-sm-2 control-label">Alt ER</label>
+        <div id="altERControls" class="col-sm-10">
+            <input id="altER" name="altER" type="checkbox" class="checkbox" ng-model="member.altER" placeholder="Enter the Member Alt ER"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.infoMail.$invalid}">
+        <label for="infoMail" class="col-sm-2 control-label">Info Mail</label>
+        <div id="infoMailControls" class="col-sm-10">
+            <input id="infoMail" name="infoMail" type="checkbox" class="checkbox" ng-model="member.infoMail" placeholder="Enter the Member Info Mail"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.support.$invalid}">
+        <label for="support" class="col-sm-2 control-label">Support</label>
+        <div id="supportControls" class="col-sm-10">
+            <input id="support" name="support" type="checkbox" class="checkbox" ng-model="member.support" placeholder="Enter the Member Support"></input>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': MemberForm.free.$invalid}">
+        <label for="free" class="col-sm-2 control-label">Free</label>
+        <div id="freeControls" class="col-sm-10">
+            <input id="free" name="free" type="checkbox" class="checkbox" ng-model="member.free" placeholder="Enter the Member Free"></input>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button id="saveMember" name="saveMember" class="btn btn-primary" ng-disabled="isClean() || MemberForm.$invalid" ng-click="save()"><span class="glyphicon glyphicon-ok-sign"></span> Save</button>
+            <button id="cancel" name="cancel" class="btn btn-default" ng-click="cancel()"><span class="glyphicon glyphicon-remove-sign"></span> Cancel</button>
+            <button id="deleteMember" name="deleteMember" class="btn btn-danger" ng-show="member.id" ng-click="remove()"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+        </div>
+    </div>
+</form>
