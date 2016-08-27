@@ -52,6 +52,7 @@ import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Configuration;
+import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 
@@ -183,28 +184,45 @@ public class DownloadBean implements Serializable {
 			row = sheet.createRow(rCount++);
 
 			int cCount = 0;
+			// BVKeyBVKey
 			row.createCell(cCount++).setCellValue(m.getBVKey());
+			// GruppenSchlussel
 			row.createCell(cCount++).setCellValue(m.getGruppenSchluessel());
+			// PersonenKey
 			row.createCell(cCount++).setCellValue(m.getPersonenKey());
+			// Titel
 			row.createCell(cCount++).setCellValue(m.getTitel());
+			// Name
 			row.createCell(cCount++).setCellValue(m.getName());
+			// Vorname
 			row.createCell(cCount++).setCellValue(m.getVorname());
+			// Anrede
 			row.createCell(cCount++).setCellValue(m.getAnrede());
+			// GebTag
 			row.createCell(cCount++).setCellValue(m.getGebTag());
+			// GebMonat
 			row.createCell(cCount++).setCellValue(m.getGebMonat());
+			// GebJahr
 			row.createCell(cCount++).setCellValue(m.getGebJahr());
+			// Straße
 			row.createCell(cCount++).setCellValue(m.getStrasse());
+			// PLZ
 			row.createCell(cCount++).setCellValue(m.getPLZ());
+			// Ort
 			row.createCell(cCount++).setCellValue(m.getOrt());
+			// Geschlecht
 			row.createCell(cCount++).setCellValue(m.getGeschlecht() != null ? m.getGeschlecht().name() : "");
+			// Aktiv
 			row.createCell(cCount++).setCellValue(m.isAktiv() ? "J" : "N");
-			row.createCell(cCount++).setCellValue(m.getFunktionen().stream().anyMatch(f->"P".equals(f.getKey())) ? "P" : (m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "N"));
+			// Vollzahler
+			row.createCell(cCount++).setCellValue(m.getFunktionen().stream().anyMatch(f->Function.PTA.equals(f.getKey())) ? "P" : (m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "N"));
+			// Email
 			row.createCell(cCount++).setCellValue(m.getEmail());
-			row.createCell(cCount++).setCellValue(withLocal ? m.getReligion() : ""); // do
-																						// not
-																						// return
-																						// Religion
+			// Religion
+			row.createCell(cCount++).setCellValue(withLocal ? m.getReligion() : ""); // do not return Religion
+			// Telefon
 			row.createCell(cCount++).setCellValue(m.getTelefon());
+			// Funktionen
 			row.createCell(cCount++).setCellValue(getFunktionen(m));
 
 			// and Local Data

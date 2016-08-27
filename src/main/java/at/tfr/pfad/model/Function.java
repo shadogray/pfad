@@ -23,6 +23,8 @@ import org.hibernate.envers.Audited;
 @Entity
 public class Function implements PrimaryKeyHolder, Serializable {
 
+	public static final String PTA = "P"; // Pfadfinder Trotz Allem
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "function_seq")
 	@SequenceGenerator(name = "function_seq", sequenceName = "function_seq", allocationSize = 1, initialValue = 1)
