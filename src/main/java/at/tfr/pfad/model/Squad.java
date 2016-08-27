@@ -35,49 +35,55 @@ import org.hibernate.envers.Audited;
 
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.dao.AuditListener;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @NamedQueries({
-	@NamedQuery(name="Squad.leadersFemale", query="select s.leaderFemale from Squad s"),
-	@NamedQuery(name="Squad.leadersMale", query="select s.leaderMale from Squad s"),
-	@NamedQuery(name="Squad.assistants", query="select a from Squad s inner join s.assistants a"),
-})
-
+		@NamedQuery(name = "Squad.leadersFemale", query = "select s.leaderFemale from Squad s"),
+		@NamedQuery(name = "Squad.leadersMale", query = "select s.leaderMale from Squad s"),
+		@NamedQuery(name = "Squad.assistants", query = "select a from Squad s inner join s.assistants a"),})
 @Audited(withModifiedFlag = true)
 @Entity
 @EntityListeners({AuditListener.class})
-public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Serializable {
+@XmlRootElement
+public class Squad
+		implements
+			PrimaryKeyHolder,
+			Comparable<Squad>,
+			Auditable,
+			Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "squad_seq")
-	@SequenceGenerator(name = "squad_seq", sequenceName = "squad_seq", allocationSize=1, initialValue=1)
+	@SequenceGenerator(name = "squad_seq", sequenceName = "squad_seq", allocationSize = 1, initialValue = 1)
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	@Version
 	@Column(name = "version")
 	private int version;
 
-	@Column(nullable=false, columnDefinition="varchar2(8) default 'WIWO' not null")
+	@Column(nullable = false, columnDefinition = "varchar2(8) default 'WIWO' not null")
 	@Enumerated(EnumType.STRING)
 	private SquadType type;
 
 	@Column
 	private String name;
-	
+
 	@Column
 	private String login;
 
 	@Column
 	private Date changed;
-	
+
 	@Column
 	private Date created;
-	
+
 	@Column
 	private String changedBy;
-	
+
 	@Column
 	private String createdBy;
-	
+
 	@ManyToOne
 	private Member leaderMale;
 
@@ -86,10 +92,10 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 
 	@ManyToMany
 	@OrderBy("Name, Vorname")
-	@JoinTable(name = "squad_member", joinColumns=@JoinColumn(name="squad_id"), inverseJoinColumns=@JoinColumn(name="assistants_id"))
+	@JoinTable(name = "squad_member", joinColumns = @JoinColumn(name = "squad_id"), inverseJoinColumns = @JoinColumn(name = "assistants_id"))
 	private Set<Member> assistants = new HashSet<Member>();
-	
-	@OneToMany(mappedBy="trupp")
+
+	@OneToMany(mappedBy = "trupp")
 	@OrderBy("Name, Vorname")
 	private Set<Member> scouts = new HashSet<Member>();
 
@@ -199,7 +205,7 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 		String result = "";
 		if (name != null && !name.trim().isEmpty())
 			result += "" + name;
-		result += ", "+type;
+		result += ", " + type;
 		return result;
 	}
 
@@ -219,6 +225,7 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 		this.leaderFemale = leaderFemale;
 	}
 
+	@XmlTransient
 	public Set<Member> getAssistants() {
 		return this.assistants;
 	}
@@ -227,13 +234,14 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 		this.assistants = assistants;
 	}
 
+	@XmlTransient
 	public Set<Member> getScouts() {
 		return scouts;
 	}
-	
+
 	@Override
 	public int compareTo(Squad o) {
-		if (type != null && o.type != null) 
+		if (type != null && o.type != null)
 			return type.compareTo(o.type);
 		if (id != null && o.id != null)
 			return id.compareTo(o.id);

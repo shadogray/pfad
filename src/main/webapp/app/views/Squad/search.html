@@ -1,0 +1,135 @@
+<div class="form-horizontal">
+    <h3>Create a new Squad</h3>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-sm-2">
+            <a id="Create" name="Create" class="btn btn-primary" href="#/Squads/new"><span class="glyphicon glyphicon-plus-sign"></span> Create</a>
+        </div>
+    </div>
+</div>
+<hr/>
+<div>
+    <h3>Search for Squads</h3>
+    <form id="SquadSearch" class="form-horizontal">
+        
+    <div class="form-group">
+        <label for="idStr" class="col-sm-2 control-label">Id Str</label>
+        <div class="col-sm-10">
+            <input id="idStr" name="idStr" class="form-control" type="text" ng-model="search.idStr" placeholder="Enter the Squad Id Str"></input>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="type" class="col-sm-2 control-label">Type</label>
+        <div class="col-sm-10">
+            <select id="type" name="type" class="form-control" ng-model="search.type" ng-options="t as t for t in typeList">
+                <option value="">Choose a Type</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name" class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-10">
+            <input id="name" name="name" class="form-control" type="text" ng-model="search.name" placeholder="Enter the Squad Name"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="login" class="col-sm-2 control-label">Login</label>
+        <div class="col-sm-10">
+            <input id="login" name="login" class="form-control" type="text" ng-model="search.login" placeholder="Enter the Squad Login"></input>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <label for="changedBy" class="col-sm-2 control-label">Changed By</label>
+        <div class="col-sm-10">
+            <input id="changedBy" name="changedBy" class="form-control" type="text" ng-model="search.changedBy" placeholder="Enter the Squad Changed By"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="createdBy" class="col-sm-2 control-label">Created By</label>
+        <div class="col-sm-10">
+            <input id="createdBy" name="createdBy" class="form-control" type="text" ng-model="search.createdBy" placeholder="Enter the Squad Created By"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="leaderMale" class="col-sm-2 control-label">Leader Male</label>
+        <div class="col-sm-10">
+            <select id="leaderMale" name="leaderMale" class="form-control" ng-model="search.leaderMale" ng-options="l as l.id for l in leaderMaleList">
+                <option value="">Choose a Leader Male</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="leaderFemale" class="col-sm-2 control-label">Leader Female</label>
+        <div class="col-sm-10">
+            <select id="leaderFemale" name="leaderFemale" class="form-control" ng-model="search.leaderFemale" ng-options="l as l.id for l in leaderFemaleList">
+                <option value="">Choose a Leader Female</option>
+            </select>
+        </div>
+    </div>
+
+
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-sm-10">
+                <a id="Search" name="Search" class="btn btn-primary" ng-click="performSearch()"><span class="glyphicon glyphicon-search"></span> Search</a>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="search-results">
+        <div class="table-responsive">
+        <table class="table table-responsive table-bordered table-striped clearfix">
+            <thead>
+                <tr>
+                    <th>Id Str</th>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Login</th>
+                    <th>Changed</th>
+                    <th>Created</th>
+                    <th>Changed By</th>
+                    <th>Created By</th>
+                    <th>Leader Male</th>
+                    <th>Leader Female</th>
+                </tr>
+            </thead>
+            <tbody id="search-results-body">
+                <tr ng-repeat="result in filteredResults | startFrom:currentPage*pageSize | limitTo:pageSize">
+                    <td><a href="#/Squads/edit/{{result.id}}">{{result.idStr}}</a></td>
+                    <td><a href="#/Squads/edit/{{result.id}}">{{result.type}}</a></td>
+                    <td><a href="#/Squads/edit/{{result.id}}">{{result.name}}</a></td>
+                    <td><a href="#/Squads/edit/{{result.id}}">{{result.login}}</a></td>
+                    <td><a href="#/Squads/edit/{{result.id}}">{{result.changed| date:'yyyy-MM-dd HH:mm:ss Z'}}</a></td>
+                    <td><a href="#/Squads/edit/{{result.id}}">{{result.created| date:'yyyy-MM-dd HH:mm:ss Z'}}</a></td>
+                    <td><a href="#/Squads/edit/{{result.id}}">{{result.changedBy}}</a></td>
+                    <td><a href="#/Squads/edit/{{result.id}}">{{result.createdBy}}</a></td>
+                        <td><a href="#/Squads/edit/{{result.id}}">{{result.leaderMale.id}}</a></td>
+                        <td><a href="#/Squads/edit/{{result.id}}">{{result.leaderFemale.id}}</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+        <ul class="pagination pagination-centered">
+        <li ng-class="{disabled:currentPage == 0}">
+            <a id="prev" href ng-click="previous()">«</a>
+        </li>
+        <li ng-repeat="n in pageRange" ng-class="{active:currentPage == n}" ng-click="setPage(n)">
+            <a href ng-bind="n + 1">1</a>
+        </li>
+        <li ng-class="{disabled: currentPage == (numberOfPages() - 1)}">
+            <a id="next" href ng-click="next()">»</a>
+        </li>
+    </ul>
+
+</div>

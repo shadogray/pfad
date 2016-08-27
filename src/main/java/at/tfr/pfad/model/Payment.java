@@ -19,6 +19,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
@@ -31,13 +34,16 @@ import org.joda.time.DateTime;
 
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.dao.AuditListener;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Audited(withModifiedFlag = true)
-@NamedQueries({
-	@NamedQuery(name = "PaymentsForBooking", query = "select p from Payment p where ?1 member of p.bookings order by p.id")
+@NamedQueries({@NamedQuery(name = "PaymentsForBooking", query = "select p from Payment p where ?1 member of p.bookings order by p.id")})
+@NamedEntityGraphs({
+	@NamedEntityGraph(attributeNodes={@NamedAttributeNode("bookings"), @NamedAttributeNode("payer")})
 })
 @Entity
 @EntityListeners({AuditListener.class})
+@XmlRootElement
 public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 
 	@Id
@@ -48,8 +54,8 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	@Version
 	@Column(name = "version")
 	private int version;
-	
-	@Column(nullable=false, columnDefinition="varchar2(16) default 'Membership' not null")
+
+	@Column(nullable = false, columnDefinition = "varchar2(16) default 'Membership' not null")
 	@Enumerated(EnumType.STRING)
 	private PaymentType type;
 
@@ -57,15 +63,15 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	private Member payer;
 
 	private Float amount;
-	
+
 	@Column
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date paymentDate;
 
-	@Column(columnDefinition="boolean default false not null")
+	@Column(columnDefinition = "boolean default false not null")
 	private Boolean finished;
 
-	@Column(columnDefinition="boolean default false not null")
+	@Column(columnDefinition = "boolean default false not null")
 	private Boolean aconto;
 
 	@Column
@@ -158,11 +164,11 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	public Boolean getAconto() {
 		return aconto;
 	}
-	
+
 	public void setAconto(Boolean aconto) {
 		this.aconto = aconto;
 	}
-	
+
 	public String getComment() {
 		return comment;
 	}
@@ -176,7 +182,8 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	}
 
 	public List<Long> getBookingsIds() {
-		return bookings.stream().map(Booking::getId).collect(Collectors.toList());
+		return bookings.stream().map(Booking::getId)
+				.collect(Collectors.toList());
 	}
 
 	public void setBookings(final Set<Booking> bookings) {
@@ -184,9 +191,10 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	}
 
 	public List<Booking> getSortedBookings() {
-		return bookings.stream().sorted(new PkComparator<Booking>()).collect(Collectors.toList());
+		return bookings.stream().sorted(new PkComparator<Booking>())
+				.collect(Collectors.toList());
 	}
-	
+
 	public PaymentType getType() {
 		return type;
 	}
@@ -202,7 +210,7 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	public void setPaymentDate(Date paymentDate) {
 		this.paymentDate = paymentDate;
 	}
-	
+
 	public Date getChanged() {
 		return changed;
 	}
@@ -241,22 +249,22 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 		}
 		return this;
 	}
-	
+
 	public Payment updateType(Activity activity) {
 		if (type == null && activity != null && activity.getType() != null) {
 			switch (activity.getType()) {
-			case Membership:
-				type = PaymentType.Membership;
-				break;
-			case Camp:
-				type = PaymentType.Camp;
-				break;
-			default:
+				case Membership :
+					type = PaymentType.Membership;
+					break;
+				case Camp :
+					type = PaymentType.Camp;
+					break;
+				default :
 			}
 		}
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		String result = getClass().getSimpleName() + " ";

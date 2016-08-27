@@ -23,8 +23,10 @@ import org.hibernate.validator.constraints.Length;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.view.Role;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
+@XmlRootElement
 public class Configuration implements PrimaryKeyHolder, Serializable {
 
 	public static final String BADEN_KEY = "BAD";

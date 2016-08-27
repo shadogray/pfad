@@ -18,9 +18,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
 import org.hibernate.envers.Audited;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Audited(withModifiedFlag = true)
 @Entity
+@XmlRootElement
 public class Function implements PrimaryKeyHolder, Serializable {
 
 	public static final String PTA = "P"; // Pfadfinder Trotz Allem
@@ -40,10 +42,10 @@ public class Function implements PrimaryKeyHolder, Serializable {
 	@Column
 	private String key;
 
-	@Column(columnDefinition="boolean default 'false' not null")
+	@Column(columnDefinition = "boolean default 'false' not null")
 	private boolean exportReg;
-	
-	@Column(columnDefinition="boolean default 'false' not null")
+
+	@Column(columnDefinition = "boolean default 'false' not null")
 	private boolean free;
 
 	public Long getId() {
@@ -118,11 +120,11 @@ public class Function implements PrimaryKeyHolder, Serializable {
 	public boolean isFree() {
 		return free;
 	}
-	
+
 	public void setFree(boolean free) {
 		this.free = free;
 	}
-	
+
 	@Override
 	public String toString() {
 		String result = "" + function;
