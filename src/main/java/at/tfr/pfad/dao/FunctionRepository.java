@@ -3,6 +3,7 @@ package at.tfr.pfad.dao;
 import java.util.Collection;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -12,6 +13,7 @@ import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
 import at.tfr.pfad.model.Function;
 
+@ApplicationScoped
 @Repository
 public abstract class FunctionRepository implements EntityRepository<Function, Long>, CriteriaSupport<Function> {
 

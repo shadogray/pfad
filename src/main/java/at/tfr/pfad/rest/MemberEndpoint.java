@@ -1,12 +1,13 @@
 package at.tfr.pfad.rest;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,22 +18,34 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
+
+import at.tfr.pfad.dao.Beans;
+import at.tfr.pfad.dao.MemberRepository;
+import at.tfr.pfad.dao.SimpleMember;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Member_;
+import at.tfr.pfad.view.Members;
 
 /**
  * 
  */
 @Stateless
 @Path("/members")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class MemberEndpoint extends EndpointBase<Member> {
-	@PersistenceContext(unitName = "pfad")
-	private EntityManager em;
+
+	@Inject
+	private Members members;
 
 	@POST
-	@Consumes("application/json")
 	public Response create(Member entity) {
 		em.persist(entity);
 		return Response.created(
@@ -53,46 +66,24 @@ public class MemberEndpoint extends EndpointBase<Member> {
 
 	@GET
 	@Path("/{id:[0-9][0-9]*}")
-	@Produces("application/json")
 	public Response findById(@PathParam("id") Long id) {
-		TypedQuery<Member> findByIdQuery = em
-				.createQuery(
-						"SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.trupp LEFT JOIN FETCH m.squads LEFT JOIN FETCH m.femaleGuided LEFT JOIN FETCH m.maleGuided LEFT JOIN FETCH m.Vollzahler LEFT JOIN FETCH m.reduced LEFT JOIN FETCH m.funktionen LEFT JOIN FETCH m.siblings LEFT JOIN FETCH m.parents LEFT JOIN FETCH m.payments LEFT JOIN FETCH m.bookings WHERE m.id = :entityId ORDER BY m.id",
-						Member.class);
-		findByIdQuery.setParameter("entityId", id);
-		Member entity;
-		try {
-			entity = findByIdQuery.getSingleResult();
-		} catch (NoResultException nre) {
-			entity = null;
-		}
+		Member entity = memberRepo.fetchBy(id);
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		return Response.ok(entity).build();
+		return Response.ok(Beans.copyProperties(entity, new Member())).build();
 	}
 
 	@GET
-	@Produces("application/json")
-	public List<Member> listAll(@QueryParam("start") Integer startPosition,
+	public List<SimpleMember> listAll(@QueryParam("start") Integer startPosition,
 			@QueryParam("max") Integer maxResult) {
-		TypedQuery<Member> findAllQuery = em
-				.createQuery(
-						"SELECT DISTINCT m FROM Member m LEFT JOIN FETCH m.trupp LEFT JOIN FETCH m.squads LEFT JOIN FETCH m.femaleGuided LEFT JOIN FETCH m.maleGuided LEFT JOIN FETCH m.Vollzahler LEFT JOIN FETCH m.reduced LEFT JOIN FETCH m.funktionen LEFT JOIN FETCH m.siblings LEFT JOIN FETCH m.parents LEFT JOIN FETCH m.payments LEFT JOIN FETCH m.bookings ORDER BY m.id",
-						Member.class);
-		if (startPosition != null) {
-			findAllQuery.setFirstResult(startPosition);
-		}
-		if (maxResult != null) {
-			findAllQuery.setMaxResults(maxResult);
-		}
-		final List<Member> results = findAllQuery.getResultList();
-		return results;
+		return memberRepo.findAll(startPosition != null ? startPosition : 0, 
+				maxResult != null ? maxResult : Integer.MAX_VALUE)
+				.stream().map(m -> Beans.copyProperties(m, new SimpleMember())).collect(Collectors.toList());
 	}
 
 	@PUT
 	@Path("/{id:[0-9][0-9]*}")
-	@Consumes("application/json")
 	public Response update(@PathParam("id") Long id, Member entity) {
 		if (entity == null) {
 			return Response.status(Status.BAD_REQUEST).build();
@@ -114,5 +105,45 @@ public class MemberEndpoint extends EndpointBase<Member> {
 		}
 
 		return Response.noContent().build();
+	}
+	
+	@GET
+	@Path("/filtered")
+	public List<SimpleMember> filtered(@QueryParam("filter") String filter) {
+		return members.filtered(filter)
+				.stream().map(m-> Beans.copyProperties(m, new SimpleMember()))
+				.collect(Collectors.toList());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@POST
+	@Path("/query")
+	public List<SimpleMember> queryByExample(Member example) {
+		return memberRepo.findBy(example, 0, 10, Member_.name, Member_.vorname, 
+				Member_.geschlecht, Member_.email, 
+				Member_.aktiv, Member_.aktivExtern, 
+				Member_.bvKey, Member_.trupp, 
+				Member_.gebJahr, Member_.gebMonat, Member_.gebTag, 
+				Member_.strasse, Member_.ort, Member_.plz, 
+				Member_.rolle, 
+				Member_.free, Member_.support, Member_.trail, Member_.gilde)
+				.stream().map(m-> Beans.copyProperties(m, new SimpleMember()))
+				.collect(Collectors.toList());
+	}
+
+	@GET
+	@Path("/siblings/{id:[0-9][0-9]*}")
+	public List<SimpleMember> findSiblingsById(@PathParam("id") Long id) {
+		Member member = memberRepo.fetchBy(id);
+		return member.getSiblings().stream().map(m -> Beans.copyProperties(m, new SimpleMember()))
+				.collect(Collectors.toList());
+	}
+
+	@GET
+	@Path("/parents/{id:[0-9][0-9]*}")
+	public List<SimpleMember> findParentsById(@PathParam("id") Long id) {
+		Member member = memberRepo.fetchBy(id);
+		return member.getParents().stream().map(m -> Beans.copyProperties(m, new SimpleMember()))
+				.collect(Collectors.toList());
 	}
 }

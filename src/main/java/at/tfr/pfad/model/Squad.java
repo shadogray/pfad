@@ -33,8 +33,14 @@ import javax.persistence.Version;
 
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.dao.AuditListener;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -46,12 +52,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @EntityListeners({AuditListener.class})
 @XmlRootElement
-public class Squad
-		implements
-			PrimaryKeyHolder,
-			Comparable<Squad>,
-			Auditable,
-			Serializable {
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
+public class Squad implements PrimaryKeyHolder,Comparable<Squad>,Auditable,Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "squad_seq")
@@ -99,6 +102,7 @@ public class Squad
 	@OrderBy("Name, Vorname")
 	private Set<Member> scouts = new HashSet<Member>();
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}

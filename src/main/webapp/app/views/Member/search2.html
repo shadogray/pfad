@@ -1,0 +1,425 @@
+<div class="form-horizontal">
+    <h3>Create a new Member</h3>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-sm-2">
+            <a id="Create" name="Create" class="btn btn-primary" href="#/Members/new"><span class="glyphicon glyphicon-plus-sign"></span> Create</a>
+        </div>
+    </div>
+</div>
+<hr/>
+<div>
+    <h3>Search for Members - TEST</h3>
+    <form id="MemberSearch" class="form-horizontal">
+
+    <div class="form-group">
+        <label for="idStr" class="col-sm-2 control-label">Id Str</label>
+        <div class="col-sm-10">
+            <input id="idStr" name="idStr" class="form-control" type="text" ng-model="search.idStr" placeholder="Enter the Member Id Str"></input>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="BVKey" class="col-sm-2 control-label">BV Key</label>
+        <div class="col-sm-10">
+            <input id="BVKey" name="BVKey" class="form-control" type="text" ng-model="search.BVKey" placeholder="Enter the Member BV Key"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="gruppenSchluessel" class="col-sm-2 control-label">Gruppen Schluessel</label>
+        <div class="col-sm-10">
+            <input id="gruppenSchluessel" name="gruppenSchluessel" class="form-control" type="text" ng-model="search.gruppenSchluessel" placeholder="Enter the Member Gruppen Schluessel"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="personenKey" class="col-sm-2 control-label">Personen Key</label>
+        <div class="col-sm-10">
+            <input id="personenKey" name="personenKey" class="form-control" type="text" ng-model="search.personenKey" placeholder="Enter the Member Personen Key"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="titel" class="col-sm-2 control-label">Titel</label>
+        <div class="col-sm-10">
+            <input id="titel" name="titel" class="form-control" type="text" ng-model="search.titel" placeholder="Enter the Member Titel"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name" class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-10">
+            <input id="name" name="name" class="form-control" type="text" ng-model="search.name" placeholder="Enter the Member Name"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="vorname" class="col-sm-2 control-label">Vorname</label>
+        <div class="col-sm-10">
+            <input id="vorname" name="vorname" class="form-control" type="text" ng-model="search.vorname" placeholder="Enter the Member Vorname"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="anrede" class="col-sm-2 control-label">Anrede</label>
+        <div class="col-sm-10">
+            <input id="anrede" name="anrede" class="form-control" type="text" ng-model="search.anrede" placeholder="Enter the Member Anrede"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="gebTag" class="col-sm-2 control-label">Geb Tag</label>
+        <div class="col-sm-10">
+            <input id="gebTag" name="gebTag" class="form-control" type="text" ng-model="search.gebTag" placeholder="Enter the Member Geb Tag"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="gebMonat" class="col-sm-2 control-label">Geb Monat</label>
+        <div class="col-sm-10">
+            <input id="gebMonat" name="gebMonat" class="form-control" type="text" ng-model="search.gebMonat" placeholder="Enter the Member Geb Monat"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="gebJahr" class="col-sm-2 control-label">Geb Jahr</label>
+        <div class="col-sm-10">
+            <input id="gebJahr" name="gebJahr" class="form-control" type="text" ng-model="search.gebJahr" placeholder="Enter the Member Geb Jahr"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="strasse" class="col-sm-2 control-label">Strasse</label>
+        <div class="col-sm-10">
+            <input id="strasse" name="strasse" class="form-control" type="text" ng-model="search.strasse" placeholder="Enter the Member Strasse"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="PLZ" class="col-sm-2 control-label">PLZ</label>
+        <div class="col-sm-10">
+            <input id="PLZ" name="PLZ" class="form-control" type="text" ng-model="search.PLZ" placeholder="Enter the Member PLZ"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="ort" class="col-sm-2 control-label">Ort</label>
+        <div class="col-sm-10">
+            <input id="ort" name="ort" class="form-control" type="text" ng-model="search.ort" placeholder="Enter the Member Ort"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="geschlecht" class="col-sm-2 control-label">Geschlecht</label>
+        <div class="col-sm-10">
+            <select id="geschlecht" name="geschlecht" class="form-control" ng-model="search.geschlecht" ng-options="g as g for g in geschlechtList">
+                <option value="">Choose a Geschlecht</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="email" class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-10">
+            <input id="email" name="email" class="form-control" type="text" ng-model="search.email" placeholder="Enter the Member Email"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="religion" class="col-sm-2 control-label">Religion</label>
+        <div class="col-sm-10">
+            <input id="religion" name="religion" class="form-control" type="text" ng-model="search.religion" placeholder="Enter the Member Religion"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="telefon" class="col-sm-2 control-label">Telefon</label>
+        <div class="col-sm-10">
+            <input id="telefon" name="telefon" class="form-control" type="text" ng-model="search.telefon" placeholder="Enter the Member Telefon"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="rolle" class="col-sm-2 control-label">Rolle</label>
+        <div class="col-sm-10">
+            <select id="rolle" name="rolle" class="form-control" ng-model="search.rolle" ng-options="r as r for r in rolleList">
+                <option value="">Choose a Rolle</option>
+            </select>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <label for="changedBy" class="col-sm-2 control-label">Changed By</label>
+        <div class="col-sm-10">
+            <input id="changedBy" name="changedBy" class="form-control" type="text" ng-model="search.changedBy" placeholder="Enter the Member Changed By"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="createdBy" class="col-sm-2 control-label">Created By</label>
+        <div class="col-sm-10">
+            <input id="createdBy" name="createdBy" class="form-control" type="text" ng-model="search.createdBy" placeholder="Enter the Member Created By"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="trupp" class="col-sm-2 control-label">Trupp</label>
+        <div class="col-sm-10">
+            <select id="trupp" name="trupp" class="form-control" ng-model="search.trupp" ng-options="t as t.id for t in truppList">
+                <option value="">Choose a Trupp</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="Vollzahler" class="col-sm-2 control-label">Vollzahler</label>
+        <div class="col-sm-10">
+            <select id="Vollzahler" name="Vollzahler" class="form-control" ng-model="search.Vollzahler" ng-options="V as V.id for V in VollzahlerList">
+                <option value="">Choose a Vollzahler</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="funktionenIds" class="col-sm-2 control-label">Funktionen Ids</label>
+        <div class="col-sm-10">
+            <input id="funktionenIds" name="funktionenIds" class="form-control" type="text" ng-model="search.funktionenIds" placeholder="Enter the Member Funktionen Ids"></input>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="siblingIds" class="col-sm-2 control-label">Sibling Ids</label>
+        <div class="col-sm-10">
+            <input id="siblingIds" name="siblingIds" class="form-control" type="text" ng-model="search.siblingIds" placeholder="Enter the Member Sibling Ids"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="compareString" class="col-sm-2 control-label">Compare String</label>
+        <div class="col-sm-10">
+            <input id="compareString" name="compareString" class="form-control" type="text" ng-model="search.compareString" placeholder="Enter the Member Compare String"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="truppId" class="col-sm-2 control-label">Trupp Id</label>
+        <div class="col-sm-10">
+            <input id="truppId" name="truppId" class="form-control" type="text" ng-model="search.truppId" placeholder="Enter the Member Trupp Id"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="VollzahlerId" class="col-sm-2 control-label">Vollzahler Id</label>
+        <div class="col-sm-10">
+            <input id="VollzahlerId" name="VollzahlerId" class="form-control" type="text" ng-model="search.VollzahlerId" placeholder="Enter the Member Vollzahler Id"></input>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="paymentsIds" class="col-sm-2 control-label">Payments Ids</label>
+        <div class="col-sm-10">
+            <input id="paymentsIds" name="paymentsIds" class="form-control" type="text" ng-model="search.paymentsIds" placeholder="Enter the Member Payments Ids"></input>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="bookingsIds" class="col-sm-2 control-label">Bookings Ids</label>
+        <div class="col-sm-10">
+            <input id="bookingsIds" name="bookingsIds" class="form-control" type="text" ng-model="search.bookingsIds" placeholder="Enter the Member Bookings Ids"></input>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="aktiv" class="col-sm-2 control-label">Aktiv</label>
+        <div class="col-sm-10">
+            <select id="aktiv" name="aktiv" class="form-control" ng-model="search.aktiv" ng-options="a as a for a in aktivList">
+                <option value="">Choose a Aktiv</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="aktivExtern" class="col-sm-2 control-label">Aktiv Extern</label>
+        <div class="col-sm-10">
+            <select id="aktivExtern" name="aktivExtern" class="form-control" ng-model="search.aktivExtern" ng-options="a as a for a in aktivExternList">
+                <option value="">Choose a Aktiv Extern</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="trail" class="col-sm-2 control-label">Trail</label>
+        <div class="col-sm-10">
+            <select id="trail" name="trail" class="form-control" ng-model="search.trail" ng-options="t as t for t in trailList">
+                <option value="">Choose a Trail</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="gilde" class="col-sm-2 control-label">Gilde</label>
+        <div class="col-sm-10">
+            <select id="gilde" name="gilde" class="form-control" ng-model="search.gilde" ng-options="g as g for g in gildeList">
+                <option value="">Choose a Gilde</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="altER" class="col-sm-2 control-label">Alt ER</label>
+        <div class="col-sm-10">
+            <select id="altER" name="altER" class="form-control" ng-model="search.altER" ng-options="a as a for a in altERList">
+                <option value="">Choose a Alt ER</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="infoMail" class="col-sm-2 control-label">Info Mail</label>
+        <div class="col-sm-10">
+            <select id="infoMail" name="infoMail" class="form-control" ng-model="search.infoMail" ng-options="i as i for i in infoMailList">
+                <option value="">Choose a Info Mail</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="support" class="col-sm-2 control-label">Support</label>
+        <div class="col-sm-10">
+            <select id="support" name="support" class="form-control" ng-model="search.support" ng-options="s as s for s in supportList">
+                <option value="">Choose a Support</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="free" class="col-sm-2 control-label">Free</label>
+        <div class="col-sm-10">
+            <select id="free" name="free" class="form-control" ng-model="search.free" ng-options="f as f for f in freeList">
+                <option value="">Choose a Free</option>
+            </select>
+        </div>
+    </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-sm-10">
+                <a id="Search" name="Search" class="btn btn-primary" ng-click="performSearch()"><span class="glyphicon glyphicon-search"></span> Search</a>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="search-results">
+        <div class="table-responsive">
+        <table class="table table-responsive table-bordered table-striped clearfix">
+            <thead>
+                <tr>
+                    <th>Id Str</th>
+                    <th>BV Key</th>
+                    <th>Gruppen Schluessel</th>
+                    <th>Personen Key</th>
+                    <th>Titel</th>
+                    <th>Name</th>
+                    <th>Vorname</th>
+                    <th>Anrede</th>
+                    <th>Geb Tag</th>
+                    <th>Geb Monat</th>
+                    <th>Geb Jahr</th>
+                    <th>Strasse</th>
+                    <th>PLZ</th>
+                    <th>Ort</th>
+                    <th>Geschlecht</th>
+                    <th>Email</th>
+                    <th>Religion</th>
+                    <th>Telefon</th>
+                    <th>Rolle</th>
+                    <th>Changed</th>
+                    <th>Created</th>
+                    <th>Changed By</th>
+                    <th>Created By</th>
+                    <th>Trupp</th>
+                    <th>Vollzahler</th>
+                    <th>Funktionen Ids</th>
+                    <th>Sibling Ids</th>
+                    <th>Compare String</th>
+                    <th>Trupp Id</th>
+                    <th>Vollzahler Id</th>
+                    <th>Payments Ids</th>
+                    <th>Bookings Ids</th>
+                    <th>Aktiv</th>
+                    <th>Aktiv Extern</th>
+                    <th>Trail</th>
+                    <th>Gilde</th>
+                    <th>Alt ER</th>
+                    <th>Info Mail</th>
+                    <th>Support</th>
+                    <th>Free</th>
+                </tr>
+            </thead>
+            <tbody id="search-results-body">
+                <tr ng-repeat="result in filteredResults | startFrom:currentPage*pageSize | limitTo:pageSize">
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.idStr}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.BVKey}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.gruppenSchluessel}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.personenKey}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.titel}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.name}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.vorname}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.anrede}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.gebTag}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.gebMonat}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.gebJahr}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.strasse}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.PLZ}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.ort}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.geschlecht}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.email}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.religion}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.telefon}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.rolle}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.changed| date:'yyyy-MM-dd HH:mm:ss Z'}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.created| date:'yyyy-MM-dd HH:mm:ss Z'}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.changedBy}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.createdBy}}</a></td>
+                        <td><a href="#/Members/edit/{{result.id}}">{{result.trupp.id}}</a></td>
+                        <td><a href="#/Members/edit/{{result.id}}">{{result.Vollzahler.id}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.funktionenIds}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.siblingIds}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.compareString}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.truppId}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.VollzahlerId}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.paymentsIds}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.bookingsIds}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.aktiv}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.aktivExtern}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.trail}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.gilde}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.altER}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.infoMail}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.support}}</a></td>
+                    <td><a href="#/Members/edit/{{result.id}}">{{result.free}}</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+        <ul class="pagination pagination-centered">
+        <li ng-class="{disabled:currentPage == 0}">
+            <a id="prev" href ng-click="previous()">«</a>
+        </li>
+        <li ng-repeat="n in pageRange" ng-class="{active:currentPage == n}" ng-click="setPage(n)">
+            <a href ng-bind="n + 1">1</a>
+        </li>
+        <li ng-class="{disabled: currentPage == (numberOfPages() - 1)}">
+            <a id="next" href ng-click="next()">»</a>
+        </li>
+    </ul>
+
+</div>

@@ -9,6 +9,9 @@ package at.tfr.pfad.dao;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+
+import org.apache.deltaspike.data.api.EntityGraph;
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
 import org.apache.deltaspike.data.api.Repository;
@@ -19,8 +22,14 @@ import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
 
+@ApplicationScoped
 @Repository
 public abstract class MemberRepository implements EntityRepository<Member, Long>, CriteriaSupport<Member> {
+
+	@EntityGraph("fetchAll")
+	public Member fetchBy(Long id) {
+		return findBy(id);
+	}
 
 	public List<Member> findAll() {
 		return criteria().orderAsc(Member_.name).orderAsc(Member_.vorname)

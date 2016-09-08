@@ -17,7 +17,7 @@ import at.tfr.pfad.model.Squad;
 public class CreateBookingsBean implements Serializable {
 
 	@Inject
-	private BookingActionBean bookingActionBean;
+	private transient BookingActionBean bookingActionBean;
 	
 	private Activity activity;
 	private List<Squad> squads = new ArrayList<>();

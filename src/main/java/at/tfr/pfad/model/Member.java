@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -37,6 +38,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -44,26 +48,35 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import at.tfr.pfad.Pfad;
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.AuditListener;
 
-@NamedQueries({
-		@NamedQuery(name = "distName", query = "select distinct m.name from Member m order by m.name"),
+@NamedQueries({ @NamedQuery(name = "distName", query = "select distinct m.name from Member m order by m.name"),
 		@NamedQuery(name = "distVorname", query = "select distinct m.vorname from Member m order by m.vorname"),
 		@NamedQuery(name = "distPLZ", query = "select distinct m.plz from Member m order by m.plz"),
 		@NamedQuery(name = "distOrt", query = "select distinct m.ort from Member m order by m.ort"),
 		@NamedQuery(name = "distStrasse", query = "select distinct m.strasse from Member m order by m.strasse"),
 		@NamedQuery(name = "distTitel", query = "select distinct m.titel from Member m order by m.titel"),
 		@NamedQuery(name = "distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
-		@NamedQuery(name = "distReligion", query = "select distinct m.religion from Member m order by m.religion"),})
+		@NamedQuery(name = "distReligion", query = "select distinct m.religion from Member m order by m.religion"), })
 @NamedEntityGraphs({
-	@NamedEntityGraph(attributeNodes=@NamedAttributeNode("trupp"))
-})
+		@NamedEntityGraph(name = "fetchAll", attributeNodes = { 
+				@NamedAttributeNode("Vollzahler"),
+				@NamedAttributeNode("reduced"), 
+				@NamedAttributeNode("parents"), 
+				@NamedAttributeNode("siblings"),
+				@NamedAttributeNode("trupp") }),
+		@NamedEntityGraph(name = "withTrupp", attributeNodes = @NamedAttributeNode("trupp")) })
 @Audited(withModifiedFlag = true)
 @Entity
-@EntityListeners({AuditListener.class})
+@EntityListeners({ AuditListener.class })
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@JsonIgnoreProperties(ignoreUnknown = true, value = { "handler", "hibernateLazyInitializer" })
 public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member>, Auditable {
 
 	@Id
@@ -165,7 +178,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column
 	protected String createdBy;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@OrderBy("name")
 	protected Squad trupp;
 
@@ -216,6 +229,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@OrderBy(value = "id DESC")
 	private Set<Booking> bookings = new HashSet<Booking>();
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}
@@ -261,13 +275,12 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		return result;
 	}
 
+	@Pfad
 	public String getBVKey() {
 		if (id == null) {
 			return bvKey;
 		}
-		return StringUtils.isEmpty(bvKey)
-				? Configuration.BADEN_KEYPFX + id
-				: bvKey;
+		return StringUtils.isEmpty(bvKey) ? Configuration.BADEN_KEYPFX + id : bvKey;
 	}
 
 	public void setBVKey(String BVKey) {
@@ -275,9 +288,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	}
 
 	public String getGruppenSchluessel() {
-		return StringUtils.isEmpty(gruppenSchluessel)
-				? Configuration.BADEN_KEY
-				: gruppenSchluessel;
+		return StringUtils.isEmpty(gruppenSchluessel) ? Configuration.BADEN_KEY : gruppenSchluessel;
 	}
 
 	public void setGruppenSchluessel(String GruppenSchluessel) {
@@ -294,6 +305,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.personenKey = PersonenKey;
 	}
 
+	@Pfad
 	public String getTitel() {
 		return titel;
 	}
@@ -302,6 +314,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.titel = Titel;
 	}
 
+	@Pfad
 	public String getName() {
 		return name;
 	}
@@ -310,6 +323,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.name = Name;
 	}
 
+	@Pfad
 	public String getVorname() {
 		return vorname;
 	}
@@ -318,6 +332,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.vorname = Vorname;
 	}
 
+	@Pfad
 	public String getAnrede() {
 		return anrede;
 	}
@@ -326,6 +341,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.anrede = Anrede;
 	}
 
+	@Pfad
 	public int getGebTag() {
 		return gebTag;
 	}
@@ -334,6 +350,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.gebTag = GebTag;
 	}
 
+	@Pfad
 	public int getGebMonat() {
 		return gebMonat;
 	}
@@ -342,6 +359,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.gebMonat = GebMonat;
 	}
 
+	@Pfad
 	public int getGebJahr() {
 		return gebJahr;
 	}
@@ -350,6 +368,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.gebJahr = GebJahr;
 	}
 
+	@Pfad
 	public String getStrasse() {
 		return strasse;
 	}
@@ -358,6 +377,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.strasse = Strasse;
 	}
 
+	@Pfad
 	public String getPLZ() {
 		return plz;
 	}
@@ -366,6 +386,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.plz = PLZ;
 	}
 
+	@Pfad
 	public String getOrt() {
 		return ort;
 	}
@@ -374,6 +395,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.ort = Ort;
 	}
 
+	@Pfad
 	public Sex getGeschlecht() {
 		return geschlecht;
 	}
@@ -382,6 +404,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.geschlecht = Geschlecht;
 	}
 
+	@Pfad
 	public boolean isAktiv() {
 		return aktiv;
 	}
@@ -390,6 +413,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.aktiv = Aktiv;
 	}
 
+	@Pfad
 	public boolean isAktivExtern() {
 		return aktivExtern;
 	}
@@ -398,6 +422,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.aktivExtern = aktivExtern;
 	}
 
+	@Pfad
 	public String getEmail() {
 		return email;
 	}
@@ -406,6 +431,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.email = Email;
 	}
 
+	@Pfad
 	public String getReligion() {
 		return religion;
 	}
@@ -414,6 +440,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.religion = Religion;
 	}
 
+	@Pfad
 	public String getTelefon() {
 		return telefon;
 	}
@@ -422,6 +449,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.telefon = Telefon;
 	}
 
+	@Pfad
 	public boolean isTrail() {
 		return trail;
 	}
@@ -430,6 +458,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.trail = Trail;
 	}
 
+	@Pfad
 	public boolean isGilde() {
 		return gilde;
 	}
@@ -438,6 +467,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.gilde = Gilde;
 	}
 
+	@Pfad
 	public boolean isAltER() {
 		return altER;
 	}
@@ -446,6 +476,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.altER = AltER;
 	}
 
+	@Pfad
 	public ScoutRole getRolle() {
 		return rolle;
 	}
@@ -454,6 +485,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.rolle = Rolle;
 	}
 
+	@Pfad
 	public boolean isInfoMail() {
 		return infoMail;
 	}
@@ -462,6 +494,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.infoMail = infoMail;
 	}
 
+	@Pfad
 	public boolean isSupport() {
 		return support;
 	}
@@ -518,7 +551,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.trupp = Trupp;
 	}
 
-	@XmlTransient
+	@Pfad
 	public Member getVollzahler() {
 		return this.Vollzahler;
 	}
@@ -527,6 +560,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.Vollzahler = Vollzahler;
 	}
 
+	@Pfad
 	public Set<Function> getFunktionen() {
 		Iterator<Function> fi = this.funktionen.iterator();
 		while (fi.hasNext()) {
@@ -538,27 +572,32 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	}
 
 	public List<Long> getFunktionenIds() {
-		return funktionen.stream().map(Function::getId)
-				.collect(Collectors.toList());
+		return funktionen.stream().map(Function::getId).collect(Collectors.toList());
 	}
 
 	public void setFunktionen(final Set<Function> Funktionen) {
 		this.funktionen = Funktionen;
 	}
 
-	@XmlTransient
+	@Pfad
 	public Set<Member> getSiblings() {
 		return siblings;
 	}
 
-	@XmlTransient
 	public List<Long> getSiblingIds() {
-		return siblings.stream().map(Member::getId)
-				.collect(Collectors.toList());
+		return siblings.stream().map(Member::getId).collect(Collectors.toList());
 	}
 
 	public void setSiblings(Set<Member> siblings) {
 		this.siblings = siblings;
+	}
+
+	public Set<Member> getParents() {
+		return parents;
+	}
+
+	public void setParents(Set<Member> parents) {
+		this.parents = parents;
 	}
 
 	@Override
@@ -585,8 +624,16 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	@XmlTransient
 	public List<Long> getPaymentsIds() {
-		return payments.stream().map(Payment::getId)
-				.collect(Collectors.toList());
+		return payments.stream().map(Payment::getId).collect(Collectors.toList());
+	}
+
+	/**
+	 * property for REST API
+	 * 
+	 * @return
+	 */
+	public String getShortString() {
+		return toShortString();
 	}
 
 	public String toShortString() {
@@ -612,16 +659,23 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 			result += (result.length() > 0 ? ", " : "") + name;
 		if (vorname != null && !vorname.trim().isEmpty())
 			result += (result.length() > 0 ? ", " : "") + vorname;
-		result += (result.length() > 0 ? ", " : "") + gebTag + "." + gebMonat
-				+ "." + gebJahr;
+		result += (result.length() > 0 ? ", " : "") + gebTag + "." + gebMonat + "." + gebJahr;
 		if (plz != null && !plz.trim().isEmpty())
 			result += (result.length() > 0 ? ", " : "") + plz;
 		if (ort != null && !ort.trim().isEmpty())
 			result += " " + ort;
-		result += (result.length() > 0 ? ", " : "")
-				+ (aktiv ? "aktiv" : "inaktiv");
+		result += (result.length() > 0 ? ", " : "") + (aktiv ? "aktiv" : "inaktiv");
 		result += free ? ":FREI" : "";
 		return result;
+	}
+
+	/**
+	 * property for REST API
+	 * 
+	 * @return
+	 */
+	public String getFullString() {
+		return toFullString();
 	}
 
 	public String toFullString() {
@@ -667,14 +721,14 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	@XmlTransient
 	public List<Long> getBookingsIds() {
-		return bookings.stream().map(Booking::getId)
-				.collect(Collectors.toList());
+		return bookings.stream().map(Booking::getId).collect(Collectors.toList());
 	}
 
 	public void setBookings(final Set<Booking> bookings) {
 		this.bookings = bookings;
 	}
 
+	@Pfad
 	public boolean isFree() {
 		return free;
 	}
@@ -684,8 +738,6 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	}
 
 	public boolean isAnyFree() {
-		return free
-				|| (funktionen != null && funktionen.stream().anyMatch(
-						Function::isFree));
+		return free || (funktionen != null && funktionen.stream().anyMatch(Function::isFree));
 	}
 }

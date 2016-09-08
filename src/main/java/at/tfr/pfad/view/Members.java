@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javax.ejb.Stateless;
 import javax.enterprise.inject.Model;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -20,7 +22,8 @@ import org.jboss.logging.Logger;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 
-@Model
+@Named
+@Stateless
 public class Members {
 
 	private Logger log = Logger.getLogger(getClass());
@@ -30,6 +33,11 @@ public class Members {
 
 	public List<Member> filtered(FacesContext facesContext, UIComponent component, final String filter) {
 		log.debug("filter: " + filter + " for: " + component.getId());
+		return filtered(filter);
+	}
+
+	public List<Member> filtered(final String filter) {
+		log.debug("filter: " + filter);
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Member> cq = cb.createQuery(Member.class);
 		Root<Member> root = cq.from(Member.class);

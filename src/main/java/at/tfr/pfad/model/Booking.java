@@ -25,10 +25,15 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.AuditListener;
@@ -41,6 +46,8 @@ import at.tfr.pfad.dao.AuditListener;
 @Entity
 @EntityListeners({AuditListener.class})
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
 public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 
 	@Id
@@ -83,6 +90,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 	@Column
 	protected String createdBy;
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}

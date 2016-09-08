@@ -39,7 +39,6 @@
 		<dependency>
 			<groupId>org.jboss.spec.javax.faces</groupId>
 			<artifactId>jboss-jsf-api_2.2_spec</artifactId>
-			<version>${faces.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -61,6 +60,11 @@
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	    <dependency>
+	        <groupId>org.jboss.spec.javax.ws.rs</groupId>
+	        <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -119,6 +123,24 @@
 			<version>${deltaspike.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.5.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jackson2-provider</artifactId>
+            <version>3.0.11.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>3.0.11.Final</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
@@ -134,6 +156,11 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.2</version>
+        </dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -260,13 +287,13 @@
 				<executions>
 					<execution>
 						<phase>compile</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
 						<configuration>
 							<show>private</show>
 							<reportOutputDirectory>${project.build.directory}/pfad/</reportOutputDirectory>
 						</configuration>
-						<goals>
-							<goal>javadoc</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>

@@ -18,11 +18,19 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
 import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Audited(withModifiedFlag = true)
 @Entity
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
 public class Function implements PrimaryKeyHolder, Serializable {
 
 	public static final String PTA = "P"; // Pfadfinder Trotz Allem
@@ -48,6 +56,7 @@ public class Function implements PrimaryKeyHolder, Serializable {
 	@Column(columnDefinition = "boolean default 'false' not null")
 	private boolean free;
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}

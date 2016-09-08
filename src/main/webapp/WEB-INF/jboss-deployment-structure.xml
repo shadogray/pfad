@@ -4,6 +4,8 @@
     <dependencies>
       <module name="org.hibernate" />
       <module name="org.dom4j" />
+      <module name="org.jboss.resteasy.resteasy-jackson2-provider"/>
+      <module name="com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider"/>
     </dependencies>
   </deployment>
 </jboss-deployment-structure>

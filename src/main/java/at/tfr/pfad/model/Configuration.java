@@ -21,12 +21,17 @@ import javax.persistence.Version;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.view.Role;
+
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @XmlRootElement
+@JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
 public class Configuration implements PrimaryKeyHolder, Serializable {
 
 	public static final String BADEN_KEY = "BAD";
@@ -58,6 +63,7 @@ public class Configuration implements PrimaryKeyHolder, Serializable {
 	@Enumerated(EnumType.STRING)
 	private ConfigurationType type;
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}

@@ -1,0 +1,11 @@
+{
+  "name": "pfad",
+  "version": "1.0.0",
+  "dependencies": {
+    "angular": "^1.5.8",
+    "angular-material": "^1.1.0",
+    "angular-resource": "^1.5.8",
+    "angular-route": "^1.5.8",
+    "angular2": "^2.0.0-beta.17"
+  }
+}

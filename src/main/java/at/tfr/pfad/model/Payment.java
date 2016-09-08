@@ -32,8 +32,14 @@ import javax.persistence.Version;
 import org.hibernate.envers.Audited;
 import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.dao.AuditListener;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @Audited(withModifiedFlag = true)
@@ -44,6 +50,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 @EntityListeners({AuditListener.class})
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
 public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 
 	@Id
@@ -92,6 +100,7 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 	@ManyToMany
 	private Set<Booking> bookings = new HashSet<Booking>();
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}

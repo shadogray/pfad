@@ -2,12 +2,15 @@ package at.tfr.pfad.dao;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Repository;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.model.Configuration;
 
+@ApplicationScoped
 @Repository
 public abstract class ConfigurationRepository implements EntityRepository<Configuration, Long>{
 

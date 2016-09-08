@@ -26,9 +26,15 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.ActivityType;
 import at.tfr.pfad.dao.AuditListener;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -36,6 +42,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @EntityListeners({AuditListener.class})
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
+@JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
 public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 
 	private static DateTimeFormatter format = DateTimeFormat
@@ -93,6 +101,7 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 	@Column
 	protected String createdBy;
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}

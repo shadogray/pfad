@@ -3,10 +3,8 @@ package at.tfr.pfad.rest;
 import java.util.List;
 
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -20,6 +18,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
+
 import at.tfr.pfad.model.Payment;
 
 /**
@@ -28,8 +27,6 @@ import at.tfr.pfad.model.Payment;
 @Stateless
 @Path("/payments")
 public class PaymentEndpoint extends EndpointBase<Payment> {
-	@PersistenceContext(unitName = "pfad")
-	private EntityManager em;
 
 	@POST
 	@Consumes("application/json")
