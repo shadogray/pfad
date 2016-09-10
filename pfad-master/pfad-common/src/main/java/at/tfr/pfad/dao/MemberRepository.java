@@ -7,7 +7,9 @@
 
 package at.tfr.pfad.dao;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -15,6 +17,7 @@ import org.apache.deltaspike.data.api.EntityGraph;
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
+import org.apache.deltaspike.data.api.QueryResult;
 import org.apache.deltaspike.data.api.Repository;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
@@ -32,11 +35,40 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 		return findBy(id);
 	}
 
-	public List<Member> findAll() {
-		return criteria().orderAsc(Member_.name).orderAsc(Member_.vorname)
-				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat).getResultList();
+	public List<Member> fetchAll() {
+		return fetchAll(0, Integer.MAX_VALUE);
 	}
 	
+	public List<Member> fetchAll(int max) {
+		return fetchAll(0, max);
+	}
+	
+	public List<Member> fetchAll(int start, int max) {
+		List<Member> list = findAll(start, max);
+		return fetch(list.stream().map(Member::getId).collect(Collectors.toList()))
+				.orderAsc(Member_.name).orderAsc(Member_.vorname)
+				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat)
+				.getResultList();
+	}
+
+	protected QueryResult<Member> queryAllIntern(int start, int max) {
+		return queryAllIntern()
+				.firstResult(start)
+				.maxResults(max);
+	}
+	
+	@Query("select e from Member e")
+	protected abstract QueryResult<Member> queryAllIntern();
+	
+	@EntityGraph("fetchAll")
+	@Query("select e from Member e where e.id in (?1)")
+	protected abstract QueryResult<Member> fetch(Collection<Long> memberIds);
+	
+	@EntityGraph("fetchAll")
+	@Query("select e from Member e")
+	protected abstract QueryResult<Member> fetchAllIntern();
+	
+	@EntityGraph("fetchAll")
 	public List<Member> findActive() {
 		return criteria().eq(Member_.aktiv, true).orderAsc(Member_.name).orderAsc(Member_.vorname)
 				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat).getResultList();

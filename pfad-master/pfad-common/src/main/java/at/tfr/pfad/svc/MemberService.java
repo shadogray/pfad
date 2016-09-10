@@ -8,18 +8,28 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import at.tfr.pfad.dao.MemberRepository;
+import at.tfr.pfad.dao.Members;
 import at.tfr.pfad.model.Member;
 
 @Stateless
 public class MemberService {
 
-	private MemberMapper mm = MemberMapper.INSTANCE;
+	@Inject
+	private MemberMapper mm;
 	@Inject
 	private MemberRepository memberRepo;
+	@Inject
+	private Members members;
 	
 	public MemberDao findBy(Long id) {
 		return mm.memberToDao(memberRepo.fetchBy(id));
 	}
+	
+	public List<MemberDao> filtered(final String filter, final Long truppId) {
+		List<Member> list = members.filtered(filter, truppId);
+		return map(list);
+	}
+	
 	
 	public MemberDao update(MemberDao dao) {
 		Member m = memberRepo.findBy(dao.getId());
@@ -35,7 +45,6 @@ public class MemberService {
 	}
 	
 	public List<MemberDao> map(Collection<Member> members) { 
-		return members.stream().map(m -> memberRepo.fetchBy(m.getId()))
-				.map(m -> mm.memberToDao(m)).collect(Collectors.toList());
+		return members.stream().map(m -> mm.memberToDao(m)).collect(Collectors.toList());
 	}
 }

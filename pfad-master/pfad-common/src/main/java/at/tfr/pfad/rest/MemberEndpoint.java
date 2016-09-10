@@ -1,7 +1,6 @@
 package at.tfr.pfad.rest;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -20,8 +19,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
-import at.tfr.pfad.dao.Beans;
-import at.tfr.pfad.dao.Members;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.svc.MemberDao;
@@ -38,10 +35,9 @@ import at.tfr.pfad.svc.MemberService;
 public class MemberEndpoint extends EndpointBase<Member> {
 
 	@Inject
-	private Members members;
-	@Inject
 	private MemberService memberSvc;
-	private MemberMapper mm = MemberMapper.INSTANCE;
+	@Inject
+	private MemberMapper mm;
 
 	@POST
 	public Response create(MemberDao dao) {
@@ -75,7 +71,7 @@ public class MemberEndpoint extends EndpointBase<Member> {
 	@GET
 	public List<MemberDao> listAll(@QueryParam("start") Integer startPosition,
 			@QueryParam("max") Integer maxResult) {
-		return memberSvc.map(memberRepo.findAll(startPosition != null ? startPosition : 0, 
+		return memberSvc.map(memberRepo.fetchAll(startPosition != null ? startPosition : 0, 
 				maxResult != null ? maxResult : Integer.MAX_VALUE));
 	}
 
@@ -106,8 +102,8 @@ public class MemberEndpoint extends EndpointBase<Member> {
 	
 	@GET
 	@Path("/filtered")
-	public List<MemberDao> filtered(@QueryParam("filter") String filter) {
-		return memberSvc.map(members.filtered(filter));
+	public List<MemberDao> filtered(@QueryParam("filter") String filter, @QueryParam("truppId") Long truppId) {
+		return memberSvc.filtered(filter, truppId);
 	}
 	
 	@SuppressWarnings("unchecked")

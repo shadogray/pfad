@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -65,6 +64,7 @@ import at.tfr.pfad.dao.AuditListener;
 		@NamedQuery(name = "distReligion", query = "select distinct m.religion from Member m order by m.religion"), })
 @NamedEntityGraphs({
 		@NamedEntityGraph(name = "fetchAll", attributeNodes = { 
+				@NamedAttributeNode("funktionen"),
 				@NamedAttributeNode("Vollzahler"),
 				@NamedAttributeNode("reduced"), 
 				@NamedAttributeNode("parents"), 
@@ -198,7 +198,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@OneToMany(mappedBy = "leaderMale")
 	protected Set<Squad> maleGuided;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	protected Member Vollzahler;
 
 	@OneToMany(mappedBy = "Vollzahler")
@@ -592,6 +592,10 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		this.siblings = siblings;
 	}
 
+	/**
+	 * Inverse relationship, add will not be persisted.
+	 * @return
+	 */
 	public Set<Member> getParents() {
 		return parents;
 	}
@@ -617,6 +621,10 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		return VollzahlerId;
 	}
 
+	/**
+	 * Inverse relationship, add will not be persisted.
+	 * @return
+	 */
 	@XmlTransient
 	public Set<Payment> getPayments() {
 		return payments;
@@ -714,6 +722,10 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		return result;
 	}
 
+	/**
+	 * Inverse relationship, add will not be persisted.
+	 * @return
+	 */
 	@XmlTransient
 	public Set<Booking> getBookings() {
 		return this.bookings;

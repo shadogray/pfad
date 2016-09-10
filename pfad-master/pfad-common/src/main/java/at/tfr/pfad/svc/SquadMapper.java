@@ -22,9 +22,6 @@ public interface SquadMapper {
 	})
 	SquadDao squadToDao(Squad squad);
 	
-	Set<SquadDao> mapSquads(Set<Squad> squads);
-	Set<BaseDao> mapMembers(Set<Member> members);
-	
 	@Mappings({
 		@Mapping(target="shortName", ignore=true),
 		@Mapping(target="longName", ignore=true),

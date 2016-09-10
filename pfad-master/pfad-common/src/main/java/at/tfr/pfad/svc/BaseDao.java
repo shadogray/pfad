@@ -7,6 +7,7 @@ import at.tfr.pfad.model.PrimaryKeyHolder;
 public class BaseDao implements PrimaryKeyHolder, Serializable {
 
 	protected Long id;
+	protected String name;
 	protected String shortName;
 	protected String longName;
 	
@@ -18,10 +19,18 @@ public class BaseDao implements PrimaryKeyHolder, Serializable {
 		this.id = id;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public String getShortName() {
 		return shortName;
 	}
-
+	
 	public void setShortName(String shortName) {
 		this.shortName = shortName;
 	}

@@ -3,6 +3,7 @@ package at.tfr.pfad.rest;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.TypedQuery;
@@ -20,6 +21,9 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.svc.SquadDao;
+import at.tfr.pfad.svc.SquadMapper;
+import at.tfr.pfad.svc.SquadService;
 
 /**
  * 
@@ -28,9 +32,16 @@ import at.tfr.pfad.model.Squad;
 @Path("/squads")
 public class SquadEndpoint extends EndpointBase<Squad> {
 
+	@Inject
+	private SquadService squadSvc;
+	@Inject
+	private SquadMapper sm;
+
 	@POST
 	@Consumes("application/json")
-	public Response create(Squad entity) {
+	public Response create(SquadDao dao) {
+		Squad entity = new Squad();
+		sm.updateSquad(dao, entity);
 		em.persist(entity);
 		return Response.created(
 				UriBuilder.fromResource(SquadEndpoint.class)
@@ -52,62 +63,46 @@ public class SquadEndpoint extends EndpointBase<Squad> {
 	@Path("/{id:[0-9][0-9]*}")
 	@Produces("application/json")
 	public Response findById(@PathParam("id") Long id) {
-		TypedQuery<Squad> findByIdQuery = em
-				.createQuery(
-						"SELECT DISTINCT s FROM Squad s LEFT JOIN FETCH s.leaderMale LEFT JOIN FETCH s.leaderFemale LEFT JOIN FETCH s.assistants LEFT JOIN FETCH s.scouts WHERE s.id = :entityId ORDER BY s.id",
-						Squad.class);
-		findByIdQuery.setParameter("entityId", id);
-		Squad entity;
+		SquadDao dao;
 		try {
-			entity = findByIdQuery.getSingleResult();
+			dao = squadSvc.findBy(id);
 		} catch (NoResultException nre) {
-			entity = null;
+			dao = null;
 		}
-		if (entity == null) {
+		if (dao == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		return Response.ok(entity).build();
+		return Response.ok(dao).build();
 	}
 
 	@GET
 	@Produces("application/json")
-	public List<Squad> listAll(@QueryParam("start") Integer startPosition,
+	public List<SquadDao> listAll(@QueryParam("start") Integer startPosition,
 			@QueryParam("max") Integer maxResult) {
-		TypedQuery<Squad> findAllQuery = em
-				.createQuery(
-						"SELECT DISTINCT s FROM Squad s LEFT JOIN FETCH s.leaderMale LEFT JOIN FETCH s.leaderFemale LEFT JOIN FETCH s.assistants LEFT JOIN FETCH s.scouts ORDER BY s.id",
-						Squad.class);
-		if (startPosition != null) {
-			findAllQuery.setFirstResult(startPosition);
-		}
-		if (maxResult != null) {
-			findAllQuery.setMaxResults(maxResult);
-		}
-		final List<Squad> results = findAllQuery.getResultList();
-		return results;
+		return squadSvc.findAll();
 	}
 
 	@PUT
 	@Path("/{id:[0-9][0-9]*}")
 	@Consumes("application/json")
-	public Response update(@PathParam("id") Long id, Squad entity) {
-		if (entity == null) {
+	public Response update(@PathParam("id") Long id, SquadDao dao) {
+		if (dao == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
 		if (id == null) {
 			return Response.status(Status.BAD_REQUEST).build();
 		}
-		if (!id.equals(entity.getId())) {
-			return Response.status(Status.CONFLICT).entity(entity).build();
+		if (!id.equals(dao.getId())) {
+			return Response.status(Status.CONFLICT).entity(dao).build();
 		}
 		if (em.find(Squad.class, id) == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		try {
-			entity = em.merge(entity);
+			dao = squadSvc.update(dao);
 		} catch (OptimisticLockException e) {
 			return Response.status(Response.Status.CONFLICT)
-					.entity(e.getEntity()).build();
+					.entity(dao).build();
 		}
 
 		return Response.noContent().build();

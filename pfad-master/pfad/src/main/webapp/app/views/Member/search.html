@@ -13,7 +13,7 @@
 	<form id="MemberSearch" class="form-horizontal">
 
 			<div>
-				<md-autocomplete md-autofocus="true" md-no-cache="true"
+				<!-- md-autocomplete md-autofocus="true" md-no-cache="true"
 					md-selected-item="selectedItem" 
 					md-selected-item-changed="selectedItemChanged(item)"
 					md-search-text="filter" 
@@ -22,32 +22,24 @@
 					<md-item-template>
 						<span md-highlight-text="filter">{{item.name}},{{item.vormane}},{{item.ort}}</span>
 					</md-item-template>
-				</md-autocomplete>
+				</md-autocomplete-->
 			</div>
 
 		<div class="form-group">
 			<label for="name" class="col-sm-2 control-label">Name</label>
 			<div class="col-sm-10">
-				<input id="name" name="name" class="form-control" type="text" ng-model="search.filter"
-					placeholder="Enter something.."></input>
+				<input id="name" name="name" class="form-control" md-autofocus ng-model="filter" ng-change="filtered(filter,trupp)"
+					placeholder="einfach tippen.."></input>
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label for="trupp" class="col-sm-2 control-label">Trupp</label>
 			<div class="col-sm-10">
-				<select id="trupp" name="trupp" class="form-control" ng-model="search.trupp"
-					ng-options="t as t.id for t in truppList">
-					<option value="">Choose a Trupp</option>
+				<select id="trupp" name="trupp" class="form-control" ng-model="trupp"
+					ng-options="t as t.name for t in truppList" ng-change="filtered(filter,trupp)">
+					<option value="">Trupp wählen</option>
 				</select>
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label for="funktionenIds" class="col-sm-2 control-label">Funktionen Ids</label>
-			<div class="col-sm-10">
-				<input id="funktionenIds" name="funktionenIds" class="form-control" type="text" ng-model="search.funktionenIds"
-					placeholder="Enter the Member Funktionen Ids"></input>
 			</div>
 		</div>
 
@@ -71,6 +63,7 @@
 					<th>PLZ</th>
 					<th>Ort</th>
 					<th>Strasse</th>
+					<th>Trupp</th>
 				</tr>
 			</thead>
 			<tbody id="search-results-body">
@@ -82,6 +75,7 @@
 					<td><a href="#/Members/edit/{{result.id}}">{{result.PLZ}}</a></td>
 					<td><a href="#/Members/edit/{{result.id}}">{{result.ort}}</a></td>
 					<td><a href="#/Members/edit/{{result.id}}">{{result.strasse}}</a></td>
+					<td><a href="#/Members/edit/{{result.id}}">{{result.trupp.name}}</a></td>
 				</tr>
 			</tbody>
 		</table>

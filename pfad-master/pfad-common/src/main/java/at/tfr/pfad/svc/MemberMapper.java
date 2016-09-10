@@ -1,6 +1,7 @@
 package at.tfr.pfad.svc;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,16 +20,16 @@ public interface MemberMapper {
 	@Mappings({
 		@Mapping(target="shortName", ignore=true),
 		@Mapping(target="longName", ignore=true),
+		@Mapping(target="siblings", expression="java(baseDaoMapper.toReferences(member.getSiblings()))"),
+		@Mapping(target="parents", expression="java(baseDaoMapper.toReferences(member.getParents()))"),
 	})
 	MemberDao memberToDao(Member member);
-	Set<BaseDao> mapMembers(Set<Member> members);
 
 	@Mappings({
 		@Mapping(target="shortName", ignore=true),
 		@Mapping(target="longName", ignore=true),
 	})
 	BaseDao mapSquad(Squad squad);
-	Set<BaseDao> mapSquads(Set<Squad> squad);
 	
 	@Mappings({
 	@Mapping(target="created", ignore=true),

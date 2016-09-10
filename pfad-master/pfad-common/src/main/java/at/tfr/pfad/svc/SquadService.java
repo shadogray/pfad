@@ -14,12 +14,17 @@ import at.tfr.pfad.model.Squad;
 @Stateless
 public class SquadService {
 
-	private SquadMapper sm = SquadMapper.INSTANCE;
+	@Inject
+	private SquadMapper sm;
 	@Inject
 	private SquadRepository squadRepo;
 	
 	public SquadDao findBy(Long id) {
 		return sm.squadToDao(squadRepo.findBy(id));
+	}
+	
+	public List<SquadDao> findAll() {
+		return squadRepo.findAll().stream().map(s -> sm.squadToDao(s)).collect(Collectors.toList());
 	}
 	
 	public SquadDao update(SquadDao dao) {
