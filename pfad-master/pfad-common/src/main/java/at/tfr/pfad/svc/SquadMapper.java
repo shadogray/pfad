@@ -23,6 +23,14 @@ public interface SquadMapper {
 	@Mappings({
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
+		@Mapping(target="assistants", ignore=true),
+		@Mapping(target="scouts", ignore=true),
+	})
+	SquadDao squadToDaoMin(Squad squad);
+	
+	@Mappings({
+		@Mapping(target="shortName", source="shortString"),
+		@Mapping(target="longName", source="longString"),
 	})
 	BaseDao memberToDao(Member member);
 

@@ -24,7 +24,7 @@ public class SquadService {
 	}
 	
 	public List<SquadDao> findAll() {
-		return squadRepo.findAll().stream().map(s -> sm.squadToDao(s)).collect(Collectors.toList());
+		return squadRepo.findAll().stream().map(s -> sm.squadToDaoMin(s)).collect(Collectors.toList());
 	}
 	
 	public SquadDao update(SquadDao dao) {
