@@ -4,9 +4,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -14,14 +11,11 @@ import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.model.Activity;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class BookingDao extends BaseDao {
 
-	@Id
-	@XmlID
 	private Long id;
 	private int version;
-	private Set<PaymentDao> payments = new HashSet<PaymentDao>();
+	private Set<BaseDao> payments = new HashSet<BaseDao>();
 	private BaseDao member;
 	private Activity activity;
 	private SquadDao squad;
@@ -32,6 +26,7 @@ public class BookingDao extends BaseDao {
 	protected String changedBy;
 	protected String createdBy;
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}
@@ -77,11 +72,11 @@ public class BookingDao extends BaseDao {
 		return result;
 	}
 
-	public Set<PaymentDao> getPayments() {
+	public Set<BaseDao> getPayments() {
 		return this.payments;
 	}
 
-	public void setPayments(final Set<PaymentDao> payments) {
+	public void setPayments(final Set<BaseDao> payments) {
 		this.payments = payments;
 	}
 

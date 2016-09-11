@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
+public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Presentable, Comparable<Payment> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payment_seq")
@@ -290,5 +290,35 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable {
 		if (comment != null && !comment.trim().isEmpty())
 			result += ", " + comment;
 		return result;
+	}
+	
+	@Override
+	public String getName() {
+		return getShortString();
+	}
+	
+	@Override
+	public int compareTo(Payment o) {
+		if (this.id != null && o.id != null) 
+			return this.id.compareTo(o.id);
+		return this.getShortString().compareTo(o.getShortString());
+	}
+	
+	@Override
+	public String getShortString() {
+		String result = getClass().getSimpleName() + " ";
+		if (payer != null) {
+			result += payer.toShortString();
+		}
+		if (Boolean.FALSE.equals(finished) && Boolean.TRUE.equals(aconto)) {
+			result += ", ANZ";
+		}
+		result += ", " + (Boolean.TRUE.equals(finished) ? "FIN" : "");
+		return result;
+	}
+	
+	@Override
+	public String getLongString() {
+		return toString();
 	}
 }

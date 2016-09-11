@@ -1,29 +1,6 @@
-<div class="form-horizontal">
-	<h3>Create a new Member</h3>
-	<div class="form-group">
-		<div class="col-md-offset-2 col-sm-2">
-			<a id="Create" name="Create" class="btn btn-primary" href="#/Members/new"><span
-				class="glyphicon glyphicon-plus-sign"></span> Create</a>
-		</div>
-	</div>
-</div>
-<hr />
 <div>
-	<h3>Search for Members - TEST</h3>
+	<h3>Mitglieder</h3>
 	<form id="MemberSearch" class="form-horizontal">
-
-			<div>
-				<!-- md-autocomplete md-autofocus="true" md-no-cache="true"
-					md-selected-item="selectedItem" 
-					md-selected-item-changed="selectedItemChanged(item)"
-					md-search-text="filter" 
-					md-items="item in filtered(filter)" 
-					md-item-text="item.name ? item.name+','+item.vorname+','+item.ort : ''">
-					<md-item-template>
-						<span md-highlight-text="filter">{{item.name}},{{item.vormane}},{{item.ort}}</span>
-					</md-item-template>
-				</md-autocomplete-->
-			</div>
 
 		<div class="form-group">
 			<label for="name" class="col-sm-2 control-label">Name</label>
@@ -44,9 +21,15 @@
 		</div>
 
 		<div class="form-group">
-			<div class="col-md-offset-2 col-sm-10">
+			<div class="col-md-offset-2 col-sm-2">
 				<a id="Search" name="Search" class="btn btn-primary" ng-click="performSearch()"><span
 					class="glyphicon glyphicon-search"></span> Search</a>
+			</div>
+			<div class="col-sm-4">
+			</div>
+			<div class="col-md-offset-1 col-sm-2">
+				<a id="Create" name="Create" class="btn btn-primary" href="#/Members/new"><span
+					class="glyphicon glyphicon-plus-sign"></span> Create</a>
 			</div>
 		</div>
 	</form>
@@ -58,8 +41,8 @@
 				<tr>
 					<th>Name</th>
 					<th>Vorname</th>
-					<th>Geschlecht</th>
-					<th>Geb Jahr</th>
+					<th>W/M</th>
+					<th>GebJahr</th>
 					<th>PLZ</th>
 					<th>Ort</th>
 					<th>Strasse</th>
@@ -80,12 +63,5 @@
 			</tbody>
 		</table>
 	</div>
-
-	<ul class="pagination pagination-centered">
-		<li ng-class="{disabled:currentPage == 0}"><a id="prev" href ng-click="previous()">«</a></li>
-		<li ng-repeat="n in pageRange" ng-class="{active:currentPage == n}" ng-click="setPage(n)"><a href ng-bind="n + 1">1</a>
-		</li>
-		<li ng-class="{disabled: currentPage == (numberOfPages() - 1)}"><a id="next" href ng-click="next()">»</a></li>
-	</ul>
 
 </div>

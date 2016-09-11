@@ -1,7 +1,6 @@
 package at.tfr.pfad.svc;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -9,6 +8,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
+import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 
@@ -18,18 +18,26 @@ public interface MemberMapper {
 	MemberMapper INSTANCE = Mappers.getMapper(MemberMapper.class);
 	
 	@Mappings({
-		@Mapping(target="shortName", ignore=true),
-		@Mapping(target="longName", ignore=true),
+		@Mapping(target="shortName", source="shortString"),
+		@Mapping(target="longName", source="longString"),
 		@Mapping(target="siblings", expression="java(baseDaoMapper.toReferences(member.getSiblings()))"),
 		@Mapping(target="parents", expression="java(baseDaoMapper.toReferences(member.getParents()))"),
+		@Mapping(target="funktionen", expression="java(baseDaoMapper.toReferences(member.getFunktionen()))"),
+		@Mapping(target="geburtstag", expression="java(baseDaoMapper.memberGeburtstag(member))"),
 	})
 	MemberDao memberToDao(Member member);
 
 	@Mappings({
-		@Mapping(target="shortName", ignore=true),
-		@Mapping(target="longName", ignore=true),
+		@Mapping(target="shortName", source="shortString"),
+		@Mapping(target="longName", source="longString"),
 	})
 	BaseDao mapSquad(Squad squad);
+	
+	@Mappings({
+		@Mapping(target="shortName", source="shortString"),
+		@Mapping(target="longName", source="longString"),
+	})
+	BaseDao mapFunction(Function function);
 	
 	@Mappings({
 	@Mapping(target="created", ignore=true),

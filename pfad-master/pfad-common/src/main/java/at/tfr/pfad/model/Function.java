@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Function implements PrimaryKeyHolder, Serializable {
+public class Function implements PrimaryKeyHolder, Serializable, Presentable, Comparable<Function> {
 
 	public static final String PTA = "P"; // Pfadfinder Trotz Allem
 	
@@ -134,6 +134,29 @@ public class Function implements PrimaryKeyHolder, Serializable {
 		this.free = free;
 	}
 
+	@Override
+	public String getName() {
+		return function;
+	}
+	
+	@Override
+	public String getShortString() {
+		String result = "" + function;
+		if (key != null && !key.trim().isEmpty())
+			result += ", key: " + key;
+		return result;
+	}
+	
+	@Override
+	public String getLongString() {
+		return toString();
+	}
+	
+	@Override
+	public int compareTo(Function o) {
+		return this.toString().compareTo(o.toString());
+	}
+	
 	@Override
 	public String toString() {
 		String result = "" + function;

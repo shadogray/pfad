@@ -54,22 +54,19 @@ import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.AuditListener;
 
-@NamedQueries({ @NamedQuery(name = "distName", query = "select distinct m.name from Member m order by m.name"),
-		@NamedQuery(name = "distVorname", query = "select distinct m.vorname from Member m order by m.vorname"),
-		@NamedQuery(name = "distPLZ", query = "select distinct m.plz from Member m order by m.plz"),
-		@NamedQuery(name = "distOrt", query = "select distinct m.ort from Member m order by m.ort"),
-		@NamedQuery(name = "distStrasse", query = "select distinct m.strasse from Member m order by m.strasse"),
-		@NamedQuery(name = "distTitel", query = "select distinct m.titel from Member m order by m.titel"),
-		@NamedQuery(name = "distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
-		@NamedQuery(name = "distReligion", query = "select distinct m.religion from Member m order by m.religion"), })
+@NamedQueries({ 
+		@NamedQuery(name = "Member.distName", query = "select distinct m.name from Member m order by m.name"),
+		@NamedQuery(name = "Member.distVorname", query = "select distinct m.vorname from Member m order by m.vorname"),
+		@NamedQuery(name = "Member.distPLZ", query = "select distinct m.plz from Member m order by m.plz"),
+		@NamedQuery(name = "Member.distOrt", query = "select distinct m.ort from Member m order by m.ort"),
+		@NamedQuery(name = "Member.distStrasse", query = "select distinct m.strasse from Member m order by m.strasse"),
+		@NamedQuery(name = "Member.distTitel", query = "select distinct m.titel from Member m order by m.titel"),
+		@NamedQuery(name = "Member.distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
+		@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m order by m.religion"), })
 @NamedEntityGraphs({
-		@NamedEntityGraph(name = "fetchAll", attributeNodes = { 
-				@NamedAttributeNode("funktionen"),
-				@NamedAttributeNode("Vollzahler"),
-				@NamedAttributeNode("reduced"), 
-				@NamedAttributeNode("parents"), 
-				@NamedAttributeNode("siblings"),
-				@NamedAttributeNode("trupp") }),
+		@NamedEntityGraph(name = "fetchAll", attributeNodes = { @NamedAttributeNode("funktionen"),
+				@NamedAttributeNode("Vollzahler"), @NamedAttributeNode("reduced"), @NamedAttributeNode("parents"),
+				@NamedAttributeNode("siblings"), @NamedAttributeNode("trupp") }),
 		@NamedEntityGraph(name = "withTrupp", attributeNodes = @NamedAttributeNode("trupp")) })
 @Audited(withModifiedFlag = true)
 @Entity
@@ -77,7 +74,7 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "handler", "hibernateLazyInitializer" })
-public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member>, Auditable {
+public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member>, Auditable, Presentable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
@@ -594,6 +591,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	/**
 	 * Inverse relationship, add will not be persisted.
+	 * 
 	 * @return
 	 */
 	public Set<Member> getParents() {
@@ -623,6 +621,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	/**
 	 * Inverse relationship, add will not be persisted.
+	 * 
 	 * @return
 	 */
 	@XmlTransient
@@ -647,13 +646,22 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	public String toShortString() {
 		String result = "";
 		if (name != null && !name.trim().isEmpty())
-			result += ", " + name;
+			result += name;
 		if (vorname != null && !vorname.trim().isEmpty())
-			result += ", " + vorname;
-		result += ", " + gebTag + "." + gebMonat + "." + gebJahr;
+			result += " " + vorname;
+		result += ", " + gebJahr;
 		if (ort != null && !ort.trim().isEmpty())
-			result += " " + ort;
+			result += ", " + ort;
 		return result;
+	}
+
+	/**
+	 * property for REST API
+	 * 
+	 * @return
+	 */
+	public String getLongString() {
+		return toString();
 	}
 
 	@Override
@@ -724,6 +732,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	/**
 	 * Inverse relationship, add will not be persisted.
+	 * 
 	 * @return
 	 */
 	@XmlTransient

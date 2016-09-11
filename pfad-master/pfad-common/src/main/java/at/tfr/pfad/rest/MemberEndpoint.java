@@ -1,6 +1,18 @@
 package at.tfr.pfad.rest;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -19,6 +31,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import org.joda.time.DateTime;
+
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.svc.MemberDao;
@@ -34,6 +48,12 @@ import at.tfr.pfad.svc.MemberService;
 @Produces(MediaType.APPLICATION_JSON)
 public class MemberEndpoint extends EndpointBase<Member> {
 
+	List<Integer> gebTag = IntStream.range(1,31).boxed().collect(Collectors.toList());
+	List<Integer> gebJahr = IntStream.range(1900, new DateTime().getYear()).boxed().collect(Collectors.toList());
+	{
+		Collections.reverse(gebJahr);
+	}
+	
 	@Inject
 	private MemberService memberSvc;
 	@Inject
@@ -121,16 +141,52 @@ public class MemberEndpoint extends EndpointBase<Member> {
 	}
 
 	@GET
-	@Path("/siblings/{id:[0-9][0-9]*}")
+	@Path("/{id:[0-9]+}/siblings")
 	public List<MemberDao> findSiblingsById(@PathParam("id") Long id) {
 		Member member = memberRepo.fetchBy(id);
 		return memberSvc.map(member.getSiblings());
 	}
 
 	@GET
-	@Path("/parents/{id:[0-9][0-9]*}")
+	@Path("/{id:[0-9]+}/parents")
 	public List<MemberDao> findParentsById(@PathParam("id") Long id) {
 		Member member = memberRepo.fetchBy(id);
 		return memberSvc.map(member.getParents());
+	}
+	
+	@GET
+	@Path("/distinct")
+	public List<String> distinct(@QueryParam("property") String property, @QueryParam("filter") String filter) {
+		String name = ("findDistinct"+property).toLowerCase();
+		Optional<Method> mOpt = Stream.of(memberRepo.getClass().getDeclaredMethods())
+				.filter(m -> m.getName().toLowerCase().equals(name)).findFirst();
+		if (mOpt.isPresent()) {
+			try {
+				return ((List<String>)mOpt.get().invoke(memberRepo))
+						.stream().filter(s -> s != null && s.toLowerCase().contains(filter.toLowerCase()))
+						.sorted().collect(Collectors.toList());
+			} catch (Exception e) {
+				log.info("failure to invoke for property="+property+", filter="+filter, e);
+			}
+		}
+		return new ArrayList<>();
+	}
+	
+	@GET
+	@Path("/gebJahr")
+	public List<Integer> gebJahr() {
+		return gebJahr;
+	}
+
+	@GET
+	@Path("/gebMonat")
+	public Map<String, Integer> gebMonat() {
+		return new GregorianCalendar().getDisplayNames(Calendar.MONTH, Calendar.LONG_FORMAT, Locale.GERMAN);
+	}
+
+	@GET
+	@Path("/gebTag")
+	public List<Integer> gebTag() {
+		return gebTag;
 	}
 }

@@ -1,6 +1,6 @@
 
 
-angular.module('pfad').controller('EditActivityController', function ($scope, $routeParams, $location, flash, ActivityResource, BookingResource) {
+angular.module('pfad').controller('EditActivityController', function ($scope, $routeParams, $location, flash, ActivityResource) {
    var self = this;
    $scope.disabled = false;
    $scope.$location = $location;
@@ -9,27 +9,6 @@ angular.module('pfad').controller('EditActivityController', function ($scope, $r
       var successCallback = function (data) {
          self.original = data;
          $scope.activity = new ActivityResource(self.original);
-         BookingResource.queryAll(function (items) {
-            $scope.bookingsSelectionList = $.map(items, function (item) {
-               var wrappedObject = {
-                  id: item.id
-               };
-               var labelObject = {
-                  value: item.id,
-                  text: item.id
-               };
-               if ($scope.activity.bookings) {
-                  $.each($scope.activity.bookings, function (idx, element) {
-                     if (item.id == element.id) {
-                        $scope.bookingsSelection.push(labelObject);
-                        $scope.activity.bookings.push(wrappedObject);
-                     }
-                  });
-                  self.original.bookings = $scope.activity.bookings;
-               }
-               return labelObject;
-            });
-         });
       };
       var errorCallback = function () {
          flash.setMessage({
@@ -105,17 +84,6 @@ angular.module('pfad').controller('EditActivityController', function ($scope, $r
       $scope.activity.$remove(successCallback, errorCallback);
    };
 
-   $scope.bookingsSelection = $scope.bookingsSelection || [];
-   $scope.$watch("bookingsSelection", function (selection) {
-      if (typeof selection != 'undefined' && $scope.activity) {
-         $scope.activity.bookings = [];
-         $.each(selection, function (idx, selectedItem) {
-            var collectionItem = {};
-            collectionItem.id = selectedItem.value;
-            $scope.activity.bookings.push(collectionItem);
-         });
-      }
-   });
    $scope.typeList = [
       "Membership",
       "Camp",

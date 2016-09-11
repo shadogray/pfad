@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -17,11 +14,8 @@ import org.joda.time.DateTime;
 import at.tfr.pfad.PaymentType;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class PaymentDao extends BaseDao {
 
-	@Id
-	@XmlID
 	private Long id;
 	private int version;
 	private PaymentType type;
@@ -35,8 +29,9 @@ public class PaymentDao extends BaseDao {
 	protected Date created;
 	protected String changedBy;
 	protected String createdBy;
-	private Set<BookingDao> bookings = new HashSet<BookingDao>();
+	private Set<BaseDao> bookings = new HashSet<BaseDao>();
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}
@@ -122,16 +117,16 @@ public class PaymentDao extends BaseDao {
 		this.comment = comment;
 	}
 
-	public Set<BookingDao> getBookings() {
+	public Set<BaseDao> getBookings() {
 		return this.bookings;
 	}
 
 	public List<Long> getBookingsIds() {
-		return bookings.stream().map(BookingDao::getId)
+		return bookings.stream().map(BaseDao::getId)
 				.collect(Collectors.toList());
 	}
 
-	public void setBookings(final Set<BookingDao> bookings) {
+	public void setBookings(final Set<BaseDao> bookings) {
 		this.bookings = bookings;
 	}
 

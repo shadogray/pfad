@@ -1,11 +1,11 @@
 package at.tfr.pfad.dao;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import javax.ejb.Stateless;
-import javax.enterprise.inject.Model;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -53,7 +53,8 @@ public class Members {
 			preds.add(cb.equal(root.get(Member_.truppId), truppId));
 		}
 		if (StringUtils.isNotBlank(filter) && filter.length() > 2) {
-			Stream.of(filter.toLowerCase().split(" ")).forEach(v -> preds.add(cb.or(predicatesFor(v, cb, root))));
+			Stream.of(filter.toLowerCase().split(" "))
+			.forEach(v -> preds.add(cb.or(predicatesFor(v, cb, root))));
 		}
 		
 		if (preds.isEmpty()) {
@@ -67,7 +68,16 @@ public class Members {
 	}
 
 	Predicate[] predicatesFor(String value, CriteriaBuilder cb, Root<Member> root) {
+		
 		List<Predicate> list = new ArrayList<>();
+		
+		for (Field field : Member.class.getDeclaredFields()) {
+			if (field.getType() == boolean.class && value.endsWith(field.getName())) {
+				list.add(cb.equal(root.get(field.getName()), !value.startsWith("no")));
+				return list.toArray(new Predicate[list.size()]);
+			}
+		}
+		
 		list.add(cb.like(cb.lower(root.get(Member_.name)), "%" + value + "%"));
 		list.add(cb.like(cb.lower(root.get(Member_.vorname)), "%" + value + "%"));
 		list.add(cb.like(cb.lower(root.get(Member_.strasse)), "%" + value + "%"));

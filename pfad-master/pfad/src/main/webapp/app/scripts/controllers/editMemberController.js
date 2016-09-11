@@ -1,11 +1,11 @@
-
 angular.module('pfad').controller(
 	'EditMemberController',
-	function($scope, $routeParams, $location, flash, MemberResource, SquadResource, MemberResource, FunctionResource, MemberResource, PaymentResource,
-		BookingResource) {
+	function($scope, $routeParams, $location, flash, MemberResource, SquadResource, FunctionResource) {
 	    var self = this;
 	    $scope.disabled = false;
 	    $scope.$location = $location;
+	    $scope.changed = false;
+	    $scope.functions = [];
 
 	    $scope.get = function() {
 		var successCallback = function(data) {
@@ -29,6 +29,7 @@ angular.module('pfad').controller(
 			});
 		    });
 		    FunctionResource.queryAll(function(items) {
+			$scope.functions = items;
 			$scope.funktionenSelectionList = $.map(items, function(item) {
 			    var wrappedObject = {
 				id : item.id
@@ -63,12 +64,24 @@ angular.module('pfad').controller(
 		}, successCallback, errorCallback);
 	    };
 
+	    $scope.memberChanged = function(chip, index) {
+		$scope.changed = true;
+	    };
+
 	    $scope.isClean = function() {
-		return angular.equals(self.original, $scope.member);
+		return !$scope.changed && angular.equals(self.original, $scope.member);
 	    };
 
 	    $scope.filteredMembers = function(filter) {
 		var results = MemberResource.filtered({
+		    "filter" : filter
+		});
+		return results.$promise;
+	    };
+
+	    $scope.distinct = function(property, filter) {
+		var results = MemberResource.distinct({
+		    "property" : property,
 		    "filter" : filter
 		});
 		return results.$promise;
@@ -84,6 +97,7 @@ angular.module('pfad').controller(
 
 	    $scope.save = function() {
 		var successCallback = function() {
+		    $scope.changed = false;
 		    flash.setMessage({
 			'type' : 'success',
 			'text' : 'The member was updated successfully.'
@@ -135,63 +149,7 @@ angular.module('pfad').controller(
 	    };
 
 	    $scope.geschlechtList = [ "W", "M", "X" ];
-	    $scope.rolleList = [ "Scout", "Leader", "Assistant", "Gilde", "Support", "undef" ];
-	    $scope.$watch("truppSelection", function(selection) {
-		if (typeof selection != 'undefined') {
-		    $scope.member.trupp = {};
-		    $scope.member.trupp.id = selection.value;
-		}
-	    });
-	    $scope.$watch("VollzahlerSelection", function(selection) {
-		if (typeof selection != 'undefined') {
-		    $scope.member.Vollzahler = {};
-		    $scope.member.Vollzahler.id = selection.value;
-		}
-	    });
-	    $scope.funktionenSelection = $scope.funktionenSelection || [];
-	    $scope.$watch("funktionenSelection", function(selection) {
-		if (typeof selection != 'undefined' && $scope.member) {
-		    $scope.member.funktionen = [];
-		    $.each(selection, function(idx, selectedItem) {
-			var collectionItem = {};
-			collectionItem.id = selectedItem.value;
-			$scope.member.funktionen.push(collectionItem);
-		    });
-		}
-	    });
-	    $scope.siblingsSelection = $scope.siblingsSelection || [];
-	    $scope.$watch("siblingsSelection", function(selection) {
-		if (typeof selection != 'undefined' && $scope.member) {
-		    $scope.member.siblings = [];
-		    $.each(selection, function(idx, selectedItem) {
-			var collectionItem = {};
-			collectionItem.id = selectedItem.value;
-			$scope.member.siblings.push(collectionItem);
-		    });
-		}
-	    });
-	    $scope.paymentsSelection = $scope.paymentsSelection || [];
-	    $scope.$watch("paymentsSelection", function(selection) {
-		if (typeof selection != 'undefined' && $scope.member) {
-		    $scope.member.payments = [];
-		    $.each(selection, function(idx, selectedItem) {
-			var collectionItem = {};
-			collectionItem.id = selectedItem.value;
-			$scope.member.payments.push(collectionItem);
-		    });
-		}
-	    });
-	    $scope.bookingsSelection = $scope.bookingsSelection || [];
-	    $scope.$watch("bookingsSelection", function(selection) {
-		if (typeof selection != 'undefined' && $scope.member) {
-		    $scope.member.bookings = [];
-		    $.each(selection, function(idx, selectedItem) {
-			var collectionItem = {};
-			collectionItem.id = selectedItem.value;
-			$scope.member.bookings.push(collectionItem);
-		    });
-		}
-	    });
+	    $scope.rolleList = [ "Scout", "Leader", "Assistant", "Gilde", "Support" ];
 	    $scope.aktivList = [ "true", "false" ];
 	    $scope.aktivExternList = [ "true", "false" ];
 	    $scope.trailList = [ "true", "false" ];

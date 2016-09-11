@@ -1,7 +1,5 @@
 package at.tfr.pfad.svc;
 
-import java.util.Set;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -17,22 +15,23 @@ public interface SquadMapper {
 	SquadMapper INSTANCE = Mappers.getMapper(SquadMapper.class);
 	
 	@Mappings({
-		@Mapping(target="shortName", ignore=true),
-		@Mapping(target="longName", ignore=true),
+		@Mapping(target="shortName", source="shortString"),
+		@Mapping(target="longName", source="longString"),
 	})
 	SquadDao squadToDao(Squad squad);
 	
 	@Mappings({
-		@Mapping(target="shortName", ignore=true),
-		@Mapping(target="longName", ignore=true),
+		@Mapping(target="shortName", source="shortString"),
+		@Mapping(target="longName", source="longString"),
 	})
 	BaseDao memberToDao(Member member);
 
 	@Mappings({
-	@Mapping(target="created", ignore=true),
-	@Mapping(target="createdBy", ignore=true),
-	@Mapping(target="changed", ignore=true),
-	@Mapping(target="changedBy", ignore=true),
+		@Mapping(target="scouts", ignore=true),
+		@Mapping(target="created", ignore=true),
+		@Mapping(target="createdBy", ignore=true),
+		@Mapping(target="changed", ignore=true),
+		@Mapping(target="changedBy", ignore=true),
 	})
 	void updateSquad(SquadDao dao, @MappingTarget Squad squad);
 }

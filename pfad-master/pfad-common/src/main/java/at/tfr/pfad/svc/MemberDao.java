@@ -8,14 +8,12 @@
 package at.tfr.pfad.svc;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -28,10 +26,8 @@ import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Function;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class MemberDao extends BaseDao implements Comparable<MemberDao> {
+public class MemberDao extends BaseDao {
 
-	@XmlID
 	private Long id;
 	protected int version;
 	protected String bvKey;
@@ -44,6 +40,7 @@ public class MemberDao extends BaseDao implements Comparable<MemberDao> {
 	protected int gebTag;
 	protected int gebMonat;
 	protected int gebJahr;
+	protected Date geburtstag;
 	protected String strasse;
 	protected String plz;
 	protected String ort;
@@ -66,14 +63,15 @@ public class MemberDao extends BaseDao implements Comparable<MemberDao> {
 	protected BaseDao Vollzahler;
 	protected Set<BaseDao> reduced;
 	protected Long VollzahlerId;
-	protected Set<Function> funktionen = new HashSet<>();
-	protected Set<BaseDao> siblings = new HashSet<>();
-	protected Set<BaseDao> parents = new HashSet<>();
+	protected Set<BaseDao> funktionen = new TreeSet<>();
+	protected Set<BaseDao> siblings = new TreeSet<>();
+	protected Set<BaseDao> parents = new TreeSet<>();
 	protected Date changed;
 	protected Date created;
 	protected String changedBy;
 	protected String createdBy;
 
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}
@@ -211,7 +209,15 @@ public class MemberDao extends BaseDao implements Comparable<MemberDao> {
 	public void setGebJahr(int GebJahr) {
 		this.gebJahr = GebJahr;
 	}
+	
+	public Date getGeburtstag() {
+		return geburtstag;
+	}
 
+	public void setGeburtstag(Date geburtstag) {
+		this.geburtstag = geburtstag;
+	}
+	
 	@Pfad
 	public String getStrasse() {
 		return strasse;
@@ -348,7 +354,7 @@ public class MemberDao extends BaseDao implements Comparable<MemberDao> {
 	}
 
 	@Override
-	public int compareTo(MemberDao o) {
+	public int compareTo(BaseDao o) {
 		return getCompareString().compareTo(o.getCompareString());
 	}
 
@@ -482,21 +488,15 @@ public class MemberDao extends BaseDao implements Comparable<MemberDao> {
 	}
 
 	@Pfad
-	public Set<Function> getFunktionen() {
-		Iterator<Function> fi = this.funktionen.iterator();
-		while (fi.hasNext()) {
-			Function f = fi.next();
-			if (f != null && f.getId() == null)
-				fi.remove();
-		}
+	public Set<BaseDao> getFunktionen() {
 		return this.funktionen;
 	}
 
 	public List<Long> getFunktionenIds() {
-		return funktionen.stream().map(Function::getId).collect(Collectors.toList());
+		return funktionen.stream().map(BaseDao::getId).collect(Collectors.toList());
 	}
 
-	public void setFunktionen(final Set<Function> Funktionen) {
+	public void setFunktionen(final Set<BaseDao> Funktionen) {
 		this.funktionen = Funktionen;
 	}
 

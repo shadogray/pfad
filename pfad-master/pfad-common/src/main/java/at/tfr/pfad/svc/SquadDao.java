@@ -8,24 +8,17 @@
 package at.tfr.pfad.svc;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
-import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import at.tfr.pfad.SquadType;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class SquadDao extends BaseDao implements Comparable<SquadDao> {
+public class SquadDao extends BaseDao {
 
-	@Id
-	@XmlID
 	private Long id;
 	private int version;
 	private SquadType type;
@@ -37,9 +30,10 @@ public class SquadDao extends BaseDao implements Comparable<SquadDao> {
 	private String createdBy;
 	private BaseDao leaderMale;
 	private BaseDao leaderFemale;
-	private Set<BaseDao> assistants = new HashSet<BaseDao>();
-	private Set<BaseDao> scouts = new HashSet<BaseDao>();
+	private Set<BaseDao> assistants = new TreeSet<BaseDao>();
+	private Set<BaseDao> scouts = new TreeSet<BaseDao>();
  
+	@XmlID
 	public Long getId() {
 		return this.id;
 	}
@@ -166,7 +160,6 @@ public class SquadDao extends BaseDao implements Comparable<SquadDao> {
 		this.leaderFemale = leaderFemale;
 	}
 
-	@XmlTransient
 	public Set<BaseDao> getAssistants() {
 		return this.assistants;
 	}
@@ -175,15 +168,19 @@ public class SquadDao extends BaseDao implements Comparable<SquadDao> {
 		this.assistants = assistants;
 	}
 
-	@XmlTransient
 	public Set<BaseDao> getScouts() {
 		return scouts;
 	}
+	
+	public void setScouts(Set<BaseDao> scouts) {
+		this.scouts = scouts;
+	}
 
 	@Override
-	public int compareTo(SquadDao o) {
-		if (type != null && o.type != null)
-			return type.compareTo(o.type);
+	public int compareTo(BaseDao o) {
+		if (name != null) {
+			return toString().compareTo(o.toString());
+		}
 		if (id != null && o.id != null)
 			return id.compareTo(o.id);
 		return this.compareTo(o);

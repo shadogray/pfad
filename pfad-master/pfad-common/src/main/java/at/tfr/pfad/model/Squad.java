@@ -54,7 +54,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Squad implements PrimaryKeyHolder,Comparable<Squad>,Auditable,Serializable {
+public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Serializable, Presentable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "squad_seq")
@@ -212,7 +212,17 @@ public class Squad implements PrimaryKeyHolder,Comparable<Squad>,Auditable,Seria
 		result += ", " + type;
 		return result;
 	}
+	
+	@Override
+	public String getShortString() {
+		return name;
+	}
 
+	@Override
+	public String getLongString() {
+		return toString();
+	}
+	
 	public Member getLeaderMale() {
 		return this.leaderMale;
 	}

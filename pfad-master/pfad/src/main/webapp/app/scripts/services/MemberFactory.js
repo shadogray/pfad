@@ -27,7 +27,12 @@ angular.module('pfad').factory('MemberResource', function($resource) {
 	    url : '../rest/members/parents/:MemberId',
 	    method : 'GET',
 	    isArray : true
-	}
+	},
+	'distinct' : {
+	    url : '../rest/members/distinct',
+	    method : 'GET',
+	    isArray : true
+	},
     });
     return resource;
 });

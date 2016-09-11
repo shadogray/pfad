@@ -17,16 +17,16 @@ public interface PaymentMapper {
 	PaymentMapper INSTANCE = Mappers.getMapper(PaymentMapper.class);
 	
 	@Mappings({
-		@Mapping(target="shortName", ignore=true),
-		@Mapping(target="longName", ignore=true),
+		@Mapping(target="shortName", source="shortString"),
+		@Mapping(target="longName", source="longString"),
 	})
 	PaymentDao paymentToDao(Payment Paymenrt);
 	
 	Set<BaseDao> mapBookings(Set<Booking> bookings);
 	
 	@Mappings({
-		@Mapping(target="shortName", ignore=true),
-		@Mapping(target="longName", ignore=true),
+		@Mapping(target="shortName", source="shortString"),
+		@Mapping(target="longName", source="longString"),
 	})
 	BaseDao memberToDao(Member member);
 

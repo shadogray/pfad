@@ -48,7 +48,7 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
+public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Presentable, Comparable<Booking> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "booking_seq")
@@ -243,5 +243,32 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable {
 		if (comment != null && !comment.trim().isEmpty())
 			result += " " + comment;
 		return result;
+	}
+	
+	@Override
+	public String getName() {
+		return getShortString();
+	}
+	
+	@Override
+	public int compareTo(Booking o) {
+		if (this.id != null && o.id != null) 
+			return this.id.compareTo(o.id);
+		return this.getShortString().compareTo(o.getShortString());
+	}
+	
+	@Override
+	public String getShortString() {
+		String result = (activity != null ? activity.getName() : "undef");
+		if (member != null) {
+			result += " " + member.getName() + " " + member.getVorname() + ", "
+					+ member.getGebJahr();
+		}
+		return result;
+	}
+
+	@Override
+	public String getLongString() {
+		return toString();
 	}
 }

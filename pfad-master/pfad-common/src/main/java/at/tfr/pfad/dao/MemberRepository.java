@@ -44,8 +44,9 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 	}
 	
 	public List<Member> fetchAll(int start, int max) {
-		List<Member> list = findAll(start, max);
-		return fetch(list.stream().map(Member::getId).collect(Collectors.toList()))
+		List<Long> ids = queryAllIdsIntern()
+				.firstResult(start).maxResults(max).getResultList();
+		return fetch(ids)
 				.orderAsc(Member_.name).orderAsc(Member_.vorname)
 				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat)
 				.getResultList();
@@ -59,6 +60,9 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 	
 	@Query("select e from Member e")
 	protected abstract QueryResult<Member> queryAllIntern();
+	
+	@Query("select e.id from Member e")
+	protected abstract QueryResult<Long> queryAllIdsIntern();
 	
 	@EntityGraph("fetchAll")
 	@Query("select e from Member e where e.id in (?1)")
@@ -82,28 +86,28 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 	}
 	
 
-	@Query(named="distName")
+	@Query(named="Member.distName")
 	public abstract List<String> findDistinctName();
 
-	@Query(named="distVorname")
+	@Query(named="Member.distVorname")
 	public abstract List<String> findDistinctVorname();
 
-	@Query(named="distPLZ")
+	@Query(named="Member.distPLZ")
 	public abstract List<String> findDistinctPLZ();
 
-	@Query(named="distOrt")
+	@Query(named="Member.distOrt")
 	public abstract List<String> findDistinctOrt();
 
-	@Query(named="distStrasse")
+	@Query(named="Member.distStrasse")
 	public abstract List<String> findDistinctStrasse();
 
-	@Query(named="distTitel")
+	@Query(named="Member.distTitel")
 	public abstract List<String> findDistinctTitel();
 
-	@Query(named="distAnrede")
+	@Query(named="Member.distAnrede")
 	public abstract List<String> findDistinctAnrede();
 
-	@Query(named="distReligion")
+	@Query(named="Member.distReligion")
 	public abstract List<String> findDistinctReligion();
 
 }

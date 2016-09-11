@@ -1,5 +1,7 @@
 package at.tfr.pfad.svc;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -20,6 +22,8 @@ import at.tfr.pfad.model.Squad;
 @ApplicationScoped
 public class BaseDaoMapper {
 
+	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+	
 	@Inject
 	private EntityManager em;
 	
@@ -31,7 +35,7 @@ public class BaseDaoMapper {
     	if (entities == null) {
     		return new TreeSet<>();
     	}
-    	return entities.stream().map(e -> toReference(e)).collect(Collectors.toSet());
+    	return entities.stream().map(e -> toReference(e)).sorted().collect(Collectors.toCollection(TreeSet::new));
     }
     
     public BaseDao toReference(PrimaryKeyHolder entity) {
@@ -61,5 +65,14 @@ public class BaseDaoMapper {
         	bd.setShortName(bd.getName());
         }
         return bd;
+    }
+    
+    public Date memberGeburtstag(Member m) {
+    	String date = m.getGebJahr()+"."+m.getGebMonat()+"."+m.getGebTag();
+    	try {
+    		return sdf.parse(date);
+    	} catch (Exception e) {
+    		return null;
+    	}
     }
 }

@@ -31,7 +31,7 @@ import at.tfr.pfad.Role;
 @Entity
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Configuration implements PrimaryKeyHolder, Serializable {
+public class Configuration implements PrimaryKeyHolder, Serializable, Comparable<Configuration> {
 
 	public static final String BADEN_KEY = "BAD";
 	public static final String BADEN_KEYPFX = "3-BAD-";
@@ -140,6 +140,13 @@ public class Configuration implements PrimaryKeyHolder, Serializable {
 		this.cvalue = cvalue;
 	}
 
+	@Override
+	public int compareTo(Configuration o) {
+		if (this.id != null && o.id != null) 
+			return this.id.compareTo(o.id);
+		return this.toString().compareTo(o.toString());
+	}
+	
 	@Override
 	public String toString() {
 		String result = getClass().getSimpleName() + " ";

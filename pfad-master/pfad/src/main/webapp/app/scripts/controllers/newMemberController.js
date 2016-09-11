@@ -1,6 +1,5 @@
 
-angular.module('pfad').controller('NewMemberController', function ($scope, $location, locationParser, flash, MemberResource, SquadResource, MemberResource,
-        FunctionResource, MemberResource, PaymentResource, BookingResource) {
+angular.module('pfad').controller('NewMemberController', function ($scope, $location, locationParser, flash, MemberResource, SquadResource,  FunctionResource) {
    $scope.disabled = false;
    $scope.$location = $location;
    $scope.member = $scope.member || {};
@@ -35,21 +34,6 @@ angular.module('pfad').controller('NewMemberController', function ($scope, $loca
       }
    });
 
-   $scope.VollzahlerList = MemberResource.queryAll(function (items) {
-      $scope.VollzahlerSelectionList = $.map(items, function (item) {
-         return ({
-            value: item.id,
-            text: item.id
-         });
-      });
-   });
-   $scope.$watch("VollzahlerSelection", function (selection) {
-      if (typeof selection != 'undefined') {
-         $scope.member.Vollzahler = {};
-         $scope.member.Vollzahler.id = selection.value;
-      }
-   });
-
    $scope.funktionenList = FunctionResource.queryAll(function (items) {
       $scope.funktionenSelectionList = $.map(items, function (item) {
          return ({
@@ -65,63 +49,6 @@ angular.module('pfad').controller('NewMemberController', function ($scope, $loca
             var collectionItem = {};
             collectionItem.id = selectedItem.value;
             $scope.member.funktionen.push(collectionItem);
-         });
-      }
-   });
-
-   $scope.siblingsList = MemberResource.queryAll(function (items) {
-      $scope.siblingsSelectionList = $.map(items, function (item) {
-         return ({
-            value: item.id,
-            text: item.id
-         });
-      });
-   });
-   $scope.$watch("siblingsSelection", function (selection) {
-      if (typeof selection != 'undefined') {
-         $scope.member.siblings = [];
-         $.each(selection, function (idx, selectedItem) {
-            var collectionItem = {};
-            collectionItem.id = selectedItem.value;
-            $scope.member.siblings.push(collectionItem);
-         });
-      }
-   });
-
-   $scope.paymentsList = PaymentResource.queryAll(function (items) {
-      $scope.paymentsSelectionList = $.map(items, function (item) {
-         return ({
-            value: item.id,
-            text: item.id
-         });
-      });
-   });
-   $scope.$watch("paymentsSelection", function (selection) {
-      if (typeof selection != 'undefined') {
-         $scope.member.payments = [];
-         $.each(selection, function (idx, selectedItem) {
-            var collectionItem = {};
-            collectionItem.id = selectedItem.value;
-            $scope.member.payments.push(collectionItem);
-         });
-      }
-   });
-
-   $scope.bookingsList = BookingResource.queryAll(function (items) {
-      $scope.bookingsSelectionList = $.map(items, function (item) {
-         return ({
-            value: item.id,
-            text: item.id
-         });
-      });
-   });
-   $scope.$watch("bookingsSelection", function (selection) {
-      if (typeof selection != 'undefined') {
-         $scope.member.bookings = [];
-         $.each(selection, function (idx, selectedItem) {
-            var collectionItem = {};
-            collectionItem.id = selectedItem.value;
-            $scope.member.bookings.push(collectionItem);
          });
       }
    });

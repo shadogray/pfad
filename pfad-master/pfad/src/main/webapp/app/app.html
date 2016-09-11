@@ -29,21 +29,20 @@
         <div class="container">
             <div class="row row-offcanvas row-offcanvas-left">
                 <!-- sidebar -->
-                <div class="col-xs-6 col-sm-2 well sidebar-offcanvas">
+                <div class="col-md-2 col-sm-2 well sidebar-offcanvas">
                     <a href="app.html">
                         <img class="hidden-xs img-responsive" style="width:100px" src="img/forge-logo.png" alt="JBoss Forge"></img>
                     </a>
                     <nav class="sidebar-nav" ng-controller="NavController" role="navigation">
                         <div id="sidebar-entries" class="list-group">
                         	<a class="list-group-item" ng-class="{active: matchesRoute('Members')}" href="#/Members" data-toggle="offcanvas">Mitgld</a>
-                        	<a class="list-group-item" ng-class="{active: matchesRoute('Squads')}" href="#/Squads" data-toggle="offcanvas">Trupp</a>
-                        	<a class="list-group-item" ng-class="{active: matchesRoute('Bookings')}" href="#/Bookings" data-toggle="offcanvas">Buchg</a>
-                        	<a class="list-group-item" ng-class="{active: matchesRoute('Payments')}" href="#/Payments" data-toggle="offcanvas">Zahlg</a>
+                        	<a class="list-group-item" ng-class="{active: matchesRoute('Squads')}" href="#/Squads" data-toggle="offcanvas">Trupps</a>
+                        	<a class="list-group-item" href="../faces/pfad/member/search.xhtml">DESKTOP</a>
                         </div>
                     </nav>
                 </div>
                 <!-- main area-->
-                <div class="col-sm-offset-1 col-xs-12 col-sm-8 well mainarea">
+                <div class="col-md-offset-0 col-xs-12 col-md-8 well mainarea">
                     <div ng-controller="FlashController" class="alert alert-dismissible" ng-class="'alert-' + flash.getMessage().cssClass" role="alert" ng-show="showAlert">
                         <button type="button" class="close" ng-click="hideAlert()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         {{flash.getMessage().text}}

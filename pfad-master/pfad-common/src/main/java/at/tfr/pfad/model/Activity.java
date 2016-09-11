@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
+public class Activity implements PrimaryKeyHolder, Auditable, Serializable, Presentable {
 
 	private static DateTimeFormatter format = DateTimeFormat
 			.forPattern("dd.MM.yyyy");
@@ -262,17 +262,25 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable {
 
 	@Override
 	public String toString() {
-		String result = (StringUtils.isNotBlank(name) ? name : getClass()
-				.getSimpleName() + ":" + type + ":" + status);
+		String result = ((StringUtils.isNotBlank(name) ? name : getClass()
+				.getSimpleName()) + ":" + type + ":" + status);
 		if (start != null) {
 			result += ", " + new DateTime(start).toString(format);
-		}
-		if (status != null) {
-			result += ", " + status;
 		}
 		return result;
 	}
 
+	@Override
+	public String getShortString() {
+		return ((StringUtils.isNotBlank(name) ? name : getClass()
+				.getSimpleName()) + ":" + type + ":" + status);
+	}
+	
+	@Override
+	public String getLongString() {
+		return toString();
+	}
+	
 	@Transient
 	public boolean isFinished() {
 		return ActivityStatus.cancelled.equals(status)

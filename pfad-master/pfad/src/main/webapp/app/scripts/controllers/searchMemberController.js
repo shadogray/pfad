@@ -9,7 +9,7 @@ angular.module('pfad').controller(
 			$scope.selectedItem = {};
 			$scope.search = {};
 			$scope.currentPage = 0;
-			$scope.pageSize = 10;
+			$scope.pageSize = 30;
 			$scope.searchResults = [];
 			$scope.filteredResults = [];
 			$scope.pageRange = [];

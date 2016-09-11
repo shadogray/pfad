@@ -21,6 +21,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.svc.MemberDao;
+import at.tfr.pfad.svc.MemberService;
 import at.tfr.pfad.svc.SquadDao;
 import at.tfr.pfad.svc.SquadMapper;
 import at.tfr.pfad.svc.SquadService;
@@ -30,15 +32,18 @@ import at.tfr.pfad.svc.SquadService;
  */
 @Stateless
 @Path("/squads")
+@Produces("application/json")
+@Consumes("application/json")
 public class SquadEndpoint extends EndpointBase<Squad> {
 
 	@Inject
 	private SquadService squadSvc;
 	@Inject
+	private MemberService memberSvc;
+	@Inject
 	private SquadMapper sm;
 
 	@POST
-	@Consumes("application/json")
 	public Response create(SquadDao dao) {
 		Squad entity = new Squad();
 		sm.updateSquad(dao, entity);
@@ -61,7 +66,6 @@ public class SquadEndpoint extends EndpointBase<Squad> {
 
 	@GET
 	@Path("/{id:[0-9][0-9]*}")
-	@Produces("application/json")
 	public Response findById(@PathParam("id") Long id) {
 		SquadDao dao;
 		try {
@@ -76,15 +80,25 @@ public class SquadEndpoint extends EndpointBase<Squad> {
 	}
 
 	@GET
-	@Produces("application/json")
 	public List<SquadDao> listAll(@QueryParam("start") Integer startPosition,
 			@QueryParam("max") Integer maxResult) {
 		return squadSvc.findAll();
 	}
 
+	@GET
+	@Path("/{id:[0-9]+}/assistants")
+	public List<MemberDao> listAssistants(@PathParam("id") Long id) {
+		return memberSvc.map(squadRepo.findBy(id).getAssistants());
+	}
+
+	@GET
+	@Path("/{id:[0-9]+}/scouts")
+	public List<MemberDao> listScouts(@PathParam("id") Long id) {
+		return memberSvc.map(squadRepo.findBy(id).getScouts());
+	}
+
 	@PUT
 	@Path("/{id:[0-9][0-9]*}")
-	@Consumes("application/json")
 	public Response update(@PathParam("id") Long id, SquadDao dao) {
 		if (dao == null) {
 			return Response.status(Status.BAD_REQUEST).build();

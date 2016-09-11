@@ -2,15 +2,23 @@ package at.tfr.pfad.svc;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import at.tfr.pfad.model.PrimaryKeyHolder;
 
-public class BaseDao implements PrimaryKeyHolder, Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@XmlRootElement
+public class BaseDao implements PrimaryKeyHolder, Serializable, Comparable<BaseDao> {
 
 	protected Long id;
 	protected String name;
 	protected String shortName;
 	protected String longName;
 	
+	@XmlID
 	public Long getId() {
 		return id;
 	};
@@ -41,5 +49,19 @@ public class BaseDao implements PrimaryKeyHolder, Serializable {
 
 	public void setLongName(String longName) {
 		this.longName = longName;
+	}
+
+	@Override
+	public int compareTo(BaseDao o) {
+		return getCompareString().compareTo(o.getCompareString());
+	}
+
+	public String getCompareString() {
+		return "" + name + id;
+	}
+
+	@Override
+	public String toString() {
+		return "BaseDao [id=" + id + ", name=" + name + ", shortName=" + shortName + "]";
 	}
 }
