@@ -5,8 +5,8 @@
 		<div class="form-group">
 			<label for="name" class="col-sm-2 control-label">Name</label>
 			<div class="col-sm-10">
-				<input id="name" name="name" class="form-control" md-autofocus ng-model="filter" ng-change="filtered(filter,trupp)"
-					placeholder="einfach tippen.."></input>
+					<input id="name" name="name" class="form-control" ng-model="filter" ng-change="filtered(filter,trupp)"
+						placeholder="einfach tippen.."></input>
 			</div>
 		</div>
 
@@ -63,5 +63,9 @@
 			</tbody>
 		</table>
 	</div>
+
+	<script type="text/javascript">
+		$().ready(function() { $('#name').focus(); });
+	</script>
 
 </div>

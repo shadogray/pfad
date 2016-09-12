@@ -41,6 +41,7 @@
 			<url-pattern>/pfad/*</url-pattern>
 			<url-pattern>/faces/pfad/*</url-pattern>
             <url-pattern>/app/*</url-pattern>
+            <url-pattern>/rest/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>admin</role-name>

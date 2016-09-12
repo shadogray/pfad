@@ -5,16 +5,16 @@
 <form id="MemberForm" name="MemberForm" class="form-horizontal" role="form">
     
     <div class="form-group" ng-class="{'has-error': MemberForm.BVKey.$invalid}">
-        <label for="BVKey" class="col-sm-2 control-label">BV Key</label>
+        <label for="BVKey" class="col-sm-2 control-label">BV Key:</label>
         <div id="BVKeyControls" class="col-sm-10">
-            <input id="BVKey" name="BVKey" type="text" class="form-control" ng-model="member.BVKey" placeholder="Nur wenn schon vorhanden!!"></input>
+            <input id="BVKey" name="BVKey" type="text" class="form-control" ng-model="member.bvkey" placeholder="Nur wenn schon vorhanden!!"></input>
         </div>
     </div>
 
     <div class="form-group" ng-class="{'has-error': MemberForm.titel.$invalid}">
         <label for="titel" class="col-sm-2 control-label">Titel</label>
         <div id="titelControls" class="col-sm-10">
-			<md-autocomplete id="titel" name="titel" md-selected-item="squad.titel" md-search-text="titelFilter" md-items="item in distinct('titel', titelFilter)" 
+			<md-autocomplete id="titel" name="titel" md-selected-item="member.titel" md-search-text="titelFilter" md-items="item in distinct('titel', titelFilter)" 
 				md-item-text="item" placeholder="Titel..(optional)" >
 				<span md-highlight-text="titelFilter">{{item}}</span>
 			</md-autocomplete>
@@ -24,7 +24,7 @@
     <div class="form-group" ng-class="{'has-error': MemberForm.name.$invalid}">
         <label for="name" class="col-sm-2 control-label">Name</label>
         <div id="nameControls" class="col-sm-10">
-			<md-autocomplete id="name" name="name" md-selected-item="squad.name" md-search-text="nameFilter" md-items="item in distinct('name', nameFilter)" 
+			<md-autocomplete id="name" name="name" md-selected-item="member.name" md-search-text="nameFilter" md-items="item in distinct('name', nameFilter)" 
 				md-item-text="item" placeholder="Familienname.." >
 				<span md-highlight-text="nameFilter">{{item}}</span>
 			</md-autocomplete>
@@ -34,7 +34,7 @@
     <div class="form-group" ng-class="{'has-error': MemberForm.vorname.$invalid}">
         <label for="vorname" class="col-sm-2 control-label">Vorname</label>
         <div id="vornameControls" class="col-sm-10">
-			<md-autocomplete id="vorname" name="vorname" md-selected-item="squad.vorname" md-search-text="vornameFilter" md-items="item in distinct('vorname', vornameFilter)" 
+			<md-autocomplete id="vorname" name="vorname" md-selected-item="member.vorname" md-search-text="vornameFilter" md-items="item in distinct('vorname', vornameFilter)" 
 				md-item-text="item" placeholder="Vorname.." >
 				<span md-highlight-text="vornameFilter">{{item}}</span>
 			</md-autocomplete>
@@ -44,7 +44,7 @@
     <div class="form-group" ng-class="{'has-error': MemberForm.anrede.$invalid}">
         <label for="anrede" class="col-sm-2 control-label">Anrede</label>
         <div id="anredeControls" class="col-sm-10">
-			<md-autocomplete id="anrede" name="anrede" md-selected-item="squad.anrede" md-search-text="anredeFilter" md-items="item in distinct('anrede', anredeFilter)" 
+			<md-autocomplete id="anrede" name="anrede" md-selected-item="member.anrede" md-search-text="anredeFilter" md-items="item in distinct('anrede', anredeFilter)" 
 				md-item-text="item" placeholder="Anrede..(optional)" >
 				<span md-highlight-text="anredeFilter">{{item}}</span>
 			</md-autocomplete>
@@ -62,19 +62,19 @@
     <div class="form-group" ng-class="{'has-error': MemberForm.strasse.$invalid}">
         <label for="strasse" class="col-sm-2 control-label">Strasse</label>
         <div id="strasseControls" class="col-sm-10">
-			<md-autocomplete id="strasse" name="strasse" md-selected-item="squad.strasse" md-search-text="strasseFilter" md-items="item in distinct('strasse', strasseFilter)" 
+			<md-autocomplete id="strasse" name="strasse" md-selected-item="member.strasse" md-search-text="strasseFilter" md-items="item in distinct('strasse', strasseFilter)" 
 				md-item-text="item" placeholder="Strasse.." >
 				<span md-highlight-text="strasseFilter">{{item}}</span>
 			</md-autocomplete>
         </div>
     </div>
 
-    <div class="form-group" ng-class="{'has-error': MemberForm.PLZ.$invalid}">
-        <label for="PLZ" class="col-sm-2 control-label">PLZ</label>
+    <div class="form-group" ng-class="{'has-error': MemberForm.plz.$invalid}">
+        <label for="plz" class="col-sm-2 control-label">PLZ</label>
         <div id="PLZControls" class="col-sm-10">
-			<md-autocomplete id="PLZ" name="PLZ" md-selected-item="squad.PLZ" md-search-text="PLZFilter" md-items="item in distinct('PLZ', PLZFilter)" 
-				md-item-text="item" placeholder="PLZ.." >
-				<span md-highlight-text="PLZFilter">{{item}}</span>
+			<md-autocomplete id="plz" name="plz" md-selected-item="member.plz" md-search-text="plzFilter" md-items="item in distinct('plz', plzFilter)" 
+				md-item-text="item" placeholder="Postleitzahl.." >
+				<span md-highlight-text="plzFilter">{{item}}</span>
 			</md-autocomplete>
         </div>
     </div>
@@ -82,7 +82,7 @@
     <div class="form-group" ng-class="{'has-error': MemberForm.ort.$invalid}">
         <label for="ort" class="col-sm-2 control-label">Ort</label>
         <div id="ortControls" class="col-sm-10">
-			<md-autocomplete id="ort" name="ort" md-selected-item="squad.ort" md-search-text="ortFilter" md-items="item in distinct('ort', ortFilter)" 
+			<md-autocomplete id="ort" name="ort" md-selected-item="member.ort" md-search-text="ortFilter" md-items="item in distinct('ort', ortFilter)" 
 				md-item-text="item" placeholder="Ort.." >
 				<span md-highlight-text="ortFilter">{{item}}</span>
 			</md-autocomplete>
@@ -142,7 +142,7 @@
     <div class="form-group" ng-class="{'has-error': MemberForm.Vollzahler.$invalid}">
         <label for="Vollzahler" class="col-sm-2 control-label">Vollzahler</label>
         <div id="VollzahlerControls" class="col-sm-10">
-			<md-autocomplete id="Vollzahler" name="Vollzahler" md-selected-item="squad.Vollzahler" md-search-text="VollzahlerFilter" md-items="item in filteredMembers(VollzahlerFilter)" 
+			<md-autocomplete id="Vollzahler" name="Vollzahler" md-selected-item="member.vollzahler" md-search-text="VollzahlerFilter" md-items="item in filteredMembers(VollzahlerFilter)" 
 				md-item-text="item.shortName" placeholder="Vollzahler für das Kind.." >
 				<span md-highlight-text="VollzahlerFilter">{{item.shortName}}</span>
 			</md-autocomplete>

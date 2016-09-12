@@ -14,6 +14,7 @@ import org.mapstruct.TargetType;
 
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.PrimaryKeyHolder;
@@ -62,6 +63,10 @@ public class BaseDaoMapper {
         }
         if (entity instanceof Activity) {
         	bd.setName(((Activity)entity).getName());
+        	bd.setShortName(bd.getName());
+        }
+        if (entity instanceof Function) {
+        	bd.setName(((Function)entity).getName());
         	bd.setShortName(bd.getName());
         }
         return bd;
