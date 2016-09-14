@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -34,7 +35,9 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
+import javax.print.attribute.standard.JobOriginatingUserName;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -49,6 +52,7 @@ import com.google.common.net.HttpHeaders;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.Role;
+import at.tfr.pfad.SquadType;
 import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
@@ -69,7 +73,7 @@ public class DownloadBean implements Serializable {
 	}
 
 	enum HeaderGruppe {
-		Key, Name, Heim1, Straße1, Plz1, Ort1, Heim2, Straße2, Plz2, Ort2, BIC, IBAN, Bezirk, Web, Mail, Gruendungsjahr_Verein, Letzte_Wahl_GFm, Letzte_Wahl_GFw, Letzte_Wahl_ER, ZVR, BLZ, KontoNr;
+		Key, Name, Heim1, Straße1, Plz1, Ort1, Heim2, Straße2, Plz2, Ort2, BIC, IBAN, Bezirk, Web, Mail, Gründungsjahr, Verein, Letzte_Wahl_GFm, Letzte_Wahl_GFw, Letzte_Wahl_ER, ZVR, BLZ, KontoNr;
 	}
 
 	enum HeaderLocal {
@@ -79,7 +83,7 @@ public class DownloadBean implements Serializable {
 	enum DataStructure {
 		XLS, CSV
 	}
-
+	
 	@Inject
 	private MemberRepository membRepo;
 	@Inject
@@ -170,8 +174,7 @@ public class DownloadBean implements Serializable {
 
 		for (Member m : getMembers()) {
 
-			if (!withLocal && !(m.isAktiv() || leaders.contains(m)
-					|| m.getFunktionen().stream().filter(f -> f.isExportReg()).count() > 0))
+			if (!withLocal && isNotGrinsExportable(m, leaders))
 				continue;
 
 			if (squads != null && squads.length > 0) {
@@ -180,7 +183,7 @@ public class DownloadBean implements Serializable {
 				}
 			}
 
-			ValidationResult vr = validate(m);
+			List<ValidationResult> vr = validate(m, getFunktionen(m), leaders);
 
 			row = sheet.createRow(rCount++);
 
@@ -230,8 +233,8 @@ public class DownloadBean implements Serializable {
 			if (withLocal) { // Religion, FunktionenBaden, Trail, Gilde, AltER
 
 				HSSFCell ok = row.createCell(cCount++);
-				ok.setCellValue(vr.message);
-				if (!vr.valid) {
+				if (!vr.isEmpty()) {
+					ok.setCellValue(vr.stream().map(v -> v.message).collect(Collectors.joining(",")));
 					ok.setCellStyle(red);
 				}
 
@@ -257,6 +260,11 @@ public class DownloadBean implements Serializable {
 		formatStatusSheet(wb.createSheet("Status"));
 
 		return wb;
+	}
+
+	public boolean isNotGrinsExportable(Member m, Collection<Member> leaders) {
+		return !(m.isAktiv() || leaders.contains(m)
+				|| m.getFunktionen().stream().anyMatch(f -> f.isExportReg()));
 	}
 
 	private HSSFSheet formatGruppeSheet(HSSFSheet sheet) {
@@ -290,7 +298,8 @@ public class DownloadBean implements Serializable {
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Bezirk.name(), "Baden"));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Web.name(), "www.ontrail.at"));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Mail.name(), "vorstand@ontrail.at"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Gruendungsjahr_Verein.name(), "1930"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Gründungsjahr.name(), "1930"));
+		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Verein.name(), ""));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_GFw.name(), "22.06.2014"));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_GFm.name(), "22.06.2014"));
 		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_ER.name(), "18.11.2015"));
@@ -391,31 +400,83 @@ public class DownloadBean implements Serializable {
 			functions.add(m.getTrupp().getType().getKey(m.getGeschlecht()));
 		}
 
-		if (!m.getFunktionen().isEmpty()) {
-			functions.addAll(m.getFunktionen().stream().map(f -> f.getKey()).collect(Collectors.toList()));
+		Collection<Function> funktionen = m.getFunktionen().stream()
+				.filter(f -> f.getKey() != null).collect(Collectors.toList());
+		
+		List<String> toLead = squadRepo.findByLeaderFemaleEqualOrLeaderMaleEqual(m).stream()
+				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
+		
+		List<String> toAss = squadRepo.findByAssistant(m).stream()
+				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
+		
+		if (!funktionen.isEmpty()) {
+			functions.addAll(funktionen.stream()
+					.filter(f -> !Function.PTA.equals(f.getKey()))
+					.filter(f -> !f.isNoFunction())
+					.map(f -> f.getKey()).collect(Collectors.toList()));
 		}
 
-		if (!functions.stream().anyMatch(f->f.startsWith("SF"))) {
-			List<String> toLead = squadRepo.findByLeaderFemaleEqualOrLeaderMaleEqual(m).stream()
-					.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
-			functions.addAll(toLead);
-	
-			List<String> toAss = squadRepo.findByAssistant(m).stream()
-					.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
-			functions.addAll(toAss);
+		// Sobald aber jemand die Bezeichnung SF oder AS vor der Stufenbezeichnung hat, dann ist er definitiv kein ZBV mehr
+		if (!toLead.isEmpty() || !toAss.isEmpty()) {
+			funktionen = funktionen.stream()
+					.filter(f -> !f.getKey().equals(Function.ZBV)).collect(Collectors.toList());
+		}
+		
+		if (!funktionen.stream().anyMatch(f -> f.isLeader())) {
+			if (!functions.stream().anyMatch(f->(f.startsWith("SF") || f.startsWith("GF")))) {
+				functions.addAll(toLead);
+				functions.addAll(toAss);
+			}
 		}
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(functions.stream().distinct().collect(Collectors.joining(",")));
 		return sb.toString().trim();
 	}
+	public static String GEB_UNVOLL = "Geburtsdatum unvollständig";
+	public static String ZU_JUNG = "Zu jung für ";
+	public static String ZU_ALT = "Zu alt für ";
+	public static String INAKTIV_IM_TRUPP = "Inaktives Mitlgied im Trupp";
+	public static String KEIN_TRUPP_FUNKTION = "Weder Trupp noch Funktion";
 
-	public ValidationResult validate(Member member) {
+	public List<ValidationResult> validate(Member member, final String funktionen, final Collection<Member> leaders) {
+		List<ValidationResult> results = new ArrayList<>();
+		
 		if (member.isAktiv() && member.getVollzahler() != null && !member.equals(member.getVollzahler())
 				&& !(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
-			return new ValidationResult(false, "Vollzahler INAKTIV");
+			results.add(new ValidationResult(false, "Vollzahler INAKTIV"));
 		}
-		return new ValidationResult(true, "");
+		
+		if (!isNotGrinsExportable(member, leaders)) {
+			if (member.getGebJahr() < 1900 || member.getGebMonat() < 1 || member.getGebTag() < 1) {
+				results.add(new ValidationResult(false, GEB_UNVOLL));
+			}
+		}
+
+		if (member.getTrupp() != null) {
+
+			if (!member.isAktiv()) {
+				results.add(new ValidationResult(false, INAKTIV_IM_TRUPP));
+			}
+			
+			SquadType type = member.getTrupp().getType();
+			if (type == null) {
+				results.add(new ValidationResult(false, "INVALID SquadType==Null"));
+			} else {
+				if ((new DateTime().getYear() - member.getGebJahr()) < type.getMin()-1) {
+					results.add(new ValidationResult(false, ZU_JUNG+type));
+				}
+				if ((new DateTime().getYear() - member.getGebJahr()) > type.getMax()+1) {
+					results.add(new ValidationResult(false, ZU_ALT+type));
+				}
+			}
+		} else {
+			if (member.isAktiv() && StringUtils.isBlank(funktionen)) {
+				results.add(new ValidationResult(false, KEIN_TRUPP_FUNKTION));
+			}
+		}
+		
+		return results;
 	}
 
 	public static class ValidationResult {
@@ -429,6 +490,11 @@ public class DownloadBean implements Serializable {
 			super();
 			this.valid = valid;
 			this.message = message;
+		}
+
+		@Override
+		public String toString() {
+			return "Valid[is=" + valid + ", message=" + message + "]";
 		}
 	}
 

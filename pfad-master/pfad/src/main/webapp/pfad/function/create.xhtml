@@ -57,6 +57,18 @@
 					<h:message for="functionBeanFunctionFree" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
+				<h:outputLabel for="functionBeanFunctionLeitung" value="Leitung:" />
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="functionBeanFunctionLeitung" title="Leitung" value="#{functionBean.function.leader}" />
+					<h:message for="functionBeanFunctionLeitung" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+				<h:outputLabel for="functionBeanFunctionNoFunction" value="Nicht in Spalte Funktion exportieren:" />
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="functionBeanFunctionNoFunction" title="Nicht in Spalte Funktion exportieren" value="#{functionBean.function.noFunction}" />
+					<h:message for="functionBeanFunctionNoFunction" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
 			</h:panelGrid>
 
 			<div class="buttons">

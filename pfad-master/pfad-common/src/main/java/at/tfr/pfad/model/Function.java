@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Function implements PrimaryKeyHolder, Serializable, Presentable, Comparable<Function> {
 
 	public static final String PTA = "P"; // Pfadfinder Trotz Allem
+	public static final String ZBV = "ZBV"; // Zur besonderen Verwendung
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "function_seq")
@@ -55,6 +56,12 @@ public class Function implements PrimaryKeyHolder, Serializable, Presentable, Co
 
 	@Column(columnDefinition = "boolean default 'false' not null")
 	private boolean free;
+
+	@Column(columnDefinition = "boolean default 'false' not null")
+	private boolean leader;
+
+	@Column(columnDefinition = "boolean default 'false' not null")
+	private boolean noFunction;
 
 	@XmlID
 	public Long getId() {
@@ -138,7 +145,23 @@ public class Function implements PrimaryKeyHolder, Serializable, Presentable, Co
 	public String getName() {
 		return function;
 	}
-	
+
+	public boolean isLeader() {
+		return leader;
+	}
+
+	public void setLeader(boolean leader) {
+		this.leader = leader;
+	}
+
+	public boolean isNoFunction() {
+		return noFunction;
+	}
+
+	public void setNoFunctiony(boolean noFunction) {
+		this.noFunction = noFunction;
+	}
+
 	@Override
 	public String getShortString() {
 		String result = "" + function;

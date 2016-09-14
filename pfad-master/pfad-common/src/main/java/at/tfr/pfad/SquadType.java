@@ -8,7 +8,16 @@
 package at.tfr.pfad;
 
 public enum SquadType {
-	WIWO, GUSP, CAEX, RARO;
+	BIBE(5,7), WIWO(7,10), GUSP(10,13), CAEX(13,16), RARO(16,20);
+	
+	int min, max;
+	SquadType(final int min, final int max) {
+		this.min = min;
+		this.max = max;
+	}
+	
+	public int getMin() { return min; }
+	public int getMax() { return max; }
 
 	public String getKey(Sex sex) {
 		switch (this) {
