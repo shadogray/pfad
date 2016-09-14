@@ -66,6 +66,8 @@ public class MemberDao extends BaseDao {
 	protected Set<BaseDao> funktionen = new TreeSet<>();
 	protected Set<BaseDao> siblings = new TreeSet<>();
 	protected Set<BaseDao> parents = new TreeSet<>();
+	protected Set<BaseDao> assisting = new TreeSet<>();
+	protected Set<BaseDao> responsible = new TreeSet<>();
 	protected Date changed;
 	protected Date created;
 	protected String changedBy;
@@ -521,4 +523,19 @@ public class MemberDao extends BaseDao {
 		this.parents = parents;
 	}
 
+	public Set<BaseDao> getAssisting() {
+		return assisting;
+	}
+	
+	public void setAssisting(Set<BaseDao> assisting) {
+		this.assisting = assisting;
+	}
+	
+	public Set<BaseDao> getResponsible() {
+		return responsible;
+	}
+	
+	public void setResponsible(Set<BaseDao> responsible) {
+		this.responsible = responsible;
+	}
 }

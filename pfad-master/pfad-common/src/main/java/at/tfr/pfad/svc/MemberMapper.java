@@ -24,6 +24,8 @@ public interface MemberMapper {
 		@Mapping(target="parents", expression="java(baseDaoMapper.toReferences(member.getParents()))"),
 		@Mapping(target="funktionen", expression="java(baseDaoMapper.toReferences(member.getFunktionen()))"),
 		@Mapping(target="geburtstag", expression="java(baseDaoMapper.memberGeburtstag(member))"),
+		@Mapping(target="assisting", expression="java(baseDaoMapper.memberAssisting(member))"),
+		@Mapping(target="responsible", expression="java(baseDaoMapper.memberResponsible(member))"),
 	})
 	MemberDao memberToDao(Member member);
 

@@ -1,8 +1,8 @@
 package at.tfr.pfad.svc;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Set;
@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 
 import org.mapstruct.TargetType;
 
+import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Function;
@@ -30,12 +31,22 @@ public class BaseDaoMapper {
 	
 	@Inject
 	private EntityManager em;
+	@Inject
+	private SquadRepository squadRepo;
+
+	public Set<BaseDao> memberResponsible(Member member) {
+		return toReferences(squadRepo.findByResponsible(member));
+	}
+	
+	public Set<BaseDao> memberAssisting(Member member) {
+		return toReferences(squadRepo.findByAssistant(member));
+	}
 	
     public <T extends PrimaryKeyHolder> T resolve(BaseDao reference, @TargetType Class<T> entityClass) {
         return reference != null ? em.find( entityClass, reference.getId() ) : null;
     }
 
-    public Set<BaseDao> toReferences(Set<? extends PrimaryKeyHolder> entities) {
+    public Set<BaseDao> toReferences(Collection<? extends PrimaryKeyHolder> entities) {
     	if (entities == null) {
     		return new TreeSet<>();
     	}

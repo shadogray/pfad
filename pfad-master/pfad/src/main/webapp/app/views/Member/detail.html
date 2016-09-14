@@ -185,6 +185,17 @@
         </div>
     </div>
 
+    <div class="form-group" >
+        <label for="assisting" class="col-sm-2 control-label">Leitg/Ass</label>
+        <div id="assistingControls" class="col-sm-10">
+			<md-chips ng-model="member.responsible" md-removable="false">
+				<md-chip-template>
+		        	<span><strong>{{$chip.shortName}}</strong></span>
+			    </md-chip-template>
+			</md-chips>
+        </div>
+    </div>
+
 	
     <div class="form-group" ng-class="{'has-error': MemberForm.siblings.$invalid}">
         <label for="siblings" class="col-sm-2 control-label">Kinder</label>
