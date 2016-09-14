@@ -33,6 +33,21 @@ angular.module('pfad').factory('MemberResource', function($resource) {
 	    method : 'GET',
 	    isArray : true
 	},
+	'gebJahr' : {
+	    url : '../rest/members/gebJahr',
+	    method : 'GET',
+	    isArray : true
+	},
+	'gebMonat' : {
+	    url : '../rest/members/gebMonat',
+	    method : 'GET',
+	    isArray : true
+	},
+	'gebTag' : {
+	    url : '../rest/members/gebTag',
+	    method : 'GET',
+	    isArray : true
+	},
     });
     return resource;
 });

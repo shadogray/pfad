@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 
+import org.apache.commons.collections.KeyValue;
 import org.joda.time.DateTime;
 
 import at.tfr.pfad.model.Member;
@@ -49,10 +50,13 @@ import at.tfr.pfad.svc.MemberService;
 public class MemberEndpoint extends EndpointBase<Member> {
 
 	List<Integer> gebTag = IntStream.range(1,31).boxed().collect(Collectors.toList());
-	List<Integer> gebJahr = IntStream.range(1900, new DateTime().getYear()).boxed().collect(Collectors.toList());
-	{
+	static List<Integer> gebJahr = IntStream.range(1900, new DateTime().getYear()).boxed().collect(Collectors.toList());
+	static {
 		Collections.reverse(gebJahr);
 	}
+	static List<Monat> gebMonat = new GregorianCalendar().getDisplayNames(Calendar.MONTH, Calendar.LONG_FORMAT, Locale.GERMAN).
+			entrySet().stream().map(e -> new Monat(e.getKey(),e.getValue())).sorted().collect(Collectors.toList());
+
 	
 	@Inject
 	private MemberService memberSvc;
@@ -180,13 +184,44 @@ public class MemberEndpoint extends EndpointBase<Member> {
 
 	@GET
 	@Path("/gebMonat")
-	public Map<String, Integer> gebMonat() {
-		return new GregorianCalendar().getDisplayNames(Calendar.MONTH, Calendar.LONG_FORMAT, Locale.GERMAN);
+	public List<Monat> gebMonat() {
+		return gebMonat;
 	}
 
 	@GET
 	@Path("/gebTag")
 	public List<Integer> gebTag() {
 		return gebTag;
+	}
+	
+	public static class Monat implements Comparable<Monat>{
+		private String name;
+		private Integer index;
+		
+		public Monat() {
+		}
+		
+		public Monat(String name, Integer index) {
+			this.name = name;
+			this.index = index;
+		}
+
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public Integer getIndex() {
+			return index;
+		}
+		public void setIndex(Integer index) {
+			this.index = index;
+		}
+		
+		@Override
+		public int compareTo(Monat o) {
+			return index.compareTo(o.index);
+		}
 	}
 }

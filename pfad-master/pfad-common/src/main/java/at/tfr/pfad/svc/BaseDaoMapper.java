@@ -1,7 +1,10 @@
 package at.tfr.pfad.svc;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -23,7 +26,7 @@ import at.tfr.pfad.model.Squad;
 @ApplicationScoped
 public class BaseDaoMapper {
 
-	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+	static SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 	
 	@Inject
 	private EntityManager em;
@@ -73,11 +76,52 @@ public class BaseDaoMapper {
     }
     
     public Date memberGeburtstag(Member m) {
-    	String date = m.getGebJahr()+"."+m.getGebMonat()+"."+m.getGebTag();
-    	try {
-    		return sdf.parse(date);
-    	} catch (Exception e) {
-    		return null;
-    	}
+    	Calendar cal = new GregorianCalendar();
+    	cal.set(Calendar.YEAR, m.getGebJahr() > 1900 ? m.getGebJahr() : 2000);
+    	cal.set(Calendar.MONTH, m.getGebMonat() > 0 ? m.getGebMonat() : 1);
+    	cal.set(Calendar.DAY_OF_MONTH, m.getGebTag() > 0 ? m.getGebTag() : 1);
+    	return cal.getTime();
     }
+    
+    public int memberGebJahr(Date geburtstag) {
+		if (geburtstag != null) {
+			Calendar cal = getDate(geburtstag);
+			return cal.get(Calendar.YEAR);
+		}
+		return 2000;
+    }
+
+    public int memberGebMonat(Date geburtstag) {
+		if (geburtstag != null) {
+			Calendar cal = getDate(geburtstag);
+			return cal.get(Calendar.MONTH);
+		}
+		return 1;
+    }
+
+    public int memberGebTag(Date geburtstag) {
+		if (geburtstag != null) {
+			Calendar cal = getDate(geburtstag);
+			return cal.get(Calendar.DAY_OF_MONTH);
+		}
+		return 1;
+    }
+
+    private Calendar getDate(Date date) {
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(date);
+		return cal;
+    }
+    
+	private Calendar parseDate(String geburtstag) {
+		Calendar cal = new GregorianCalendar();
+		try {
+			cal.setTime(sdf.parse(geburtstag));
+			return cal;
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+		return cal;
+	}
+
 }

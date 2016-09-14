@@ -4,6 +4,18 @@ angular.module('pfad').controller('NewMemberController', function ($scope, $loca
    $scope.$location = $location;
    $scope.member = $scope.member || {};
 
+   MemberResource.gebJahr(function(list) {
+	$scope.gebJahr = list;
+   });
+
+   MemberResource.gebMonat(function(list) {
+	$scope.gebMonat = list;
+   });
+
+   MemberResource.gebTag(function(list) {
+	$scope.gebTag = list;
+   });
+   
    $scope.geschlechtList = [
       "W",
       "M",

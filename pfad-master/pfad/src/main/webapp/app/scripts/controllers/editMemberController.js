@@ -50,6 +50,18 @@ angular.module('pfad').controller(
 			    return labelObject;
 			});
 		    });
+		    
+		    MemberResource.gebJahr(function(list) {
+			$scope.gebJahr = list;
+		    });
+
+		    MemberResource.gebMonat(function(list) {
+			$scope.gebMonat = list;
+		    });
+
+		    MemberResource.gebTag(function(list) {
+			$scope.gebTag = list;
+		    });
 
 		};
 		var errorCallback = function() {
@@ -62,6 +74,7 @@ angular.module('pfad').controller(
 		MemberResource.get({
 		    MemberId : $routeParams.MemberId
 		}, successCallback, errorCallback);
+
 	    };
 
 	    $scope.memberChanged = function(chip, index) {

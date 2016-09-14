@@ -7,8 +7,9 @@
 
 package at.tfr.pfad.svc;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,7 +24,6 @@ import at.tfr.pfad.Pfad;
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.model.Configuration;
-import at.tfr.pfad.model.Function;
 
 @XmlRootElement
 public class MemberDao extends BaseDao {
@@ -214,8 +214,8 @@ public class MemberDao extends BaseDao {
 		return geburtstag;
 	}
 
-	public void setGeburtstag(Date geburtstag) {
-		this.geburtstag = geburtstag;
+	public void setGeburtstag(Date date) {
+		this.geburtstag = date;
 	}
 	
 	@Pfad

@@ -40,14 +40,17 @@ public interface MemberMapper {
 	BaseDao mapFunction(Function function);
 	
 	@Mappings({
-	@Mapping(target="created", ignore=true),
-	@Mapping(target="createdBy", ignore=true),
-	@Mapping(target="changed", ignore=true),
-	@Mapping(target="changedBy", ignore=true),
-	@Mapping(target="payments", ignore=true),
-	@Mapping(target="bookings", ignore=true),
-	@Mapping(target="paymentsIds", ignore=true),
-	@Mapping(target="bookingsIds", ignore=true),
+//		@Mapping(target="gebJahr", expression="java(baseDaoMapper.memberGebJahr(dao.getGeburtstag()))"),
+//		@Mapping(target="gebMonat", expression="java(baseDaoMapper.memberGebMonat(dao.getGeburtstag()))"),
+//		@Mapping(target="gebTag", expression="java(baseDaoMapper.memberGebTag(dao.getGeburtstag()))"),
+		@Mapping(target="created", ignore=true),
+		@Mapping(target="createdBy", ignore=true),
+		@Mapping(target="changed", ignore=true),
+		@Mapping(target="changedBy", ignore=true),
+		@Mapping(target="payments", ignore=true),
+		@Mapping(target="bookings", ignore=true),
+		@Mapping(target="paymentsIds", ignore=true),
+		@Mapping(target="bookingsIds", ignore=true),
 	})
 	void updateMember(MemberDao dao, @MappingTarget Member member);
 	Set<Member> mapDaos(Set<MemberDao> members);
