@@ -78,7 +78,7 @@ public class BaseDaoMapper {
     public Date memberGeburtstag(Member m) {
     	Calendar cal = new GregorianCalendar();
     	cal.set(Calendar.YEAR, m.getGebJahr() > 1900 ? m.getGebJahr() : 2000);
-    	cal.set(Calendar.MONTH, m.getGebMonat() > 0 ? m.getGebMonat() : 1);
+    	cal.set(Calendar.MONTH, m.getGebMonat() > 0 ? m.getGebMonat()+1 : 1);  // ATTENTION: Pfad starts with "1"!!
     	cal.set(Calendar.DAY_OF_MONTH, m.getGebTag() > 0 ? m.getGebTag() : 1);
     	return cal.getTime();
     }
@@ -94,7 +94,7 @@ public class BaseDaoMapper {
     public int memberGebMonat(Date geburtstag) {
 		if (geburtstag != null) {
 			Calendar cal = getDate(geburtstag);
-			return cal.get(Calendar.MONTH);
+			return cal.get(Calendar.MONTH)+1; // ATTENTION: Pfad starts with "1"!!
 		}
 		return 1;
     }

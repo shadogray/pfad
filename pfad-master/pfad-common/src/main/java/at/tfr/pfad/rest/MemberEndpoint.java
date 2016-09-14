@@ -54,8 +54,9 @@ public class MemberEndpoint extends EndpointBase<Member> {
 	static {
 		Collections.reverse(gebJahr);
 	}
+	 // ATTENTION: Pfad GebMonat starts with "1"!!
 	static List<Monat> gebMonat = new GregorianCalendar().getDisplayNames(Calendar.MONTH, Calendar.LONG_FORMAT, Locale.GERMAN).
-			entrySet().stream().map(e -> new Monat(e.getKey(),e.getValue())).sorted().collect(Collectors.toList());
+			entrySet().stream().map(e -> new Monat(e.getKey(),e.getValue()+1)).sorted().collect(Collectors.toList());
 
 	
 	@Inject
@@ -222,6 +223,11 @@ public class MemberEndpoint extends EndpointBase<Member> {
 		@Override
 		public int compareTo(Monat o) {
 			return index.compareTo(o.index);
+		}
+
+		@Override
+		public String toString() {
+			return "Monat [name=" + name + ", index=" + index + "]";
 		}
 	}
 }
