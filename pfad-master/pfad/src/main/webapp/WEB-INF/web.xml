@@ -25,10 +25,7 @@
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>/faces/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>*.xhtml</url-pattern>
+        <url-pattern>*.xhtml</url-pattern>
 	</servlet-mapping>
 	<mime-mapping>
 		<extension>ico</extension>
@@ -58,8 +55,8 @@
 	<login-config>
 		<auth-method>BASIC?silent=true,FORM</auth-method>
 		<form-login-config>
-			<form-login-page>/faces/login.xhtml</form-login-page>
-			<form-error-page>/faces/login.xhtml</form-error-page>
+			<form-login-page>/faces/login.html</form-login-page>
+			<form-error-page>/faces/login-error.html</form-error-page>
 		</form-login-config>
 	</login-config>
 	<security-role>
@@ -78,6 +75,10 @@
 		<description>Kassier</description>
 		<role-name>kassier</role-name>
 	</security-role>
+    <security-role>
+        <description>Vorstand</description>
+        <role-name>vorstand</role-name>
+    </security-role>
 	<welcome-file-list>
 		<welcome-file>/index.html</welcome-file>
 	</welcome-file-list>
