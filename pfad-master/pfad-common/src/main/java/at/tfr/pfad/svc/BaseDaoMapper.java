@@ -1,10 +1,12 @@
 package at.tfr.pfad.svc;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -13,6 +15,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.TargetType;
 
 import at.tfr.pfad.dao.SquadRepository;
@@ -60,8 +63,10 @@ public class BaseDaoMapper {
         bd.setId(entity.getId());
         bd.setLongName(entity.toString());
         if (entity instanceof Member) {
-        	bd.setName(((Member)entity).getName());
-        	bd.setShortName(((Member)entity).toShortString());
+        	Member member = (Member)entity;
+			bd.setName(member.getName());
+        	bd.setShortName(member.toShortString());
+        	bd.setContacts(getContacts(member));
         }
         if (entity instanceof Payment) {
         	bd.setName(((Payment)entity).toString());
@@ -85,6 +90,17 @@ public class BaseDaoMapper {
         }
         return bd;
     }
+
+	public List<Contact> getContacts(Member member) {
+		List<Contact> contacts = new ArrayList<>();
+		if (StringUtils.isNotBlank(member.getTelefon())) {
+			contacts.add(new Contact("tel", member.getTelefon()));
+		}
+		if (StringUtils.isNotBlank(member.getEmail())) {
+			contacts.add(new Contact("mailto", member.getEmail()));
+		}
+		return contacts;
+	}
     
     public Date memberGeburtstag(Member m) {
     	Calendar cal = new GregorianCalendar();

@@ -64,9 +64,13 @@ import at.tfr.pfad.dao.AuditListener;
 		@NamedQuery(name = "Member.distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
 		@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m order by m.religion"), })
 @NamedEntityGraphs({
-		@NamedEntityGraph(name = "fetchAll", attributeNodes = { @NamedAttributeNode("funktionen"),
-				@NamedAttributeNode("Vollzahler"), @NamedAttributeNode("reduced"), @NamedAttributeNode("parents"),
-				@NamedAttributeNode("siblings"), @NamedAttributeNode("trupp") }),
+		@NamedEntityGraph(name = "fetchAll", 
+				attributeNodes = { @NamedAttributeNode("funktionen"),
+				@NamedAttributeNode("Vollzahler"), 
+				@NamedAttributeNode("reduced"), 
+				@NamedAttributeNode("parents"),
+				@NamedAttributeNode("siblings"), 
+				@NamedAttributeNode("trupp") }),
 		@NamedEntityGraph(name = "withTrupp", attributeNodes = @NamedAttributeNode("trupp")) })
 @Audited(withModifiedFlag = true)
 @Entity

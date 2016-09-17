@@ -1,6 +1,8 @@
 package at.tfr.pfad.svc;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -17,6 +19,8 @@ public class BaseDao implements PrimaryKeyHolder, Serializable, Comparable<BaseD
 	protected String name;
 	protected String shortName;
 	protected String longName;
+	protected String details;
+	protected List<Contact> contacts = new ArrayList<>();
 	
 	@XmlID
 	public Long getId() {
@@ -51,6 +55,22 @@ public class BaseDao implements PrimaryKeyHolder, Serializable, Comparable<BaseD
 		this.longName = longName;
 	}
 
+	public String getDetails() {
+		return details;
+	}
+	
+	public void setDetails(String details) {
+		this.details = details;
+	}
+	
+	public List<Contact> getContacts() {
+		return contacts;
+	}
+	
+	public void setContacts(List<Contact> contacts) {
+		this.contacts = contacts;
+	}
+	
 	@Override
 	public int compareTo(BaseDao o) {
 		return getCompareString().compareTo(o.getCompareString());

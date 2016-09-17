@@ -102,6 +102,7 @@ public class MemberBean extends BaseBean implements Serializable {
 				this.member = findById(getId());
 				if (this.member.getTrupp() != null) this.member.getTrupp().getId();
 				this.member.getSiblings().size();
+				this.member.getParents().size();
 				this.member.getFunktionen().size();
 				if (this.member.getVollzahler() != null) {
 					this.member.getVollzahler().getId();
@@ -112,8 +113,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public Member findById(Long id) {
-
-		return this.entityManager.find(Member.class, id);
+		return memberRepo.fetchBy(id);
 	}
 
 	/*

@@ -55,14 +55,14 @@
         <label for="gebTag" class="col-sm-2 control-label">Geburtstag</label>
         <div id="gebTagControls" class="col-sm-10">
 	        <md-input-container>
-	        	<label>Jahr..</label>
+	        	<label>Jahr</label>
 		        <md-select ng-model="member.gebJahr">
 					<md-option ng-repeat="j in gebJahr" ng-value="j" >{{j}}</md-option>            
 		        </md-select>
 		    </md-input-container>
 	        <span style="padding-left:20px;">
 		        <md-input-container >
-		        	<label>Monat..</label>
+		        	<label>Monat</label>
 			        <md-select ng-model="member.gebMonat">
 						<md-option ng-repeat="m in gebMonat" ng-value="m.index" >{{m.name}}</md-option>            
 			        </md-select>
@@ -70,13 +70,20 @@
 			</span>
 	        <span style="padding-left:20px;">
 		        <md-input-container>
-		        	<label>Tag..</label>
+		        	<label>Tag</label>
 			        <md-select ng-model="member.gebTag">
 						<md-option ng-repeat="t in gebTag" ng-value="t" >{{t}}</md-option>            
 			        </md-select>
 			    </md-input-container>
 			</span>
-	        <span class="help-block error" ng-show="MemberForm.gebTag.$error.number">not a number</span>
+            <span style="padding-left:20px;">
+                <md-input-container>
+                    <label>Geschlecht</label>
+                    <md-select ng-model="member.geschlecht">
+                        <md-option ng-repeat="t in geschlechtList" ng-value="t" >{{t}}</md-option>            
+                    </md-select>
+                </md-input-container>
+            </span>
         </div>
     </div>
 
@@ -107,15 +114,6 @@
 				md-item-text="item" placeholder="Ort.." >
 				<span md-highlight-text="ortFilter">{{item}}</span>
 			</md-autocomplete>
-        </div>
-    </div>
-
-    <div class="form-group" ng-class="{'has-error': MemberForm.geschlecht.$invalid}">
-        <label for="geschlecht" class="col-sm-2 control-label">Geschlecht</label>
-        <div id="geschlechtControls" class="col-sm-10">
-        <select id="geschlecht" name="geschlecht" class="form-control" ng-model="member.geschlecht" ng-options="g for g in geschlechtList"  >
-            <option value="">Geschlecht..</option>
-        </select>
         </div>
     </div>
 
@@ -190,7 +188,9 @@
         <div id="assistingControls" class="col-sm-10">
 			<md-chips ng-model="member.responsible" md-removable="false">
 				<md-chip-template>
-		        	<span><strong>{{$chip.shortName}}</strong></span>
+		        	<span>
+                        <a href="#/Members/edit/{{$chip.id}}"><strong>{{$chip.shortName}}</strong></a>
+                    </span>
 			    </md-chip-template>
 			</md-chips>
         </div>
@@ -198,53 +198,69 @@
 
 	
     <div class="form-group" ng-class="{'has-error': MemberForm.siblings.$invalid}">
-        <label for="siblings" class="col-sm-2 control-label">Kinder</label>
+        <label for="siblings" class="col-sm-2 control-label">Eltern</label>
         <div id="siblingsControls" class="col-sm-10">
-			<md-chips ng-model="member.siblings" md-on-remove="memberChanged($chip, $index)" md-on-add="memberChanged($chip, $index)">
+			<md-chips ng-model="member.parents" md-on-remove="memberChanged($chip, $index)" md-on-add="memberChanged($chip, $index)">
 				<md-chip-template>
-		        	<span><strong>{{$chip.shortName}}</strong></span>
+		        	<span>
+                        <a href="#/Members/edit/{{$chip.id}}">
+                            <strong>{{$chip.shortName}}</strong>
+                        </a>
+                        <span ng-repeat="c in $chip.contacts">
+                            <a href="{{c.type}}:{{c.value}}">{{c.value}}</a>
+                        </span>
+                    </span>
 			    </md-chip-template>
-				<md-autocomplete md-search-text="siblingsFilter" md-items="item in filteredMembers(siblingsFilter)" md-item-text="item.shortName"
-					placeholder="Kind des Mitglieds.." >
+				<md-autocomplete md-search-text="parentsFilter" md-items="item in filteredMembers(parentsFilter)" md-item-text="item.shortName"
+					placeholder="Eltern des Mitglieds.." >
 					<span md-highlight-text="siblingsFilter">{{item.shortName}}</span>
 				</md-autocomplete> 
 			</md-chips>
         </div>
     </div>
 
+    <div class="form-group" ng-class="{'has-error': MemberForm.siblings.$invalid}">
+        <label for="siblings" class="col-sm-2 control-label">Kinder</label>
+        <div id="siblingsControls" class="col-sm-10">
+            <md-chips ng-model="member.siblings" md-on-remove="memberChanged($chip, $index)" md-on-add="memberChanged($chip, $index)">
+                <md-chip-template>
+                    <span>
+                        <a href="#/Members/edit/{{$chip.id}}"><strong>{{$chip.shortName}}</strong></a>
+                    </span>
+                </md-chip-template>
+                <md-autocomplete md-search-text="siblingsFilter" md-items="item in filteredMembers(siblingsFilter)" md-item-text="item.shortName"
+                    placeholder="Kind des Mitglieds.." >
+                    <span md-highlight-text="siblingsFilter">{{item.shortName}}</span>
+                </md-autocomplete> 
+            </md-chips>
+        </div>
+    </div>
+
+
     <div class="row" ng-class="{'has-error': MemberForm.aktiv.$invalid}">
         <label for="Diverse" class="col-sm-2 control-label">Diverse</label>
         <div id="siblingsControls" class="col-sm-10">
-	        <label for="aktiv" class="col-sm-2 control-label">Aktiv</label>
-	        <div id="aktivControls" class="col-sm-2">
-	            <input id="aktiv" name="aktiv" type="checkbox" class="checkbox" ng-model="member.aktiv" placeholder="Aktiv.."></input>
-	        </div>
-	        <label for="aktivExtern" class="col-sm-2 control-label">Aktiv Extern</label>
-	        <div id="aktivExternControls" class="col-sm-2">
-	            <input id="aktivExtern" name="aktivExtern" type="checkbox" class="checkbox" ng-model="member.aktivExtern" placeholder="Aktiv Extern.."></input>
-	        </div>
-	        <label for="trail" class="col-sm-2 control-label">Trail</label>
-	        <div id="trailControls" class="col-sm-2">
-	            <input id="trail" name="trail" type="checkbox" class="checkbox" ng-model="member.trail" placeholder="Trail.."></input>
-	        </div>
-	    </div>
-        <label class="col-sm-2 control-label"></label>
-        <div id="siblingsControls" class="col-sm-10">
-	        <label for="infoMail" class="col-sm-2 control-label">Info Mail</label>
-	        <div id="infoMailControls" class="col-sm-2">
-	            <input id="infoMail" name="infoMail" type="checkbox" class="checkbox" ng-model="member.infoMail" placeholder="Info Mail.."></input>
-	        </div>
-	        <label for="support" class="col-sm-2 control-label">Support</label>
-	        <div id="supportControls" class="col-sm-2">
-	            <input id="support" name="support" type="checkbox" class="checkbox" ng-model="member.support" placeholder="Support.."></input>
-	        </div>
-	        <label for="free" class="col-sm-2 control-label">Free</label>
-	        <div id="freeControls" class="col-sm-2">
-	            <input id="free" name="free" type="checkbox" class="checkbox" ng-model="member.free" placeholder="Enter the Member Free"></input>
-	        </div>
-       </div>
-    </div>
+            <div class="col-sm-4">
+    	            <md-checkbox id="aktiv" name="aktiv" type="checkbox" ng-model="member.aktiv" >Aktiv</md-checkbox>
+            </div>
+            <div class="col-sm-4">
+    	            <md-checkbox id="aktivExtern" name="aktivExtern" ng-model="member.aktivExtern" >Aktiv Extern</md-checkbox>
+            </div>
+            <div class="col-sm-4">
+    	            <md-checkbox id="trail" name="trail" ng-model="member.trail" >Trail</md-checkbox>
+    	    </div>
 
+            <div class="col-sm-4">
+                    <md-checkbox id="infoMail" name="infoMail" ng-model="member.infoMail" >InfoMail</md-checkbox>
+            </div>
+            <div class="col-sm-4">
+                    <md-checkbox id="support" name="support" ng-model="member.support" >Support</md-checkbox>
+            </div>
+            <div class="col-sm-4">
+                    <md-checkbox id="free" name="free" ng-model="member.free" >Frei</md-checkbox>
+            </div>
+        </div>
+    </div>
 
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
