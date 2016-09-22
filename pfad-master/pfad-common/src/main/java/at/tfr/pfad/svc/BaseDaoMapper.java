@@ -94,7 +94,7 @@ public class BaseDaoMapper {
 	public List<Contact> getContacts(Member member) {
 		List<Contact> contacts = new ArrayList<>();
 		if (StringUtils.isNotBlank(member.getTelefon())) {
-			contacts.add(new Contact("tel", member.getTelefon()));
+			contacts.add(new Contact("tel", (member.getTelefon() != null ? member.getTelefon().replaceAll("[ \\-/]+", "") : "")));
 		}
 		if (StringUtils.isNotBlank(member.getEmail())) {
 			contacts.add(new Contact("mailto", member.getEmail()));
