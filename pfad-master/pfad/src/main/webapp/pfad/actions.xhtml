@@ -18,8 +18,10 @@
 			<h:messages />
 			<h:panelGroup styleClass="buttons">
 				<h:outputLabel value="Registrierungs-Daten" />
-				<h:commandLink value="Download Registrierung" action="#{downloadBean.downloadRegistrierung()}"
+				<h:commandLink value="Download Vor-Registrierung" action="#{downloadBean.downloadVorRegistrierung()}"
 					styleClass="btn btn-primary" disabled="#{!downloadBean.downloadAllowed}" />
+                <h:commandLink value="Download Registrierung" action="#{downloadBean.downloadRegistrierung()}"
+                    styleClass="btn btn-primary" disabled="#{!downloadBean.downloadAllowed}" />
 			</h:panelGroup>
 
 			<h:panelGroup styleClass="buttons">

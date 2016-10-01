@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -101,16 +102,23 @@ public class DownloadBean implements Serializable {
 	private List<List<?>> results = new ArrayList<>();
 	private HtmlPanelGroup dataTableGroup;
 
+	public String downloadVorRegistrierung() throws Exception {
+		Collection<Member> leaders = squadRepo.findLeaders();
+		Predicate<Member> filter = 
+				m -> (leaders.contains(m) || m.getFunktionen().stream().anyMatch(f -> f.isExportReg()));
+		return downloadData(false, filter);
+	}
+
 	public String downloadRegistrierung() throws Exception {
-		return downloadData(false);
+		return downloadData(false, null);
 	}
 
 	public String downloadAll() throws Exception {
-		return downloadData(true);
+		return downloadData(true, null);
 	}
 
 	public String downloadSquad(Squad squad) throws Exception {
-		return downloadData(true, squad);
+		return downloadData(true, null, squad);
 	}
 
 	public boolean isDownloadAllowed() {
@@ -124,7 +132,7 @@ public class DownloadBean implements Serializable {
 		return false;
 	}
 
-	public String downloadData(boolean withLocal, Squad... squads) throws Exception {
+	public String downloadData(boolean withLocal, Predicate<Member> filter, Squad... squads) throws Exception {
 		try {
 
 			if (!isDownloadAllowed(squads))
@@ -133,7 +141,7 @@ public class DownloadBean implements Serializable {
 
 			ExternalContext ectx = setHeaders();
 			try (OutputStream os = ectx.getResponseOutputStream()) {
-				HSSFWorkbook wb = generateData(withLocal, squads);
+				HSSFWorkbook wb = generateData(withLocal, filter, squads);
 				wb.write(os);
 			}
 			FacesContext.getCurrentInstance().responseComplete();
@@ -147,13 +155,18 @@ public class DownloadBean implements Serializable {
 		return "";
 	}
 
-	private HSSFWorkbook generateData(boolean withLocal, Squad... squads) {
+	private HSSFWorkbook generateData(boolean withLocal, Predicate<Member> filter, Squad... squads) {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Personen");
 		CellStyle red = wb.createCellStyle();
 		red.setFillForegroundColor(HSSFColor.RED.index);
 		red.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
 
+		// non-filtered members
+		if (filter == null) {
+			filter = m -> true;
+		}
+		
 		int rCount = 0;
 		HSSFRow row = sheet.createRow(rCount++);
 
@@ -171,9 +184,10 @@ public class DownloadBean implements Serializable {
 		}
 
 		Collection<Member> leaders = squadRepo.findLeaders();
+		List<Member> members = getMembers().stream().filter(filter).collect(Collectors.toList());
 
-		for (Member m : getMembers()) {
-
+		for (Member m : members) {
+			
 			if (!withLocal && isNotGrinsExportable(m, leaders))
 				continue;
 
