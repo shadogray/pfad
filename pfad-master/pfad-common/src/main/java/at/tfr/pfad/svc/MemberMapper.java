@@ -20,6 +20,7 @@ public interface MemberMapper {
 	@Mappings({
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
+		@Mapping(target="vollzahler", expression="java(baseDaoMapper.toReference(member.getVollzahler()))"),
 		@Mapping(target="siblings", expression="java(baseDaoMapper.toReferences(member.getSiblings()))"),
 		@Mapping(target="parents", expression="java(baseDaoMapper.toReferences(member.getParents()))"),
 		@Mapping(target="funktionen", expression="java(baseDaoMapper.toReferences(member.getFunktionen()))"),

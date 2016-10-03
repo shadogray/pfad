@@ -486,7 +486,7 @@ public class MemberDao extends BaseDao {
 		return this.Vollzahler;
 	}
 
-	public void setVollzahler(final MemberDao Vollzahler) {
+	public void setVollzahler(final BaseDao Vollzahler) {
 		this.Vollzahler = Vollzahler;
 	}
 
