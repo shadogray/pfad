@@ -73,12 +73,14 @@ public class TestDownloadBean {
 		f.setExportReg(true);
 		m.getFunktionen().add(f);
 
-		assertFalse("exportable", mv.isNotGrinsExportable(m, leaders));
+		assertTrue("with function, but not exportable", mv.isNotGrinsExportable(m, leaders));
+		
+		m.setAktiv(true);
+		assertFalse("must be exportable", mv.isNotGrinsExportable(m, leaders));
 		
 		vr = mv.validate(m, "", leaders);
 		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.getMessage().contains(MemberValidator.GEB_UNVOLL)));
 		
-		m.setAktiv(true);
 		vr = mv.validate(m, "", leaders);
 		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.getMessage().contains(MemberValidator.GEB_UNVOLL)));
 
