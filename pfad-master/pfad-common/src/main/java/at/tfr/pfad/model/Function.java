@@ -125,20 +125,20 @@ public class Function implements PrimaryKeyHolder, Serializable, Presentable, Co
 		this.key = key;
 	}
 
-	public boolean isExportReg() {
+	public Boolean getExportReg() {
 		return exportReg;
 	}
 
-	public void setExportReg(boolean exportReg) {
-		this.exportReg = exportReg;
+	public void setExportReg(Boolean exportReg) {
+		this.exportReg = Boolean.TRUE.equals(exportReg);
 	}
 
-	public boolean isFree() {
+	public Boolean getFree() {
 		return free;
 	}
 
-	public void setFree(boolean free) {
-		this.free = free;
+	public void setFree(Boolean free) {
+		this.free = Boolean.TRUE.equals(free);
 	}
 
 	@Override
@@ -146,20 +146,20 @@ public class Function implements PrimaryKeyHolder, Serializable, Presentable, Co
 		return function;
 	}
 
-	public boolean isLeader() {
+	public Boolean getLeader() {
 		return leader;
 	}
 
-	public void setLeader(boolean leader) {
-		this.leader = leader;
+	public void setLeader(Boolean leader) {
+		this.leader = Boolean.TRUE.equals(leader);
 	}
 
-	public boolean isNoFunction() {
+	public Boolean getNoFunction() {
 		return noFunction;
 	}
 
-	public void setNoFunctiony(boolean noFunction) {
-		this.noFunction = noFunction;
+	public void setNoFunction(Boolean noFunction) {
+		this.noFunction = Boolean.TRUE.equals(noFunction);
 	}
 
 	@Override

@@ -33,7 +33,8 @@ public class BookingUI extends Booking {
 		this.payments = booking.getPayments();
 		this.payers = booking.getPayments().stream().map(Payment::getPayer).collect(Collectors.toSet());
 		if (booking.getMember() != null) {
-			free = booking.getMember().isFree() || booking.getMember().getFunktionen().stream().anyMatch(Function::isFree);
+			free = booking.getMember().isFree() || 
+					booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.getFree()));
 		}
 		squadName = booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : null;
 		if (squadName == null) {

@@ -763,6 +763,6 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	}
 
 	public boolean isAnyFree() {
-		return free || (funktionen != null && funktionen.stream().anyMatch(Function::isFree));
+		return free || (funktionen != null && funktionen.stream().anyMatch(f->Boolean.TRUE.equals(f.getFree())));
 	}
 }

@@ -105,7 +105,7 @@ public class DownloadBean implements Serializable {
 	public String downloadVorRegistrierung() throws Exception {
 		Collection<Member> leaders = squadRepo.findLeaders();
 		Predicate<Member> filter = 
-				m -> (leaders.contains(m) || m.getFunktionen().stream().anyMatch(f -> f.isExportReg()));
+				m -> (leaders.contains(m) || m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
 		return downloadData(false, filter);
 	}
 
@@ -278,7 +278,7 @@ public class DownloadBean implements Serializable {
 
 	public boolean isNotGrinsExportable(Member m, Collection<Member> leaders) {
 		return !(m.isAktiv() || leaders.contains(m)
-				|| m.getFunktionen().stream().anyMatch(f -> f.isExportReg()));
+				|| m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
 	}
 
 	private HSSFSheet formatGruppeSheet(HSSFSheet sheet) {
@@ -426,7 +426,7 @@ public class DownloadBean implements Serializable {
 		if (!funktionen.isEmpty()) {
 			functions.addAll(funktionen.stream()
 					.filter(f -> !Function.PTA.equals(f.getKey()))
-					.filter(f -> !f.isNoFunction())
+					.filter(f -> Boolean.FALSE.equals(f.getNoFunction()))
 					.map(f -> f.getKey()).collect(Collectors.toList()));
 		}
 
@@ -436,7 +436,7 @@ public class DownloadBean implements Serializable {
 					.filter(f -> !f.getKey().equals(Function.ZBV)).collect(Collectors.toList());
 		}
 		
-		if (!funktionen.stream().anyMatch(f -> f.isLeader())) {
+		if (!funktionen.stream().anyMatch(f -> Boolean.TRUE.equals(f.getLeader()))) {
 			if (!functions.stream().anyMatch(f->(f.startsWith("SF") || f.startsWith("GF")))) {
 				functions.addAll(toLead);
 				functions.addAll(toAss);
