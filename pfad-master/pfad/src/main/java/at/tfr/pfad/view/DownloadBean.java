@@ -61,6 +61,8 @@ import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.view.validator.MemberValidator;
+import at.tfr.pfad.view.validator.ValidationResult;
 
 @Named
 @SessionScoped
@@ -95,6 +97,8 @@ public class DownloadBean implements Serializable {
 	private SquadBean squadBean;
 	@Inject
 	private SessionBean sessionBean;
+	@Inject
+	private MemberValidator memberValidator;
 	@Inject
 	private EntityManager em;
 	private String query;
@@ -188,7 +192,7 @@ public class DownloadBean implements Serializable {
 
 		for (Member m : members) {
 			
-			if (!withLocal && isNotGrinsExportable(m, leaders))
+			if (!withLocal && memberValidator.isNotGrinsExportable(m, leaders))
 				continue;
 
 			if (squads != null && squads.length > 0) {
@@ -197,7 +201,7 @@ public class DownloadBean implements Serializable {
 				}
 			}
 
-			List<ValidationResult> vr = validate(m, getFunktionen(m), leaders);
+			List<ValidationResult> vr = memberValidator.validate(m, getFunktionen(m), leaders);
 
 			row = sheet.createRow(rCount++);
 
@@ -274,11 +278,6 @@ public class DownloadBean implements Serializable {
 		formatStatusSheet(wb.createSheet("Status"));
 
 		return wb;
-	}
-
-	public boolean isNotGrinsExportable(Member m, Collection<Member> leaders) {
-		return !(m.isAktiv() || leaders.contains(m)
-				|| m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
 	}
 
 	private HSSFSheet formatGruppeSheet(HSSFSheet sheet) {
@@ -447,71 +446,7 @@ public class DownloadBean implements Serializable {
 		sb.append(functions.stream().distinct().collect(Collectors.joining(",")));
 		return sb.toString().trim();
 	}
-	public static String GEB_UNVOLL = "Geburtsdatum unvollständig";
-	public static String ZU_JUNG = "Zu jung für ";
-	public static String ZU_ALT = "Zu alt für ";
-	public static String INAKTIV_IM_TRUPP = "Inaktives Mitlgied im Trupp";
-	public static String KEIN_TRUPP_FUNKTION = "Weder Trupp noch Funktion";
-
-	public List<ValidationResult> validate(Member member, final String funktionen, final Collection<Member> leaders) {
-		List<ValidationResult> results = new ArrayList<>();
-		
-		if (member.isAktiv() && member.getVollzahler() != null && !member.equals(member.getVollzahler())
-				&& !(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
-			results.add(new ValidationResult(false, "Vollzahler INAKTIV"));
-		}
-		
-		if (!isNotGrinsExportable(member, leaders)) {
-			if (member.getGebJahr() < 1900 || member.getGebMonat() < 1 || member.getGebTag() < 1) {
-				results.add(new ValidationResult(false, GEB_UNVOLL));
-			}
-		}
-
-		if (member.getTrupp() != null) {
-
-			if (!member.isAktiv()) {
-				results.add(new ValidationResult(false, INAKTIV_IM_TRUPP));
-			}
-			
-			SquadType type = member.getTrupp().getType();
-			if (type == null) {
-				results.add(new ValidationResult(false, "INVALID SquadType==Null"));
-			} else {
-				if ((new DateTime().getYear() - member.getGebJahr()) < type.getMin()-1) {
-					results.add(new ValidationResult(false, ZU_JUNG+type));
-				}
-				if ((new DateTime().getYear() - member.getGebJahr()) > type.getMax()+1) {
-					results.add(new ValidationResult(false, ZU_ALT+type));
-				}
-			}
-		} else {
-			if (member.isAktiv() && StringUtils.isBlank(funktionen)) {
-				results.add(new ValidationResult(false, KEIN_TRUPP_FUNKTION));
-			}
-		}
-		
-		return results;
-	}
-
-	public static class ValidationResult {
-		public boolean valid;
-		public String message;
-
-		public ValidationResult() {
-		}
-
-		public ValidationResult(boolean valid, String message) {
-			super();
-			this.valid = valid;
-			this.message = message;
-		}
-
-		@Override
-		public String toString() {
-			return "Valid[is=" + valid + ", message=" + message + "]";
-		}
-	}
-
+	
 	public String getQuery() {
 		return query;
 	}

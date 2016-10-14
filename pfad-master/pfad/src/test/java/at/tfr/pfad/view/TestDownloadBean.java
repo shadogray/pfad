@@ -1,3 +1,10 @@
+/*
+ * Copyright 2015 Thomas Frühbeck, fruehbeck(at)aon(dot)at.
+ *
+ * Licensed under the Eclipse Public License version 1.0, available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package at.tfr.pfad.view;
 
 import static org.junit.Assert.assertFalse;
@@ -16,13 +23,15 @@ import at.tfr.pfad.SquadType;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
-import at.tfr.pfad.view.DownloadBean.ValidationResult;
+import at.tfr.pfad.view.validator.MemberValidator;
+import at.tfr.pfad.view.validator.ValidationResult;
 
 @RunWith(CdiTestRunner.class)
 public class TestDownloadBean {
 
 	private DownloadBean db = new DownloadBean();
 	private Collection<Member> leaders = new ArrayList<Member>();
+	private MemberValidator mv = new MemberValidator();
 	
 	@Test
 	public void testValidationVollzahler() throws Exception {
@@ -34,16 +43,16 @@ public class TestDownloadBean {
 		m.setAktiv(true);
 		m.setVollzahler(vollz);
 		
-		List<ValidationResult> vr = db.validate(m, "", leaders);
+		List<ValidationResult> vr = mv.validate(m, "", leaders);
 		assertTrue("Vollzahler auf Inaktiv", vr.stream().anyMatch(r -> r.message.contains("Vollzahler")));
 		
 		vollz.setAktivExtern(true);
-		vr = db.validate(m, "", leaders);
+		vr = mv.validate(m, "", leaders);
 		assertTrue("Vollzahler auf AktivExtern", !vr.stream().anyMatch(r -> r.message.contains("Vollzahler")));
 		
 		vollz.setAktiv(true);
 		vollz.setAktivExtern(false);
-		vr = db.validate(m, "", leaders);
+		vr = mv.validate(m, "", leaders);
 		assertTrue("Vollzahler auf Aktiv", !vr.stream().anyMatch(r -> r.message.contains("Vollzahler")));
 		
 	}
@@ -54,36 +63,36 @@ public class TestDownloadBean {
 		Member m = new Member();
 		
 		// No checks for Inaktiv
-		List<ValidationResult> vr = db.validate(m, "", leaders);
-		assertFalse("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(DownloadBean.GEB_UNVOLL)));
+		List<ValidationResult> vr = mv.validate(m, "", leaders);
+		assertFalse("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(MemberValidator.GEB_UNVOLL)));
 
-		assertTrue("exportable", db.isNotGrinsExportable(m, leaders));
+		assertTrue("exportable", mv.isNotGrinsExportable(m, leaders));
 		
 		Function f = new Function();
 		f.setId(1L);
 		f.setExportReg(true);
 		m.getFunktionen().add(f);
 
-		assertFalse("exportable", db.isNotGrinsExportable(m, leaders));
+		assertFalse("exportable", mv.isNotGrinsExportable(m, leaders));
 		
-		vr = db.validate(m, "", leaders);
-		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(DownloadBean.GEB_UNVOLL)));
+		vr = mv.validate(m, "", leaders);
+		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(MemberValidator.GEB_UNVOLL)));
 		
 		m.setAktiv(true);
-		vr = db.validate(m, "", leaders);
-		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(DownloadBean.GEB_UNVOLL)));
+		vr = mv.validate(m, "", leaders);
+		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(MemberValidator.GEB_UNVOLL)));
 
 		m.setGebJahr(1900);
-		vr = db.validate(m, "", leaders);
-		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(DownloadBean.GEB_UNVOLL)));
+		vr = mv.validate(m, "", leaders);
+		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(MemberValidator.GEB_UNVOLL)));
 
 		m.setGebMonat(1);
-		vr = db.validate(m, "", leaders);
-		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(DownloadBean.GEB_UNVOLL)));
+		vr = mv.validate(m, "", leaders);
+		assertTrue("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(MemberValidator.GEB_UNVOLL)));
 		
 		m.setGebTag(1);
-		vr = db.validate(m, "", leaders);
-		assertFalse("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(DownloadBean.GEB_UNVOLL)));
+		vr = mv.validate(m, "", leaders);
+		assertFalse("Datum Unvollständig", vr.stream().anyMatch(r -> r.message.contains(MemberValidator.GEB_UNVOLL)));
 		
 }
 	
@@ -104,26 +113,26 @@ public class TestDownloadBean {
 		m.setTrupp(trupp);
 		
 		m.setGebJahr(1900);
-		List<ValidationResult> vr = db.validate(m, "", leaders);
-		assertTrue(DownloadBean.ZU_ALT, vr.stream().anyMatch(r -> r.message.contains(DownloadBean.ZU_ALT)));
+		List<ValidationResult> vr = mv.validate(m, "", leaders);
+		assertTrue(MemberValidator.ZU_ALT, vr.stream().anyMatch(r -> r.message.contains(MemberValidator.ZU_ALT)));
 		
 		m.setGebJahr(currentYear-st.getMax()-2);
-		vr = db.validate(m, "", leaders);
-		assertTrue(DownloadBean.ZU_ALT, vr.stream().anyMatch(r -> r.message.contains(DownloadBean.ZU_ALT)));
+		vr = mv.validate(m, "", leaders);
+		assertTrue(MemberValidator.ZU_ALT, vr.stream().anyMatch(r -> r.message.contains(MemberValidator.ZU_ALT)));
 		
 		m.setGebJahr(currentYear-st.getMin()+2);
-		vr = db.validate(m, "", leaders);
-		assertTrue(DownloadBean.ZU_JUNG, vr.stream().anyMatch(r -> r.message.contains(DownloadBean.ZU_JUNG)));
+		vr = mv.validate(m, "", leaders);
+		assertTrue(MemberValidator.ZU_JUNG, vr.stream().anyMatch(r -> r.message.contains(MemberValidator.ZU_JUNG)));
 
 		// Just OK
 
 		m.setGebJahr(currentYear-st.getMax()-1);
-		vr = db.validate(m, "", leaders);
-		assertFalse(DownloadBean.ZU_ALT, vr.stream().anyMatch(r -> r.message.contains(DownloadBean.ZU_ALT)));
+		vr = mv.validate(m, "", leaders);
+		assertFalse(MemberValidator.ZU_ALT, vr.stream().anyMatch(r -> r.message.contains(MemberValidator.ZU_ALT)));
 		
 		m.setGebJahr(currentYear-st.getMin()+1);
-		vr = db.validate(m, "", leaders);
-		assertFalse(DownloadBean.ZU_JUNG, vr.stream().anyMatch(r -> r.message.contains(DownloadBean.ZU_JUNG)));
+		vr = mv.validate(m, "", leaders);
+		assertFalse(MemberValidator.ZU_JUNG, vr.stream().anyMatch(r -> r.message.contains(MemberValidator.ZU_JUNG)));
 	}
 
 	@Test
@@ -132,20 +141,20 @@ public class TestDownloadBean {
 		Member m = new Member();
 		m.setAktiv(true);
 		
-		List<ValidationResult> vr = db.validate(m, "", leaders);
-		assertTrue(DownloadBean.KEIN_TRUPP_FUNKTION, vr.stream().anyMatch(r -> r.message.contains(DownloadBean.KEIN_TRUPP_FUNKTION)));
+		List<ValidationResult> vr = mv.validate(m, "", leaders);
+		assertTrue(MemberValidator.KEIN_TRUPP_FUNKTION, vr.stream().anyMatch(r -> r.message.contains(MemberValidator.KEIN_TRUPP_FUNKTION)));
 
 		m.setAktiv(false);
 		
-		vr = db.validate(m, "", leaders);
-		assertFalse(DownloadBean.KEIN_TRUPP_FUNKTION, vr.stream().anyMatch(r -> r.message.contains(DownloadBean.KEIN_TRUPP_FUNKTION)));
+		vr = mv.validate(m, "", leaders);
+		assertFalse(MemberValidator.KEIN_TRUPP_FUNKTION, vr.stream().anyMatch(r -> r.message.contains(MemberValidator.KEIN_TRUPP_FUNKTION)));
 
 		Squad trupp = new Squad();
 		trupp.setType(SquadType.GUSP);
 		m.setTrupp(trupp);
 
-		vr = db.validate(m, "", leaders);
-		assertTrue(DownloadBean.INAKTIV_IM_TRUPP, vr.stream().anyMatch(r -> r.message.contains(DownloadBean.INAKTIV_IM_TRUPP)));
+		vr = mv.validate(m, "", leaders);
+		assertTrue(MemberValidator.INAKTIV_IM_TRUPP, vr.stream().anyMatch(r -> r.message.contains(MemberValidator.INAKTIV_IM_TRUPP)));
 
 	}
 }

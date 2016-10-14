@@ -10,6 +10,7 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +48,8 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.view.ViewUtils.Month;
+import at.tfr.pfad.view.validator.MemberValidator;
+import at.tfr.pfad.view.validator.ValidationResult;
 
 /**
  * Backing bean for Member entities.
@@ -70,8 +73,11 @@ public class MemberBean extends BaseBean implements Serializable {
 	private MemberRepository memberRepo;
 	@Inject
 	private FunctionRepository functionRepo;
+	@Inject
+	private MemberValidator memberValidator;
 	private Boolean exampleActive;
 	private Boolean exampleFree;
+	private Collection<ValidationResult> validationResults = new ArrayList<>();
 
 	/*
 	 * support creating and retrieving Member entities
@@ -109,6 +115,7 @@ public class MemberBean extends BaseBean implements Serializable {
 					filteredMembers.add(member.getVollzahler());
 				}
 			}
+			this.validationResults = validateMember(member, false);
 		}
 	}
 
@@ -123,8 +130,9 @@ public class MemberBean extends BaseBean implements Serializable {
 	@Transactional
 	public String update() {
 
-		if (!isUpdateAllowed())
+		if (!isUpdateAllowed()) {
 			throw new SecurityException("Update denied for: "+sessionBean.getUser());
+		}
 		
 		log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
 
@@ -132,9 +140,12 @@ public class MemberBean extends BaseBean implements Serializable {
 			if (id == null) {
 				entityManager.persist(member);
 				id = member.getId();
+
 				if (StringUtils.isEmpty(member.getBVKey())) {
 					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
 				}
+				validateMember(member, true);
+				
 				if (member.getId() != null) {
 					return "view?faces-redirect=true&id=" + member.getId();
 				}
@@ -143,14 +154,27 @@ public class MemberBean extends BaseBean implements Serializable {
 				if (StringUtils.isEmpty(member.getBVKey())) {
 					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
 				}
+
 				member = entityManager.merge(member);
+				validateMember(member, true);
+
 				return "view?faces-redirect=true&id=" + member.getId();
 			}
+			
 		} catch (Exception e) {
 			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
+	}
+
+	private Collection<ValidationResult> validateMember(Member member, boolean toMessages) {
+		Collection<Member> leaders = squadRepo.findLeaders();
+		List<ValidationResult> vr = memberValidator.validate(member, leaders);
+		if (!vr.isEmpty() && toMessages) {
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(vr.toString()));
+		}
+		return vr;
 	}
 
 	public boolean isUpdateAllowed() {
@@ -178,6 +202,10 @@ public class MemberBean extends BaseBean implements Serializable {
 		}
 	}
 
+	public Collection<ValidationResult> getValidationResults() {
+		return validationResults;
+	}
+	
 	/*
 	 * support searching Member entities with pagination
 	 */
