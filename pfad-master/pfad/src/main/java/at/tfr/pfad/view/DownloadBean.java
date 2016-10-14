@@ -252,7 +252,7 @@ public class DownloadBean implements Serializable {
 
 				HSSFCell ok = row.createCell(cCount++);
 				if (!vr.isEmpty()) {
-					ok.setCellValue(vr.stream().map(v -> v.message).collect(Collectors.joining(",")));
+					ok.setCellValue(vr.stream().map(v -> v.getMessage()).collect(Collectors.joining(",")));
 					ok.setCellStyle(red);
 				}
 
