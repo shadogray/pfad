@@ -13,11 +13,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import at.tfr.pfad.SquadType;
+import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 
@@ -29,6 +31,11 @@ public class MemberValidator {
 	public static String ZU_ALT = "Zu alt für ";
 	public static String INAKTIV_IM_TRUPP = "Inaktives Mitlgied im Trupp";
 	public static String KEIN_TRUPP_FUNKTION = "Weder Trupp noch Funktion";
+	public static String INAKTIV_ALS_LEITER = "Inaktiv als Leiter/Assistent";
+	
+	@Inject
+	private SquadRepository squadRepo;
+	
 
 	public boolean isNotGrinsExportable(Member m, Collection<Member> leaders) {
 		return !m.isAktiv() || !(leaders.contains(m)
@@ -42,11 +49,13 @@ public class MemberValidator {
 	public List<ValidationResult> validate(Member member, final String funktionen, final Collection<Member> leaders) {
 		List<ValidationResult> results = new ArrayList<>();
 		
-		if (!member.isAktiv() && !member.getFunktionen().isEmpty()) {
-			List<Function> funcExp = member.getFunktionen().stream().filter(f->f.getExportReg()).collect(Collectors.toList());
-			if (!funcExp.isEmpty()) {
-				results.add(new ValidationResult(false, "Inaktiv mit "+funcExp));
-			}
+		List<Function> funcExp = member.getFunktionen().stream().filter(f->f.getExportReg()).collect(Collectors.toList());
+		if (!member.isAktiv() && !funcExp.isEmpty()) {
+			results.add(new ValidationResult(false, "Inaktiv mit "+funcExp));
+		}
+		
+		if (!member.isAktiv() && leaders.contains(member)) {
+			results.add(new ValidationResult(false, INAKTIV_ALS_LEITER+": "+squadRepo.findByResponsible(member)));
 		}
 		
 		if (member.isAktiv() && member.getVollzahler() != null && !member.equals(member.getVollzahler())
@@ -78,7 +87,7 @@ public class MemberValidator {
 				}
 			}
 		} else {
-			if (member.isAktiv() && StringUtils.isBlank(funktionen)) {
+			if (member.isAktiv() && StringUtils.isBlank(funktionen) && !leaders.contains(member)) {
 				results.add(new ValidationResult(false, KEIN_TRUPP_FUNKTION));
 			}
 		}
