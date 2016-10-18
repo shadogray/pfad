@@ -87,7 +87,7 @@ public class MemberValidator {
 				}
 			}
 		} else {
-			if (member.isAktiv() && StringUtils.isBlank(funktionen) && !leaders.contains(member)) {
+			if (member.isAktiv() && StringUtils.isBlank(funktionen) && funcExp.isEmpty() && !leaders.contains(member)) {
 				results.add(new ValidationResult(false, KEIN_TRUPP_FUNKTION));
 			}
 		}
