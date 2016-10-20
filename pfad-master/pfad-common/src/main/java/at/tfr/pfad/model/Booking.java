@@ -24,6 +24,7 @@ import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -229,6 +230,11 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 		this.createdBy = createdBy;
 	}
 
+	@Transient
+	public boolean isValid() {
+		return !BookingStatus.storno.equals(status);
+	}
+	
 	@Override
 	public String toString() {
 		String result = (activity != null

@@ -283,7 +283,7 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable, Pres
 	
 	@Transient
 	public boolean isFinished() {
-		return ActivityStatus.cancelled.equals(status)
+		return ActivityStatus.cancelled.equals(status) || ActivityStatus.finished.equals(status)
 				|| (end != null && new Date().after(end));
 	}
 }

@@ -28,6 +28,8 @@
 				<h:outputLabel value="Daten gesamt" />
 				<h:commandLink value="Download Gesamt" action="#{downloadBean.downloadAll()}" styleClass="btn btn-primary"
 					disabled="#{!downloadBean.downloadAllowed}" />
+				<h:commandLink value="Download MitBuchgn" action="#{downloadBean.downloadAllWithBookings()}" styleClass="btn btn-primary"
+					disabled="#{!downloadBean.downloadAllowed}" />
 			</h:panelGroup>
 		</h:form>
 

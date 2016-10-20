@@ -51,12 +51,18 @@ import org.joda.time.DateTime;
 
 import com.google.common.net.HttpHeaders;
 
+import at.tfr.pfad.ActivityStatus;
+import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.Role;
 import at.tfr.pfad.SquadType;
+import at.tfr.pfad.dao.ActivityRepository;
+import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
+import at.tfr.pfad.model.Activity;
+import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
@@ -94,6 +100,10 @@ public class DownloadBean implements Serializable {
 	@Inject
 	private ConfigurationRepository configRepo;
 	@Inject
+	private ActivityRepository activityRepo;
+	@Inject
+	private BookingRepository bookingRepo;
+	@Inject
 	private SquadBean squadBean;
 	@Inject
 	private SessionBean sessionBean;
@@ -121,6 +131,10 @@ public class DownloadBean implements Serializable {
 		return downloadData(true, null);
 	}
 
+	public String downloadAllWithBookings() throws Exception {
+		return downloadData(true, true, null);
+	}
+
 	public String downloadSquad(Squad squad) throws Exception {
 		return downloadData(true, null, squad);
 	}
@@ -137,6 +151,10 @@ public class DownloadBean implements Serializable {
 	}
 
 	public String downloadData(boolean withLocal, Predicate<Member> filter, Squad... squads) throws Exception {
+		return downloadData(withLocal, false, filter, squads);
+	}
+	
+	public String downloadData(boolean withLocal, boolean withBookings, Predicate<Member> filter, Squad... squads) throws Exception {
 		try {
 
 			if (!isDownloadAllowed(squads))
@@ -145,7 +163,7 @@ public class DownloadBean implements Serializable {
 
 			ExternalContext ectx = setHeaders();
 			try (OutputStream os = ectx.getResponseOutputStream()) {
-				HSSFWorkbook wb = generateData(withLocal, filter, squads);
+				HSSFWorkbook wb = generateData(withLocal, withBookings, filter, squads);
 				wb.write(os);
 			}
 			FacesContext.getCurrentInstance().responseComplete();
@@ -159,7 +177,7 @@ public class DownloadBean implements Serializable {
 		return "";
 	}
 
-	private HSSFWorkbook generateData(boolean withLocal, Predicate<Member> filter, Squad... squads) {
+	private HSSFWorkbook generateData(boolean withLocal, boolean withBookings, Predicate<Member> filter, Squad... squads) {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Personen");
 		CellStyle red = wb.createCellStyle();
@@ -173,12 +191,19 @@ public class DownloadBean implements Serializable {
 		
 		int rCount = 0;
 		HSSFRow row = sheet.createRow(rCount++);
+		
+		List<Activity> activities = activityRepo.findAll().stream().filter(a->!a.isFinished())
+				.sorted((a,b) -> a.getName().compareTo(b.getName())).collect(Collectors.toList());
 
 		List<String> headers = Arrays.asList(HeaderRegistrierung.values()).stream().map(h -> h.name())
 				.collect(Collectors.toList());
 		if (withLocal) {
 			headers.addAll(
 					Arrays.asList(HeaderLocal.values()).stream().map(h -> h.name()).collect(Collectors.toList()));
+		}
+		if (withBookings) {
+			headers.add("--");
+			headers.addAll(activities.stream().map(a->a.getName()).collect(Collectors.toList()));
 		}
 
 		for (int i = 0; i < headers.size(); i++) {
@@ -270,6 +295,15 @@ public class DownloadBean implements Serializable {
 						.setCellValue(m.getSiblings().stream().map(s -> s.toString()).collect(Collectors.joining(",")));
 				row.createCell(cCount++).setCellValue(m.getSiblings().stream()
 						.map(s -> s.getTrupp() != null ? s.getTrupp().getName() : "").collect(Collectors.joining(",")));
+			}
+			
+			if (withBookings) {
+				row.createCell(cCount++).setCellValue("");
+				for (Activity a : activities) {
+					Optional<Booking> bOpt = m.getBookings().stream()
+							.filter(b-> b.isValid() && a.equals(b.getActivity())).findAny();
+					row.createCell(cCount++).setCellValue(bOpt.isPresent() ? ""+a.getName() : "");
+				}
 			}
 
 		}
