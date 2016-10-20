@@ -110,8 +110,7 @@
 					<h:outputLabel value="Buchung Neu:" />
 					<h:commandButton id="createBookingsBeanCreateBookingsSource" action="#{createBookingsBean.createBookingsFromSource()}"
 						value="Von #{createBookingsBean.sourceActivity.name} auf #{createBookingsBean.targetActivity.name} Neu Buchen"
-						disabled="#{!bookingBean.createAllAllowed}"
-						rendered="#{createBookingsBean.sourceActivity != null and createBookingsBean.targetActivity != null}" />
+						disabled="#{!bookingBean.createAllAllowed}" />
 					<h:messages for="createBookingsBeanCreateBookingsSource" />
 
 				</h:panelGrid>
