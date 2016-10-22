@@ -12,7 +12,7 @@
 	</f:metadata>
 
 	<ui:define name="header">
-		Zahlungen | #{processorBean.sessionContext}
+		Zahlungen | #{sessionBean.userSession.callerPrincipal}
 	</ui:define>
 
 	<ui:define name="subheader">

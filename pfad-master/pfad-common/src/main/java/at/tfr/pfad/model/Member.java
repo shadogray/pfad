@@ -164,6 +164,9 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean free;
 
+	@Column(columnDefinition = "boolean default 'false' not null")
+	protected boolean dead;
+
 	@Enumerated(EnumType.STRING)
 	protected ScoutRole rolle;
 
@@ -764,5 +767,14 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public boolean isAnyFree() {
 		return free || (funktionen != null && funktionen.stream().anyMatch(f->Boolean.TRUE.equals(f.getFree())));
+	}
+	
+	@Pfad
+	public boolean isDead() {
+		return dead;
+	}
+	
+	public void setDead(boolean dead) {
+		this.dead = dead;
 	}
 }

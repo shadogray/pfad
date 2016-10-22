@@ -2,6 +2,6 @@ package at.tfr.pfad;
 
 public enum ActivityType {
 
-	Membership, Camp, Other
+	Membership, Camp, Friend, Support, Other
 	
 }

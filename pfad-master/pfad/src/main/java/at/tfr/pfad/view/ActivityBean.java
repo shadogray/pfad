@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
@@ -27,6 +28,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.criterion.Order;
 
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.ActivityType;
@@ -231,7 +233,8 @@ public class ActivityBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Activity> criteria = this.entityManager.getCriteriaBuilder()
 				.createQuery(Activity.class);
-		return this.entityManager.createQuery(criteria.select(criteria.from(Activity.class))).getResultList();
+		return this.entityManager.createQuery(criteria.select(criteria.from(Activity.class)))
+				.getResultList().stream().sorted((x,y)->x.getName().compareTo(y.getName())).collect(Collectors.toList());
 	}
 	
 	public List<Activity> getActive() {

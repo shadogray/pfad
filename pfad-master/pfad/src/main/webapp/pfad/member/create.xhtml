@@ -357,6 +357,11 @@
 					<h:selectBooleanCheckbox id="memberBeanMemberFree" value="#{memberBean.member.free}" title="Zahlungsbefreit"/>
 					<h:message for="memberBeanMemberFree" styleClass="error" />
 				</h:panelGroup>
+				<h:outputLabel for="memberBeanMemberDead" value="Verstorben:" />
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="memberBeanMemberDead" value="#{memberBean.member.dead}" title="Verstorben"/>
+					<h:message for="memberBeanMemberDead" styleClass="error" />
+				</h:panelGroup>
 			</h:panelGrid>
 			<h:panelGrid columns="8" style="width: 100%;">
 				<h:outputLabel value="Erstellt:" />

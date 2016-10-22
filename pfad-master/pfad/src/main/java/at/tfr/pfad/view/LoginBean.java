@@ -45,8 +45,8 @@ public class LoginBean {
 		FacesContext context = FacesContext.getCurrentInstance();
 		HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 		try {
-			request.logout();
-		} catch (ServletException e) {
+			request.getSession().invalidate();
+		} catch (Exception e) {
 			context.addMessage(null, new FacesMessage("Logout failed."));
 		}
 		return "/index.html";

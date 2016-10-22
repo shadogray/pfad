@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateful;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,14 +21,13 @@ import at.tfr.pfad.model.Configuration;
 
 @Named
 @SessionScoped
-@Stateful
 public class SessionBean implements Serializable {
 	
 	private Logger log = Logger.getLogger(getClass());
 	private List<Configuration> config;
 	private Date registrationEndDate;
-	@Resource
-	protected SessionContext sessionContext;
+	@Inject
+	protected UserSession userSession;
 	@Inject
 	private ConfigurationRepository configRepo;
 	
@@ -50,31 +46,35 @@ public class SessionBean implements Serializable {
 	}
 
 	public Principal getUser() {
-		return sessionContext.getCallerPrincipal();
+		return userSession.getCallerPrincipal();
+	}
+	
+	public boolean isAnonymous() {
+		return "anonymous".equals(userSession.getCallerPrincipal());
 	}
 
 	public boolean isAdmin() {
-		return sessionContext.isCallerInRole(Role.admin.name());
+		return userSession.isCallerInRole(Role.admin.name());
 	}
 	
 	public boolean isGruppe() {
-		return sessionContext.isCallerInRole(Role.gruppe.name());
+		return userSession.isCallerInRole(Role.gruppe.name());
 	}
 
 	public boolean isLeiter() {
-		return sessionContext.isCallerInRole(Role.leiter.name());
+		return userSession.isCallerInRole(Role.leiter.name());
 	}
 
 	public boolean isKassier() {
-		return sessionContext.isCallerInRole(Role.kassier.name());
+		return userSession.isCallerInRole(Role.kassier.name());
 	}
 
 	public boolean isVorstand() {
-		return sessionContext.isCallerInRole(Role.vorstand.name());
+		return userSession.isCallerInRole(Role.vorstand.name());
 	}
 
-	public SessionContext getSessionContext() {
-		return sessionContext;
+	public UserSession getUserSession() {
+		return userSession;
 	}
 	
 	public void setRegistrationEndDate(Date registrationEndDate) {

@@ -14,13 +14,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.el.ValueExpression;
 import javax.enterprise.context.SessionScoped;
@@ -36,9 +34,7 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
-import javax.print.attribute.standard.JobOriginatingUserName;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -51,11 +47,8 @@ import org.joda.time.DateTime;
 
 import com.google.common.net.HttpHeaders;
 
-import at.tfr.pfad.ActivityStatus;
-import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.Role;
-import at.tfr.pfad.SquadType;
 import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.ConfigurationRepository;
@@ -159,7 +152,7 @@ public class DownloadBean implements Serializable {
 
 			if (!isDownloadAllowed(squads))
 				throw new SecurityException(
-						"user may not download: " + sessionBean.getSessionContext().getCallerPrincipal());
+						"user may not download: " + sessionBean.getUserSession().getCallerPrincipal());
 
 			ExternalContext ectx = setHeaders();
 			try (OutputStream os = ectx.getResponseOutputStream()) {
@@ -412,11 +405,11 @@ public class DownloadBean implements Serializable {
 
 	private List<Member> getMembers() {
 		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
-		SessionContext ctx = sessionBean.getSessionContext();
-		if (ctx.isCallerInRole(Role.admin.name()) || ctx.isCallerInRole(Role.gruppe.name()))
+		UserSession userSess = sessionBean.getUserSession();
+		if (userSess.isCallerInRole(Role.admin.name()) || userSess.isCallerInRole(Role.gruppe.name()))
 			return members;
-		if (ctx.isCallerInRole(Role.leiter.name())) {
-			List<Squad> squads = squadRepo.findByName(ctx.getCallerPrincipal().getName());
+		if (userSess.isCallerInRole(Role.leiter.name())) {
+			List<Squad> squads = squadRepo.findByName(userSess.getCallerPrincipal().getName());
 			members = members.stream().filter(m -> m.getTrupp() != null && squads.contains(m.getTrupp()))
 					.collect(Collectors.toList());
 		}
@@ -508,7 +501,7 @@ public class DownloadBean implements Serializable {
 	public List<Configuration> getQueries() {
 		return configRepo.findByTypeOrderByCkeyAsc(ConfigurationType.query).stream()
 				.filter(q -> sessionBean.isAdmin() || Role.none.equals(q.getRole())
-						|| sessionBean.getSessionContext().isCallerInRole(q.getRole().name()))
+						|| sessionBean.getUserSession().isCallerInRole(q.getRole().name()))
 				.collect(Collectors.toList());
 	}
 

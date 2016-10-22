@@ -214,6 +214,10 @@
 				<h:outputLabel value="Frei:" />
 				<h:outputText styleClass="#{memberBean.member.free ? 'boolean-true' : 'boolean-false'}" value="" />
 			</h:panelGroup>
+			<h:panelGroup>
+				<h:outputLabel value="Verstorben:" />
+				<h:outputText styleClass="#{memberBean.member.dead ? 'boolean-true' : 'boolean-false'}" value="" />
+			</h:panelGroup>
 		</h:panelGrid>
 		<h:panelGrid columns="8" style="width: 100%;">
 			<h:outputLabel value="Erstellt:" />
