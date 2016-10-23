@@ -121,11 +121,11 @@ public class DownloadBean implements Serializable {
 	}
 
 	public String downloadAll() throws Exception {
-		return downloadData(true, null);
+		return downloadData(true, null, sessionBean.getSquad());
 	}
 
 	public String downloadAllWithBookings() throws Exception {
-		return downloadData(true, true, null);
+		return downloadData(true, true, null, sessionBean.getSquad());
 	}
 
 	public String downloadSquad(Squad squad) throws Exception {
@@ -138,7 +138,7 @@ public class DownloadBean implements Serializable {
 
 	public boolean isDownloadAllowed(Squad... squads) {
 		if (sessionBean.isAdmin() || sessionBean.isGruppe() || (sessionBean.isLeiter() && squads != null
-				&& Stream.of(squads).allMatch(s -> squadBean.isUpdateAllowed(s))))
+				&& Stream.of(squads).allMatch(s -> squadBean.isDownloadAllowed(s))))
 			return true;
 		return false;
 	}

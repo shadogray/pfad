@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -17,7 +18,9 @@ import org.joda.time.format.DateTimeFormat;
 
 import at.tfr.pfad.Role;
 import at.tfr.pfad.dao.ConfigurationRepository;
+import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Configuration;
+import at.tfr.pfad.model.Squad;
 
 @Named
 @SessionScoped
@@ -30,11 +33,15 @@ public class SessionBean implements Serializable {
 	protected UserSession userSession;
 	@Inject
 	private ConfigurationRepository configRepo;
+	@Inject
+	private SquadRepository squadRepo;
+	private Squad squad;
 	
 	@PostConstruct
 	public void init() {
 		config = configRepo.findAll();
 		registrationEndDate = getRegistrationEndDate();
+		squad = isResponsibleFor();
 	}
 
 	public List<Configuration> getConfig() {
@@ -63,6 +70,21 @@ public class SessionBean implements Serializable {
 
 	public boolean isLeiter() {
 		return userSession.isCallerInRole(Role.leiter.name());
+	}
+	
+	public Squad isResponsibleFor() {
+		if (isLeiter()) {
+			String name = userSession.getCallerPrincipal().getName();
+			Optional<Squad> sOpt = squadRepo.findAll().stream().filter(s-> name.equalsIgnoreCase(s.getLogin())).findAny();
+			if (sOpt.isPresent()) {
+				return sOpt.get();
+			}
+		}
+		return null;
+	}
+	
+	public Squad getSquad() {
+		return squad;
 	}
 
 	public boolean isKassier() {
