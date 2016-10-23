@@ -140,7 +140,7 @@
 							<h:commandLink action="#{_collection.remove(_item)}" styleClass="remove-button" />
 						</h:column>
 					</h:dataTable>
-					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
+					<h:panelGrid columnClasses=",remove-column" columns="3" styleClass="data-table-footer">
 						<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanSquadAssistantsSelect"
 							value="#{requestScope['squadBeanSquadAssistantsSelect']}">
 							<f:selectItem />
@@ -151,6 +151,7 @@
 							id="squadBeanSquadAssistantsAdd"
 							onclick="if (document.getElementById('create:squadBeanSquadAssistantsSelect').selectedIndex &lt; 1) { alert('Must select a Member'); return false; }"
 							styleClass="add-button" />
+						<h:outputText />
 					</h:panelGrid>
 				</h:panelGroup>
 				<h:outputText />

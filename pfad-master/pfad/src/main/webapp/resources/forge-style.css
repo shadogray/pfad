@@ -243,6 +243,7 @@ footer p {
 	width: 75%;
 	text-align: left;
 	vertical-align: top;
+	max-width: 400px;
 }
 
 #content table .label2 {
@@ -256,6 +257,7 @@ footer p {
 	width: 35%;
 	text-align: left;
 	vertical-align: top;
+	max-width: 200px;
 }
 
 #content table .component input {
@@ -283,7 +285,7 @@ input.rf-sel-inp {
 
 select {
 	max-width: 100%;
-	width: auto !important;
+	/*width: auto !important;*/
 }
 
 select.manual {
@@ -398,7 +400,7 @@ select.manual {
 }
 
 #content .data-table-footer select {
-	width: 50%;
+	width: 95%;
 	/*height: 30px;*/
 	vertical-align: middle;
 	margin-right: 5px;

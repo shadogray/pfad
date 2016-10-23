@@ -245,7 +245,7 @@
 							<h:commandLink action="#{_collection.remove(_item)}" styleClass="remove-button" />
 						</h:column>
 					</h:dataTable>
-					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
+					<h:panelGrid columnClasses=",remove-column" columns="3" styleClass="data-table-footer">
 						<h:selectOneMenu converter="#{functionBean.converter}" id="memberBeanMemberFunktionenSelect"
 							value="#{requestScope['memberBeanMemberFunktionenSelect']}">
 							<f:selectItem />
@@ -256,6 +256,7 @@
 							id="memberBeanMemberFunktionenAdd"
 							onclick="if (document.getElementById('create:memberBeanMemberFunktionenSelect').selectedIndex &lt; 1) { alert('Must select a Function'); return false; }"
 							styleClass="add-button" />
+						<h:outputText />
 					</h:panelGrid>
 				</h:panelGroup>
 				<h:outputText />
