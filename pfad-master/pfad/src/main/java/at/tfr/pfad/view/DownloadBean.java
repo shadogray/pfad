@@ -176,6 +176,7 @@ public class DownloadBean implements Serializable {
 		CellStyle red = wb.createCellStyle();
 		red.setFillForegroundColor(HSSFColor.RED.index);
 		red.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		squads = Stream.of(squads).filter(s->s != null).collect(Collectors.toList()).toArray(new Squad[]{});
 
 		// non-filtered members
 		if (filter == null) {
