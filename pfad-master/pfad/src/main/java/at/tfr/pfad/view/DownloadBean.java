@@ -137,7 +137,7 @@ public class DownloadBean implements Serializable {
 	}
 
 	public boolean isDownloadAllowed(Squad... squads) {
-		if (sessionBean.isAdmin() || sessionBean.isGruppe() || (sessionBean.isLeiter() && squads != null
+		if (sessionBean.isAdmin() || sessionBean.isGruppe() || sessionBean.isVorstand() || (sessionBean.isLeiter() && squads != null
 				&& Stream.of(squads).allMatch(s -> squadBean.isDownloadAllowed(s))))
 			return true;
 		return false;
@@ -406,12 +406,11 @@ public class DownloadBean implements Serializable {
 
 	private List<Member> getMembers() {
 		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
-		UserSession userSess = sessionBean.getUserSession();
-		if (userSess.isCallerInRole(Role.admin.name()) || userSess.isCallerInRole(Role.gruppe.name()))
+		if (sessionBean.isAdmin() || sessionBean.isGruppe() || sessionBean.isVorstand())
 			return members;
-		if (userSess.isCallerInRole(Role.leiter.name())) {
-			List<Squad> squads = squadRepo.findByName(userSess.getCallerPrincipal().getName());
-			members = members.stream().filter(m -> m.getTrupp() != null && squads.contains(m.getTrupp()))
+		if (sessionBean.isLeiter()) {
+			Squad squad = sessionBean.getSquad();
+			members = members.stream().filter(m -> m.getTrupp() != null && m.getTrupp().equals(squad))
 					.collect(Collectors.toList());
 		}
 		return members;
