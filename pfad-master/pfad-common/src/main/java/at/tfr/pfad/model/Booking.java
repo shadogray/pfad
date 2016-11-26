@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -61,16 +62,26 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	private int version;
 
 	@ManyToMany(mappedBy = "bookings")
+	@BatchSize(size=10)
 	private Set<Payment> payments = new HashSet<Payment>();
 
 	@ManyToOne(optional = false)
 	private Member member;
+	
+	@Column(name="member_id", insertable=false, updatable=false)
+	private Long memberId;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Activity activity;
+	
+	@Column(name="activity_id", insertable=false, updatable=false)
+	private Long activityId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Squad squad;
+	
+	@Column(name="squad_id", insertable=false, updatable=false)
+	private Long squadId;
 
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
@@ -166,6 +177,10 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 		this.member = member;
 	}
 
+	public Long getMemberId() {
+		return memberId;
+	}
+	
 	public Activity getActivity() {
 		return this.activity;
 	}
@@ -174,12 +189,20 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 		this.activity = activity;
 	}
 
+	public Long getActivityId() {
+		return activityId;
+	}
+	
 	public Squad getSquad() {
 		return squad;
 	}
 
 	public void setSquad(Squad squad) {
 		this.squad = squad;
+	}
+	
+	public Long getSquadId() {
+		return squadId;
 	}
 
 	public BookingStatus getStatus() {

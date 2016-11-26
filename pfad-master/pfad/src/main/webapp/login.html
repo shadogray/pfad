@@ -10,47 +10,47 @@
 <script type="text/javascript" src="app/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 </head>
 <body style="text-align: center !important;">
-    <form id="login" name="login" method="post" action="j_security_check" enctype="application/x-www-form-urlencoded">
-        <div class="navbar navbar-fixed-top">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a id="brandLink" name="brandLink" href="/pfad/faces/pfad/index.xhtml?dswid=7588" class="brand"></a>
-                    <div class="nav-collapse collapse">
-                        <ul class="nav">
-                            <li></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container forgecontainer">
-            <div class="content">
-                <h3>Willkommen in der Pfadfinder-Datenbank</h3>
-                <h3></h3>
-                <h4 class="success">Bitte um Username/Passwort.. :-)</h4>
-                <div>
-                    <table style="margin: auto;">
-                        <tbody>
-                            <tr>
-                                <td><label>Username:</label></td>
-                                <td><input id="username" type="text" name="j_username" tabindex="1" /></td>
-                            </tr>
-                            <tr>
-                                <td><label>Passwort:</label></td>
-                                <td><input id="password" type="password" name="j_password" tabindex="2" /></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td><input type="submit" name="submit" value="Login" tabindex="3" /></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </form>
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a id="brandLink" name="brandLink" href="/pfad/faces/pfad/index.xhtml" class="brand"></a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						<li></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container forgecontainer">
+		<div class="content">
+			<h3>Willkommen in der Pfadfinder-Datenbank</h3>
+			<h3></h3>
+			<h4 class="success">Bitte um Username/Passwort.. :-)</h4>
+			<div>
+				<form id="login" name="login" method="post" action="j_security_check" enctype="application/x-www-form-urlencoded">
+					<table style="margin: auto;">
+						<tbody>
+							<tr>
+								<td><label>Username:</label></td>
+								<td><input id="username" type="text" name="j_username" tabindex="1" /></td>
+							</tr>
+							<tr>
+								<td><label>Passwort:</label></td>
+								<td><input id="password" type="password" name="j_password" tabindex="2" /></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><input type="submit" name="submit" value="Login" tabindex="3" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</form>
+			</div>
+		</div>
+	</div>
 
-    <script>
+	<script>
 	<!--
     try {
         document.getElementById("username").focus();

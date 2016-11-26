@@ -30,6 +30,10 @@ import at.tfr.pfad.model.Squad_;
 @Repository
 public abstract class MemberRepository implements EntityRepository<Member, Long>, CriteriaSupport<Member>, EntityManagerDelegate<Member> {
 
+	@Query
+	@EntityGraph(paths = {"trupp", "funktionen"})
+	public abstract Member findById(Long id);
+	
 	@EntityGraph("fetchAll")
 	public Member fetchBy(Long id) {
 		return findBy(id);

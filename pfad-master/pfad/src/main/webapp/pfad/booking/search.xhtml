@@ -93,8 +93,8 @@
 
 					<h:panelGroup styleClass="buttons">
 						<h:commandLink value="Suchen" action='#{bookingBean.search}' styleClass="btn btn-primary" />
-						<h:link value="Buchen" outcome="booking" styleClass="btn btn-primary" />
-						<h:link value="Liste" outcome="list" styleClass="btn btn-primary" />
+						<h:commandLink value="Buchen" outcome="booking" styleClass="btn btn-primary" />
+						<h:commandLink value="Liste" outcome="list" styleClass="btn btn-primary" />
 						<h:commandLink value="Neu" action='#{bookingBean.create}' styleClass="btn btn-primary" />
 					</h:panelGroup>
 
@@ -107,50 +107,50 @@
 					<f:facet name="header">
 						<h:outputText value="Aktivität" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingActivity" value="#{_item.activity.name}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Start" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingActivityStart" value="#{_item.activity.start}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Teilnehmer" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingMember" value="#{_item.member}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Status" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingStatus" value="#{_item.status}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Comment" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingComment" value="#{_item.comment}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 
 			</h:dataTable>

@@ -62,8 +62,8 @@
 	<login-config>
 		<auth-method>BASIC?silent=true,FORM</auth-method>
 		<form-login-config>
-			<form-login-page>/faces/login.html</form-login-page>
-			<form-error-page>/faces/login-error.html</form-error-page>
+			<form-login-page>/login.xhtml</form-login-page>
+			<form-error-page>/login-error.xhtml</form-error-page>
 		</form-login-config>
 	</login-config>
 	<security-role>
@@ -91,10 +91,10 @@
 	</welcome-file-list>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/faces/error.xhtml</location>
+		<location>/error.xhtml</location>
 	</error-page>
 	<error-page>
 		<error-code>500</error-code>
-		<location>/faces/error.xhtml</location>
+		<location>/error.xhtml</location>
 	</error-page>
 </web-app>

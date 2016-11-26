@@ -5,7 +5,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package at.tfr.pfad.view;
+package at.tfr.pfad.model;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,6 +17,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.PhaseId;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.QueryHint;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -31,6 +32,7 @@ import org.ajax4jsf.model.Range;
 import org.ajax4jsf.model.SequenceRange;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.jpa.QueryHints;
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
 import org.richfaces.component.SortOrder;
@@ -42,8 +44,6 @@ import org.richfaces.model.SortField;
 
 import com.google.common.collect.Lists;
 
-import at.tfr.pfad.model.PrimaryKeyHolder;
-
 public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends ExtendedDataModel<U> implements Arrangeable {
 
     private static final int ABSOLUTE_MAX_ROWS = 200;
@@ -54,8 +54,6 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     protected Class<T> entityClass;
     protected Class<U> uiClass;
 
-    @Inject
-    protected SessionBean sessionBean;
     @Inject
     protected EntityManager entityManager;
     
@@ -256,11 +254,6 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     private List<Predicate> createFilterCriteria(CriteriaQuery<?> criteriaQuery) {
         List<Predicate> filterCriteria = new ArrayList<>();
 
-        if (sessionBean.isLeiter()) {
-//            filterCriteria = Restrictions.conjunction();
-//            filterCriteria.add(Restrictions.eq(getAccountProperty(), getAccountValue(smsUsers)));
-        }
-
         if (null == arrangeableState) {
             return filterCriteria;
         }
@@ -294,16 +287,16 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         }
     }
 
-    protected List<U> getRowData(final Range range) {
+    public List<U> getRowData(final Range range) {
     	if (uData == null) {
     		uData = getRowDataInternal(range);
     	}
     	return uData;
     }
 
-	private List<U> getRowDataInternal(final Range range) {
+	protected List<U> getRowDataInternal(final Range range) {
 		final CriteriaQuery<T> criteria = createSelectCriteriaQuery();
-		criteria.distinct(true);
+		groupBy(criteria);
 
         TypedQuery<T> query = entityManager.createQuery(criteria);
         sequenceRange = (SequenceRange) range;
@@ -311,11 +304,18 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
             query.setFirstResult(sequenceRange.getFirstRow());
         }
         query.setMaxResults(sequenceRange.getRows() > 0 ? sequenceRange.getRows() : ABSOLUTE_MAX_ROWS);
+        query.setHint(QueryHints.HINT_FETCH_SIZE, 20);
 
         final List<T> data = query.getResultList();
         currentRows = data.size();
         uData = convertToUiBean(data);
         return uData;
+	}
+
+	protected CriteriaQuery<T> groupBy(CriteriaQuery<T> crit) {
+		//crit.groupBy(root.get("id"));
+		crit.distinct(true);
+		return crit;
 	}
 
     @Override

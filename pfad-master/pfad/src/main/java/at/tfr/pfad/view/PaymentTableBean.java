@@ -13,16 +13,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Stateful;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.richfaces.component.SortOrder;
 
+import at.tfr.pfad.model.PaymentDataModel;
+
 @Named
 @ViewScoped
-@Stateful
 public class PaymentTableBean implements Serializable {
 
 	private static int cnt = 0;
@@ -33,7 +33,7 @@ public class PaymentTableBean implements Serializable {
 	private String sortProperty;
 
 	@Inject
-	private transient PaymentDataModel paymentDataModel;
+	private PaymentDataModel paymentDataModel;
 
 	public PaymentTableBean() {
 		sortOrders.put("id", SortOrder.unsorted);

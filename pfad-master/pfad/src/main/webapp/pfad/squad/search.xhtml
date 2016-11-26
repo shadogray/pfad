@@ -7,6 +7,10 @@
 
 	<f:metadata>
 		<f:viewParam name="page" value='#{squadBean.page}' />
+		<f:viewParam name="squadBeanExampleType" value="#{squadBean.example.type}" />
+		<f:viewParam name="squadBeanExampleName" value="#{squadBean.example.name}" />
+		<f:viewParam name="squadBeanExampleLeaderFemale" value="#{squadBean.example.leaderFemale}" converter="#{memberBean.converter}"/>
+		<f:viewParam name="squadBeanExampleLeaderMale" value="#{squadBean.example.leaderMale}" converter="#{memberBean.converter}" />
 		<f:event type="preRenderView" listener='#{squadBean.paginate}' />
 	</f:metadata>
 
@@ -45,8 +49,7 @@
 						<h:outputText />
 						<h:outputLabel for="squadBeanExampleLeaderFemale" value="LeaderFemale:" />
 						<h:panelGroup>
-							<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanExampleLeaderFemale"
-								value="#{squadBean.example.leaderFemale}">
+							<h:selectOneMenu id="squadBeanExampleLeaderFemale" value="#{squadBean.example.leaderFemale}" converter="#{memberBean.converter}" >
 								<f:selectItem />
 								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}"
 									value="#{memberBean.selectableLeaders}" var="_item" />
@@ -56,8 +59,7 @@
 						<h:outputText />
 						<h:outputLabel for="squadBeanExampleLeaderMale" value="LeaderMale:" />
 						<h:panelGroup>
-							<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanExampleLeaderMale"
-								value="#{squadBean.example.leaderMale}">
+							<h:selectOneMenu id="squadBeanExampleLeaderMale" value="#{squadBean.example.leaderMale}" converter="#{memberBean.converter}" >
 								<f:selectItem />
 								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}"
 									value="#{memberBean.selectableLeaders}" var="_item" />
@@ -78,46 +80,46 @@
 					<f:facet name="header">
 						<h:outputText value="Type" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemType" value="#{_item.type}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemName" value="#{_item.name}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Scouts" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemScouts" value="#{_item.scouts.size()}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="LeaderFemale" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="forgeviewdisplayitemLeaderFemale" value="#{forgeview:display(_item.leaderFemale)}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="LeaderMale" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="forgeviewdisplayitemLeaderMale" value="#{forgeview:display(_item.leaderMale)}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 			</h:dataTable>
 			<ui:include src="/resources/scaffold/paginator.xhtml">

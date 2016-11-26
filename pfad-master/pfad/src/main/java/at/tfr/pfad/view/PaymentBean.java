@@ -26,6 +26,8 @@ import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -36,6 +38,7 @@ import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Payment;
+import at.tfr.pfad.model.PaymentUI;
 import at.tfr.pfad.model.Payment_;
 
 /**
@@ -87,6 +90,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 					filteredPayers.add(payment.getPayer());
 				}
 			}
+			payment.toString();
+
 		} catch (Exception e) {
 			log.info("retrieve: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
@@ -94,7 +99,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	}
 
 	public Payment findById(Long id) {
-		return this.entityManager.find(Payment.class, id);
+		return paymentRepo.findById(id);
 	}
 
 	/*
@@ -146,6 +151,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 			}
 			payment.getBookings().stream().filter(b->b.getActivity() != null).map(b->b.getActivity()).collect(Collectors.toList()); // for lazy init exc
 			id = payment.getId();
+			retrieve();
 			switch (command) {
 			case createAndNew:
 				return "create?faces-redirect=true";
@@ -276,6 +282,11 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Payment> criteria = builder.createQuery(Payment.class);
 		root = criteria.from(Payment.class);
+		root.fetch(Payment_.payer, JoinType.LEFT);
+		Fetch<Payment, Booking> bookings = root.fetch(Payment_.bookings, JoinType.LEFT);
+		bookings.fetch(Booking_.activity, JoinType.LEFT);
+		bookings.fetch(Booking_.member, JoinType.LEFT);
+		bookings.fetch(Booking_.squad, JoinType.LEFT);
 		TypedQuery<Payment> query = this.entityManager
 				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());

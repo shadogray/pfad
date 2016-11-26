@@ -132,10 +132,17 @@ public class BookingBean extends BaseBean implements Serializable {
 	}
 
 	public Booking findById(Long id) {
-
-		return this.entityManager.find(Booking.class, id);
+		return bookingRepo.findById(id);
 	}
 
+	public List<Payment> getSortedPayments() {
+		return getSortedPayments(id);
+	}
+	
+	public List<Payment> getSortedPayments(Long id) {
+		return paymentRepo.findByBookingIdOrderByIdDesc(id);
+	}
+	
 	/*
 	 * Support updating and deleting Booking entities
 	 */

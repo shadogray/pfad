@@ -22,7 +22,7 @@ public class PfadExceptionHandler
         		|| evt.getException() instanceof ViewExpiredException) {
         	try {
         		ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-				ectx.redirect(ectx.getRequestContextPath()+"/login.xhtml");
+				ectx.redirect(ectx.getRequestContextPath()+"/index.xhtml");
         	} catch (Exception e) {
         		log.info("cannot redirect: "+e, e);
         	}

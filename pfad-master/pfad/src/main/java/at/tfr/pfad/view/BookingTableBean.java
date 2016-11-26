@@ -9,20 +9,22 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Stateful;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.richfaces.component.SortOrder;
 
+import at.tfr.pfad.model.BookingDataModel;
+import at.tfr.pfad.model.Squad;
+
 @Named
 @ViewScoped
-@Stateful
 public class BookingTableBean implements Serializable {
 
 	    private static int cnt = 0;
@@ -31,9 +33,13 @@ public class BookingTableBean implements Serializable {
 	    private Map<String, String> columnHeaders = new HashMap<String, String>();
 	    private Map<String, String> filterValues = new HashMap<String, String>();
 	    private String sortProperty;
+	    private List<Squad> squads;
 
 	    @Inject
-	    private transient BookingDataModel bookingDataModel;
+	    private BookingDataModel bookingDataModel;
+	    
+	    @Inject
+	    private SquadBean squadBean;
 
 	    public BookingTableBean() {
 	    }
@@ -59,19 +65,29 @@ public class BookingTableBean implements Serializable {
 	        sortOrders.put("status", SortOrder.unsorted);
 	        sortOrders.put("comment", SortOrder.unsorted);
 	        sortOrders.put("payed", SortOrder.unsorted);
+	        
+	        squads = squadBean.getAll();
 	    }
 
 	    public Map<String, String> getColumnHeaders() {
 	        return columnHeaders;
 	    }
-
+	    
 	    public Map<String, SortOrder> getSortOrders() {
 	        return sortOrders;
 	    }
 
+	    public void setSortOrders(Map<String, SortOrder> sortOrders) {
+			this.sortOrders = sortOrders;
+		}
+	    
 	    public Map<String, String> getFilterValues() {
 	        return filterValues;
 	    }
+	    
+	    public void setFilterValues(Map<String, String> filterValues) {
+			this.filterValues = filterValues;
+		}
 
 	    public String getSortProperty() {
 	        return sortProperty;
@@ -103,6 +119,10 @@ public class BookingTableBean implements Serializable {
 	        return bookingDataModel;
 	    }
 
+	    public List<Squad> getSquads() {
+			return squads;
+		}
+	    
 	    /**
 	     * @return the selectionMode
 	     */

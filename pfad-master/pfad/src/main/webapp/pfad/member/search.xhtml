@@ -109,7 +109,7 @@
 					<h:panelGroup styleClass="buttons">
 						<h:commandLink value="Suchen" action="#{memberBean.search}" styleClass="btn btn-primary" />
 						<h:commandLink value="Neu" action="#{memberBean.create}" styleClass="btn btn-primary" />
-						<h:link value="History" outcome="history" styleClass="btn btn-primary" disabled="#{!memberBean.updateAllowed}" />
+						<h:commandLink value="History" outcome="history" styleClass="btn btn-primary" disabled="#{!memberBean.updateAllowed}" />
 					</h:panelGroup>
 				</h:panelGroup>
 			</f:validateBean>
@@ -119,64 +119,64 @@
 					<f:facet name="header">
 						<h:outputText value="BV Key" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBVKey" value="#{_item.BVKey}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemName" value="#{_item.name}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Vorname" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemVorname" value="#{_item.vorname}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Aktiv" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Frei" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemFrei" value="#{_item.free}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Trupp" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemTrupp" value="#{_item.trupp.name}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="GebJahr" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemJahr" value="#{_item.gebJahr}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 			</h:dataTable>
 			<ui:include src="/resources/scaffold/paginator.xhtml">

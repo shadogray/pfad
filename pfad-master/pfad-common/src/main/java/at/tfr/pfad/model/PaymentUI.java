@@ -5,7 +5,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package at.tfr.pfad.view;
+package at.tfr.pfad.model;
 
 import java.util.Date;
 import java.util.List;
@@ -13,9 +13,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import at.tfr.pfad.PaymentType;
-import at.tfr.pfad.model.Booking;
-import at.tfr.pfad.model.Member;
-import at.tfr.pfad.model.Payment;
 
 public class PaymentUI extends Payment {
 

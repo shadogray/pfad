@@ -5,7 +5,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package at.tfr.pfad.view;
+package at.tfr.pfad.model;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,17 +13,12 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
-
-import at.tfr.pfad.model.Activity_;
-import at.tfr.pfad.model.Booking_;
-import at.tfr.pfad.model.Member_;
-import at.tfr.pfad.model.Payment;
-import at.tfr.pfad.model.Payment_;
-import at.tfr.pfad.model.Squad_;
 
 @RequestScoped
 @Stateful
@@ -38,6 +33,19 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 		super(uiClass, entityClass);
 	}
 
+	@Override
+	protected CriteriaQuery<Payment> createCriteria(boolean addOrder) {
+		CriteriaQuery<Payment> query = super.createCriteria(addOrder);
+		root.fetch(Payment_.payer, JoinType.LEFT);
+		//Fetch<Payment, Booking> bookings = root.fetch(Payment_.bookings, JoinType.LEFT);
+		//bookings.fetch(Booking_.activity, JoinType.LEFT);
+		//Fetch<Booking, Member> member = bookings.fetch(Booking_.member, JoinType.LEFT);
+		//member.fetch(Member_.trupp, JoinType.LEFT);
+		//member.fetch(Member_.funktionen, JoinType.LEFT);
+		//bookings.fetch(Booking_.squad, JoinType.LEFT);
+		return query;
+	}
+	
 	@Override
 	public List<PaymentUI> convertToUiBean(List<Payment> list) {
 		return list.stream().map(b->new PaymentUI(b)).collect(Collectors.toList());

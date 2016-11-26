@@ -6,6 +6,10 @@
 	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
 	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
+	<f:metadata>
+<!-- 		<f:viewParam name="bookingTableBeanFilterValues" value="#{bookingTableBean.filterValues}"/>
+		<f:viewParam name="bookingTableBeanSortOrders" value="#{bookingTableBean.sortOrders}"/>
+ -->	</f:metadata>
 	<ui:param name="pageTitle" value="Buchungen" />
 
 	<ui:define name="header">
@@ -16,18 +20,55 @@
 		</h:outputScript>
 	</ui:define>
 
-	<ui:define name="subheader">
-		Buchungen
-	</ui:define>
+	<ui:define name="subheader">Buchungen</ui:define>
 
 	<ui:define name="footer" />
 
 	<ui:define name="main">
 		<f:validateBean disabled="true">
-			<h:form id="list">
+			<h:form id="list" onsubmit="return false;">
 				<h:messages styleClass="error" />
+				
+				<rich:focus ajaxRendered="false"/>
 	
-				<rich:focus id="richFocus" preserve="true" />
+				<h:panelGrid columns="7">
+					<h:panelGroup layout="block" style="line-height:0.8; padding: 0 3px; width:12em;">
+						<h:inputText id="bookingTableBeanMember" value="#{bookingTableBean.filterValues['member']}" tabindex="1" p:placeholder="Name,Vorname..">
+							<f:ajax render="richTable" execute="@this"/>
+						</h:inputText>
+					</h:panelGroup>
+					<h:panelGroup layout="block" style="line-height:0.8; padding: 0 3px; width:12em;">
+						<h:inputText id="bookingTableBeanStrasse" value="#{bookingTableBean.filterValues['strasse']}" tabindex="1" p:placeholder="Strasse,Ort..">
+							<f:ajax render="richTable" event="valueChange" />
+						</h:inputText>
+					</h:panelGroup>
+					<h:panelGroup layout="block" style="line-height:0.8; padding: 0 3px; width:6em;">
+						<h:inputText id="bookingTableBeanActivity" value="#{bookingTableBean.filterValues['activity']}" tabindex="2" p:placeholder="Aktivität..">
+							<f:ajax render="richTable" event="valueChange" />
+						</h:inputText>
+					</h:panelGroup>
+					<h:panelGroup layout="block" style="line-height:0.8; padding: 0 3px; width:8em;">
+						<h:selectOneMenu id="bookingTableBeanSquadName" value="#{bookingTableBean.filterValues['squadName']}" tabindex="3" p:placeholder="Trupp..">
+							<f:selectItem />
+							<f:selectItems value="#{bookingTableBean.squads}" var="s" itemLabel="#{s.name}" itemValue="#{s.name}"/>
+							<f:ajax render="richTable" event="valueChange" />
+						</h:selectOneMenu>
+					</h:panelGroup>
+					<h:panelGroup layout="block" style="line-height:0.8; padding: 0 3px; width:4em;">
+						<h:selectOneMenu id="bookingTableBeanPayed" value="#{bookingTableBean.filterValues['payed']}" tabindex="4" p:placeholder="bez..">
+							<f:selectItem />
+							<f:selectItem itemLabel="Ja" itemValue="true"/>
+							<f:selectItem itemLabel="Nein" itemValue="false"/>
+							<f:selectItem itemLabel="Anz" itemValue="anz"/>
+							<f:ajax render="richTable" event="valueChange" />
+						</h:selectOneMenu>
+					</h:panelGroup>
+					<h:panelGroup layout="block" style="line-height:0.8; padding: 0 3px; width:10em;">
+						<h:inputText id="bookingTableBeanComment" value="#{bookingTableBean.filterValues['comment']}" tabindex="1" p:placeholder="Beschreibung..">
+							<f:ajax render="richTable" event="valueChange" />
+						</h:inputText>
+					</h:panelGroup>
+				</h:panelGrid>
 	
 				<rich:extendedDataTable keepSaved="true" id="richTable" var="record" value="#{bookingTableBean.dataModel}"
 					rows="#{bookingTableBean.dataModel.rows}" styleClass="smsplus-management-table" rowClass="height30">
@@ -74,68 +115,28 @@
 						<ui:param name="link" value="/pfad/booking/view" />
 						<ui:param name="width" value="12em" />
 					</ui:include>
-
-	<rich:column id="column_squadName" sortBy="#{'squadName'}" sortOrder="#{bookingTableBean.sortOrders['squadName']}" sortType="custom"
-		filterValue="#{bookingTableBean.filterValues['squadName']}" filterExpression="#{'squadName'}" filterType="custom" width="5em">
-
-		<f:facet name="header">
-			<h:panelGroup>
-				<h:panelGroup layout="block" style="white-space:nowrap;">
-					<h:commandLink value="#{bookingTableBean.columnHeaders['squadName']}" actionListener="#{bookingTableBean.toggleSort}">
-						<f:ajax render="@form" />
-						<f:setPropertyActionListener target="#{bookingTableBean.sortProperty}" value="squadName" />
-					</h:commandLink>
-					<h:graphicImage name="down.gif" rendered="#{bookingTableBean.sortOrders['squadName']=='descending'}" alt="UP"/>
-					<h:graphicImage name="up.gif" rendered="#{bookingTableBean.sortOrders['squadName']=='ascending'}" alt="DWN"/>
-				</h:panelGroup>
-				<h:panelGroup layout="block">
-					<h:selectOneMenu value="#{bookingTableBean.filterValues['squadName']}" tabindex="6">
-						<f:selectItem />
-						<f:selectItems value="#{squadBean.all}" var="s" itemLabel="#{s.name}" itemValue="#{s.name}"/>
-						<f:ajax render="@form" event="valueChange" />
-					</h:selectOneMenu>
-				</h:panelGroup>
-			</h:panelGroup>
-		</f:facet>
-
-		<h:outputText value="#{record.squadName}"/>
-	</rich:column>
-
-				<ui:include src="../column.xhtml">
-					<ui:param name="bean" value="#{bookingTableBean}" />
-					<ui:param name="record" value="#{record}" />
-					<ui:param name="property" value="status" />
-					<ui:param name="link" value="/pfad/booking/view" />
-					<ui:param name="width" value="5em" />
-				</ui:include>
-
-	<rich:column id="column_payed" sortBy="#{'payed'}" sortOrder="#{bookingTableBean.sortOrders['payed']}" sortType="custom"
-		filterValue="#{bookingTableBean.filterValues['payed']}" filterExpression="#{'payed'}" filterType="custom" width="5em">
-
-		<f:facet name="header">
-			<h:panelGroup>
-				<h:panelGroup layout="block" style="white-space:nowrap;">
-					<h:commandLink value="#{bookingTableBean.columnHeaders['payed']}" actionListener="#{bookingTableBean.toggleSort}">
-						<f:ajax render="@form" />
-						<f:setPropertyActionListener target="#{bookingTableBean.sortProperty}" value="payed" />
-					</h:commandLink>
-					<h:graphicImage name="down.gif" rendered="#{bookingTableBean.sortOrders['payed']=='descending'}" alt="UP"/>
-					<h:graphicImage name="up.gif" rendered="#{bookingTableBean.sortOrders['payed']=='ascending'}" alt="DWN"/>
-				</h:panelGroup>
-				<h:panelGroup layout="block">
-					<h:selectOneMenu value="#{bookingTableBean.filterValues['payed']}" tabindex="6">
-						<f:selectItem />
-						<f:selectItem itemLabel="Ja" itemValue="true"/>
-						<f:selectItem itemLabel="Nein" itemValue="false"/>
-						<f:selectItem itemLabel="Anz" itemValue="anz"/>
-						<f:ajax render="@form" event="valueChange" />
-					</h:selectOneMenu>
-				</h:panelGroup>
-			</h:panelGroup>
-		</f:facet>
-
-		<h:outputText value="#{record.free ? 'FREI' : record.payed}"/>
-	</rich:column>
+					<ui:include src="../column.xhtml">
+						<ui:param name="bean" value="#{bookingTableBean}" />
+						<ui:param name="record" value="#{record}" />
+						<ui:param name="property" value="squadName" />
+						<ui:param name="tabIndex" value="5" />
+						<ui:param name="link" value="/pfad/booking/view" />
+						<ui:param name="width" value="5em" />
+					</ui:include>
+					<ui:include src="../column.xhtml">
+						<ui:param name="bean" value="#{bookingTableBean}" />
+						<ui:param name="record" value="#{record}" />
+						<ui:param name="property" value="status" />
+						<ui:param name="link" value="/pfad/booking/view" />
+						<ui:param name="width" value="5em" />
+					</ui:include>
+					<ui:include src="../column.xhtml">
+						<ui:param name="bean" value="#{bookingTableBean}" />
+						<ui:param name="record" value="#{record}" />
+						<ui:param name="property" value="payed" />
+						<ui:param name="link" value="/pfad/booking/view" />
+						<ui:param name="width" value="5em" />
+					</ui:include>
 
 				<rich:column width="3em" rendered="#{paymentBean.viewAllowed}">
 					<f:facet name="header">Zahlg</f:facet>
@@ -211,21 +212,26 @@
 		</h:form>
 
 		<h:panelGroup id="panelGroupEditPayment">
-		<rich:popupPanel id="popupPanelEditPaymentPopup" domElementAttachment="form" autosized="true" modal="true" show="#{bookingBean.paymentPopupVisible}">
+		<rich:popupPanel id="popupPanelEditPaymentPopup" domElementAttachment="body" autosized="true" modal="true" 
+		show="#{bookingBean.paymentPopupVisible}" onshow="var x = #{rich:component('paymentPanelFocus')}; alert('found:'+x);#{rich:component('paymentPanelFocus')}.applyFocus();">
+										<rich:focus id="paymentPanelFocus"/>
 			<h:panelGroup id="popupPanelEditPayment">
 				<h:panelGroup rendered="#{bookingBean.booking != null}">
 					<h:form id="popupPanelEditPaymentForm">
 						<h:panelGrid columns="2" style="width:100%;">
 							<h:panelGroup>
 								<h:outputLabel value="Zahlungen:" />
-								<h:selectOneMenu id="bookingBeanPaymentSelect" value="#{paymentBean.payment}" converter="#{paymentBean.converter}"  readonly="#{paymentBean.id == null}">
+								<h:selectOneMenu id="bookingBeanPaymentSelectEmpty" value="#{paymentBean.payment}" converter="#{paymentBean.converter}"  readonly="#{true}" rendered="#{empty paymentBean.id}">
+									<f:selectItem itemLabel="#{paymentBean.payment}"/>
+								</h:selectOneMenu>
+								<h:selectOneMenu id="bookingBeanPaymentSelect" value="#{paymentBean.payment}" converter="#{paymentBean.converter}"  rendered="#{not empty paymentBean.id}">
 									<f:selectItem itemLabel="Zahlung hinzufügen.."/>
-									<f:selectItems value="#{bookingBean.booking.sortedPayments}" var="p" itemLabel="#{p}" itemValue="#{p}" />
-									<f:ajax execute="@this" listener="#{bookingBean.initNewPayment()}" render="panelGroupEditPayment" />
+									<f:selectItems value="#{bookingBean.sortedPayments}" var="p" itemLabel="#{p}" itemValue="#{p.idStr}"/>
+									<f:ajax execute="@this" listener="#{bookingBean.initNewPayment()}" render="popupPanelEditPayment" />
 								</h:selectOneMenu>
 								<h:message for="bookingBeanPaymentSelect" />
 							</h:panelGroup>
-							<a4j:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" immediate="true" accesskey="c" title="Cancel [ALT]+[C]"
+							<h:button value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" immediate="true" accesskey="c" title="Cancel [ALT]+[C]"
 								render="panelGroupEditPayment" styleClass="btn btn-primary" />
 						</h:panelGrid>
 						<h:panelGroup id="popupPanelPayment">
@@ -244,7 +250,7 @@
 				<h:panelGroup id="paymentBeanPaymentPayerPanel" style="width: 100%; ">
 					<h:selectOneMenu id="paymentBeanPaymentPayer" value="#{paymentBean.payment.payer}" converter="#{memberBean.converter}" 
 						tabindex="1" rendered="#{paymentBean.payment.payer != null}">
-						<f:selectItem itemLabel="löschen.." noSelectionOption="true"/>
+						<f:selectItem itemLabel="löschen.." />
 						<f:selectItem itemLabel="#{paymentBean.payment.payer}" itemValue="#{paymentBean.payment.payer.idStr}" />
 						<f:ajax render="panelGroupEditPayment" />
 					</h:selectOneMenu>
@@ -330,7 +336,7 @@
 						</h:column>
 						<h:column footerClass="remove-column" headerClass="remove-column">
 							<a4j:commandButton value="DEL" actionListener="#{paymentBean.deleteBooking(_item.id)}" styleClass="remove-button" >
-								<a4j:ajax execute="@this" render="popupPanelEditPaymentPopup"/>
+								<a4j:ajax execute="@this" render="paymentBeanPaymentBookingsPanel"/>
 							</a4j:commandButton>
 						</h:column>
 					</h:dataTable>
@@ -369,22 +375,26 @@
 											<h:message for="paymentBeanPaymentFinished" styleClass="error" />
 										</h:panelGroup>
 										<h:outputText />
+										
+										<h:outputText />
+										<h:messages errorClass="error" />
+										<h:outputText />
+										
 	
 									</h:panelGrid>
 	
-									<h:messages errorClass="error" />
 									<h:panelGrid columns="4" style="width: 100%;">
-										<a4j:commandLink value="SaveAndClose" actionListener='#{paymentBean.update}' accesskey="r"
+										<a4j:commandLink id="panelGroupEditPaymentSaveAndClose" value="SaveAndClose" actionListener='#{paymentBean.update}' accesskey="r"
 											title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}"
 											execute="@form" render="panelGroupEditPayment" >
 											<f:setPropertyActionListener target="#{bookingBean.paymentPopupVisible}" value="false"/>
 										</a4j:commandLink>
 										<h:outputText/>
-										<a4j:commandLink value="Speichern" actionListener='#{paymentBean.update}' accesskey="s" title="Speichern [ALT]+[S]"
+										<a4j:commandLink id="panelGroupEditPaymentSave" value="Speichern" actionListener='#{paymentBean.update}' accesskey="s" title="Speichern [ALT]+[S]"
 											styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" execute="@form" render="@form" >
 											<a4j:actionListener listener="#{bookingBean.retrieve()}"/>
 										</a4j:commandLink>
-										<a4j:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" immediate="true" accesskey="c" title="Cancel [ALT]+[C]"
+										<a4j:commandLink id="panelGroupEditPaymentClose" value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" immediate="true" accesskey="c" title="Cancel [ALT]+[C]"
 											render="panelGroupEditPayment" styleClass="btn btn-primary" />
 									</h:panelGrid>
 								</h:panelGroup>

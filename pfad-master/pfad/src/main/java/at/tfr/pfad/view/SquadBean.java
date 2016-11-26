@@ -21,9 +21,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.persistence.FetchType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -32,6 +34,7 @@ import org.apache.poi.util.StringUtil;
 
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
 
@@ -260,7 +263,10 @@ public class SquadBean extends BaseBean implements Serializable {
 	public List<Squad> getAll() {
 
 		CriteriaQuery<Squad> criteria = this.entityManager.getCriteriaBuilder().createQuery(Squad.class);
-		return this.entityManager.createQuery(criteria.select(criteria.from(Squad.class))).getResultList().stream()
+		Root<Squad> root = criteria.from(Squad.class);
+		root.fetch(Squad_.leaderFemale, JoinType.LEFT).fetch(Member_.funktionen, JoinType.LEFT);
+		root.fetch(Squad_.leaderMale, JoinType.LEFT).fetch(Member_.funktionen, JoinType.LEFT);
+		return this.entityManager.createQuery(criteria.select(root)).getResultList().stream()
 				.sorted().collect(Collectors.toList());
 	}
 

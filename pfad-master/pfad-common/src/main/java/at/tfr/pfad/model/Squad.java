@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -87,10 +88,10 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 	@Column
 	private String createdBy;
 
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	private Member leaderMale;
 
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	private Member leaderFemale;
 
 	@ManyToMany

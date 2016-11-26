@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,6 +30,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.joda.time.DateTime;
 
@@ -67,8 +69,11 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 	@Enumerated(EnumType.STRING)
 	private PaymentType type;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Member payer;
+	
+	@Column(name = "payer_id", insertable = false, updatable = false)
+	private Long payerId;
 
 	private Float amount;
 
@@ -98,6 +103,7 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 	protected String createdBy;
 
 	@ManyToMany
+	@BatchSize(size=10)
 	private Set<Booking> bookings = new HashSet<Booking>();
 
 	@XmlID
@@ -154,6 +160,10 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 		this.payer = Payer;
 	}
 
+	public Long getPayerId() {
+		return payerId;
+	}
+	
 	public Float getAmount() {
 		return amount;
 	}
@@ -277,7 +287,7 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 	@Override
 	public String toString() {
 		String result = getClass().getSimpleName() + " ";
-		if (payer != null) {
+		if (payerId != null) {
 			result += payer.toShortString();
 		}
 		if (paymentDate != null) {

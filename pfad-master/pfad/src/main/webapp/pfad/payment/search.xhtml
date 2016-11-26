@@ -154,7 +154,7 @@
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
 						<h:commandLink value="Suchen" action='#{paymentBean.search}' styleClass="btn btn-primary" />
-						<h:link value="Liste" outcome="list" styleClass="btn btn-primary" />
+						<h:commandLink value="Liste" outcome="list" styleClass="btn btn-primary" />
 						<h:commandLink value="Neu" action='#{paymentBean.create}' styleClass="btn btn-primary" />
 					</h:panelGroup>
 				</h:panelGroup>
@@ -166,75 +166,75 @@
 					<f:facet name="header">
 						<h:outputText value="Typ" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentType" value="#{_item.type}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Zahler" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPayer" value="#{_item.payer != null ? _item.payerName : 'kein Zahler..'}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Aktivität" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentActivities" value="#{_item.activitiesLines}" escape="false"/>
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Betrag" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPaymentAmount" value="#{_item.amount}">
 							<f:convertNumber maxFractionDigits="2" />
 						</h:outputText>
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Akonto" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentAconto" value="#{_item.aconto ? 'JA' : 'NEIN'}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Bezahlt" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentFinished" value="#{_item.finished ? 'JA' : 'NEIN'}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Datum" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPaymentDate" value="#{_item.paymentDate}" converter="javax.faces.DateTime" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Comment" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:commandLink action="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentComment" value="#{_item.comment}" />
-					</h:link>
+					</h:commandLink>
 				</h:column>
 			</h:dataTable>
 			<ui:include src="/resources/scaffold/paginator.xhtml">

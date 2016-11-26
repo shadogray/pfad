@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import org.apache.deltaspike.data.api.EntityGraph;
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
@@ -23,6 +24,10 @@ public abstract class BookingRepository implements EntityRepository<Booking, Lon
 
 	@Inject
 	private EntityManager em;
+	
+	@Query
+	@EntityGraph(paths = {"member", "activity", "squad", "payments"})
+	public abstract Booking findById(Long id);
 	
 	@Query
 	public abstract List<Booking> findByActivity(Activity activity);

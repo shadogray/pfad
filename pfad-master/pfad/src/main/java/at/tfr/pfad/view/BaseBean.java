@@ -29,6 +29,7 @@ import org.jboss.logging.Logger;
 import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.dao.BookingRepository;
+import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.Members;
 import at.tfr.pfad.dao.PaymentRepository;
 import at.tfr.pfad.model.Activity;
@@ -56,6 +57,8 @@ public abstract class BaseBean implements Serializable {
 	private transient Members members;
 	@Inject
 	private transient Payments payments;
+	@Inject
+	private transient MemberRepository memberRepo;
 	@Inject
 	protected transient BookingRepository bookingRepo;
 	@Inject
@@ -412,11 +415,11 @@ public abstract class BaseBean implements Serializable {
 	}
 
 	public Booking findBookingById(Long id) {
-		return this.entityManager.find(Booking.class, id);
+		return bookingRepo.findById(id);
 	}
 
 	public Member findMemberById(Long id) {
-		return this.entityManager.find(Member.class, id);
+		return memberRepo.findById(id);
 	}
 	
 	public Booking getBookingToAdd() {

@@ -182,12 +182,12 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column
 	protected String createdBy;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@OrderBy("name")
 	protected Squad trupp;
 
 	@NotAudited
-	@Column(insertable = false, updatable = false, name = "Trupp_id")
+	@Column(name = "Trupp_id", insertable = false, updatable = false)
 	protected Long truppId;
 
 	@NotAudited
@@ -202,7 +202,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@OneToMany(mappedBy = "leaderMale")
 	protected Set<Squad> maleGuided;
 
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	protected Member Vollzahler;
 
 	@OneToMany(mappedBy = "Vollzahler")
@@ -210,7 +210,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	protected Set<Member> reduced;
 
 	@NotAudited
-	@Column(insertable = false, updatable = false, name = "Vollzahler_id")
+	@Column(name = "Vollzahler_id", insertable = false, updatable = false)
 	protected Long VollzahlerId;
 
 	@ManyToMany(fetch = FetchType.EAGER)

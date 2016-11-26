@@ -5,29 +5,27 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package at.tfr.pfad.view;
+package at.tfr.pfad.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.BookingStatus;
-import at.tfr.pfad.model.Activity_;
-import at.tfr.pfad.model.Booking;
-import at.tfr.pfad.model.Booking_;
-import at.tfr.pfad.model.Member_;
-import at.tfr.pfad.model.Payment;
-import at.tfr.pfad.model.Payment_;
-import at.tfr.pfad.model.Squad_;
 
 @RequestScoped
 @Stateful
@@ -43,6 +41,25 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 	}
 
 	@Override
+    protected CriteriaQuery<Booking> createCriteria(boolean addOrder) {
+		CriteriaQuery<Booking> query = super.createCriteria(addOrder);
+        root.fetch(Booking_.activity, JoinType.LEFT);
+        root.fetch(Booking_.squad, JoinType.LEFT);
+        root.fetch(Booking_.member, JoinType.LEFT);//.fetch(Member_.funktionen, JoinType.LEFT);
+        Join<Booking, Member> member = root.join(Booking_.member, JoinType.LEFT);
+		member.join(Member_.trupp, JoinType.LEFT);
+        root.fetch(Booking_.activity, JoinType.LEFT);
+        //root.fetch(Booking_.payments, JoinType.LEFT).fetch(Payment_.payer, JoinType.LEFT);
+        return query;
+    }
+	
+	@Override
+	protected CriteriaQuery<Booking> groupBy(CriteriaQuery<Booking> crit) {
+		crit.distinct(true);
+		return crit;
+	}
+	
+	@Override
 	public List<BookingUI> convertToUiBean(List<Booking> list) {
 		return list.stream().map(b->new BookingUI(b)).collect(Collectors.toList());
 	}
@@ -53,14 +70,25 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			return null;
 		}
 		String val = filterValue.toString().toLowerCase();
+		List<Predicate> list = new ArrayList<>();
 		switch(propertyName) {
 		case "member":
-			return cb.or(cb.like(cb.lower(root.join(Booking_.member).get(Member_.name)), "%"+val+"%"),
-					cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+val+"%"));
+			Stream.of(val.split(" +")).forEach(v -> { 
+				list.add(cb.or(
+						cb.like(cb.lower(root.join(Booking_.member).get(Member_.name)), "%"+v+"%"),
+						cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+v+"%")
+						));
+			});
+			return cb.and(list.toArray(new Predicate[]{}));
 		case "strasse":
-			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.strasse)), "%"+val+"%");
-		case "ort":
-			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.ort)), "%"+val+"%");
+			Stream.of(val.split(" +")).forEach(v -> { 
+				list.add(cb.or(
+					cb.like(cb.lower(root.join(Booking_.member).get(Member_.strasse)), "%"+v+"%"),
+					cb.like(cb.lower(root.join(Booking_.member).get(Member_.ort)), "%"+v+"%"),
+					cb.like(cb.lower(root.join(Booking_.member).get(Member_.plz)), "%"+v+"%")
+					));
+			});
+			return cb.and(list.toArray(new Predicate[]{}));
 		case "activity":
 			return cb.like(cb.lower(root.join(Booking_.activity).get(Activity_.name)), "%"+val+"%");
 		case "squadName":

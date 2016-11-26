@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
->
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.tfr.pfad</groupId>
     <artifactId>pfad-master</artifactId>
@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <faces.version>2.2.12</faces.version>
         <deltaspike.version>1.5.4</deltaspike.version>
-        <hibernate.version>4.3.1.Final</hibernate.version>
+        <hibernate.version>5.0.7.Final</hibernate.version>
         <org.mapstruct.version>1.1.0.Beta2</org.mapstruct.version>
     </properties>
 
