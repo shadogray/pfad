@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -47,7 +48,7 @@ public class ProcessExcelPayments implements Serializable {
 
 		if (bd == null || ad == null || date == null) {
 			return addResultCell(row, IndexedColors.RED, (ad == null ? "kein Betrag gefunden"
-					: bd == null ? "keine Buchung gefunden" : "kein Datum gefunden"));
+					: bd == null ? "keine Buchung gefunden" : "kein Datum gefunden"), bd);
 		}
 
 		if (ad.index == 0 && bd.bookings.size() == 1) {
@@ -61,19 +62,30 @@ public class ProcessExcelPayments implements Serializable {
 					.filter(p -> sdf.format(p.getPaymentDate()).equals(sdf.format(date))).findFirst();
 			if (pOpt.isPresent()) {
 				pay = pOpt.get();
-				return addResultCell(row, IndexedColors.YELLOW, "existiert: " + pay);
+				return addResultCell(row, IndexedColors.YELLOW, "existiert: " + pay, bd);
 
 			} else {
 				pay = createPayment(data, ad, bd, booking);
 			}
 
 			return addResultCell(row, pay.getId() != null ? IndexedColors.GREEN : IndexedColors.YELLOW,
-					(pay.getId() != null ? "Erstellt: " : "Möglich: ") + pay);
+					(pay.getId() != null ? "Erstellt: " : "Möglich: ") + pay, bd);
 		}
 
 		if (ad.index > 0 && bd.bookings.size() > 1) {
 			log.info("Row: " + row.getRowNum() + ": found multiple: " + bd);
 
+			for (Booking book : bd.bookings) {
+				// if !Vollzahler, the Vollzahler must be in List:
+				if (book.getMember().getVollzahler() != null 
+						&& !bd.bookings.stream().anyMatch(bv->book.getMember().getVollzahler().equals(bv.getMember()))
+						// or Vollzahler has Sibling in bookings
+					|| !bd.bookings.stream().anyMatch(bv->bv.getMember().getVollzahler().equals(book.getMember()))) {
+					log.info("no sibling for "+book+" in "+bd);
+					return addResultCell(row, IndexedColors.RED, "keine Geschwister in "+bd, bd);
+				}
+			}
+			
 			Payment pay;
 
 			for (Booking booking : bd.bookings) {
@@ -83,14 +95,14 @@ public class ProcessExcelPayments implements Serializable {
 						.filter(p -> sdf.format(p.getPaymentDate()).equals(sdf.format(date))).findFirst();
 				if (pOpt.isPresent()) {
 					pay = pOpt.get();
-					return addResultCell(row, IndexedColors.YELLOW, "existiert: " + pay);
+					return addResultCell(row, IndexedColors.YELLOW, "existiert: " + pay, bd);
 				}
 			}
 
 			pay = createPayment(data, ad, bd, bd.bookings.toArray(new Booking[bd.bookings.size()]));
 
 			return addResultCell(row, pay.getId() != null ? IndexedColors.GREEN : IndexedColors.YELLOW,
-					(pay.getId() != null ? "Erstellt: " : "Möglich: ") + pay);
+					(pay.getId() != null ? "Erstellt: " : "Möglich: ") + pay, bd);
 		}
 
 		return row;
@@ -116,13 +128,20 @@ public class ProcessExcelPayments implements Serializable {
 		return pay;
 	}
 
-	public XSSFRow addResultCell(XSSFRow row, IndexedColors color, String text) {
+	public XSSFRow addResultCell(XSSFRow row, IndexedColors color, String text, BookingData bd) {
 		log.info("Row: " + row.getRowNum() + ": " + text);
 		XSSFCell res = row.createCell(row.getLastCellNum() + 1);
 		res.setCellValue(text);
 		CellStyle style = res.getCellStyle();
 		style.setFillForegroundColor(color.getIndex());
 		res.setCellStyle(style);
+		if (bd != null) {
+			for (Booking b : bd.bookings) {
+				int bCellIdx = row.getLastCellNum();
+				XSSFCell bRes = row.createCell(++bCellIdx);
+				bRes.setCellValue(b.toString());
+			}
+		}
 		return row;
 	}
 

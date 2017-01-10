@@ -45,40 +45,25 @@ public class TestExcelPaymentImport {
 
 	@Before
 	public void init() throws Exception {
-		Activity a = new Activity();
-		a.setAmount(70.0F);
-		a.setName("TEST");
-		a.setType(ActivityType.Membership);
-		a.setStatus(ActivityStatus.planned);
-		a = activityRepo.save(a);
+		Activity a = createActivity();
+		Squad s = createSquad();
 		
-		Squad s = new Squad();
-		s.setName("TEST");
-		s.setType(SquadType.CAEX);
-		s = squadRepo.save(s);
+		Member m = createMember("Name", "Vorname", s);
 		
-		Member m = new Member();
-		m.setName("Name");
-		m.setVorname("Vorname");
-		m.setGebJahr(1990);
-		m.setGebMonat(1);
-		m.setGebTag(1);
-		m.setTrupp(s);
-		m = memberRepo.save(m);
+		Member m2 = createMember("NameZwei", "VornameZwei", s);
 		
-		Booking b = new Booking();
-		b.setMember(m);
-		b.setActivity(a);
-		b.setStatus(BookingStatus.created);
-		b = bookingRepo.save(b);
+		createBooking(a, m);
+		createBooking(a, m2);
 	}
-	
+
 	@Test
 	public void testExcelImport() throws Exception {
 		
 		Activity activity = activityRepo.findAll().iterator().next();
 		
 		ProcessData data = new ProcessData(activity);
+		data.setCreatePayment(true);
+		data.setAccontoGrades(new Double[]{50D, 100D});
 		Path xmlFile = Paths.get(excelFile);
 		System.out.println("Reading: "+xmlFile);
 		
@@ -101,5 +86,43 @@ public class TestExcelPaymentImport {
 		}
 	}
 	
+	
+	private Booking createBooking(Activity a, Member m) {
+		Booking b = new Booking();
+		b.setMember(m);
+		b.setActivity(a);
+		b.setStatus(BookingStatus.created);
+		return bookingRepo.save(b);
+	}
+
+	private Squad createSquad() {
+		Squad s = new Squad();
+		s.setName("TEST");
+		s.setType(SquadType.CAEX);
+		s = squadRepo.save(s);
+		return s;
+	}
+
+	private Activity createActivity() {
+		Activity a = new Activity();
+		a.setAmount(70.0F);
+		a.setName("TEST");
+		a.setType(ActivityType.Membership);
+		a.setStatus(ActivityStatus.planned);
+		a = activityRepo.save(a);
+		return a;
+	}
+
+	private Member createMember(String name, String vorname, Squad s) {
+		Member m = new Member();
+		m.setName(name);
+		m.setVorname(vorname);
+		m.setGebJahr(1990);
+		m.setGebMonat(1);
+		m.setGebTag(1);
+		m.setTrupp(s);
+		m = memberRepo.save(m);
+		return m;
+	}
 	
 }
