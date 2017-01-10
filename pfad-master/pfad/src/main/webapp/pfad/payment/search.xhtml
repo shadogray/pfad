@@ -156,6 +156,7 @@
 						<h:commandLink value="Suchen" action='#{paymentBean.search}' styleClass="btn btn-primary" />
 						<h:link value="Liste" outcome="list" styleClass="btn btn-primary" />
 						<h:commandLink value="Neu" action='#{paymentBean.create}' styleClass="btn btn-primary" />
+						<h:link value="Import" outcome="import" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
 					</h:panelGroup>
 				</h:panelGroup>
 			</f:validateBean>

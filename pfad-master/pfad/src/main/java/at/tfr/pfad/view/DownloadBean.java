@@ -154,7 +154,7 @@ public class DownloadBean implements Serializable {
 				throw new SecurityException(
 						"user may not download: " + sessionBean.getUserSession().getCallerPrincipal());
 
-			ExternalContext ectx = setHeaders();
+			ExternalContext ectx = setHeaders("Export");
 			try (OutputStream os = ectx.getResponseOutputStream()) {
 				HSSFWorkbook wb = generateData(withLocal, withBookings, filter, squads);
 				wb.write(os);
@@ -416,7 +416,7 @@ public class DownloadBean implements Serializable {
 		return members;
 	}
 
-	private ExternalContext setHeaders() {
+	public static ExternalContext setHeaders(String prefix) {
 		ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
 		ectx.responseReset();
 		DataStructure dataStructure = DataStructure.XLS;
@@ -429,7 +429,7 @@ public class DownloadBean implements Serializable {
 			ectx.setResponseContentType("application/csv");
 			ectx.setResponseCharacterEncoding(encoding);
 		}
-		ectx.setResponseHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Export_"
+		ectx.setResponseHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+prefix+"_"
 				+ DateTime.now().toString("yyyyMMdd_HHmm") + "." + dataStructure.name().toLowerCase());
 		return ectx;
 	}

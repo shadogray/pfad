@@ -1,0 +1,232 @@
+package at.tfr.pfad.processing;
+
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.jboss.logging.Logger;
+
+import at.tfr.pfad.dao.BookingRepository;
+import at.tfr.pfad.dao.PaymentRepository;
+import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.Payment;
+
+public class ProcessExcelPayments implements Serializable {
+
+	private Logger log = Logger.getLogger(getClass());
+
+	private BookingRepository bookingRepo;
+	private PaymentRepository paymentRepo;
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd.mm.yyyy");
+
+	public ProcessExcelPayments() {
+	}
+
+	@Inject
+	public ProcessExcelPayments(BookingRepository bookingRepo, PaymentRepository paymentRepo) {
+		this.bookingRepo = bookingRepo;
+		this.paymentRepo = paymentRepo;
+	}
+
+	public XSSFRow processRow(XSSFRow row, ProcessData data) {
+
+		AmountData ad = findAmount(row, data);
+		Date date = findDate(row, data);
+		BookingData bd = findBooking(row, data);
+
+		if (bd == null || ad == null || date == null) {
+			return addResultCell(row, IndexedColors.RED, (ad == null ? "kein Betrag gefunden"
+					: bd == null ? "keine Buchung gefunden" : "kein Datum gefunden"));
+		}
+
+		if (ad.index == 0 && bd.bookings.size() == 1) {
+			log.info("Row: " + row.getRowNum() + ": found single: " + bd);
+
+			Booking booking = bd.bookings.get(0);
+			List<Payment> payments = paymentRepo.findByBooking(booking);
+			Payment pay;
+
+			Optional<Payment> pOpt = payments.stream()
+					.filter(p -> sdf.format(p.getPaymentDate()).equals(sdf.format(date))).findFirst();
+			if (pOpt.isPresent()) {
+				pay = pOpt.get();
+				return addResultCell(row, IndexedColors.YELLOW, "existiert: " + pay);
+
+			} else {
+				pay = createPayment(data, ad, bd, booking);
+			}
+
+			return addResultCell(row, pay.getId() != null ? IndexedColors.GREEN : IndexedColors.YELLOW,
+					(pay.getId() != null ? "Erstellt: " : "Möglich: ") + pay);
+		}
+
+		if (ad.index > 0 && bd.bookings.size() > 1) {
+			log.info("Row: " + row.getRowNum() + ": found multiple: " + bd);
+
+			Payment pay;
+
+			for (Booking booking : bd.bookings) {
+				List<Payment> payments = paymentRepo.findByBooking(booking);
+	
+				Optional<Payment> pOpt = payments.stream()
+						.filter(p -> sdf.format(p.getPaymentDate()).equals(sdf.format(date))).findFirst();
+				if (pOpt.isPresent()) {
+					pay = pOpt.get();
+					return addResultCell(row, IndexedColors.YELLOW, "existiert: " + pay);
+				}
+			}
+
+			pay = createPayment(data, ad, bd, bd.bookings.toArray(new Booking[bd.bookings.size()]));
+
+			return addResultCell(row, pay.getId() != null ? IndexedColors.GREEN : IndexedColors.YELLOW,
+					(pay.getId() != null ? "Erstellt: " : "Möglich: ") + pay);
+		}
+
+		return row;
+	}
+
+	public Payment createPayment(ProcessData data, AmountData ad, BookingData bd, Booking... booking) {
+		Payment pay = new Payment();
+		pay.getBookings().addAll(Arrays.asList(booking));
+		pay.updateType(data.getActivity());
+		pay.setAmount(ad.amount.floatValue());
+		if (ad.acconto) {
+			pay.setAconto(true);
+		} else {
+			pay.setFinished(true);
+		}
+		pay.setComment(bd.text);
+		if (data.isCreatePayment()) {
+			pay = paymentRepo.saveAndFlush(pay);
+			log.info("created: " + bd + " : " + pay);
+		} else {
+			log.info("NOT created: " + bd + " : " + pay);
+		}
+		return pay;
+	}
+
+	public XSSFRow addResultCell(XSSFRow row, IndexedColors color, String text) {
+		log.info("Row: " + row.getRowNum() + ": " + text);
+		XSSFCell res = row.createCell(row.getLastCellNum() + 1);
+		res.setCellValue(text);
+		CellStyle style = res.getCellStyle();
+		style.setFillForegroundColor(color.getIndex());
+		res.setCellStyle(style);
+		return row;
+	}
+
+	public AmountData findAmount(XSSFRow row, ProcessData data) {
+		for (Cell cell : row) {
+			try {
+				double value = cell.getNumericCellValue();
+				for (int i = 0; i < data.getAmountGrades().length; i++) {
+					if (data.getAmountGrades()[i].equals(value)) {
+						return new AmountData(i, value);
+					}
+				}
+				for (int i = 0; i < data.getAccontoGrades().length; i++) {
+					if (data.getAccontoGrades()[i].equals(value)) {
+						return new AmountData(i, value, true);
+					}
+				}
+			} catch (Exception e) {
+			}
+			try {
+				String value = cell.getStringCellValue();
+				for (int i = 0; i < data.getAmountGrades().length; i++) {
+					if (data.getAmountGrades()[i].toString().equals(value)) {
+						return new AmountData(i, Double.valueOf(value));
+					}
+				}
+				for (int i = 0; i < data.getAccontoGrades().length; i++) {
+					if (data.getAccontoGrades()[i].toString().equals(value)) {
+						return new AmountData(i, Double.valueOf(value), true);
+					}
+				}
+			} catch (Exception e) {
+			}
+		}
+		return null;
+	}
+
+	public Date findDate(XSSFRow row, ProcessData data) {
+		for (Cell cell : row) {
+			try {
+				Date value = cell.getDateCellValue();
+				return value;
+			} catch (Exception e) {
+			}
+			try {
+				String value = cell.getStringCellValue();
+				return sdf.parse(value);
+			} catch (Exception e) {
+			}
+		}
+		return null;
+	}
+
+	public BookingData findBooking(XSSFRow row, ProcessData data) {
+		for (Cell cell : row) {
+			try {
+				String value = cell.getStringCellValue();
+				if (StringUtils.isNotBlank(value) && value.length() > 3) {
+					List<Booking> bookings = bookingRepo.findByMemberNames(value, data.getActivity());
+					if (!bookings.isEmpty()) {
+						return new BookingData(value, bookings);
+					}
+				}
+			} catch (Exception e) {
+			}
+		}
+		return null;
+	}
+
+	public static class AmountData implements Serializable {
+		public final int index;
+		public final Double amount;
+		public final boolean acconto;
+
+		public AmountData(int index, Double amount) {
+			this.index = index;
+			this.amount = amount;
+			this.acconto = false;
+		}
+
+		public AmountData(int index, Double amount, boolean acconto) {
+			this.index = index;
+			this.amount = amount;
+			this.acconto = acconto;
+		}
+
+		@Override
+		public String toString() {
+			return "AmountData [index=" + index + ", amount=" + amount + ", acconto=" + acconto + "]";
+		}
+	}
+
+	public static class BookingData implements Serializable {
+		public final String text;
+		public final List<Booking> bookings;
+
+		public BookingData(String text, List<Booking> bookings) {
+			this.text = text;
+			this.bookings = bookings;
+		}
+
+		@Override
+		public String toString() {
+			return "BookingData [text=" + text + ", bookings=" + bookings + "]";
+		}
+	}
+}

@@ -35,4 +35,22 @@ public abstract class BookingRepository implements EntityRepository<Booking, Lon
 		return em.createQuery("select b from Booking b where b.id in :ids")
 				.setParameter("ids", ids).getResultList();
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Booking> findByMemberNames(String text, Activity activity) {
+		
+		List<Booking> list = em.createQuery("select b from Booking b where b.member.trupp != null and b.activity = :activity and locate(b.member.name, :text) > 0 and locate(b.member.vorname, :text) > 0")
+		.setParameter("text", text)
+		.setParameter("activity", activity)
+		.getResultList();
+		
+		if (list.isEmpty()) {
+			list = em.createQuery("select b from Booking b where b.member.trupp != null and b.activity = :activity and (locate(b.member.name, :text) > 0 or locate(b.member.vorname, :text) > 0)")
+					.setParameter("text", text)
+					.setParameter("activity", activity)
+					.getResultList();
+		}
+		return list;
+	}
+	
 }
