@@ -45,7 +45,7 @@ public abstract class BookingRepository implements EntityRepository<Booking, Lon
 		.getResultList();
 		
 		if (list.isEmpty()) {
-			list = em.createQuery("select b from Booking b where b.member.trupp != null and b.activity = :activity and (locate(b.member.name, :text) > 0 or locate(b.member.vorname, :text) > 0)")
+			list = em.createQuery("select b from Booking b where b.member.trupp != null and b.activity = :activity and locate(b.member.name, :text) > 0")
 					.setParameter("text", text)
 					.setParameter("activity", activity)
 					.getResultList();

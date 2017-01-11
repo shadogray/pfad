@@ -9,7 +9,6 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -21,6 +20,7 @@ import org.jboss.logging.Logger;
 import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.PaymentRepository;
 import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 
 public class ProcessExcelPayments implements Serializable {
@@ -75,15 +75,8 @@ public class ProcessExcelPayments implements Serializable {
 		if (ad.index > 0 && bd.bookings.size() > 1) {
 			log.info("Row: " + row.getRowNum() + ": found multiple: " + bd);
 
-			for (Booking book : bd.bookings) {
-				// if !Vollzahler, the Vollzahler must be in List:
-				if (book.getMember().getVollzahler() != null 
-						&& !bd.bookings.stream().anyMatch(bv->book.getMember().getVollzahler().equals(bv.getMember()))
-						// or Vollzahler has Sibling in bookings
-					|| !bd.bookings.stream().anyMatch(bv->bv.getMember().getVollzahler().equals(book.getMember()))) {
-					log.info("no sibling for "+book+" in "+bd);
-					return addResultCell(row, IndexedColors.RED, "keine Geschwister in "+bd, bd);
-				}
+			if (!validateBookings(bd)) {
+				return addResultCell(row, IndexedColors.RED, "keine Geschwister in "+bd, bd);
 			}
 			
 			Payment pay;
@@ -106,6 +99,27 @@ public class ProcessExcelPayments implements Serializable {
 		}
 
 		return row;
+	}
+
+	public boolean validateBookings(BookingData bd) {
+		for (Booking book : bd.bookings) {
+			// if !Vollzahler, the Vollzahler must be in List:
+			if (book.getMember().getVollzahler() != null && hasVollzahler(bd, book.getMember())
+					// or Vollzahler has Sibling in bookings
+				|| isVollzahlerForAllSiblings(bd, book.getMember())) {
+				return true;
+			}
+			log.info("no sibling for "+book+" in "+bd);
+		}
+		return false;
+	}
+
+	private boolean isVollzahlerForAllSiblings(BookingData bd, Member vollzahler) {
+		return bd.bookings.stream().allMatch(bs->bs.getMember().equals(vollzahler) || vollzahler.equals(bs.getMember().getVollzahler()));
+	}
+
+	private boolean hasVollzahler(BookingData bd, Member sibling) {
+		return bd.bookings.stream().anyMatch(bv->bv.getMember().equals(sibling.getVollzahler()));
 	}
 
 	public Payment createPayment(ProcessData data, AmountData ad, BookingData bd, Booking... booking) {
