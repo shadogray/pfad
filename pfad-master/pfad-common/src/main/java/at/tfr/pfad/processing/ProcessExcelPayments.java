@@ -29,7 +29,7 @@ public class ProcessExcelPayments implements Serializable {
 
 	private BookingRepository bookingRepo;
 	private PaymentRepository paymentRepo;
-	private SimpleDateFormat sdf = new SimpleDateFormat("dd.mm.yyyy");
+	public static final SimpleDateFormat sdf = new SimpleDateFormat("dd.mm.yyyy");
 
 	public ProcessExcelPayments() {
 	}

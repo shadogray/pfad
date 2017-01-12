@@ -83,7 +83,7 @@ public class DownloadBean implements Serializable {
 	}
 
 	enum DataStructure {
-		XLS, CSV
+		XLS, CSV, XLSX
 	}
 	
 	@Inject
@@ -417,20 +417,34 @@ public class DownloadBean implements Serializable {
 	}
 
 	public static ExternalContext setHeaders(String prefix) {
-		ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-		ectx.responseReset();
 		DataStructure dataStructure = DataStructure.XLS;
 		String encoding = "UTF8";
+		return setHeaders(prefix, dataStructure, encoding);
+	}
 
-		if (DataStructure.XLS.equals(dataStructure)) {
+	public static ExternalContext setHeaders(String prefix, DataStructure dataStructure) {
+		return setHeaders(prefix, dataStructure, "UTF-8");
+	}
+	
+	public static ExternalContext setHeaders(String prefix, DataStructure dataStructure, String encoding) {
+		ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+		ectx.responseReset();
+
+		String suffix = dataStructure != null ? dataStructure.name().toLowerCase() : "binary";
+
+		switch (dataStructure) {
+		case XLS:
+		case XLSX:
 			ectx.setResponseContentType("application/excel");
 			ectx.setResponseCharacterEncoding("binary");
-		} else {
+			suffix = "xls";
+		default:
 			ectx.setResponseContentType("application/csv");
 			ectx.setResponseCharacterEncoding(encoding);
 		}
+		
 		ectx.setResponseHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+prefix+"_"
-				+ DateTime.now().toString("yyyyMMdd_HHmm") + "." + dataStructure.name().toLowerCase());
+				+ DateTime.now().toString("yyyyMMdd_HHmm") + "." + suffix);
 		return ectx;
 	}
 
