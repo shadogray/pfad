@@ -430,14 +430,17 @@ public class DownloadBean implements Serializable {
 		ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
 		ectx.responseReset();
 
-		String suffix = dataStructure != null ? dataStructure.name().toLowerCase() : "binary";
+		String suffix = dataStructure != null ? dataStructure.name().toLowerCase() : "bin";
 
 		switch (dataStructure) {
 		case XLS:
-		case XLSX:
 			ectx.setResponseContentType("application/excel");
 			ectx.setResponseCharacterEncoding("binary");
-			suffix = "xls";
+			break;
+		case XLSX:
+			ectx.setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			ectx.setResponseCharacterEncoding("binary");
+			break;
 		default:
 			ectx.setResponseContentType("application/csv");
 			ectx.setResponseCharacterEncoding(encoding);

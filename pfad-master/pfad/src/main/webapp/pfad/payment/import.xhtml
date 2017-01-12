@@ -31,8 +31,8 @@
 				<h:inputText value="#{paymentImportBean.accontoGrades}" />
 
 				<h:outputLabel value="ImportFile:" />
-				<h:inputFile value="#{paymentImportBean.fileContentPart}" required="#{paymentImportBean.fileContent == null}"
-					requiredMessage="Datei muss gewählt werden!">
+				<h:inputFile value="#{paymentImportBean.fileContentPart}" disabled="#{!paymentBean.updateAllowed}" 
+					required="#{paymentImportBean.fileContent == null}" requiredMessage="Datei muss gewählt werden!">
 					<f:ajax execute="@form" listener="#{paymentImportBean.test()}" render="@form dataTable" />
 				</h:inputFile>
 				
@@ -40,7 +40,7 @@
 				<h:outputText value="#{paymentImportBean.fileName}" />
 				
 				<h:outputLabel value="TestImport:" />
-				<h:commandButton value="Test-Only">
+				<h:commandButton value="Test-Only" disabled="#{!paymentBean.updateAllowed || paymentImportBean.fileContent == null}">
 					<f:ajax listener="#{paymentImportBean.test()}" render="@form" />
 				</h:commandButton>
 
@@ -48,7 +48,7 @@
 				<h:commandButton value="Download" actionListener="#{paymentImportBean.download()}" immediate="true" disabled="#{paymentImportBean.resultContent == null}"/>
 
 				<h:outputLabel value="ImportUndSpeichern:" />
-				<h:commandButton value="ImportAndSave">
+				<h:commandButton value="ImportAndSave" disabled="#{!paymentBean.updateAllowed || paymentImportBean.fileContent == null}">
 					<f:ajax listener="#{paymentImportBean.execute()}" render="@form" />
 				</h:commandButton>
 

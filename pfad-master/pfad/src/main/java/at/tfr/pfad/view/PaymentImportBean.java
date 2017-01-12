@@ -21,6 +21,7 @@ import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -210,7 +211,7 @@ public class PaymentImportBean implements Serializable {
 			for (int i=0; i<VALS; i++) {
 				values.set(i, "");
 				try {
-					Cell cell = row.getCell(i+1);
+					Cell cell = row.getCell(i);
 					if (cell != null) {
 						switch (cell.getCellTypeEnum()) {
 						case STRING:
@@ -218,7 +219,11 @@ public class PaymentImportBean implements Serializable {
 							break;
 						case NUMERIC:
 							try {
-								values.set(i, ProcessExcelPayments.sdf.format(cell.getDateCellValue()));
+								if (DateUtil.isCellDateFormatted(cell))	{
+									values.set(i, ProcessExcelPayments.sdf.format(cell.getDateCellValue()));
+								} else {
+									values.set(i, ""+cell.getNumericCellValue());
+								}
 							} catch (Exception e) {
 								values.set(i, ""+cell.getNumericCellValue());
 							}
