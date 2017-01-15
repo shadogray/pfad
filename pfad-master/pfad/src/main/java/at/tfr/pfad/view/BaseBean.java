@@ -51,11 +51,11 @@ public abstract class BaseBean implements Serializable {
 	@Inject
 	protected PageSizeBean pageSize;
 	@Inject
-	private transient Bookings bookings;
+	protected transient Bookings bookings;
 	@Inject
-	private transient Members members;
+	protected transient Members members;
 	@Inject
-	private transient Payments payments;
+	protected transient Payments payments;
 	@Inject
 	protected transient BookingRepository bookingRepo;
 	@Inject

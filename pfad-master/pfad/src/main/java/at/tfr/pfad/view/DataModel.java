@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -63,6 +64,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     protected int currentRows;
     protected Integer rowCount;
     protected List<U> uData;
+    protected List<Long> keys;
     protected boolean useUniquResultTransformer = false;
     protected SequenceRange sequenceRange;
     protected String entityIdProperty = "id";
@@ -297,6 +299,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     protected List<U> getRowData(final Range range) {
     	if (uData == null) {
     		uData = getRowDataInternal(range);
+    		keys = uData.stream().map(d -> d.getId()).collect(Collectors.toList());
     	}
     	return uData;
     }
@@ -350,6 +353,9 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
     @Override
     public int getRowIndex() {
+    	if (rowKey != null) {
+    		return keys.indexOf(rowKey)+1;
+    	}
         return -1;
     }
 

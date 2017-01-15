@@ -18,6 +18,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
+import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
@@ -32,12 +33,24 @@ public class Bookings implements Serializable {
 	private transient EntityManager entityManager;
 
 	public List<Booking> filtered(FacesContext facesContext, UIComponent component, final String filter) {
+		return filtered(facesContext, component, filter, null, null);
+	}
+
+	public List<Booking> filtered(FacesContext facesContext, UIComponent component, final String filter, Activity activity, String strasse) {
 		log.debug("filter: " + filter + " for: " + component.getId());
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Booking> cq = cb.createQuery(Booking.class);
 		Root<Booking> root = cq.from(Booking.class);
 		CriteriaQuery<Booking> query = cq.select(root);
 		List<Predicate> preds = new ArrayList<>();
+		
+		if (activity != null) {
+			preds.add(cb.equal(root.get(Booking_.activity), activity));
+		}
+		if (StringUtils.isNotBlank(strasse)) {
+			preds.add(cb.equal(root.join(Booking_.member).get(Member_.strasse), strasse));
+		}
+		
 		if (StringUtils.isNotBlank(filter) && filter.length() > 2) {
 			Stream.of(filter.toLowerCase().split(" ")).forEach(v->preds.add(cb.or(predicatesFor(v, cb, root))));
 			cq.where(cb.and(preds.toArray(new Predicate[preds.size()])));

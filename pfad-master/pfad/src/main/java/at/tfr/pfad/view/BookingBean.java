@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
@@ -19,6 +20,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.CollectionDataModel;
+import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -203,7 +206,8 @@ public class BookingBean extends BaseBean implements Serializable {
 	 * Support searching Booking entities with pagination
 	 */
 
-	private List<Booking> pageItems;
+	private List<BookingUI> pageItems;
+	private DataModel<BookingUI> dataModel;
 
 	public Booking getExample() {
 		return this.getBookingExample();
@@ -240,7 +244,8 @@ public class BookingBean extends BaseBean implements Serializable {
 		TypedQuery<Booking> query = this.entityManager
 				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
-		this.pageItems = query.getResultList();
+		this.pageItems = query.getResultList().stream().map(b -> new BookingUI(b)).collect(Collectors.toList());
+		dataModel = new CollectionDataModel<BookingUI>(pageItems);
 	}
 
 	private Predicate[] getSearchPredicates(Root<Booking> root) {
@@ -279,8 +284,12 @@ public class BookingBean extends BaseBean implements Serializable {
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
 	}
 
-	public List<Booking> getPageItems() {
+	public List<BookingUI> getPageItems() {
 		return this.pageItems;
+	}
+
+	public DataModel<BookingUI> getDataModel() {
+		return dataModel;
 	}
 
 	/*

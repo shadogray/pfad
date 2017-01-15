@@ -114,7 +114,13 @@
 				</h:panelGroup>
 			</f:validateBean>
 
-			<h:dataTable id="memberBeanPageItems" styleClass="data-table" value="#{memberBean.pageItems}" var="_item">
+			<h:dataTable id="memberBeanPageItems" styleClass="data-table" value="#{memberBean.dataModel}" var="_item" >
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Nr" />
+					</f:facet>
+					<h:outputText name="id" value="#{memberBean.dataModel.rowIndex+1}" />
+				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="BV Key" />

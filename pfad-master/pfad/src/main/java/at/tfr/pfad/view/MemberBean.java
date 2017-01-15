@@ -36,6 +36,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.richfaces.component.UISelect;
+import org.richfaces.model.CollectionDataModel;
 
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
@@ -211,6 +212,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	 */
 
 	private List<Member> pageItems;
+	private javax.faces.model.DataModel<Member> dataModel;
 
 	public int getPage() {
 		return this.page;
@@ -269,6 +271,7 @@ public class MemberBean extends BaseBean implements Serializable {
 						builder.asc(root.get(Member_.vorname)), builder.asc(root.get(Member_.id))));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
+		dataModel = new CollectionDataModel<>(pageItems);
 	}
 
 	private Predicate[] getSearchPredicates(Root<Member> root) {
@@ -326,7 +329,11 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public List<Member> getPageItems() {
-		return this.pageItems;
+		return pageItems;
+	}
+	
+	public javax.faces.model.DataModel<Member> getDataModel() {
+		return dataModel;
 	}
 
 	public long getCount() {

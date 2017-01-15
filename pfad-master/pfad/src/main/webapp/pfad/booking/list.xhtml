@@ -32,6 +32,13 @@
 				<rich:extendedDataTable keepSaved="true" id="richTable" var="record" value="#{bookingTableBean.dataModel}"
 					rows="#{bookingTableBean.dataModel.rows}" styleClass="smsplus-management-table" rowClass="height30">
 	
+					<h:column width="2em">
+						<f:facet name="header">
+							<h:outputText value="Nr" />
+						</f:facet>
+						<h:outputText value="#{bookingTableBean.dataModel.rowIndex}" />
+					</h:column>
+
 					<rich:column width="3em">
 						<f:facet name="header">Edit</f:facet>
 						<a4j:commandLink execute="@this" render="popupPanelEditBooking"

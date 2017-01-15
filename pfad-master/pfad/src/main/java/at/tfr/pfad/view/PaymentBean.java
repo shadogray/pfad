@@ -31,6 +31,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.richfaces.component.UISelect;
+import org.richfaces.model.CollectionDataModel;
 
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.model.Booking;
@@ -198,6 +199,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	 */
 
 	private List<PaymentUI> pageItems;
+	private javax.faces.model.DataModel<PaymentUI> dataModel;
 
 	private Boolean exampleFinished;
 	private Boolean exampleAconto;
@@ -280,6 +282,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList().stream().map(p -> new PaymentUI(p)).collect(Collectors.toList());
+		dataModel = new CollectionDataModel<>(pageItems);
 	}
 
 	private Predicate[] getSearchPredicates(Root<Payment> root) {
@@ -337,6 +340,10 @@ public class PaymentBean extends BaseBean implements Serializable {
 		return this.pageItems;
 	}
 
+	public javax.faces.model.DataModel<PaymentUI> getDataModel() {
+		return dataModel;
+	}
+	
 	public long getCount() {
 		return this.count;
 	}
@@ -419,6 +426,20 @@ public class PaymentBean extends BaseBean implements Serializable {
 				retrieve();
 			}
 		}
+	}
+	
+	@Override
+	public List<Booking> filterBookings(FacesContext facesContext, UIComponent component, final String filter) {
+		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
+			if (payment != null && payment.getBookings().size() > 0) {
+				Booking b = payment.getBookings().iterator().next();
+				filteredBookings = bookings.filtered(facesContext, component, filter, b.getActivity(), b.getMember().getStrasse());
+				filteredBookings.removeAll(payment.getBookings());
+			} else {
+				filteredBookings = bookings.filtered(facesContext, component, filter);
+			}
+		}
+		return filteredBookings;
 	}
 	
 }

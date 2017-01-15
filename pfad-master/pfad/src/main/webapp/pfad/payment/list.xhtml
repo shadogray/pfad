@@ -30,8 +30,15 @@
 
 			<rich:extendedDataTable keepSaved="true" id="richTable" var="record" value="#{paymentTableBean.dataModel}"
 				rows="#{paymentTableBean.dataModel.rows}" styleClass="smsplus-management-table" frozenColumns="7"
-				rowClass="height35">
+				rowClass="height35" >
 
+				<h:column width="2em">
+					<f:facet name="header">
+						<h:outputText value="Nr" />
+					</f:facet>
+					<h:outputText value="#{paymentTableBean.dataModel.rowIndex}" />
+				</h:column>
+					
 				<ui:include src="../column.xhtml">
 					<ui:param name="bean" value="#{paymentTableBean}" />
 					<ui:param name="record" value="#{record}" />

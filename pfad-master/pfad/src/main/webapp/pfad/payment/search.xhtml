@@ -161,8 +161,14 @@
 				</h:panelGroup>
 			</f:validateBean>
 
-			<h:dataTable id="paymentBeanPageItems" styleClass="data-table" value="#{paymentBean.pageItems}" var="_item">
+			<h:dataTable id="paymentBeanPageItems" styleClass="data-table" value="#{paymentBean.dataModel}" var="_item">
 
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Nr" />
+					</f:facet>
+					<h:outputText name="id" value="#{paymentBean.dataModel.rowIndex+1}" />
+				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Typ" />

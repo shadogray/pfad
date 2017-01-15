@@ -101,8 +101,14 @@
 				</h:panelGroup>
 			</f:validateBean>
 
-			<h:dataTable id="bookingBeanPageItems" styleClass="data-table" value="#{bookingBean.pageItems}" var="_item">
+			<h:dataTable id="bookingBeanPageItems" styleClass="data-table" value="#{bookingBean.dataModel}" var="_item">
 
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Nr" />
+					</f:facet>
+					<h:outputText name="id" value="#{bookingBean.dataModel.rowIndex+1}" />
+				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Aktivität" />
