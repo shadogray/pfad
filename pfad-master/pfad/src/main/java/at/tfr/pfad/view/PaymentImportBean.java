@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Resource;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -53,7 +54,7 @@ public class PaymentImportBean implements Serializable {
 	@Inject
 	private ConfigurationRepository configRepo;
 	@Resource
-	private UserTransaction userTx;
+	private SessionContext ctx;
 
 	private Part fileContentPart;
 	private byte[] fileContent;
@@ -65,7 +66,7 @@ public class PaymentImportBean implements Serializable {
 	private Activity activity;
 	
 	public void test() throws IllegalStateException, SystemException {
-		userTx.setRollbackOnly();
+		ctx.setRollbackOnly();
 		process(false);
 	}
 	
