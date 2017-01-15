@@ -36,6 +36,7 @@ public class Configuration implements PrimaryKeyHolder, Serializable, Comparable
 	public static final String BADEN_KEY = "BAD";
 	public static final String BADEN_KEYPFX = "3-BAD-";
 	public static final String REGEND_KEY = "RegistrationEnd";
+	public static final String BADEN_IBANS = "BadenIBANs";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "configuration_seq")

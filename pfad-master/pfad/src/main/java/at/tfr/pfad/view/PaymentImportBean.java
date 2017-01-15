@@ -7,9 +7,11 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Resource;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -17,6 +19,9 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.Part;
+import javax.transaction.SystemException;
+import javax.transaction.Transactional;
+import javax.transaction.UserTransaction;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +34,9 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.logging.Logger;
 
+import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.model.Activity;
+import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.processing.ProcessData;
 import at.tfr.pfad.processing.ProcessExcelPayments;
 import at.tfr.pfad.view.DownloadBean.DataStructure;
@@ -43,6 +50,10 @@ public class PaymentImportBean implements Serializable {
 	
 	@Inject
 	private ProcessExcelPayments processor;
+	@Inject
+	private ConfigurationRepository configRepo;
+	@Resource
+	private UserTransaction userTx;
 
 	private Part fileContentPart;
 	private byte[] fileContent;
@@ -53,7 +64,8 @@ public class PaymentImportBean implements Serializable {
 	private List<Line> results = new ArrayList<>();
 	private Activity activity;
 	
-	public void test() {
+	public void test() throws IllegalStateException, SystemException {
+		userTx.setRollbackOnly();
 		process(false);
 	}
 	
@@ -77,6 +89,7 @@ public class PaymentImportBean implements Serializable {
 		try {
 		
 			ProcessData data = new ProcessData(activity);
+			data.setBadenIBANs(Pattern.compile(configRepo.getValue(Configuration.BADEN_IBANS, "AT112020500000007450")));
 			data.setCreatePayment(execute);
 			if (StringUtils.isNoneBlank(amountGrades)) {
 				data.setAmountGrades(parse(amountGrades));
@@ -196,7 +209,7 @@ public class PaymentImportBean implements Serializable {
 
 	public static class Line {
 		private List<String> values = new ArrayList<>();
-		private int VALS = 10;
+		private final int VALS = 20;
 		
 		public Line() {
 			for (int i=0; i<VALS; i++) {
@@ -321,6 +334,86 @@ public class PaymentImportBean implements Serializable {
 
 		public void setVal9(String val) {
 			write(9, val);
+		}
+
+		public String getVal10() {
+			return read(10);
+		}
+
+		public void setVal10(String val) {
+			write(10, val);
+		}
+
+		public String getVal11() {
+			return read(11);
+		}
+
+		public void setVal11(String val) {
+			write(11, val);
+		}
+
+		public String getVal12() {
+			return read(12);
+		}
+
+		public void setVal12(String val) {
+			write(12, val);
+		}
+
+		public String getVal13() {
+			return read(13);
+		}
+
+		public void setVal13(String val) {
+			write(13, val);
+		}
+
+		public String getVal14() {
+			return read(14);
+		}
+
+		public void setVal14(String val) {
+			write(14, val);
+		}
+
+		public String getVal15() {
+			return read(15);
+		}
+
+		public void setVal15(String val) {
+			write(15, val);
+		}
+
+		public String getVal16() {
+			return read(16);
+		}
+
+		public void setVal16(String val) {
+			write(16, val);
+		}
+
+		public String getVal17() {
+			return read(17);
+		}
+
+		public void setVal17(String val) {
+			write(17, val);
+		}
+
+		public String getVal18() {
+			return read(18);
+		}
+
+		public void setVal18(String val) {
+			write(18, val);
+		}
+
+		public String getVal19() {
+			return read(19);
+		}
+
+		public void setVal19(String val) {
+			write(19, val);
 		}
 
 		private String read(int idx) {

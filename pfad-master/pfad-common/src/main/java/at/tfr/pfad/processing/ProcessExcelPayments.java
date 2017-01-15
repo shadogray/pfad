@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +20,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.jboss.logging.Logger;
 
 import at.tfr.pfad.dao.BookingRepository;
+import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.PaymentRepository;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Member;
@@ -29,7 +32,9 @@ public class ProcessExcelPayments implements Serializable {
 
 	private BookingRepository bookingRepo;
 	private PaymentRepository paymentRepo;
+	private ConfigurationRepository configRepo;
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("dd.mm.yyyy");
+	public static Pattern ibanPattern = Pattern.compile("[A-Z]{2}\\d{18,}"); // AT112020500000007450
 
 	public ProcessExcelPayments() {
 	}
@@ -39,11 +44,17 @@ public class ProcessExcelPayments implements Serializable {
 		this.bookingRepo = bookingRepo;
 		this.paymentRepo = paymentRepo;
 	}
+	
+	@PostConstruct
+	public void init() {
+	}
 
 	public XSSFRow processRow(XSSFRow row, ProcessData data) {
 
+		data.setPayment(null);
 		AmountData ad = findAmount(row, data);
 		Date date = findDate(row, data);
+		String iban = findIBAN(row, data);
 		BookingData bd = findBooking(row, data);
 
 		if (bd == null || ad == null || date == null) {
@@ -62,12 +73,18 @@ public class ProcessExcelPayments implements Serializable {
 					.filter(p -> sdf.format(p.getPaymentDate()).equals(sdf.format(date))).findFirst();
 			if (pOpt.isPresent()) {
 				pay = pOpt.get();
+				if (pay.getPayerIBAN() == null && StringUtils.isNotBlank(iban)) {
+					pay.setPayerIBAN(iban);
+				}
+
+				data.setPayment(pay);
 				return addResultCell(row, IndexedColors.YELLOW, "existiert: " + pay, bd);
 
 			} else {
-				pay = createPayment(data, ad, bd, booking);
+				pay = createPayment(data, ad, bd, iban, booking);
 			}
 
+			data.setPayment(pay);
 			return addResultCell(row, pay.getId() != null ? IndexedColors.GREEN : IndexedColors.YELLOW,
 					(pay.getId() != null ? "Erstellt: " : "Möglich: ") + pay, bd);
 		}
@@ -88,12 +105,18 @@ public class ProcessExcelPayments implements Serializable {
 						.filter(p -> sdf.format(p.getPaymentDate()).equals(sdf.format(date))).findFirst();
 				if (pOpt.isPresent()) {
 					pay = pOpt.get();
+					if (pay.getPayerIBAN() == null && StringUtils.isNotBlank(iban)) {
+						pay.setPayerIBAN(iban);
+					}
+				
+					data.setPayment(pay);
 					return addResultCell(row, IndexedColors.YELLOW, "existiert: " + pay, bd);
 				}
 			}
 
-			pay = createPayment(data, ad, bd, bd.bookings.toArray(new Booking[bd.bookings.size()]));
+			pay = createPayment(data, ad, bd, iban, bd.bookings.toArray(new Booking[bd.bookings.size()]));
 
+			data.setPayment(pay);
 			return addResultCell(row, pay.getId() != null ? IndexedColors.GREEN : IndexedColors.YELLOW,
 					(pay.getId() != null ? "Erstellt: " : "Möglich: ") + pay, bd);
 		}
@@ -122,8 +145,10 @@ public class ProcessExcelPayments implements Serializable {
 		return bd.bookings.stream().anyMatch(bv->bv.getMember().equals(sibling.getVollzahler()));
 	}
 
-	public Payment createPayment(ProcessData data, AmountData ad, BookingData bd, Booking... booking) {
+	public Payment createPayment(ProcessData data, AmountData ad, BookingData bd, String iban, Booking... booking) {
 		Payment pay = new Payment();
+		pay.setAconto(false);
+		pay.setFinished(false);
 		pay.getBookings().addAll(Arrays.asList(booking));
 		pay.updateType(data.getActivity());
 		pay.setAmount(ad.amount.floatValue());
@@ -132,7 +157,8 @@ public class ProcessExcelPayments implements Serializable {
 		} else {
 			pay.setFinished(true);
 		}
-		pay.setComment(bd.text);
+		pay.setPayerIBAN(iban);
+		pay.setComment(StringUtils.abbreviate(bd.text, 250));
 		if (data.isCreatePayment()) {
 			pay = paymentRepo.saveAndFlush(pay);
 			log.info("created: " + bd + " : " + pay);
@@ -209,20 +235,41 @@ public class ProcessExcelPayments implements Serializable {
 		return null;
 	}
 
-	public BookingData findBooking(XSSFRow row, ProcessData data) {
+	public String findIBAN(XSSFRow row, ProcessData data) {
 		for (Cell cell : row) {
 			try {
 				String value = cell.getStringCellValue();
-				if (StringUtils.isNotBlank(value) && value.length() > 3) {
-					List<Booking> bookings = bookingRepo.findByMemberNames(value, data.getActivity());
-					if (!bookings.isEmpty()) {
-						return new BookingData(value, bookings);
-					}
+				if (data.getBadenIBANs().matcher(value).matches()) {
+					continue;
+				}
+				if (ibanPattern.matcher(value.trim()).matches()) {
+					return value;
 				}
 			} catch (Exception e) {
 			}
 		}
 		return null;
+	}
+
+	public BookingData findBooking(XSSFRow row, ProcessData data) {
+		String value = getText(row);
+		if (StringUtils.isNotBlank(value) && value.length() > 10) {
+			List<Booking> bookings = bookingRepo.findByMemberNames(value, data.getActivity());
+			if (!bookings.isEmpty()) {
+				return new BookingData(value, bookings);
+			}
+		}
+		return null;
+	}
+
+	public String getText(XSSFRow row) {
+		StringBuilder sb = new StringBuilder();
+		for (Cell cell : row) {
+			try {
+				sb.append(cell.getStringCellValue()).append(" : ");
+			} catch (Exception e) {}
+		}
+		return sb.toString();
 	}
 
 	public static class AmountData implements Serializable {

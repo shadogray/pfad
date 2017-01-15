@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,6 +36,10 @@ import at.tfr.pfad.processing.ProcessExcelPayments;
 public class TestExcelPaymentImport {
 
 	final String excelFile = "./src/test/data/ImportPayments.xlsx";
+	final String excelBuchungen = "./src/test/data/Mitgliedsbeitrag_ZahlungenGruppe.xlsx";
+	final String selfIban = "AT112020500000007450";
+	final String IBANEins = "AT112233445566778899";
+	final String IBANDrei = "AT998877665544332211";
 	@Inject
 	private ProcessExcelPayments procPayments;
 	@Inject
@@ -46,7 +51,7 @@ public class TestExcelPaymentImport {
 	@Inject
 	private SquadRepository squadRepo;
 
-	Activity activity;
+	private Activity activity;
 
 	@Before
 	public void init() throws Exception {
@@ -78,7 +83,7 @@ public class TestExcelPaymentImport {
 		Assert.assertFalse(bookings.isEmpty());
 		Assert.assertEquals(1, bookings.size());
 
-		bookings = bookingRepo.findByMemberNames("Gruppenbeitrag 16/17 NameDrei VornameDrei", activity);
+		bookings = bookingRepo.findByMemberNames("Gruppenbeitrag 16/17 NameDrei VornameDrei1 VornameDrei2 VornameDrei3", activity);
 		Assert.assertFalse(bookings.isEmpty());
 		Assert.assertEquals(3, bookings.size());
 	}
@@ -99,12 +104,31 @@ public class TestExcelPaymentImport {
 	}
 
 	@Test
+	public void testFindIBAN() throws Exception {
+		final String badenIBAN = "AT112020500000007450";
+		final String targetIBAN = "AT252026702001284989";
+		String[] line = new String[]{"01.09.2016","Köhnigshöhle/Gruppenleitung Katharina Fiala","-199,9","EUR","Pfadfindergruppe Baden",
+				badenIBAN,"SPBDAT21XXX","Katharina Fiala", targetIBAN,"Köhnigshöhle/Gruppenleitung"};
+		XSSFWorkbook wb = new XSSFWorkbook();
+		XSSFRow row = wb.createSheet("TEST").createRow(1);
+		int idx = 1;
+		for (String val : Arrays.asList(line)) {
+			row.createCell(idx++).setCellValue(val);
+		}
+		
+		ProcessData data = new ProcessData(activity);
+			
+		String iban = procPayments.findIBAN(row, data);
+		Assert.assertEquals(targetIBAN, iban);
+	}
+
+	@Test
 	public void testFindBookingsPerRowMultiple() throws Exception {
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFRow row = wb.createSheet("TEST").createRow(1);
 		row.createCell(1).setCellValue("01.01.2017");
 		row.createCell(2).setCellValue("123");
-		row.createCell(3).setCellValue("Gruppenbeitrag 16/17 NameDrei");
+		row.createCell(3).setCellValue("Gruppenbeitrag 16/17 NameDrei VornameDrei1 VornameDrei2 VornameDrei3");
 		row.createCell(4).setCellValue(120.0D);
 		
 		ProcessData data = new ProcessData(activity);
@@ -121,7 +145,7 @@ public class TestExcelPaymentImport {
 		XSSFRow row = wb.createSheet("TEST").createRow(1);
 		row.createCell(1).setCellValue("01.01.2017");
 		row.createCell(2).setCellValue("123");
-		row.createCell(3).setCellValue("Gruppenbeitrag 16/17 NameVier");
+		row.createCell(3).setCellValue("Gruppenbeitrag 16/17 NameVier VornameVier1, VornameVier2, VornameVier3, VornameVier4");
 		row.createCell(4).setCellValue(120.0D);
 		
 		ProcessData data = new ProcessData(activity);
@@ -133,8 +157,6 @@ public class TestExcelPaymentImport {
 
 	@Test
 	public void testExcelImport() throws Exception {
-
-		Activity activity = activityRepo.findAll().iterator().next();
 
 		ProcessData data = new ProcessData(activity);
 		data.setCreatePayment(true);
@@ -149,6 +171,59 @@ public class TestExcelPaymentImport {
 				int lastrow = sheet.getLastRowNum();
 				for (Row row : sheet) {
 					row = procPayments.processRow((XSSFRow) row, data);
+					if (row.getRowNum() > lastrow) {
+						break;
+					}
+				}
+			}
+
+			Path outFile = xmlFile.resolveSibling(xmlFile.getFileName() + ".out.xlsx");
+			System.out.println("Writing: " + outFile);
+			wb.write(Files.newOutputStream(outFile));
+		}
+	}
+
+	@Test
+	public void testExcelImportBuchungenFull() throws Exception {
+
+		final String firstLine = " : NameEins VornameEins : EUR : Pfadfindergruppe Baden : AT112020500000007450 : SPBDAT21XXX : "
+				+ "Katharina Fiala : AT112233445566778899 : Köhnigshöhle/Gruppenleitung : Köhnigshöhle/Gruppenleitung : Katharina Fiala : "
+				+ "Köhnigshöhle/Gruppenleitung : 202051609012AIG-092026976866 : ";
+		List<Booking> bookings = bookingRepo.findByMemberNames(firstLine, activity);
+		Assert.assertFalse(bookings.isEmpty());
+		Assert.assertEquals(1, bookings.size());
+		
+		ProcessData data = new ProcessData(activity);
+		data.setCreatePayment(true);
+		data.setAccontoGrades(new Double[] { 50D, 100D });
+		Path xmlFile = Paths.get(excelBuchungen);
+		System.out.println("Reading: " + xmlFile);
+
+		try (InputStream is = Files.newInputStream(xmlFile);
+				XSSFWorkbook wb = (XSSFWorkbook) WorkbookFactory.create(is)) {
+
+			for (Sheet sheet : wb) {
+				int lastrow = sheet.getLastRowNum();
+				for (Row row : sheet) {
+					row = procPayments.processRow((XSSFRow) row, data);
+					XSSFRow xssfRow = (XSSFRow)row;
+					ProcessExcelPayments.BookingData bd = null;
+					
+					switch (row.getRowNum()) {
+					case 0:
+						bd = procPayments.findBooking(xssfRow, data);
+						Assert.assertNotNull(bd);
+						Assert.assertEquals(1, bd.bookings.size());
+						Assert.assertEquals(IBANEins, data.getPayment().getPayerIBAN());
+						break;
+					case 1:
+						bd = procPayments.findBooking(xssfRow, data);
+						Assert.assertNotNull(bd);
+						Assert.assertEquals(3, bd.bookings.size());
+						Assert.assertEquals(IBANDrei, data.getPayment().getPayerIBAN());
+						break;
+					}
+					
 					if (row.getRowNum() > lastrow) {
 						break;
 					}

@@ -1,6 +1,9 @@
 package at.tfr.pfad.processing;
 
+import java.util.regex.Pattern;
+
 import at.tfr.pfad.model.Activity;
+import at.tfr.pfad.model.Payment;
 
 public class ProcessData {
 
@@ -8,6 +11,8 @@ public class ProcessData {
 	private Double[] amountGrades = new Double[] {70D,120D};
 	private Double[] accontoGrades = new Double[] {};
 	private boolean createPayment;
+	private Pattern badenIBANs = Pattern.compile("AT112020500000007450");
+	private Payment payment;
 	
 	public ProcessData() {
 	}
@@ -51,5 +56,21 @@ public class ProcessData {
 
 	public void setCreatePayment(boolean createPayment) {
 		this.createPayment = createPayment;
+	}
+	
+	public Pattern getBadenIBANs() {
+		return badenIBANs;
+	}
+	
+	public void setBadenIBANs(Pattern badenIBANs) {
+		this.badenIBANs = badenIBANs;
+	}
+	
+	public Payment getPayment() {
+		return payment;
+	}
+	
+	public void setPayment(Payment payment) {
+		this.payment = payment;
 	}
 }
