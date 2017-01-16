@@ -70,6 +70,10 @@ public class PaymentImportBean implements Serializable {
 		ctx.setRollbackOnly();
 	}
 	
+	public void updateData() throws IllegalStateException, SystemException {
+		process(false);
+	}
+	
 	public void execute() {
 		process(true);
 	}

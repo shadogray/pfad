@@ -44,6 +44,11 @@
 					<f:ajax listener="#{paymentImportBean.test()}" render="@form" />
 				</h:commandButton>
 
+				<h:outputLabel value="DatenUpdate:" />
+				<h:commandButton value="UpdateData" disabled="#{!paymentBean.updateAllowed || paymentImportBean.fileContent == null}">
+					<f:ajax listener="#{paymentImportBean.updateData()}" render="@form" />
+				</h:commandButton>
+
 				<h:outputLabel value="Download Ergebnis:" />
 				<h:commandButton value="Download" actionListener="#{paymentImportBean.download()}" immediate="true" disabled="#{paymentImportBean.resultContent == null}"/>
 
