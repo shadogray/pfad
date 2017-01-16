@@ -7,6 +7,7 @@
 
 package at.tfr.pfad.view;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,7 +79,12 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			} else {
 				Subquery<Payment> sq = criteriaQuery.subquery(Payment.class);
 				Root<Payment> sr = sq.from(Payment.class);
-				sq.select(sr).where(cb.isMember(root, sr.get(Payment_.bookings)), cb.equal(sr.get(Payment_.finished), !finished));
+				List<Predicate> paymentStatOr = new ArrayList<>();
+				paymentStatOr.add(cb.and(cb.isMember(root, sr.get(Payment_.bookings)), cb.equal(sr.get(Payment_.finished), true)));
+				if ("false".equalsIgnoreCase(val)) {
+					paymentStatOr.add(cb.and(cb.isMember(root, sr.get(Payment_.bookings)), cb.equal(sr.get(Payment_.aconto), true)));
+				}
+				sq.select(sr).where(cb.or(paymentStatOr.toArray(new Predicate[paymentStatOr.size()])));
 				Predicate notFin = cb.not(cb.exists(sq));
 				if ("anz".equalsIgnoreCase(val)) {
 					notFin = cb.and(notFin, cb.equal(root.join(Booking_.payments).get(Payment_.aconto), true));
