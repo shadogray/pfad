@@ -23,6 +23,8 @@
 		<f:viewParam name="paymentBeanExampleComment" value="#{paymentBean.example.comment}"/>
 		<f:viewParam name="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}"/>
 		<f:viewParam name="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}"/>
+		<f:viewParam name="paymentBeanExampleIBAN" value="#{paymentBean.example.payerIBAN}"/>
+		
 		<f:event type="preRenderView" listener='#{paymentBean.paginate}' />
 	</f:metadata>
 
@@ -126,6 +128,13 @@
 						</h:panelGroup>
 						<h:outputText />
 
+						<h:outputLabel for="paymentBeanExampleIBAN" value="IBAN:" />
+						<h:panelGroup>
+							<h:inputText id="paymentBeanExampleIBAN" value="#{paymentBean.example.payerIBAN}" />
+							<h:message for="paymentBeanExampleIBAN" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
 						<h:outputLabel for="paymentBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
 							<h:inputText id="paymentBeanExampleComment" value="#{paymentBean.example.comment}" />
@@ -133,21 +142,23 @@
 						</h:panelGroup>
 						<h:outputText />
 
-						<h:outputText />
-						<h:panelGroup>
 						<h:outputLabel for="paymentBeanExampleFinished" value="Erledigt:" />
-						<h:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}">
-							<f:selectItem />
-							<f:selectItem itemLabel="Ja" itemValue="true" />
-							<f:selectItem itemLabel="Nein" itemValue="false" />
-						</h:selectOneMenu>
+						<h:panelGroup>
+							<h:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}">
+								<f:selectItem />
+								<f:selectItem itemLabel="Ja" itemValue="true" />
+								<f:selectItem itemLabel="Nein" itemValue="false" />
+							</h:selectOneMenu>
+						</h:panelGroup>
+						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleAconto" value="Akonto:" />
-						<h:selectOneMenu id="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}">
-							<f:selectItem />
-							<f:selectItem itemLabel="Ja" itemValue="true" />
-							<f:selectItem itemLabel="Nein" itemValue="false" />
-						</h:selectOneMenu>
+						<h:panelGroup>
+							<h:selectOneMenu id="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}">
+								<f:selectItem />
+								<f:selectItem itemLabel="Ja" itemValue="true" />
+								<f:selectItem itemLabel="Nein" itemValue="false" />
+							</h:selectOneMenu>
 						</h:panelGroup>
 						<h:outputText />
 
@@ -232,6 +243,15 @@
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPaymentDate" value="#{_item.paymentDate}" converter="javax.faces.DateTime" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="IBAN" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemPaymentIBAN" value="#{_item.payerIBAN}" />
 					</h:link>
 				</h:column>
 				<h:column>

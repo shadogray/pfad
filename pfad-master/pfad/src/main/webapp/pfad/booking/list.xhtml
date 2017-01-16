@@ -355,6 +355,14 @@
 				</h:panelGroup>
 				<h:outputText />
 
+										<h:outputLabel for="paymentBeanPaymentIBAN" value="IBAN:" />
+										<h:panelGroup>
+											<h:inputTextarea id="paymentBeanPaymentIBAN" value="#{paymentBean.payment.payerIBAN}" rows="3"
+												styleClass="fullwidth" />
+											<h:message for="paymentBeanPaymentIBAN" styleClass="error" />
+										</h:panelGroup>
+										<h:outputText />
+	
 										<h:outputLabel for="paymentBeanPaymentComment" value="Bemerkung:" />
 										<h:panelGroup>
 											<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"

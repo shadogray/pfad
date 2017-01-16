@@ -98,7 +98,15 @@ public class PaymentUI extends Payment {
 	public void setComment(String comment) {
 		payment.setComment(comment);
 	}
+	
+	public String getPayerIBAN() {
+		return payment.getPayerIBAN();
+	}
 
+	public void setPayerIBAN(String payerIBAN) {
+		payment.setPayerIBAN(payerIBAN);
+	}
+	
 	public Set<Booking> getBookings() {
 		return bookings;
 	}

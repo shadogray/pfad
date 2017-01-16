@@ -332,6 +332,15 @@ public class PaymentBean extends BaseBean implements Serializable {
 		if (examplePaymentDateEnd != null) {
 			predicatesList.add(builder.lessThanOrEqualTo(root.get(Payment_.paymentDate), examplePaymentDateEnd));
 		}
+		
+		Payment pex = getPaymentExample();
+		if (StringUtils.isNotBlank(pex.getPayerIBAN())) {
+			predicatesList.add(builder.like(root.get(Payment_.payerIBAN), "%"+pex.getPayerIBAN()+"%"));
+		}
+
+		if (StringUtils.isNotBlank(pex.getComment())) {
+			predicatesList.add(builder.like(root.get(Payment_.comment), "%"+pex.getComment()+"%"));
+		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
 	}
