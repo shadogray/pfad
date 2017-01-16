@@ -19,7 +19,7 @@ public class BookingService {
 	private BookingRepository bookingRepo;
 	
 	public BookingDao map(Booking booking) {
-		return bm.bookingToDao(bookingRepo.findBy(booking.getId()));
+		return bm.toDao(bookingRepo.findBy(booking.getId()));
 	}
 
 	public List<BookingDao> map(Collection<Booking> bookings) { 

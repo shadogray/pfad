@@ -19,7 +19,7 @@ public class PaymentService {
 	private PaymentRepository paymentRepo;
 	
 	public PaymentDao map(Payment Payment) {
-		return pm.paymentToDao(paymentRepo.findBy(Payment.getId()));
+		return pm.toDao(paymentRepo.findBy(Payment.getId()));
 	}
 
 	public List<PaymentDao> map(Collection<Payment> Payments) { 

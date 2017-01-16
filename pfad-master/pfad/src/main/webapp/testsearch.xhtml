@@ -3,12 +3,13 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://primefaces.org/ui"   xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:pfad="http://xmlns.jcp.org/jsf/composite/pfad"
+	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
-		<f:viewParam name="page" value='#{paymentBean.page}' />
-		<f:event type="preRenderView" listener='#{paymentBean.paginate}' />
+		<f:viewParam name="pid" value='#{paymentEditBean.id}' />
+		<f:viewAction action="#{paymentEditBean.init()}"/>
 	</f:metadata>
 
 	<ui:define name="header">
@@ -21,109 +22,84 @@
 	<ui:define name="footer" />
 
 	<ui:define name="main">
-		<h:form id="search" rendered="#{paymentBean.viewAllowed}">
+		<h:form id="search" rendered="#{paymentEditBean.viewAllowed}">
 			<f:validateBean disabled="true">
 
-				<rich:focus preserve="true" ajaxRendered="false" />
+				<p:focus preserve="true" ajaxRendered="false" />
 
-				<h:commandLink value="Init" actionListener="#{paymentBean.retrieve()}">
+				<h:commandLink value="Init" actionListener="#{paymentEditBean.init()}">
 					<f:ajax render="@form" />
 				</h:commandLink>
-
-				<h:dataTable value="#{paymentBean.payment.bookings}" rendered="#{paymentBean.payment != null}" var="b">
+				
+				<p:selectOneMenu var="pid">
+					<f:selectItems value="#{payments.allIds()}"/>
 					<h:column>
+						<h:commandButton value="Player_#{pid}" actionListener="#{paymentEditBean.initialize(pid)}" >
+							<p:ajax update="@form"/>
+						</h:commandButton>
+					</h:column>
+				</p:selectOneMenu>
+
+				<p:dataTable value="#{paymentEditBean.payment.bookings}" rendered="#{paymentEditBean.payment != null}" var="b">
+					<p:column>
 						<f:facet name="header">Aktion</f:facet>
 						#{b.activity}
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column>
 						<f:facet name="header">Mitglied</f:facet>
 						#{b.member}
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column>
 						<f:facet name="header">Status</f:facet>
 						#{b.status}
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column>
 						<f:facet name="header">Entfernen</f:facet>
 						<h:commandLink value="Entfernen" actionListener="#{paymentBean.payment.bookings.remove(b)}">
 							<f:ajax render="@form" />
 						</h:commandLink>
-					</h:column>
-				</h:dataTable>
+					</p:column>
+				</p:dataTable>
 
 				<h:panelGrid columns="2">
 					<h:outputLabel value="Amount" />
-					<h:inputText tabindex="0" value="#{paymentBean.example.amount}" />
+					<p:inputText tabindex="0" value="#{paymentBean.example.amount}" />
 				</h:panelGrid>
 
-
-				<h:panelGroup styleClass="search" id="bookingsSelect">
-
-					<h:messages globalOnly="true" />
-					<h:panelGrid columnClasses="label,component,required" columns="3">
-
-						<h:outputLabel value="Buchung:" />
-						<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
-							<rich:select id="paymentBeanPaymentBookingsSelect" tabindex="0" styleClass="fullwidth"
-								selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{paymentBean.filterBookings}" var="b"
-								itemLabel="#{b}" itemValue="#{b.id}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}"
-									render="@form" />
-							</rich:select>
-						</h:panelGrid>
-						<h:message for="paymentBeanPaymentBookingsSelect" />
-
-						<h:outputLabel value="Buchung-2:" />
-						<h:outputText value="#{paymentBean.exampleBooking}" />
-						<h:outputText value="#{paymentBean.filteredBookings}" />
-
-						<h:outputLabel value="Buchung-2:" />
-						<h:selectOneMenu value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}"
-							rendered="#{paymentBean.exampleBooking.id != null}">
-							<f:selectItem itemLabel="löschen.." noSelectionOption="true" />
-							<f:selectItems value="#{paymentBean.filteredBookings}" />
-							<f:ajax render="bookingsSelect" />
-						</h:selectOneMenu>
-						<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer"
-							rendered="#{paymentBean.exampleBooking.id == null}">
-							<rich:select id="paymentBeanPaymentBookingsSelect2" tabindex="0" styleClass="fullwidth"
-								converter="#{bookingBean.converter}" value="#{paymentBean.exampleBooking}" enableManualInput="false"
-								selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{paymentBean.filterBookings}" var="b"
-								itemLabel="#{b}" itemValue="#{b.id}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-								<f:selectItems value="#{paymentBean.filteredBookings}" />
-								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExampleBooking}"
-									render="bookingsSelect" />
-							</rich:select>
-						</h:panelGrid>
-						<h:message for="paymentBeanPaymentBookingsSelect2" />
-
-						<h:outputLabel value="Buchung-3" />
-						<rich:select id="paymentBeanPaymentBookingsSelect3" tabindex="0" styleClass="fullwidth"
-							converter="#{bookingBean.converter}" value="#{paymentBean.exampleBooking}" enableManualInput="false"
-							selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{paymentBean.filterBookings}" var="b"
-							itemLabel="#{b}" itemValue="#{b.id}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-							<f:selectItems value="#{paymentBean.filteredBookings}" />
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExampleBooking}"
-								render="bookingsSelect" />
-						</rich:select>
-						<h:message for="paymentBeanPaymentBookingsSelect3" />
-					</h:panelGrid>
-
-				</h:panelGroup>
 
 				<h:panelGrid columns="2">
 					<h:outputLabel value="Comment" />
-					<h:inputText tabindex="0" value="#{paymentBean.example.comment}" />
+					<p:inputText tabindex="0" value="#{paymentBean.example.comment}" />
 				</h:panelGrid>
 
-				<h:commandButton tabindex="0" actionListener="#{paymentBean.update}" value="Save">
-					<f:ajax render="@form" />
-				</h:commandButton>
+				<h:panelGrid columns="2">
+					<h:commandButton tabindex="0" actionListener="#{paymentBean.update}" value="Save">
+						<f:ajax render="@form" />
+					</h:commandButton>
+				</h:panelGrid>
+				
 			</f:validateBean>
+			
+			<p:autoComplete id="selectPayment" completeMethod="#{paymentEditBean.filterPayments}" 
+				converter="#{paymentBean.converter}" forceSelection="true" 
+				var="p" itemLabel="#{p.longName}" itemValue="#{p.id}">
+				<p:ajax event="itemSelect" listener="#{paymentEditBean.handle}" update="editPaymentDialogId" oncomplete="PF('editPaymentDialog').show();"/>
+			</p:autoComplete>
+			
+			<p:dialog id="editPaymentDialogId" widgetVar="editPaymentDialog">
+				<h:panelGroup>
+					<h:outputText value="#{paymentEditBean.paymentBean.id}"/>
+					<h:outputText value="#{paymentEditBean.payment}"/>
+				</h:panelGroup>
+				<h:panelGroup styleClass="search" id="bookingsSelect">
+
+					<h:messages globalOnly="true" />
+					<pfad:editPayment id="editPayment" popupWidgetId="editPaymentDialog" />
+
+				</h:panelGroup>
+			</p:dialog>
+			
 		</h:form>
-
-		<a4j:log level="debug" />
-
 
 	</ui:define>
 

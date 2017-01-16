@@ -16,7 +16,7 @@ public class BookingDao extends BaseDao {
 	private Long id;
 	private int version;
 	private Set<BaseDao> payments = new HashSet<BaseDao>();
-	private BaseDao member;
+	private MemberDao member;
 	private Activity activity;
 	private SquadDao squad;
 	private BookingStatus status;
@@ -80,11 +80,11 @@ public class BookingDao extends BaseDao {
 		this.payments = payments;
 	}
 
-	public BaseDao getMember() {
+	public MemberDao getMember() {
 		return this.member;
 	}
 
-	public void setMember(final BaseDao member) {
+	public void setMember(final MemberDao member) {
 		this.member = member;
 	}
 

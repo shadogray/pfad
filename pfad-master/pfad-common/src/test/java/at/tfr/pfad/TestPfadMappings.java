@@ -53,7 +53,7 @@ public class TestPfadMappings {
 
 		s = squadRepo.findBy(saved.getId());
 		
-		SquadDao dao = sm.squadToDao(s);
+		SquadDao dao = sm.toDao(s);
 		assertTrue("Squad has no scouts", dao.getScouts().size() > 0);
 		assertTrue("Squad has wrong number of scouts", dao.getScouts().size() == NUM_SCOUTS);
 		Collection<Member> scouts = Collections.unmodifiableCollection(new TreeSet<Member>(s.getScouts()));
@@ -100,7 +100,7 @@ public class TestPfadMappings {
 		final Squad sCheck = squadRepo.findBy(saved.getId());
 		
 		// Given: an external representation of Squad
-		SquadDao dao = sm.squadToDao(sCheck);
+		SquadDao dao = sm.toDao(sCheck);
 		assertTrue("Squad has no scouts", dao.getScouts().size() > 0);
 		assertTrue("Squad has wrong number of scouts", dao.getScouts().size() == NUM_SCOUTS);
 		Collection<Member> scouts = Collections.unmodifiableCollection(new TreeSet<Member>(sCheck.getScouts()));

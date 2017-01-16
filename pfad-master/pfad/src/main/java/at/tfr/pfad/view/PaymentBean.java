@@ -15,31 +15,33 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJBObject;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.richfaces.component.UISelect;
+import org.primefaces.event.SelectEvent;
 
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
+import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.PaymentUI;
 import at.tfr.pfad.model.Payment_;
+import at.tfr.pfad.svc.PaymentDao;
 
 /**
  * Backing bean for Payment entities. This class provides CRUD functionality for
@@ -60,6 +62,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	 * Support creating and retrieving Payment entities
 	 */
 
+	protected Payment payment;
 	private Float amountFrom;
 	private Float amountTo;
 
@@ -67,6 +70,14 @@ public class PaymentBean extends BaseBean implements Serializable {
 		return "create?faces-redirect=true";
 	}
 
+	public Payment getPayment() {
+		return payment;
+	}
+	
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+	
 	public void retrieve() {
 
 		try {
@@ -85,9 +96,8 @@ public class PaymentBean extends BaseBean implements Serializable {
 			} else {
 				payment = findById(getId());
 				payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b));
-				paymentPayer = payment.getPayer();
 				if (payment.getPayer() != null) {
-					filteredPayers.add(payment.getPayer());
+					filteredPayers.add(memberMap.toDao(payment.getPayer()));
 				}
 			}
 			payment.toString();
@@ -100,6 +110,10 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	public Payment findById(Long id) {
 		return paymentRepo.findById(id);
+	}
+	
+	public PaymentDao toDao(Long id) {
+		return paymentMap.toDao(paymentRepo.findById(id));
 	}
 
 	/*
@@ -136,7 +150,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 		if (!isUpdateAllowed())
 			throw new SecurityException("Update disallowed for: "+sessionBean.getUser());
 		
-		payment.setPayer(paymentPayer);
+		payment.init();
 		
 		try {
 			if (payment.getId() == null) {
@@ -150,6 +164,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 				this.entityManager.flush();
 			}
 			payment.getBookings().stream().filter(b->b.getActivity() != null).map(b->b.getActivity()).collect(Collectors.toList()); // for lazy init exc
+			payment.getPayer(); // for lazy loading..
 			id = payment.getId();
 			retrieve();
 			switch (command) {
@@ -282,15 +297,15 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Payment> criteria = builder.createQuery(Payment.class);
 		root = criteria.from(Payment.class);
-		root.fetch(Payment_.payer, JoinType.LEFT);
-		Fetch<Payment, Booking> bookings = root.fetch(Payment_.bookings, JoinType.LEFT);
-		bookings.fetch(Booking_.activity, JoinType.LEFT);
-		bookings.fetch(Booking_.member, JoinType.LEFT);
-		bookings.fetch(Booking_.squad, JoinType.LEFT);
+		Join<Payment,Member> payer = root.join(Payment_.payer, JoinType.LEFT);
+		criteria.select(root);
 		TypedQuery<Payment> query = this.entityManager
-				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
+				.createQuery(criteria.distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
-		this.pageItems = query.getResultList().stream().map(p -> new PaymentUI(p)).collect(Collectors.toList());
+		this.pageItems = query.getResultList().stream().map(p->new PaymentUI(p)).collect(Collectors.toList());
+		
+		bookingRepo.findByPaymentIds(pageItems.stream().map(p->p.getId()).collect(Collectors.toList()));
+		pageItems.forEach(pui->pui.setBookings(pui.getPayment().getBookings()));
 	}
 
 	private Predicate[] getSearchPredicates(Root<Payment> root) {
@@ -381,15 +396,18 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	public Converter getConverter() {
 
-		final PaymentBean ejbProxy = this.sessionContext.getBusinessObject(PaymentBean.class);
-
 		return new Converter() {
 
+			final PaymentBean ejbProxy = sessionContext.getBusinessObject(PaymentBean.class);
+			
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 				if (StringUtils.isBlank(value))
 					return null;
-				return ejbProxy.findById(Long.valueOf(value));
+				if ("null".equals(value)) {
+					return payment;
+				}
+				return ejbProxy.toDao(Long.valueOf(value));
 			}
 
 			@Override
@@ -421,14 +439,11 @@ public class PaymentBean extends BaseBean implements Serializable {
 		return Arrays.asList(PaymentType.values());
 	}
 
-	public void handle(AjaxBehaviorEvent event) {
+	public void handle(SelectEvent event) {
 		log.debug("handle: " + event);
-		if (event != null && event.getSource() instanceof UISelect) {
-			String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-			if (StringUtils.isNotBlank(val)) {
-				setId(Long.valueOf(val));
-				retrieve();
-			}
+		if (event.getObject() instanceof Payment) {
+			setId(Long.valueOf(((Payment)event.getObject()).getId()));
+			retrieve();
 		}
 	}
 	

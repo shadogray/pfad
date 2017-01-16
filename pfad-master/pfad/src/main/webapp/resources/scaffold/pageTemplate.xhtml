@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
 	xmlns:ds="http://deltaspike.apache.org/jsf">
 
 <h:head>
 	<title>#{empty pageTitle ? 'Pfad' : pageTitle}</title>
 	<link rel="icon" href='#{resource["favicon.ico"]}' />
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
-	<h:outputStylesheet name="bootstrap.css" />
-	<h:outputStylesheet name="forge-style.css" />
-	<h:outputScript name="jquery-1.12.1.min.js" />
-	<h:outputScript name="scripts.js" />
+	<h:outputStylesheet library="bootstrap" name="css/bootstrap.css" />
+	<h:outputScript library="bootstrap" name="js/bootstrap.js" />
+	<link rel="stylesheet" href="#{resource['pfad.css']}" />
+	<h:outputScript name="scripts.js" target="body" />
 </h:head>
 
 <h:body>
 
 	<ds:windowId />
-	<a4j:log level="ALL" popup="true" width="800" height="600" rendered="false" />
-	<ui:debug rendered="#{true || facesContext.application.projectStage == 'Development'}" />
-	<div class="navbar navbar-fixed-top">
+	<p:log level="ALL" popup="true" width="800" height="600" rendered="false" />
+	<ui:debug rendered="#{facesContext.application.projectStage == 'Development'}" />
+	<div class="col-md-12">
 		<div class="navbar-inner">
 			<div class="container">
 				<h:link id="brandLink" outcome="/pfad/index.xhtml" styleClass="brand">
@@ -38,31 +38,33 @@
 		</div>
 	</div>
 
-	<div class="container forgecontainer">
-		<h:panelGroup id="navigation" rendered="#{sessionBean.userSession.callerPrincipal != 'anonymous'}">
-			<h:link id="homeLink" outcome="/pfad/index.xhtml">
-				<img style="max-width: 10em;" src='#{resource["forge-logo.png"]}' alt="Forge... get hammered" border="0" />
-			</h:link>
-			<h:form>
-				<ul>
-					<li><a href="/pfad/app/app.html#Members"><b>MOBILE</b></a></li>
-					<li><h:link outcome="/pfad/member/search" value="Personen" /></li>
-					<li><h:link outcome="/pfad/squad/search" value="Trupps" /></li>
-					<li><h:link outcome="/pfad/activity/search" value="Aktivitäten" /></li>
-					<li><h:link outcome="/pfad/booking/search" value="Buchungen" /></li>
-					<li><h:link outcome="/pfad/booking/list" value="BuchgsListe" /></li>
-					<li><h:link outcome="/pfad/payment/search" value="Zahlungen" /></li>
-					<li><h:link outcome="/pfad/payment/list" value="ZahlgsListe" /></li>
-					<li><h:link outcome="/pfad/function/search" value="Funktionen" /></li>
-					<li><h:link outcome="/pfad/configuration/search" value="Konfig" /></li>
-					<li><h:link outcome="/pfad/actions" value="Aktionen" /></li>
-					<li><h:commandLink action="#{loginBean.logout()}" value="Beenden" /></li>
-					<li><h:outputLink value="#{request.contextPath}/apidocs/" target="apidocs">API</h:outputLink></li>
-				</ul>
-			</h:form>
-		</h:panelGroup>
+	<div class="col-md-12">
+		<div class="col-md-2">
+			<h:panelGroup id="navigation" rendered="#{sessionBean.userSession.callerPrincipal != 'anonymous'}">
+				<h:link id="homeLink" outcome="/pfad/index.xhtml">
+					<img style="max-width: 6em;" src='#{resource["forge-logo.png"]}' alt="Forge... get hammered" border="0" />
+				</h:link>
+				<h:form>
+					<p:menu style="width:8em;">
+						<p:menuitem url="/app/app.html#Members" value="MOBILE"/>
+						<p:menuitem outcome="/pfad/member/search" value="Personen" />
+						<p:menuitem outcome="/pfad/squad/search" value="Trupps" />
+						<p:menuitem outcome="/pfad/activity/search" value="Aktivitäten" />
+						<p:menuitem outcome="/pfad/booking/search" value="Buchungen" />
+						<p:menuitem outcome="/pfad/booking/list" value="BuchgsListe" />
+						<p:menuitem outcome="/pfad/payment/search" value="Zahlungen" />
+						<p:menuitem outcome="/pfad/payment/list" value="ZahlgsListe" />
+						<p:menuitem outcome="/pfad/function/search" value="Funktionen" />
+						<p:menuitem outcome="/pfad/configuration/search" value="Konfig" />
+						<p:menuitem outcome="/pfad/actions" value="Aktionen" />
+						<p:menuitem action="#{loginBean.logout()}" value="Beenden" />
+						<p:menuitem url="/apidocs/" target="apidocs" value="API" />
+					</p:menu>
+				</h:form>
+			</h:panelGroup>
+		</div>
 
-		<div id="content">
+		<div id="content" class="col-md-10">
 			<h2>
 				<ui:insert name="header" />
 			</h2>

@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.enterprise.inject.Model;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -23,7 +22,8 @@ import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member_;
 
-@Model
+@Named
+@ApplicationScoped
 public class Bookings implements Serializable {
 
 	private Logger log = Logger.getLogger(getClass());
@@ -31,8 +31,8 @@ public class Bookings implements Serializable {
 	@Inject
 	private transient EntityManager entityManager;
 
-	public List<Booking> filtered(FacesContext facesContext, UIComponent component, final String filter) {
-		log.debug("filter: " + filter + " for: " + component.getId());
+	public List<Booking> filtered(final String filter) {
+		log.debug("filter: " + filter);
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Booking> cq = cb.createQuery(Booking.class);
 		Root<Booking> root = cq.from(Booking.class);
@@ -53,4 +53,8 @@ public class Bookings implements Serializable {
 		return list.toArray(new Predicate[list.size()]);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Long> allIds() {
+		return (List<Long>)entityManager.createQuery("select b.id from Booking b").getResultList();
+	}
 }

@@ -1,7 +1,6 @@
 
 
-angular.module('pfad').controller('SearchSquadController', function ($scope, $http, $filter, SquadResource, MemberResource, MemberResource, MemberResource,
-        MemberResource) {
+angular.module('pfad').controller('SearchSquadController', function ($scope, $http, $filter, SquadResource, MemberResource) {
 
    $scope.search = {};
    $scope.currentPage = 0;

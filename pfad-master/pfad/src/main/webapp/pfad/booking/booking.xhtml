@@ -3,8 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://primefaces.org/ui"   xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<ui:param name="pageTitle" value="Create Booking" />
 
@@ -21,7 +21,7 @@
 	<ui:define name="main">
 
 		<h:form id="createBookings">
-			<rich:collapsiblePanel header="Trupps Buchen Auf Aktivität" switchType="ajax"
+			<p:collapsiblePanel header="Trupps Buchen Auf Aktivität" switchType="ajax"
 				expanded="#{createBookingsBean.squadBookingVisible}" immediate="true">
 				<h:messages styleClass="error" />
 				<h:panelGrid columnClasses="label,component,required" columns="3">
@@ -54,11 +54,11 @@
 					<h:messages for="createBookingsBeanCreateBookings" />
 
 				</h:panelGrid>
-			</rich:collapsiblePanel>
+			</p:collapsiblePanel>
 		</h:form>
 
 		<h:form id="createBookingsForAllActive">
-			<rich:collapsiblePanel header="Alle Aktiven Auf Aktivität Buchen" switchType="ajax"
+			<p:collapsiblePanel header="Alle Aktiven Auf Aktivität Buchen" switchType="ajax"
 				expanded="#{createBookingsBean.allBookingVisible}" immediate="true">
 				<h:messages styleClass="error" />
 				<h:panelGrid columnClasses="label,component,required" columns="3">
@@ -78,11 +78,11 @@
 					<h:messages for="createBookingsBeanCreateBookingsAllActive" />
 
 				</h:panelGrid>
-			</rich:collapsiblePanel>
+			</p:collapsiblePanel>
 		</h:form>
 
 		<h:form id="createBookingsFromSource">
-			<rich:collapsiblePanel header="Neu Buchen Von/Auf Aktivität" switchType="ajax"
+			<p:collapsiblePanel header="Neu Buchen Von/Auf Aktivität" switchType="ajax"
 				expanded="#{createBookingsBean.fromToVisible}" immediate="true">
 				<h:messages styleClass="error" />
 				<h:panelGrid columnClasses="label,component,required" columns="3">
@@ -114,7 +114,7 @@
 					<h:messages for="createBookingsBeanCreateBookingsSource" />
 
 				</h:panelGrid>
-			</rich:collapsiblePanel>
+			</p:collapsiblePanel>
 		</h:form>
 
 	</ui:define>

@@ -8,16 +8,18 @@
 package at.tfr.pfad.view;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.richfaces.component.SortOrder;
+import org.primefaces.model.SortMeta;
+import org.primefaces.model.SortOrder;
 
 import at.tfr.pfad.model.PaymentDataModel;
 
@@ -27,7 +29,7 @@ public class PaymentTableBean implements Serializable {
 
 	private static int cnt = 0;
 	private String selectionMode = "multiple";
-	private Map<String, SortOrder> sortOrders = new HashMap<String, SortOrder>();
+	private List<SortMeta> sortOrders = new ArrayList<>();
 	private Map<String, String> columnHeaders = new HashMap<String, String>();
 	private Map<String, String> filterValues = new HashMap<String, String>();
 	private String sortProperty;
@@ -36,15 +38,15 @@ public class PaymentTableBean implements Serializable {
 	private PaymentDataModel paymentDataModel;
 
 	public PaymentTableBean() {
-		sortOrders.put("id", SortOrder.unsorted);
-		sortOrders.put("payer", SortOrder.unsorted);
-		sortOrders.put("amount", SortOrder.unsorted);
-		sortOrders.put("member", SortOrder.unsorted);
-		sortOrders.put("squad", SortOrder.unsorted);
-		sortOrders.put("activity", SortOrder.unsorted);
-		sortOrders.put("aconto", SortOrder.unsorted);
-		sortOrders.put("finished", SortOrder.unsorted);
-		sortOrders.put("comment", SortOrder.unsorted);
+//		sortOrders.put("id", SortOrder.UNSORTED);
+//		sortOrders.put("payer", SortOrder.UNSORTED);
+//		sortOrders.put("amount", SortOrder.UNSORTED);
+//		sortOrders.put("member", SortOrder.UNSORTED);
+//		sortOrders.put("squad", SortOrder.UNSORTED);
+//		sortOrders.put("activity", SortOrder.UNSORTED);
+//		sortOrders.put("aconto", SortOrder.UNSORTED);
+//		sortOrders.put("finished", SortOrder.UNSORTED);
+//		sortOrders.put("comment", SortOrder.UNSORTED);
 	}
 
 	@PostConstruct
@@ -64,7 +66,7 @@ public class PaymentTableBean implements Serializable {
 		return columnHeaders;
 	}
 
-	public Map<String, SortOrder> getSortOrders() {
+	public List<SortMeta> getSortOrders() {
 		return sortOrders;
 	}
 
@@ -81,20 +83,20 @@ public class PaymentTableBean implements Serializable {
 	}
 
 	public void toggleSort() {
-		for (final Entry<String, SortOrder> entry : sortOrders.entrySet()) {
+		for (final SortMeta entry : sortOrders) {
 			SortOrder newOrder;
 
-			if (entry.getKey().equals(sortProperty)) {
-				if (entry.getValue() == SortOrder.ascending) {
-					newOrder = SortOrder.descending;
+			if (entry.getSortField().equals(sortProperty)) {
+				if (entry.getSortOrder() == SortOrder.ASCENDING) {
+					newOrder = SortOrder.DESCENDING;
 				} else {
-					newOrder = SortOrder.ascending;
+					newOrder = SortOrder.ASCENDING;
 				}
 			} else {
-				newOrder = SortOrder.unsorted;
+				newOrder = SortOrder.UNSORTED;
 			}
 
-			entry.setValue(newOrder);
+			entry.setSortOrder(newOrder);
 		}
 	}
 

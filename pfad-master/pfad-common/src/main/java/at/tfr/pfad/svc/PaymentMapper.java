@@ -19,15 +19,19 @@ public interface PaymentMapper {
 	@Mappings({
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
+		@Mapping(target="contacts", ignore=true),
+		@Mapping(target="details", expression="java( toString() )"),
 	})
-	PaymentDao paymentToDao(Payment Paymenrt);
+	PaymentDao toDao(Payment payment);
 	
 	Set<BaseDao> mapBookings(Set<Booking> bookings);
 	
 	@Mappings({
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
+		@Mapping(target="contacts", ignore=true),
+		@Mapping(target="details", ignore=true),
 	})
-	BaseDao memberToDao(Member member);
+	BaseDao toDao(Member member);
 
 }

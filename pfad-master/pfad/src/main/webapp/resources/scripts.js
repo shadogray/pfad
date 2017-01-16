@@ -26,11 +26,11 @@ function submitSearch(event) {
 	}
 }
 
-$(function() {
-	$('#search').on('keypress', function(event) {
-		submitSearch(event);
-	});
-	$('.stopKeyPress').keypress(function(event) {
-		event.stopPropagation();
-	});
-});
+//$(function() {
+//	$('#search').on('keypress', function(event) {
+//		submitSearch(event);
+//	});
+//	$('.stopKeyPress').keypress(function(event) {
+//		event.stopPropagation();
+//	});
+//});

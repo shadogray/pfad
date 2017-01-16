@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -23,6 +24,7 @@ import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 import javax.persistence.Version;
@@ -41,17 +43,33 @@ import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.AuditListener;
 
 @Audited(withModifiedFlag = true)
-@NamedQueries({@NamedQuery(name = "BookingsForPayment", query = "select b from Booking b where ?1 member of b.payments order by b.id")})
-@NamedEntityGraphs({
-	@NamedEntityGraph(attributeNodes={@NamedAttributeNode("payments"),@NamedAttributeNode("member")})
-})
+@NamedQueries({
+		@NamedQuery(name = "BookingsForPayment", query = "select b from Booking b where ?1 member of b.payments order by b.id"),
+		@NamedQuery(name = "BookingsForPaymentIds", query = "select b,m,a,s from Booking b left join b.member m left join b.activity a left join b.squad s , Payment p where p member of b.payments and p.id in ?1 order by b.id, p.id"),
+		})
+@NamedEntityGraphs({ 
+	@NamedEntityGraph(name = Booking.Booking, attributeNodes = { 
+			@NamedAttributeNode("activity"),
+			@NamedAttributeNode("member"),
+			@NamedAttributeNode("squad"),
+			}), 
+	@NamedEntityGraph(name = Booking.FetchAll, attributeNodes = { 
+			@NamedAttributeNode("activity"),
+			@NamedAttributeNode("member"),
+			@NamedAttributeNode("squad"),
+			@NamedAttributeNode("payments"),
+			}), 
+	})
 @Entity
-@EntityListeners({AuditListener.class})
+@EntityListeners({ AuditListener.class })
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
-@JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
+@JsonIgnoreProperties(ignoreUnknown = true, value = { "handler", "hibernateLazyInitializer" })
 public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Presentable, Comparable<Booking> {
 
+	public static final String Booking = "BookingBooking";
+	public static final String FetchAll = "BookingFetchAll";
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "booking_seq")
 	@SequenceGenerator(name = "booking_seq", sequenceName = "booking_seq", allocationSize = 1, initialValue = 1)
@@ -62,25 +80,25 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	private int version;
 
 	@ManyToMany(mappedBy = "bookings")
-	@BatchSize(size=10)
+	@BatchSize(size = 10)
 	private Set<Payment> payments = new HashSet<Payment>();
 
 	@ManyToOne(optional = false)
 	private Member member;
-	
-	@Column(name="member_id", insertable=false, updatable=false)
+
+	@Column(name = "member_id", insertable = false, updatable = false)
 	private Long memberId;
 
 	@ManyToOne(optional = false)
 	private Activity activity;
-	
-	@Column(name="activity_id", insertable=false, updatable=false)
+
+	@Column(name = "activity_id", insertable = false, updatable = false)
 	private Long activityId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Squad squad;
-	
-	@Column(name="squad_id", insertable=false, updatable=false)
+
+	@Column(name = "squad_id", insertable = false, updatable = false)
 	private Long squadId;
 
 	@Column(nullable = false)
@@ -102,6 +120,15 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	@Column
 	protected String createdBy;
 
+	public Booking() {
+	}
+	
+	public Booking(Member member, Activity activity) {
+		this.member = member;
+		this.activity = activity;
+		this.status = BookingStatus.created;
+	}
+	
 	@XmlID
 	public Long getId() {
 		return this.id;
@@ -132,20 +159,12 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 			return false;
 		}
 		Booking other = (Booking) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
+		return checkIds(id, other);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return 31 + ((id == null) ? 0 : id.hashCode());
 	}
 
 	@XmlTransient
@@ -155,8 +174,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 
 	@XmlTransient
 	public List<Long> getPaymentsIds() {
-		return payments.stream().map(Payment::getId)
-				.collect(Collectors.toList());
+		return payments.stream().map(Payment::getId).collect(Collectors.toList());
 	}
 
 	public void setPayments(final Set<Payment> payments) {
@@ -165,8 +183,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 
 	@XmlTransient
 	public List<Payment> getSortedPayments() {
-		return payments.stream().sorted(new PkComparator<Payment>())
-				.collect(Collectors.toList());
+		return payments.stream().sorted(new PkComparator<Payment>()).collect(Collectors.toList());
 	}
 
 	public Member getMember() {
@@ -180,7 +197,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	public Long getMemberId() {
 		return memberId;
 	}
-	
+
 	public Activity getActivity() {
 		return this.activity;
 	}
@@ -192,7 +209,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	public Long getActivityId() {
 		return activityId;
 	}
-	
+
 	public Squad getSquad() {
 		return squad;
 	}
@@ -200,7 +217,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	public void setSquad(Squad squad) {
 		this.squad = squad;
 	}
-	
+
 	public Long getSquadId() {
 		return squadId;
 	}
@@ -257,41 +274,38 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	public boolean isValid() {
 		return !BookingStatus.storno.equals(status);
 	}
-	
+
 	@Override
 	public String toString() {
 		String result = (activity != null
-				? activity.getType() + ":" + activity.getName() + "/"
-						+ activity.getStartString()
+				? activity.getType() + ":" + activity.getName() + "/" + activity.getStartString()
 				: getClass().getSimpleName());
 		if (member != null) {
-			result += " " + member.getName() + " " + member.getVorname() + ", "
-					+ member.getGebJahr() + ", " + member.getPLZ() + ", "
-					+ member.getStrasse();
+			result += " " + member.getName() + " " + member.getVorname() + ", " + member.getGebJahr() + ", "
+					+ member.getPLZ() + ", " + member.getStrasse();
 		}
 		if (comment != null && !comment.trim().isEmpty())
 			result += " " + comment;
 		return result;
 	}
-	
+
 	@Override
 	public String getName() {
 		return getShortString();
 	}
-	
+
 	@Override
 	public int compareTo(Booking o) {
-		if (this.id != null && o.id != null) 
+		if (this.id != null && o.id != null)
 			return this.id.compareTo(o.id);
 		return this.getShortString().compareTo(o.getShortString());
 	}
-	
+
 	@Override
 	public String getShortString() {
 		String result = (activity != null ? activity.getName() : "undef");
 		if (member != null) {
-			result += " " + member.getName() + " " + member.getVorname() + ", "
-					+ member.getGebJahr();
+			result += " " + member.getName() + " " + member.getVorname() + ", " + member.getGebJahr();
 		}
 		return result;
 	}

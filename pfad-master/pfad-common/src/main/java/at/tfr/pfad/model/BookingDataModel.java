@@ -9,25 +9,22 @@ package at.tfr.pfad.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Default;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.BookingStatus;
 
-@RequestScoped
 @Stateful
 public class BookingDataModel extends DataModel<Booking, BookingUI> {
 
@@ -41,27 +38,22 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 	}
 
 	@Override
+	public BookingUI convert(Booking entity) {
+		return new BookingUI(entity);
+	}
+	
+	@Override
     protected CriteriaQuery<Booking> createCriteria(boolean addOrder) {
 		CriteriaQuery<Booking> query = super.createCriteria(addOrder);
-        root.fetch(Booking_.activity, JoinType.LEFT);
-        root.fetch(Booking_.squad, JoinType.LEFT);
-        root.fetch(Booking_.member, JoinType.LEFT);//.fetch(Member_.funktionen, JoinType.LEFT);
-        Join<Booking, Member> member = root.join(Booking_.member, JoinType.LEFT);
-		member.join(Member_.trupp, JoinType.LEFT);
-        root.fetch(Booking_.activity, JoinType.LEFT);
-        //root.fetch(Booking_.payments, JoinType.LEFT).fetch(Payment_.payer, JoinType.LEFT);
+        Fetch<Booking,Member> member = root.fetch(Booking_.member, JoinType.LEFT);
+        Fetch<Booking,Activity> activity = root.fetch(Booking_.activity, JoinType.LEFT);
+        Fetch<Booking,Squad> squad = root.fetch(Booking_.squad, JoinType.LEFT);
         return query;
     }
 	
 	@Override
 	protected CriteriaQuery<Booking> groupBy(CriteriaQuery<Booking> crit) {
-		crit.distinct(true);
 		return crit;
-	}
-	
-	@Override
-	public List<BookingUI> convertToUiBean(List<Booking> list) {
-		return list.stream().map(b->new BookingUI(b)).collect(Collectors.toList());
 	}
 	
 	@Override

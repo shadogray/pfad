@@ -3,8 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:o="http://omnifaces.org/ui"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://primefaces.org/ui"  xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<o:viewParam name="id" value='#{activityBean.id}' />
@@ -30,13 +30,13 @@
 	<ui:define name="main">
 		<h:form id="create">
 			<h:messages globalOnly="true" styleClass="error" />
-			<rich:focus />
+			<p:focus />
 
 			<h:panelGrid columnClasses="label,component,required" columns="3">
 
 				<h:outputLabel for="activityBeanActivityName" value="Name:" />
 				<h:panelGroup>
-					<h:inputText id="activityBeanActivityName" value="#{activityBean.activity.name}" />
+					<p:inputText id="activityBeanActivityName" value="#{activityBean.activity.name}" />
 					<h:message for="activityBeanActivityName" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
@@ -62,32 +62,32 @@
 
 				<h:outputLabel for="activityBeanActivityStart" value="Start:" />
 				<h:panelGroup>
-					<rich:calendar id="activityBeanActivityStart" value="#{activityBean.activity.start}" datePattern="dd.MM.yyyy" />
+					<p:calendar id="activityBeanActivityStart" value="#{activityBean.activity.start}" datePattern="dd.MM.yyyy" />
 					<h:message for="activityBeanActivityStart" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="activityBeanActivityEnd" value="Ende:" />
 				<h:panelGroup>
-					<rich:calendar id="activityBeanActivityEnd" value="#{activityBean.activity.end}" datePattern="dd.MM.yyyy" />
+					<p:calendar id="activityBeanActivityEnd" value="#{activityBean.activity.end}" datePattern="dd.MM.yyyy" />
 					<h:message for="activityBeanActivityEnd" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel value="Betrag:" />
-				<h:inputText id="activityBeanActivityAmount" tabindex="0" value="#{activityBean.activity.amount}" validatorMessage="Betrag ungültig!">
+				<p:inputText id="activityBeanActivityAmount" tabindex="0" value="#{activityBean.activity.amount}" validatorMessage="Betrag ungültig!">
 					<f:convertNumber maxFractionDigits="2" />
-				</h:inputText>
+				</p:inputText>
 				<h:message for="activityBeanActivityAmount" />
 
 				<h:outputLabel value="Anzahlung:" />
-				<h:inputText id="activityBeanActivityAconto" tabindex="0" value="#{activityBean.activity.aconto}" validatorMessage="Betrag ungültig!">
+				<p:inputText id="activityBeanActivityAconto" tabindex="0" value="#{activityBean.activity.aconto}" validatorMessage="Betrag ungültig!">
 					<f:convertNumber maxFractionDigits="2" />
-				</h:inputText>
+				</p:inputText>
 				<h:message for="activityBeanActivityAconto" />
 
 				<h:outputLabel value="Bemerkung:" />
-				<h:inputTextarea id="activityBeanActivityComment" tabindex="0" value="#{activityBean.activity.comment}" rows="5"/>
+				<p:inputTextarea id="activityBeanActivityComment" tabindex="0" value="#{activityBean.activity.comment}" rows="5"/>
 				<h:message for="activityBeanActivityComment" />
 
 				<h:outputLabel for="activityBeanActivityRevision" value="Änderung:" />

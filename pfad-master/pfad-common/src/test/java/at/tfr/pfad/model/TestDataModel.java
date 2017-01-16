@@ -1,13 +1,12 @@
 package at.tfr.pfad.model;
 
+import java.util.Collections;
+
 import javax.inject.Inject;
 
-import org.ajax4jsf.model.SequenceRange;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import at.tfr.pfad.model.BookingDataModel;
 
 @RunWith(CdiTestRunner.class)
 public class TestDataModel {
@@ -18,7 +17,7 @@ public class TestDataModel {
 	@Test
 	public void testLoadData() throws Exception {
 		
-		bdm.getRowData(new SequenceRange(0, 10));
+		bdm.load(0, 10, Collections.emptyList(), Collections.emptyMap());
 		
 	}
 	

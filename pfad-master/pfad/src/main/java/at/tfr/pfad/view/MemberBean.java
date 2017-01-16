@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ejb.EJBObject;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,11 +31,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.richfaces.component.UISelect;
+import org.primefaces.event.SelectEvent;
 
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
@@ -47,6 +46,7 @@ import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.svc.MemberDao;
 import at.tfr.pfad.view.ViewUtils.Month;
 import at.tfr.pfad.view.validator.MemberValidator;
 import at.tfr.pfad.view.validator.ValidationResult;
@@ -75,6 +75,9 @@ public class MemberBean extends BaseBean implements Serializable {
 	private FunctionRepository functionRepo;
 	@Inject
 	private MemberValidator memberValidator;
+	
+	protected Member member;
+
 	private Boolean exampleActive;
 	private Boolean exampleFree;
 	private Collection<ValidationResult> validationResults = new ArrayList<>();
@@ -94,7 +97,15 @@ public class MemberBean extends BaseBean implements Serializable {
 	public String create() {
 		return "create?faces-redirect=true";
 	}
-
+	
+	public Member getMember() {
+		return member;
+	}
+	
+	public void setMember(Member member) {
+		this.member = member;
+	}
+	
 	public void retrieve() {
 
 		if (FacesContext.getCurrentInstance().isPostback()) {
@@ -112,7 +123,7 @@ public class MemberBean extends BaseBean implements Serializable {
 				this.member.getFunktionen().size();
 				if (this.member.getVollzahler() != null) {
 					this.member.getVollzahler().getId();
-					filteredMembers.add(member.getVollzahler());
+					filteredMembers.add(memberMap.toDao(member.getVollzahler()));
 				}
 			}
 			this.validationResults = validateMember(member, false);
@@ -121,6 +132,10 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	public Member findById(Long id) {
 		return memberRepo.fetchBy(id);
+	}
+
+	public MemberDao toDao(Long id) {
+		return memberMap.toDao(memberRepo.findById(id));
 	}
 
 	/*
@@ -166,6 +181,38 @@ public class MemberBean extends BaseBean implements Serializable {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
 		}
+	}
+
+	public void selectMemberVollzahler(SelectEvent event) {
+		log.debug("selectMemberVollzahler: " + event);
+		Object val = event.getObject();
+		if (!(val instanceof Member)) {
+			member.setVollzahler(null);
+		} else {
+			Member member = findMemberById(Long.valueOf(((Member)val).getId()));
+			setMemberVollzahler(member);
+		}
+	}
+
+	public void setMemberVollzahler(Member member) {
+		member.setVollzahler(member);
+	}
+
+	public void addMemberSibling(SelectEvent event) {
+		log.debug("selectMemberSibling: " + event);
+		Object val = event.getObject();
+		Long id = null;
+		if (val instanceof Long) {
+			id = (Long)val;
+		} else if (val instanceof Member) {
+			id = ((Member)val).getId();
+		} else if (val instanceof String) {
+			id = Long.valueOf((String)val);
+		}
+		if (id != null) {
+			member.getSiblings().add(findMemberById(id));
+		}
+		memberToAdd = null;
 	}
 
 	private Collection<ValidationResult> validateMember(Member member, boolean toMessages) {
@@ -229,7 +276,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 	
 	public String getFunctionIds() {
-		return getExample().getFunktionen().stream().map(f->f.getId().toString()).collect(Collectors.joining(","));
+		return getExample().getFunktionen().stream().map(f->""+f.getId()).collect(Collectors.joining(","));
 	}
 	
 	public void setFunctionIds(String value) {
@@ -392,15 +439,15 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	public Converter getConverter() {
 
-		final MemberBean ejbProxy = this.sessionContext.getBusinessObject(MemberBean.class);
-
 		return new Converter() {
+
+			final MemberBean ejbProxy = sessionContext.getBusinessObject(MemberBean.class);
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 				if (StringUtils.isBlank(value))
 					return null;
-				return ejbProxy.findById(Long.valueOf(value));
+				return ejbProxy.toDao(Long.valueOf(value));
 			}
 
 			@Override
@@ -428,43 +475,36 @@ public class MemberBean extends BaseBean implements Serializable {
 		return added;
 	}
 
-	public List<String> getDistinctName() {
-		return memberRepo.findDistinctName();
+	public List<String> getDistinctName(String value) {
+		return memberRepo.findDistinctNameLike(("%"+value+"%").toLowerCase());
 	}
 
-	public List<String> getDistinctVorname() {
-		return memberRepo.findDistinctVorname();
+	public List<String> getDistinctVorname(String value) {
+		return memberRepo.findDistinctVornameLike(("%"+value+"%").toLowerCase());
 	}
 
-	public List<String> getDistinctPLZ() {
-		return memberRepo.findDistinctPLZ();
+	public List<String> getDistinctPLZ(String value) {
+		return memberRepo.findDistinctPLZLike(("%"+value+"%").toLowerCase());
 	}
 
-	public List<String> getDistinctOrt() {
-		return memberRepo.findDistinctOrt();
+	public List<String> getDistinctOrt(String value) {
+		return memberRepo.findDistinctOrtLike(("%"+value+"%").toLowerCase());
 	}
 
-	public List<String> getDistinctStrasse() {
-		return memberRepo.findDistinctStrasse();
+	public List<String> getDistinctStrasse(String value) {
+		return memberRepo.findDistinctStrasseLike(("%"+value+"%").toLowerCase());
 	}
 
-	public List<String> getDistinctTitel() {
-		return memberRepo.findDistinctTitel();
+	public List<String> getDistinctTitel(String value) {
+		return memberRepo.findDistinctTitelLike(("%"+value+"%").toLowerCase());
 	}
 
-	public List<String> getDistinctAnrede() {
-		return memberRepo.findDistinctAnrede();
+	public List<String> getDistinctAnrede(String value) {
+		return memberRepo.findDistinctAnredeLike(("%"+value+"%").toLowerCase());
 	}
 
-	public List<String> getDistinctReligion() {
+	public List<String> getDistinctReligion(String value) {
 		return memberRepo.findDistinctReligion();
-	}
-	
-	public String logout() {
-		try {
-			((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).logout();
-		} catch (Exception e) {}
-		return "index?faces-redirect=true";
 	}
 	
 	public List<ScoutRole> getScoutRoles() {
@@ -479,14 +519,11 @@ public class MemberBean extends BaseBean implements Serializable {
 		return Arrays.asList(Month.values());
 	}
 	
-	public void handle(AjaxBehaviorEvent event) {
+	public void handle(SelectEvent event) {
 		log.debug("handle: " + event);
-		if (event != null && event.getSource() instanceof UISelect) {
-			String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-			if (StringUtils.isNotBlank(val)) {
-				setId(Long.valueOf(val));
-				retrieve();
-			}
+		if (event.getObject() instanceof Member) {
+			setId(Long.valueOf(((Member)event.getObject()).getId()));
+			retrieve();
 		}
 	}
 }

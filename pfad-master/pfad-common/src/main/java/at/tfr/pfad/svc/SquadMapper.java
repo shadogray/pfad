@@ -17,16 +17,20 @@ public interface SquadMapper {
 	@Mappings({
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
+		@Mapping(target="contacts", ignore=true),
+		@Mapping(target="details", expression="java( toString() )"),
 	})
-	SquadDao squadToDao(Squad squad);
+	SquadDao toDao(Squad squad);
 	
 	@Mappings({
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
 		@Mapping(target="assistants", ignore=true),
 		@Mapping(target="scouts", ignore=true),
+		@Mapping(target="contacts", ignore=true),
+		@Mapping(target="details", expression="java( toString() )"),
 	})
-	SquadDao squadToDaoMin(Squad squad);
+	SquadDao toDaoMin(Squad squad);
 	
 	@Mappings({
 		@Mapping(target="scouts", ignore=true),

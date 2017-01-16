@@ -12,25 +12,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.ejb.EJBObject;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.richfaces.component.UISelect;
+import org.primefaces.event.SelectEvent;
 
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.BookingStatus;
@@ -38,10 +41,13 @@ import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.BookingUI;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
+import at.tfr.pfad.model.PkComparator;
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.svc.BookingDao;
 
 /**
  * Backing bean for Booking entities. This class provides CRUD functionality for
@@ -64,13 +70,12 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	@Inject
 	private ActivityRepository activityRepo;
-	@Inject
-	private PaymentBean paymentBean;
+
+	protected Booking booking;
 
 	private boolean showFinished;
 	private boolean squadBookingVisible;
 	private boolean allBookingVisible;
-	private boolean paymentPopupVisible;
 
 	public boolean isSquadBookingVisible() {
 		return squadBookingVisible;
@@ -112,6 +117,14 @@ public class BookingBean extends BaseBean implements Serializable {
 		return "create?faces-redirect=true";
 	}
 
+	public Booking getBooking() {
+		return booking;
+	}
+	
+	public void setBooking(Booking booking) {
+		this.booking = booking;
+	}
+	
 	public void retrieve() {
 
 		FacesContext ctx = FacesContext.getCurrentInstance();
@@ -127,19 +140,42 @@ public class BookingBean extends BaseBean implements Serializable {
 			if (booking.getSquad() != null) {
 				booking.getSquad().getName();
 			}
-			filteredMembers.add(booking.getMember());
+			filteredMembers.add(memberMap.toDao(booking.getMember()));
 		}
+	}
+
+	public void selectBookingMember(SelectEvent event) {
+		log.debug("selectBookingMember: " + event);
+		Object val = event.getObject();
+		if (!(val instanceof Member)) {
+			booking.setMember(null);
+		} else {
+			Member member = findMemberById(Long.valueOf(((Member)val).getId()));
+			setBookingMember(member);
+		}
+	}
+
+	public void setBookingMember(Member member) {
+		booking.setMember(member);
 	}
 
 	public Booking findById(Long id) {
 		return bookingRepo.findById(id);
 	}
 
+	public BookingDao toDao(Long id) {
+		return bookingMap.toDao(bookingRepo.findById(id));
+	}
+
 	public List<Payment> getSortedPayments() {
-		return getSortedPayments(id);
+		return booking.getPayments().stream().sorted(new PkComparator<Payment>()).collect(Collectors.toList());
 	}
 	
-	public List<Payment> getSortedPayments(Long id) {
+	public List<Payment> findSortedPayments() {
+		return findSortedPayments(id);
+	}
+	
+	public List<Payment> findSortedPayments(Long id) {
 		return paymentRepo.findByBookingIdOrderByIdDesc(id);
 	}
 	
@@ -210,7 +246,7 @@ public class BookingBean extends BaseBean implements Serializable {
 	 * Support searching Booking entities with pagination
 	 */
 
-	private List<Booking> pageItems;
+	private List<BookingUI> pageItems;
 
 	public Booking getExample() {
 		return this.getBookingExample();
@@ -244,10 +280,14 @@ public class BookingBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Booking> criteria = builder.createQuery(Booking.class);
 		root = criteria.from(Booking.class);
+		Fetch<Booking,Member> member = root.fetch(Booking_.member, JoinType.LEFT);
+		Fetch<Booking,Activity> activity = root.fetch(Booking_.activity, JoinType.LEFT);
+		Fetch<Booking,Squad> squad = root.fetch(Booking_.squad, JoinType.LEFT);
+		criteria.select(root);
 		TypedQuery<Booking> query = this.entityManager
-				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
+				.createQuery(criteria.where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
-		this.pageItems = query.getResultList();
+		this.pageItems = query.getResultList().stream().map(b->new BookingUI(b)).collect(Collectors.toList());
 	}
 
 	private Predicate[] getSearchPredicates(Root<Booking> root) {
@@ -286,7 +326,7 @@ public class BookingBean extends BaseBean implements Serializable {
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
 	}
 
-	public List<Booking> getPageItems() {
+	public List<BookingUI> getPageItems() {
 		return this.pageItems;
 	}
 
@@ -303,15 +343,15 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	public Converter getConverter() {
 
-		final BookingBean ejbProxy = this.sessionContext.getBusinessObject(BookingBean.class);
-
 		return new Converter() {
+
+			final BookingBean ejbProxy = sessionContext.getBusinessObject(BookingBean.class);
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 				if (StringUtils.isBlank(value))
 					return null;
-				return ejbProxy.findById(Long.valueOf(value));
+				return ejbProxy.toDao(Long.valueOf(value));
 			}
 
 			@Override
@@ -373,54 +413,5 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	public boolean isCreateAllAllowed() {
 		return isAdmin() || isGruppe();
-	}
-
-	public boolean isPaymentPopupVisible() {
-		return paymentPopupVisible;
-	}
-	
-	public void setPaymentPopupVisible(boolean paymentPopupVisible) {
-		this.paymentPopupVisible = paymentPopupVisible;
-	}
-	
-	public void retrieveAndGetPayment() {
-		booking = null; // so much caching around :-/
-		retrieve();
-		paymentBean.setPaymentPayer(null);
-		if (!booking.getPayments().isEmpty()) {
-			paymentBean.setId(booking.getPayments().iterator().next().getId());
-		} else {
-			paymentBean.setExample(new Payment());
-			paymentBean.setId(null);
-		}
-		paymentBean.retrieve();
-		Payment pay = paymentBean.getPayment();
-		if (pay.getId() == null) {
-			pay.getBookings().add(booking);
-			booking.getPayments().add(pay);
-		}
-		pay.updateType(booking);
-	}
-
-	public void initNewPayment() {
-		paymentBean.setPaymentPayer(null);
-		paymentBean.setExample(new Payment());
-		paymentBean.setId(paymentBean.getPayment() != null ? paymentBean.getPayment().getId() : null);
-		paymentBean.retrieve();
-		Payment pay = paymentBean.getPayment();
-		pay.getBookings().add(booking);
-		booking.getPayments().add(pay);
-		pay.updateType(booking);
-	}
-
-	public void handle(AjaxBehaviorEvent event) {
-		log.debug("handle: " + event);
-		if (event != null && event.getSource() instanceof UISelect) {
-			String val = (String) ((UISelect) event.getSource()).getSubmittedValue();
-			if (StringUtils.isNotBlank(val)) {
-				setId(Long.valueOf(val));
-				retrieve();
-			}
-		}
 	}
 }

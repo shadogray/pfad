@@ -8,10 +8,12 @@
 package at.tfr.pfad.model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.RequestScoped;
+import javax.ejb.Stateless;
+import javax.enterprise.inject.Default;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.JoinType;
@@ -19,8 +21,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.primefaces.model.SortMeta;
 
-@RequestScoped
 @Stateful
 public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 
@@ -32,23 +34,26 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 	public PaymentDataModel(Class<PaymentUI> uiClass, Class<Payment> entityClass) {
 		super(uiClass, entityClass);
 	}
+	
+	@Override
+	protected List<PaymentUI> getRowDataInternal(int first, int pageSize, List<SortMeta> sortMetas,
+			Map<String, Object> filters) {
+		List<PaymentUI> data = super.getRowDataInternal(first, pageSize, sortMetas, filters);
+		bookingRepo.findByPaymentIds(data.stream().map(p->p.getId()).collect(Collectors.toList()));
+		data.forEach(pui->pui.setBookings(pui.getPayment().getBookings()));
+		return data;
+	}
+	
+	@Override
+	public PaymentUI convert(Payment entity) {
+		return new PaymentUI(entity);
+	}
 
 	@Override
 	protected CriteriaQuery<Payment> createCriteria(boolean addOrder) {
 		CriteriaQuery<Payment> query = super.createCriteria(addOrder);
-		root.fetch(Payment_.payer, JoinType.LEFT);
-		//Fetch<Payment, Booking> bookings = root.fetch(Payment_.bookings, JoinType.LEFT);
-		//bookings.fetch(Booking_.activity, JoinType.LEFT);
-		//Fetch<Booking, Member> member = bookings.fetch(Booking_.member, JoinType.LEFT);
-		//member.fetch(Member_.trupp, JoinType.LEFT);
-		//member.fetch(Member_.funktionen, JoinType.LEFT);
-		//bookings.fetch(Booking_.squad, JoinType.LEFT);
+		Fetch<Payment,Member> payer = root.fetch(Payment_.payer, JoinType.LEFT);
 		return query;
-	}
-	
-	@Override
-	public List<PaymentUI> convertToUiBean(List<Payment> list) {
-		return list.stream().map(b->new PaymentUI(b)).collect(Collectors.toList());
 	}
 	
 	@Override

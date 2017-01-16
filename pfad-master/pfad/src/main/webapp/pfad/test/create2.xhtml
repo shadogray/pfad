@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:pfad="http://xmlns.jcp.org/jsf/composite/pfad"
+	template="/resources/scaffold/pageTemplate.xhtml">
+
+	<f:metadata>
+		<o:viewParam name="id" value="#{memberBean.id}" />
+		<f:viewAction onPostback="false" action="#{memberBean.retrieve}" />
+		<f:viewAction onPostback="false" action="#{paymentBean.retrieve}" />
+		<f:viewAction onPostback="false" action="#{bookingBean.retrieveAndGetPayment(13)}"/>
+	</f:metadata>
+
+	<ui:param name="pageTitle" value="Person erstellen/bearbeiten" />
+
+	<ui:define name="header">
+	</ui:define>
+
+	<ui:define name="subheader">
+	</ui:define>
+
+	<ui:define name="footer" />
+
+	<ui:define name="main">
+		<h:form id="create">
+
+			<h:panelGrid columnClasses="col-md-1,col-md-3,col-md-1,col-md-3,col-md-1,col-md-3" columns="6">
+
+				<h:outputLabel for="memberBeanMemberBVKey" value="BV Key:" />
+				<h:panelGroup>
+					<p:inputText id="memberBeanMemberBVKey" value="#{memberBean.member.BVKey}" p:placeholder="nur bei Externen!" />
+					<h:message for="memberBeanMemberBVKey" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+
+				<h:outputLabel for="Vorname" value="Vorname:" />
+				<h:panelGroup>
+					<p:autoComplete id="Vorname" value="#{memberBean.member.vorname}" completeMethod="#{memberBean.getDistinctVorname}"
+						maxResults="10">
+						<f:validateLength minimum="2" />
+					</p:autoComplete>
+					<h:message for="Vorname" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+				
+				<h:outputLabel for="memberBeanMemberSiblingsPanel" value="Kinder:" />
+				<h:panelGroup id="memberBeanMemberSiblingsPanel">
+					<p:dataTable id="memberBeanMemberSiblings" styleClass="table table-bordered" value="#{memberBean.member.siblings}"
+						var="_item">
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Name" />
+							</f:facet>
+							<h:link outcome="view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemFunction" value="#{_item.name}" />
+							</h:link>
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Vorname" />
+							</f:facet>
+							<h:link outcome="view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemVorname" value="#{_item.vorname}" />
+							</h:link>
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Geb.Jahr" />
+							</f:facet>
+							<h:link outcome="view">
+								<f:param name="id" value="#{_item.id}" />
+								<h:outputText id="itemGebJahr" value="#{_item.gebJahr}" />
+							</h:link>
+						</p:column>
+						<p:column footerClass="remove-column" headerClass="remove-column">
+							<p:commandButton actionListener="#{memberBean.member.siblings.remove(_item)}" ajax="true" icon="fa fa-fw fa-remove" update="memberBeanMemberSiblings" />
+							<p:commandButton icon="fa fa-fw fa-remove" actionListener="#{memberBean.member.siblings.remove(_item)}" update="memberBeanMemberSiblings">
+							</p:commandButton>
+							
+							<h:commandButton actionListener="#{memberBean.member.siblings.remove(_item)}" value="X">
+								<f:ajax render="memberBeanMemberSiblingsPanel"/>
+							</h:commandButton>
+						</p:column>
+					</p:dataTable>
+					<p:focus ajaxRendered="true" for="memberBeanMemberSiblingsSelect"/>
+					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
+							<p:autoComplete id="memberBeanMemberSiblingsSelect"  value="#{requestScope['memberToAdd']}" styleClass="fullwidth manual"
+								p:placeholder="Kinder, Suche nach Name, Vorname..." converter="#{memberBean.converter}" forceSelection="true"
+								title="Kinder des Erziehungsberechtigten bitte hier auswählen.." minQueryLenth="3"
+								completeMethod="#{memberBean.filterMembers}" var="b" itemLabel="#{b}" itemValue="#{b.id}"
+								maxResults="10" >
+								<p:ajax event="itemSelect" listener="#{memberBean.member.siblings.add(requestScope['memberToAdd'])}"/>
+								<p:ajax event="itemSelect" execute="@none" listener="#{requestScope.remove('memberToAdd')}" update="memberBeanMemberSiblingsPanel"/>
+							</p:autoComplete>
+					</h:panelGrid>
+				</h:panelGroup>
+				
+			</h:panelGrid>
+
+			<h:selectOneMenu value="#{bookingBean.booking}" converter="#{bookingBean.converter}" >
+				<f:selectItem />
+				<f:selectItems value="#{bookingBean.all}" var="b" itemLabel="#{b}" itemValue="#{b}"/>
+				<f:ajax listener="#{bookingBean.retrieveAndGetPayment}" render="editPaymentGrid"/>
+			</h:selectOneMenu>
+			<h:panelGrid id="editPaymentGrid">
+				<pfad:editPayment selfWidgetId="tit" sourceWidgetId="tat"></pfad:editPayment>
+			</h:panelGrid>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

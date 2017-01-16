@@ -28,18 +28,23 @@ public interface MemberMapper {
 		@Mapping(target="assisting", expression="java(baseDaoMapper.memberAssisting(member))"),
 		@Mapping(target="responsible", expression="java(baseDaoMapper.memberResponsible(member))"),
 		@Mapping(target="contacts", expression="java(baseDaoMapper.getContacts(member))"),
+		@Mapping(target="details", source="longString"),
 	})
-	MemberDao memberToDao(Member member);
+	MemberDao toDao(Member member);
 
 	@Mappings({
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
+		@Mapping(target="details", source="longString"),
+		@Mapping(target="contacts", ignore=true),
 	})
 	BaseDao mapSquad(Squad squad);
 	
 	@Mappings({
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
+		@Mapping(target="details", source="longString"),
+		@Mapping(target="contacts", ignore=true),
 	})
 	BaseDao mapFunction(Function function);
 	

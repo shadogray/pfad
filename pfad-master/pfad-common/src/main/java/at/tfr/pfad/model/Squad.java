@@ -25,6 +25,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -49,6 +52,9 @@ import javax.xml.bind.annotation.XmlTransient;
 		@NamedQuery(name = "Squad.leadersFemale", query = "select s.leaderFemale from Squad s"),
 		@NamedQuery(name = "Squad.leadersMale", query = "select s.leaderMale from Squad s"),
 		@NamedQuery(name = "Squad.assistants", query = "select a from Squad s inner join s.assistants a"),})
+@NamedEntityGraphs({
+	@NamedEntityGraph(name = "Squad.fetchAll", attributeNodes = { @NamedAttributeNode("leaderFemale"), @NamedAttributeNode("leaderMale")}),
+})
 @Audited(withModifiedFlag = true)
 @Entity
 @EntityListeners({AuditListener.class})
@@ -133,20 +139,12 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 			return false;
 		}
 		Squad other = (Squad) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
+		return checkIds(id, other);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return 31 + ((id == null) ? 0 : id.hashCode());
 	}
 
 	public SquadType getType() {

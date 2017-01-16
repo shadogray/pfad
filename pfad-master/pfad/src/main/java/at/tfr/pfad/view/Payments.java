@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.enterprise.inject.Model;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -25,7 +24,8 @@ import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
 
-@Model
+@Named
+@ApplicationScoped
 public class Payments {
 
 	private Logger log = Logger.getLogger(getClass());
@@ -33,8 +33,8 @@ public class Payments {
 	@Inject
 	private EntityManager entityManager;
 	
-	public List<Payment> filtered(FacesContext facesContext, UIComponent component, final String filter) {
-		log.debug("filter: " + filter + " for: " + component.getId());
+	public List<Payment> filtered(final String filter) {
+		log.debug("filter: " + filter);
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Payment> cq = cb.createQuery(Payment.class);
 		Root<Payment> root = cq.from(Payment.class);
@@ -58,4 +58,8 @@ public class Payments {
 		return list.toArray(new Predicate[list.size()]);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Long> allIds() {
+		return (List<Long>)entityManager.createQuery("select p.id from Payment p").getResultList();
+	}
 }

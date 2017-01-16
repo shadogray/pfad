@@ -20,30 +20,30 @@ public class SquadService {
 	private SquadRepository squadRepo;
 	
 	public SquadDao findBy(Long id) {
-		return sm.squadToDao(squadRepo.findBy(id));
+		return sm.toDao(squadRepo.findBy(id));
 	}
 	
 	public List<SquadDao> findAll() {
 		return squadRepo.findAll().stream()
 				.sorted((a,b)-> a.getName().compareTo(b.getName()))
-				.map(s -> sm.squadToDaoMin(s)).collect(Collectors.toList());
+				.map(s -> sm.toDaoMin(s)).collect(Collectors.toList());
 	}
 	
 	public SquadDao update(SquadDao dao) {
 		Squad m = squadRepo.findBy(dao.getId());
 		sm.updateSquad(dao, m);
-		return sm.squadToDao(m);
+		return sm.toDao(m);
 	}
 	
 	public SquadDao save(SquadDao dao) {
 		Squad m = new Squad();
 		sm.updateSquad(dao, m);
 		squadRepo.save(m);
-		return sm.squadToDao(m);
+		return sm.toDao(m);
 	}
 	
 	public List<SquadDao> map(Collection<Squad> squads) { 
-		return squads.stream().map(s -> sm.squadToDao(s)).collect(Collectors.toList());
+		return squads.stream().map(s -> sm.toDao(s)).collect(Collectors.toList());
 	}
 	
 }

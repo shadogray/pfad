@@ -10,8 +10,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceUnit;
 
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.Before;
@@ -20,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import at.tfr.pfad.dao.MemberRepository;
+import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
@@ -108,12 +107,13 @@ public class TestPfadPersistence {
 		em.getTransaction().begin();
 
 		Member m = new Member();
-		Payment p = new Payment();
-		Booking orig = new Booking();
-		orig.setMember(m);
-		orig.setStatus(BookingStatus.created);
+		Activity a = new Activity().init();
+		Payment p = new Payment().init();
+		Booking orig = new Booking(m, a);
 		orig.getPayments().add(p);
+		em.persist(a);
 		em.persist(m);
+		em.persist(p);
 		em.persist(orig);
 		em.getTransaction().commit();
 		em.close();

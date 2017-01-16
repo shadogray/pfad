@@ -136,20 +136,12 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 			return false;
 		}
 		Payment other = (Payment) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
+		return checkIds(id, other);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return 31 + ((id == null) ? 0 : id.hashCode());
 	}
 
 	public Member getPayer() {
@@ -330,5 +322,12 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 	@Override
 	public String getLongString() {
 		return toString();
+	}
+	
+	public Payment init() {
+		if (aconto == null) aconto = false;
+		if (finished == null) finished = false;
+		if (type == null) type = PaymentType.Membership;
+		return this;
 	}
 }

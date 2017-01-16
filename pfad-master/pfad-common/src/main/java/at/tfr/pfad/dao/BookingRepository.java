@@ -12,6 +12,7 @@ import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
 import org.apache.deltaspike.data.api.Repository;
+import org.apache.deltaspike.data.api.SingleResultType;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
 import at.tfr.pfad.model.Activity;
@@ -25,7 +26,7 @@ public abstract class BookingRepository implements EntityRepository<Booking, Lon
 	@Inject
 	private EntityManager em;
 	
-	@Query
+	@Query(singleResult=SingleResultType.OPTIONAL)
 	@EntityGraph(paths = {"member", "activity", "squad", "payments"})
 	public abstract Booking findById(Long id);
 	
@@ -33,7 +34,11 @@ public abstract class BookingRepository implements EntityRepository<Booking, Lon
 	public abstract List<Booking> findByActivity(Activity activity);
 	
 	@Query(named = "BookingsForPayment")
+	@EntityGraph(paths = {"member", "activity", "squad"})
 	public abstract List<Booking> findByPayment(Payment payment);
+	
+	@Query(named = "BookingsForPaymentIds")
+	public abstract List<Booking> findByPaymentIds(List<Long> paymentIds);
 	
 	@SuppressWarnings("unchecked")
 	public List<Booking> findByIds(Collection<Long> ids) {

@@ -92,14 +92,11 @@ public class SquadBean extends BaseBean implements Serializable {
 			this.squad = this.example;
 		} else {
 			this.squad = findById(getId());
-			this.squad.getScouts().size();
-			this.squad.getAssistants().size();
 		}
 	}
 
 	public Squad findById(Long id) {
-
-		return this.entityManager.find(Squad.class, id);
+		return squadRepo.findById(id);
 	}
 
 	/*
@@ -214,8 +211,10 @@ public class SquadBean extends BaseBean implements Serializable {
 
 		CriteriaQuery<Squad> criteria = builder.createQuery(Squad.class);
 		root = criteria.from(Squad.class);
-		root.fetch(Squad_.assistants);
-		root.fetch(Squad_.scouts);
+		root.fetch(Squad_.leaderFemale, JoinType.LEFT);
+		root.fetch(Squad_.leaderMale, JoinType.LEFT);
+		root.fetch(Squad_.assistants, JoinType.LEFT);
+		root.fetch(Squad_.scouts, JoinType.LEFT);
 		TypedQuery<Squad> query = this.entityManager
 				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());

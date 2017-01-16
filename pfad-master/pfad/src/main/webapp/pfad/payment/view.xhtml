@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
+	xmlns:p="http://primefaces.org/ui"   xmlns:o="http://omnifaces.org/ui"
 	xmlns:forgeview="http://jboss.org/forge/view" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
@@ -41,7 +41,7 @@
 				
 				<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
 				<h:panelGroup>
-					<rich:calendar id="paymentBeanPaymentPaymentDate" value="#{paymentBean.payment.paymentDate}" 
+					<p:calendar id="paymentBeanPaymentPaymentDate" value="#{paymentBean.payment.paymentDate}" 
 						datePattern="dd.MM.yyyy" disabled="true"/>
 					<h:message for="paymentBeanPaymentPaymentDate" styleClass="error" />
 				</h:panelGroup>
@@ -50,9 +50,9 @@
 				<h:outputLabel for="paymentBeanPaymentBookings" value="Buchungen:" />
 				<h:panelGroup>
 					<ui:param name="_collection" value="#{paymentBean.payment.bookings}" />
-					<h:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{forgeview:asList(_collection)}"
+					<p:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{forgeview:asList(_collection)}"
 						var="_item">
-						<h:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Aktivität" />
 							</f:facet>
@@ -60,8 +60,8 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemActivity" value="#{_item.activity}" />
 							</h:link>
-						</h:column>
-						<h:column>
+						</p:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Name" />
 							</f:facet>
@@ -69,8 +69,8 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemName" value="#{_item.member.name}" />
 							</h:link>
-						</h:column>
-						<h:column>
+						</p:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Vorname" />
 							</f:facet>
@@ -78,8 +78,8 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemVorname" value="#{_item.member.vorname}" />
 							</h:link>
-						</h:column>
-						<h:column>
+						</p:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Frei" />
 							</f:facet>
@@ -87,8 +87,8 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemFree" value="#{_item.member.anyFree ? 'FREI' : ''}" />
 							</h:link>
-						</h:column>
-						<h:column>
+						</p:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Geb.Jahr" />
 							</f:facet>
@@ -96,13 +96,13 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemGebJahr" value="#{_item.member.gebJahr}" />
 							</h:link>
-						</h:column>
-					</h:dataTable>
+						</p:column>
+					</p:dataTable>
 				</h:panelGroup>
 				<h:outputText />
 	
 				<h:outputLabel for="paymentBeanPaymentComment" value="Bemerkung:" />
-				<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3" styleClass="fullwidth" readonly="true"/>
+				<p:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3" styleClass="fullwidth" readonly="true"/>
 				<h:outputText />
 	
 				<h:outputLabel for="paymentBeanPaymentAconto" value="Akonto:" />

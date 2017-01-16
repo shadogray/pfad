@@ -16,27 +16,38 @@ import at.tfr.pfad.BookingStatus;
 public class BookingUI extends Booking {
 
 	private Booking booking;
-	private boolean isPayed;
-	private Set<Member> payers;
+	private Member member;
+	private Activity activity;
+	private Squad squad;
 	private boolean free;
 	private Set<Payment> payments;
 	private String squadName;
+	boolean finished;
+	boolean aconto;
+
 
 	public BookingUI(Booking booking) {
+		this(booking, booking.getMember(), booking.getActivity(), booking.getSquad());
+	}
+	
+	public BookingUI(Booking booking, Member member, Activity activity, Squad squad) {
 		this.booking = booking;
-		booking.getPayments().stream().peek(Payment::getId);
+		this.member = member;
+		this.activity = activity;
+		this.squad = squad;
 		this.payments = booking.getPayments();
-		this.payers = booking.getPayments().stream().map(Payment::getPayer).collect(Collectors.toSet());
-		if (booking.getMember() != null) {
-			free = booking.getMember().isFree() || 
-					booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.getFree()));
+		if (member != null) {
+			free = member.isFree() || 
+					member.getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.getFree()));
 		}
-		squadName = booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : null;
+		squadName = member != null && member.getTrupp() != null ? member.getTrupp().getName() : null;
 		if (squadName == null) {
 			if (booking.getSquad() != null) {
 				squadName = booking.getSquad().getName();
 			}
 		}
+		finished = payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getFinished()));
+		aconto = payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getAconto()));
 	}
 
 	public Long getId() {
@@ -72,19 +83,19 @@ public class BookingUI extends Booking {
 	}
 
 	public Member getMember() {
-		return booking.getMember();
+		return member;
 	}
 
 	public void setMember(Member member) {
-		booking.setMember(member);
+		this.member = member;
 	}
 
 	public Activity getActivity() {
-		return booking.getActivity();
+		return activity;
 	}
 
-	public void setActivity(Activity Activity) {
-		booking.setActivity(Activity);
+	public void setActivity(Activity activity) {
+		this.activity = activity;
 	}
 	
 	public BookingStatus getStatus() {
@@ -132,11 +143,9 @@ public class BookingUI extends Booking {
 	}
 
 	public String getPayed() {
-		boolean finished = payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getFinished()));
 		if (finished) {
 			return "JA";
 		}
-		boolean aconto = payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getAconto()));
 		if (aconto) {
 			return "ANZ";
 		}
@@ -145,6 +154,11 @@ public class BookingUI extends Booking {
 	
 	public String getPayer() {
 		return payments.stream().filter(b->b.getPayer() != null).map(Payment::getPayer).map(p->p.toString()).collect(Collectors.joining(","));
+	}
+	
+	@Override
+	public Squad getSquad() {
+		return squad;
 	}
 
 	public String getSquadName() {

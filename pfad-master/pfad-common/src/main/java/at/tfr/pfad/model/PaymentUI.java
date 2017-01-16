@@ -17,15 +17,28 @@ import at.tfr.pfad.PaymentType;
 public class PaymentUI extends Payment {
 
 	private Payment payment;
+	private Member payer;
 	private Set<Booking> bookings;
-	private List<String> truppNames;
+	private String members;
+	private String squads;
+	private String activities;
+	private String activitiesLines;
+	private String payerName;
 
 	public PaymentUI(Payment payment) {
+		this(payment, payment.getPayer());
+	}
+	
+	public PaymentUI(Payment payment, Member payer) {
 		this.payment = payment;
-		this.bookings = payment.getBookings();
-		truppNames = bookings.stream().filter(b-> b.getMember() != null && b.getMember().getTrupp() != null).map(b->b.getMember().getTrupp().getName()).collect(Collectors.toList());
+		this.payer = payer;
+		payerName = payer != null ? payer.getName()+","+payer.getVorname() : "";
 	}
 
+	public Payment getPayment() {
+		return payment;
+	}
+	
 	public Long getId() {
 		return payment.getId();
 	}
@@ -51,15 +64,15 @@ public class PaymentUI extends Payment {
 	}
 
 	public Member getPayer() {
-		return payment.getPayer();
+		return payer;
 	}
 
-	public void setPayer(Member Payer) {
-		payment.setPayer(Payer);
+	public void setPayer(Member payer) {
+		this.payer = payer;
 	}
 	
 	public String getPayerName() {
-		return payment.getPayer() != null ? payment.getPayer().getName()+","+payment.getPayer().getVorname() : ""; 
+		return payerName; 
 	}
 	
 	@Override
@@ -102,6 +115,10 @@ public class PaymentUI extends Payment {
 
 	public void setBookings(Set<Booking> bookings) {
 		this.bookings = bookings;
+		members = bookings.stream().filter(b->b.getMember() != null).map(Booking::getMember).map(m->m.toString()).collect(Collectors.joining(","));
+		squads = bookings.stream().filter(b->b.getMember() != null && b.getMember().getTrupp() != null).map(b->b.getMember().getTrupp().getName()).collect(Collectors.joining(","));
+		activities = bookings.stream().filter(b->b.getActivity() != null).map(Booking::getActivity).map(a->a.toString()).collect(Collectors.joining(","));
+		activitiesLines = bookings.stream().filter(b->b.getActivity() != null).map(b -> b.getActivity().toString()).collect(Collectors.joining("<br>"));
 	}
 
 	public PaymentType getType() {
@@ -161,18 +178,18 @@ public class PaymentUI extends Payment {
 	}
 	
 	public String getMember() {
-		return bookings.stream().filter(b->b.getMember() != null).map(Booking::getMember).map(m->m.toString()).collect(Collectors.joining(","));
+		return members;
 	}
 
 	public String getSquad() {
-		return bookings.stream().filter(b->b.getMember() != null && b.getMember().getTrupp() != null).map(b->b.getMember().getTrupp().getName()).collect(Collectors.joining(","));
+		return squads;
 	}
 
 	public String getActivity() {
-		return bookings.stream().filter(b->b.getActivity() != null).map(Booking::getActivity).map(a->a.toString()).collect(Collectors.joining(","));
+		return activities;
 	}
 	
 	public String getActivitiesLines() {
-		return bookings.stream().filter(b->b.getActivity() != null).map(b -> b.getActivity().toString()).collect(Collectors.joining("<br>"));
+		return activitiesLines;
 	}
 }

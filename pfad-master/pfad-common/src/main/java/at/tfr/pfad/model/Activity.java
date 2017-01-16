@@ -131,20 +131,12 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable, Pres
 			return false;
 		}
 		Activity other = (Activity) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
+		return checkIds(id, other);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return 31 + ((id == null) ? 0 : id.hashCode());
 	}
 
 	@XmlTransient
@@ -285,5 +277,11 @@ public class Activity implements PrimaryKeyHolder, Auditable, Serializable, Pres
 	public boolean isFinished() {
 		return ActivityStatus.cancelled.equals(status) || ActivityStatus.finished.equals(status)
 				|| (end != null && new Date().after(end));
+	}
+	
+	public Activity init() {
+		if (type == null) type = ActivityType.Membership;
+		if (status == null) status = ActivityStatus.planned;
+		return this;
 	}
 }

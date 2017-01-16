@@ -22,7 +22,7 @@ public class MemberService {
 	private Members members;
 	
 	public MemberDao findBy(Long id) {
-		return mm.memberToDao(memberRepo.fetchBy(id));
+		return mm.toDao(memberRepo.fetchBy(id));
 	}
 	
 	public List<MemberDao> filtered(final String filter, final Long truppId) {
@@ -34,17 +34,17 @@ public class MemberService {
 	public MemberDao update(MemberDao dao) {
 		Member m = memberRepo.findBy(dao.getId());
 		mm.updateMember(dao, m);
-		return mm.memberToDao(m);
+		return mm.toDao(m);
 	}
 	
 	public MemberDao save(MemberDao dao) {
 		Member m = new Member();
 		mm.updateMember(dao, m);
 		memberRepo.save(m);
-		return mm.memberToDao(m);
+		return mm.toDao(m);
 	}
 	
 	public List<MemberDao> map(Collection<Member> members) { 
-		return members.stream().map(m -> mm.memberToDao(m)).collect(Collectors.toList());
+		return members.stream().map(m -> mm.toDao(m)).collect(Collectors.toList());
 	}
 }

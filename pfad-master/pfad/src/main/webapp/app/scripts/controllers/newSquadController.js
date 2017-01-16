@@ -1,6 +1,5 @@
 
-angular.module('pfad').controller('NewSquadController', function ($scope, $location, locationParser, flash, SquadResource, MemberResource, MemberResource,
-        MemberResource, MemberResource) {
+angular.module('pfad').controller('NewSquadController', function ($scope, $location, locationParser, flash, SquadResource, MemberResource) {
    $scope.disabled = false;
    $scope.$location = $location;
    $scope.squad = $scope.squad || {};

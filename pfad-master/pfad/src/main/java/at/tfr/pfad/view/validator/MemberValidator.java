@@ -38,8 +38,8 @@ public class MemberValidator {
 	
 
 	public boolean isNotGrinsExportable(Member m, Collection<Member> leaders) {
-		return !m.isAktiv() || !(leaders.contains(m)
-				|| m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
+		return !m.isAktiv() && !(leaders.contains(m)
+				&& m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
 	}
 
 	public List<ValidationResult> validate(Member member, final Collection<Member> leaders) {

@@ -2,8 +2,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://primefaces.org/ui"   xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<o:viewParam name="id" value='#{paymentBean.id}' />
@@ -28,7 +28,7 @@
 	<ui:define name="main">
 		<h:form id="create" rendered="#{paymentBean.viewAllowed}">
 		
-			<rich:focus ajaxRendered="false"/>
+			<p:focus ajaxRendered="false"/>
 			
 			<h:messages globalOnly="true" styleClass="error" />
 
@@ -51,30 +51,30 @@
 						<f:selectItem itemLabel="#{paymentBean.payment.payer}" itemValue="#{paymentBean.payment.payer.idStr}" />
 						<f:ajax render="paymentBeanPaymentPayerPanel" />
 					</h:selectOneMenu>
-					<rich:select id="paymentBeanPaymentPayerSelect" rendered="#{paymentBean.payment.payer == null}" 
+					<p:autoComplete id="paymentBeanPaymentPayerSelect" rendered="#{paymentBean.payment.payer == null}" 
 						tabindex="1" styleClass="fullwidth manual" p:placeholder="Der Zahler oder das Mitglied.."  
-						mode="ajax" autocompleteMethod="#{paymentBean.filterPayers}" minChars="3" selectFirst="false"  
+						mode="ajax" completeMethod="#{paymentBean.filterPayers}" minQueryLenth="3" selectFirst="false"  
 						var="p" itemValue="#{p.id}" itemLabel="#{p}" converter="#{memberBean.converter}" 
 						minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
 						<f:selectItems value="#{paymentBean.filteredPayers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}" />
-						<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectPaymentPayer}"
+						<p:ajax immediate="true" execute="@this" listener="#{paymentBean.selectPaymentPayer}"
 							render="paymentBeanPaymentPayerPanel" />
-					</rich:select>
+					</p:autoComplete>
 					<h:message for="paymentBeanPaymentPayer" styleClass="error" />
 					<h:message for="paymentBeanPaymentPayerSelect" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel value="Betrag:" />
-				<h:inputText id="paymentBeanPaymentAmount" tabindex="0" value="#{paymentBean.payment.amount}" required="true"
+				<p:inputText id="paymentBeanPaymentAmount" tabindex="0" value="#{paymentBean.payment.amount}" required="true"
 					 requiredMessage="Betrag fehlt!" validatorMessage="Betrag ungültig!">
 					<f:convertNumber maxFractionDigits="2" />
-				</h:inputText>
+				</p:inputText>
 				<h:message for="paymentBeanPaymentAmount" />
 
 				<h:outputLabel for="paymentBeanPaymentPaymentDate" value="Zahlungsdatum:" />
 				<h:panelGroup>
-					<rich:calendar id="paymentBeanPaymentPaymentDate" tabindex="0" value="#{paymentBean.payment.paymentDate}"
+					<p:calendar id="paymentBeanPaymentPaymentDate" tabindex="0" value="#{paymentBean.payment.paymentDate}"
 						datePattern="dd.MM.yyyy" />
 					<h:message for="paymentBeanPaymentPaymentDate" styleClass="error" />
 				</h:panelGroup>
@@ -82,9 +82,9 @@
 
 				<h:outputLabel for="paymentBeanPaymentBookings" value="Buchungen:" />
 				<h:panelGroup id="paymentBeanPaymentBookingsPanel">
-					<h:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{paymentBean.payment.bookings}"
+					<p:dataTable id="paymentBeanPaymentBookings" styleClass="data-table" value="#{paymentBean.payment.bookings}"
 						var="_item">
-						<h:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Aktivität" />
 							</f:facet>
@@ -92,8 +92,8 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemActivity" value="#{_item.activity}" />
 							</h:link>
-						</h:column>
-						<h:column>
+						</p:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Name" />
 							</f:facet>
@@ -101,8 +101,8 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemName" value="#{_item.member.name}" />
 							</h:link>
-						</h:column>
-						<h:column>
+						</p:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Vorname" />
 							</f:facet>
@@ -110,8 +110,8 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemVorname" value="#{_item.member.vorname}" />
 							</h:link>
-						</h:column>
-						<h:column>
+						</p:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Frei" />
 							</f:facet>
@@ -119,8 +119,8 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemFree" value="#{_item.member.anyFree ? 'FREI' : ''}" />
 							</h:link>
-						</h:column>
-						<h:column>
+						</p:column>
+						<p:column>
 							<f:facet name="header">
 								<h:outputText value="Geb.Jahr" />
 							</f:facet>
@@ -128,21 +128,21 @@
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemGebJahr" value="#{_item.member.gebJahr}" />
 							</h:link>
-						</h:column>
-						<h:column footerClass="remove-column" headerClass="remove-column">
+						</p:column>
+						<p:column footerClass="remove-column" headerClass="remove-column">
 							<h:commandLink tabindex="0" actionListener="#{paymentBean.deleteBooking(_item.id)}" styleClass="remove-button" >
-								<a4j:ajax execute="@this" render="paymentBeanPaymentBookingsPanel"/>
+								<p:ajax execute="@this" render="paymentBeanPaymentBookingsPanel"/>
 							</h:commandLink>
-						</h:column>
-					</h:dataTable>
+						</p:column>
+					</p:dataTable>
 					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
-						<rich:select id="paymentBeanExampleBookingSelect" styleClass="fullwidth manual" 
-							mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{paymentBean.filterBookings}" 
+						<p:autoComplete id="paymentBeanExampleBookingSelect" styleClass="fullwidth manual" 
+							mode="ajax" minQueryLenth="3" selectFirst="false" completeMethod="#{paymentBean.filterBookings}" 
 							var="b" itemLabel="#{b}" itemValue="#{b.id}" converter="#{bookingBean.converter}"
 							minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
 							<f:selectItems value="#{paymentBean.filteredBookings}" var="boo" itemLabel="#{boo}" itemValue="#{boo.idStr}"/>
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}" render="paymentBeanPaymentBookingsPanel" />
-						</rich:select>
+							<p:ajax immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}" render="paymentBeanPaymentBookingsPanel" />
+						</p:autoComplete>
 						<h:message for="paymentBeanExampleBookingSelect" styleClass="error" />
 					</h:panelGrid>
 				</h:panelGroup>
@@ -150,7 +150,7 @@
 
 				<h:outputLabel for="paymentBeanPaymentComment" value="Bemerkung:" />
 				<h:panelGroup>
-					<h:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"
+					<p:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3"
 						styleClass="fullwidth" />
 					<h:message for="paymentBeanPaymentComment" styleClass="error" />
 				</h:panelGroup>

@@ -12,6 +12,7 @@ import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
 import org.apache.deltaspike.data.api.Repository;
+import org.apache.deltaspike.data.api.SingleResultType;
 
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Payment;
@@ -23,7 +24,7 @@ public abstract class PaymentRepository implements EntityRepository<Payment, Lon
 	@Inject
 	private EntityManager em;
 	
-	@Query
+	@Query(singleResult=SingleResultType.OPTIONAL)
 	@EntityGraph(paths = {"payer", "bookings"})
 	public abstract Payment findById(Long id);
 	

@@ -62,15 +62,27 @@ import at.tfr.pfad.dao.AuditListener;
 		@NamedQuery(name = "Member.distStrasse", query = "select distinct m.strasse from Member m order by m.strasse"),
 		@NamedQuery(name = "Member.distTitel", query = "select distinct m.titel from Member m order by m.titel"),
 		@NamedQuery(name = "Member.distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
-		@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m order by m.religion"), })
+		@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m order by m.religion"), 
+		@NamedQuery(name = "Member.distNameLike", query = "select distinct m.name from Member m where lower(m.name) like :value order by m.name"),
+		@NamedQuery(name = "Member.distVornameLike", query = "select distinct m.vorname from Member m where lower(m.vorname) like :value order by m.vorname"),
+		@NamedQuery(name = "Member.distPLZLike", query = "select distinct m.plz from Member m where lower(m.plz) like :value order by m.plz"),
+		@NamedQuery(name = "Member.distOrtLike", query = "select distinct m.ort from Member m where lower(m.ort) like :value order by m.ort"),
+		@NamedQuery(name = "Member.distStrasseLike", query = "select distinct m.strasse from Member m where lower(m.strasse) like :value order by m.strasse"),
+		@NamedQuery(name = "Member.distTitelLike", query = "select distinct m.titel from Member m where lower(m.titel) like :value order by m.titel"),
+		@NamedQuery(name = "Member.distAnredeLike", query = "select distinct m.anrede from Member m where lower(m.anrede) like :value order by m.anrede"),
+		@NamedQuery(name = "Member.distReligionLike", query = "select distinct m.religion from Member m where lower(m.religion) like :value order by m.religion"), 
+		})
 @NamedEntityGraphs({
-		@NamedEntityGraph(name = "fetchAll", 
-				attributeNodes = { @NamedAttributeNode("funktionen"),
-				@NamedAttributeNode("Vollzahler"), 
-				@NamedAttributeNode("reduced"), 
-				@NamedAttributeNode("parents"),
-				@NamedAttributeNode("siblings"), 
-				@NamedAttributeNode("trupp") }),
+		@NamedEntityGraph(name = Member.Funktionen, attributeNodes = { @NamedAttributeNode("funktionen") }),
+		@NamedEntityGraph(name = Member.FetchAll, 
+				attributeNodes = { 
+						@NamedAttributeNode("funktionen"),
+						@NamedAttributeNode("vollzahler"), 
+						@NamedAttributeNode("reduced"), 
+						@NamedAttributeNode("parents"),
+						@NamedAttributeNode("siblings"), 
+						@NamedAttributeNode("trupp"),
+				}),
 		@NamedEntityGraph(name = "withTrupp", attributeNodes = @NamedAttributeNode("trupp")) })
 @Audited(withModifiedFlag = true)
 @Entity
@@ -79,6 +91,9 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "handler", "hibernateLazyInitializer" })
 public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member>, Auditable, Presentable {
+
+	public static final String Funktionen = "MemberFunktionen";
+	public static final String FetchAll = "MemberFetchAll";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
@@ -203,26 +218,26 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	protected Set<Squad> maleGuided;
 
 	@ManyToOne(fetch=FetchType.LAZY)
-	protected Member Vollzahler;
+	protected Member vollzahler;
 
-	@OneToMany(mappedBy = "Vollzahler")
+	@OneToMany(mappedBy = "vollzahler")
 	@OrderBy("Name, Vorname")
 	protected Set<Member> reduced;
 
 	@NotAudited
-	@Column(name = "Vollzahler_id", insertable = false, updatable = false)
-	protected Long VollzahlerId;
+	@Column(name = "vollzahler_id", insertable = false, updatable = false)
+	protected Long vollzahlerId;
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER)
 	protected Set<Function> funktionen = new HashSet<>();
 
 	@ManyToMany
 	@JoinTable(name = "member_member", joinColumns = @JoinColumn(name = "member_id"), inverseJoinColumns = @JoinColumn(name = "siblings_id"))
-	@OrderBy("Name, Vorname")
+	@OrderBy("name, vorname")
 	protected Set<Member> siblings = new HashSet<>();
 
 	@ManyToMany(mappedBy = "siblings")
-	@OrderBy("Name, Vorname")
+	@OrderBy("name, vorname")
 	protected Set<Member> parents = new HashSet<>();
 
 	@OneToMany(mappedBy = "payer")
@@ -263,20 +278,12 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 			return false;
 		}
 		Member other = (Member) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
+		return checkIds(id, other);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
+		return 31 + ((id == null) ? 0 : id.hashCode());
 	}
 
 	@Pfad
@@ -557,11 +564,11 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	@Pfad
 	public Member getVollzahler() {
-		return this.Vollzahler;
+		return this.vollzahler;
 	}
 
-	public void setVollzahler(final Member Vollzahler) {
-		this.Vollzahler = Vollzahler;
+	public void setVollzahler(final Member vollzahler) {
+		this.vollzahler = vollzahler;
 	}
 
 	@Pfad
@@ -623,7 +630,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	}
 
 	public Long getVollzahlerId() {
-		return VollzahlerId;
+		return vollzahlerId;
 	}
 
 	/**
@@ -732,8 +739,8 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 			result += ", telefon: " + telefon;
 		if (truppId != null)
 			result += ", truppId: " + truppId;
-		if (VollzahlerId != null)
-			result += ", VollzahlerId: " + VollzahlerId;
+		if (vollzahlerId != null)
+			result += ", vollzahlerId: " + vollzahlerId;
 		return result;
 	}
 

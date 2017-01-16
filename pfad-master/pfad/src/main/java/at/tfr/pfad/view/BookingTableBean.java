@@ -8,17 +8,18 @@
 package at.tfr.pfad.view;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.richfaces.component.SortOrder;
+import org.primefaces.model.SortMeta;
+import org.primefaces.model.SortOrder;
 
 import at.tfr.pfad.model.BookingDataModel;
 import at.tfr.pfad.model.Squad;
@@ -29,9 +30,9 @@ public class BookingTableBean implements Serializable {
 
 	    private static int cnt = 0;
 	    private String selectionMode = "multiple";
-	    private Map<String, SortOrder> sortOrders = new HashMap<String, SortOrder>();
-	    private Map<String, String> columnHeaders = new HashMap<String, String>();
-	    private Map<String, String> filterValues = new HashMap<String, String>();
+	    private List<SortMeta> sortOrders = new ArrayList<>();
+	    private Map<String, String> columnHeaders = new HashMap<>();
+	    private Map<String, String> filterValues = new HashMap<>();
 	    private String sortProperty;
 	    private List<Squad> squads;
 
@@ -56,15 +57,15 @@ public class BookingTableBean implements Serializable {
 	        columnHeaders.put("payed", "Bezahlt");
 	        columnHeaders.put("comment", "Bemerkung");
 
-	        sortOrders.put("id", SortOrder.unsorted);
-	        sortOrders.put("member", SortOrder.unsorted);
-	        sortOrders.put("strasse", SortOrder.unsorted);
-	        sortOrders.put("ort", SortOrder.unsorted);
-	        sortOrders.put("activity", SortOrder.unsorted);
-	        sortOrders.put("squadName", SortOrder.unsorted);
-	        sortOrders.put("status", SortOrder.unsorted);
-	        sortOrders.put("comment", SortOrder.unsorted);
-	        sortOrders.put("payed", SortOrder.unsorted);
+//	        sortOrders.add("id", SortOrder.UNSORTED);
+//	        sortOrders.put("member", SortOrder.UNSORTED);
+//	        sortOrders.put("strasse", SortOrder.UNSORTED);
+//	        sortOrders.put("ort", SortOrder.UNSORTED);
+//	        sortOrders.put("activity", SortOrder.UNSORTED);
+//	        sortOrders.put("squadName", SortOrder.UNSORTED);
+//	        sortOrders.put("status", SortOrder.UNSORTED);
+//	        sortOrders.put("comment", SortOrder.UNSORTED);
+//	        sortOrders.put("payed", SortOrder.UNSORTED);
 	        
 	        squads = squadBean.getAll();
 	    }
@@ -73,11 +74,11 @@ public class BookingTableBean implements Serializable {
 	        return columnHeaders;
 	    }
 	    
-	    public Map<String, SortOrder> getSortOrders() {
+	    public List<SortMeta> getSortOrders() {
 	        return sortOrders;
 	    }
 
-	    public void setSortOrders(Map<String, SortOrder> sortOrders) {
+	    public void setSortOrders(List<SortMeta> sortOrders) {
 			this.sortOrders = sortOrders;
 		}
 	    
@@ -98,20 +99,20 @@ public class BookingTableBean implements Serializable {
 	    }
 
 	    public void toggleSort() {
-	        for (final Entry<String, SortOrder> entry : sortOrders.entrySet()) {
+	        for (final SortMeta entry : sortOrders) {
 	            SortOrder newOrder;
 
-	            if (entry.getKey().equals(sortProperty)) {
-	                if (entry.getValue() == SortOrder.ascending) {
-	                    newOrder = SortOrder.descending;
+	            if (entry.getSortField().equals(sortProperty)) {
+	                if (entry.getSortOrder() == SortOrder.ASCENDING) {
+	                    newOrder = SortOrder.DESCENDING;
 	                } else {
-	                    newOrder = SortOrder.ascending;
+	                    newOrder = SortOrder.DESCENDING;
 	                }
 	            } else {
-	                newOrder = SortOrder.unsorted;
+	                newOrder = SortOrder.UNSORTED;
 	            }
 
-	            entry.setValue(newOrder);
+	            entry.setSortOrder(newOrder);
 	        }
 	    }
 

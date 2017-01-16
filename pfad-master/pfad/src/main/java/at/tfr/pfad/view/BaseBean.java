@@ -17,25 +17,30 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
-import org.richfaces.component.UISelect;
+import org.primefaces.event.SelectEvent;
 
 import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.Members;
 import at.tfr.pfad.dao.PaymentRepository;
+import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
+import at.tfr.pfad.svc.BookingDao;
+import at.tfr.pfad.svc.BookingMapper;
+import at.tfr.pfad.svc.MemberDao;
+import at.tfr.pfad.svc.MemberMapper;
+import at.tfr.pfad.svc.PaymentDao;
+import at.tfr.pfad.svc.PaymentMapper;
+import at.tfr.pfad.svc.SquadMapper;
 
 public abstract class BaseBean implements Serializable {
 
@@ -52,17 +57,28 @@ public abstract class BaseBean implements Serializable {
 	@Inject
 	protected PageSizeBean pageSize;
 	@Inject
-	private transient Bookings bookings;
+	private Bookings bookings;
 	@Inject
-	private transient Members members;
+	private Members members;
 	@Inject
-	private transient Payments payments;
+	private Payments payments;
 	@Inject
-	private transient MemberRepository memberRepo;
+	private MemberRepository memberRepo;
 	@Inject
-	protected transient BookingRepository bookingRepo;
+	protected BookingRepository bookingRepo;
 	@Inject
-	protected transient PaymentRepository paymentRepo;
+	protected PaymentRepository paymentRepo;
+	@Inject
+	protected SquadRepository squadRepo;
+	
+	@Inject
+	protected PaymentMapper paymentMap;
+	@Inject
+	protected BookingMapper bookingMap;
+	@Inject
+	protected MemberMapper memberMap;
+	@Inject
+	protected SquadMapper squadMap;
 	
 	protected int page;
 	protected long count;
@@ -127,10 +143,6 @@ public abstract class BaseBean implements Serializable {
 	
 	protected Long id;
 
-	protected Payment payment;
-	protected Booking booking;
-	protected Member member;
-
 	private Payment paymentExample = new Payment();
 	private Booking bookingExample = new Booking();
 	private Member memberExample = new Member();
@@ -143,11 +155,10 @@ public abstract class BaseBean implements Serializable {
 	protected Member exampleMember = null;
 	protected Payment examplePayment = null;
 	protected Member examplePayer = null;
-	protected Member paymentPayer = null;
-	protected List<Member> filteredMembers = new ArrayList<>();
-	protected List<Member> filteredPayers = new ArrayList<>();
-	protected List<Booking> filteredBookings = new ArrayList<>();
-	protected List<Payment> filteredPayments = new ArrayList<>();
+	protected List<MemberDao> filteredMembers = new ArrayList<>();
+	protected List<MemberDao> filteredPayers = new ArrayList<>();
+	protected List<BookingDao> filteredBookings = new ArrayList<>();
+	protected List<PaymentDao> filteredPayments = new ArrayList<>();
 
 	{
 		log.debug("inited");
@@ -180,10 +191,7 @@ public abstract class BaseBean implements Serializable {
 	public void setPaymentExample(Payment paymentExample) {
 		this.paymentExample = paymentExample;
 	}
-	public Payment getPayment() {
-		return payment;
-	}
-	
+
 	public List<Payment> getPayments(Booking b) {
 		if (b == null) {
 			return Collections.emptyList();
@@ -192,28 +200,6 @@ public abstract class BaseBean implements Serializable {
 			return new ArrayList<Payment>(b.getPayments().stream().sorted((x,y) -> x.getId().compareTo(y.getId())).collect(Collectors.toList()));
 		}
 		return paymentRepo.findByBooking(b);
-	}
-	
-	public void setPayment(Payment payment) {
-		if (this.payment == null || !this.payment.equals(payment)) {
-			this.payment = payment;
-		}
-	}
-	
-	public Member getMember() {
-		return member;
-	}
-	
-	public void setMember(Member member) {
-		this.member = member;
-	}
-	
-	public Booking getBooking() {
-		return booking;
-	}
-	
-	public void setBooking(Booking booking) {
-		this.booking = booking;
 	}
 	
 	public List<Booking> getBookings(Payment p) {
@@ -266,156 +252,123 @@ public abstract class BaseBean implements Serializable {
 		this.examplePayer = examplePayer;
 	}
 	
-	public Member getPaymentPayer() {
-		return paymentPayer;
-	}
-	
-	public void setPaymentPayer(Member paymentPayer) {
-		this.paymentPayer = paymentPayer;
-	}
-	
-	public List<Booking> filterBookings(FacesContext facesContext, UIComponent component, final String filter) {
+	public List<BookingDao> filterBookings(final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
-			filteredBookings = bookings.filtered(facesContext, component, filter);
+			filteredBookings = bookings.filtered(filter)
+					.stream().map(b->bookingMap.toDao(b)).collect(Collectors.toList());
 		}
 		return filteredBookings;
 	}
 	
-	public List<Booking> getFilteredBookings() {
+	public List<BookingDao> getFilteredBookings() {
 		return filteredBookings;
 	}
 
-	public List<Member> filterPayers(FacesContext facesContext, UIComponent component, final String filter) {
+	public List<MemberDao> filterPayers(final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
-			filteredPayers = members.filtered(facesContext, component, filter);
+			filteredPayers = members.filtered(filter)
+					.stream().map(b->memberMap.toDao(b)).collect(Collectors.toList());
 		}
 		return filteredPayers;
 	}
 	
-	public List<Member> getFilteredPayers() {
+	public List<MemberDao> getFilteredPayers() {
 		return filteredPayers;
 	}
 
-	public List<Member> filterMembers(FacesContext facesContext, UIComponent component, final String filter) {
+	public List<MemberDao> filterMembers(final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
-			filteredMembers = members.filtered(facesContext, component, filter);
+			filteredMembers = members.filtered(filter)
+					.stream().map(b->memberMap.toDao(b)).collect(Collectors.toList());
 		}
 		return filteredMembers;
 	}
 	
-	public List<Member> getFilteredMembers() {
+	public List<MemberDao> getFilteredMembers() {
 		return filteredMembers;
 	}
 	
-	public List<Payment> filterPayments(FacesContext facesContext, UIComponent component, final String filter) {
+	public List<PaymentDao> filterPayments(final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
-			filteredPayments = payments.filtered(facesContext, component, filter);
+			filteredPayments = payments.filtered(filter)
+					.stream().map(b->paymentMap.toDao(b)).collect(Collectors.toList());
 		}
 		return filteredPayments;
 	}
 	
-	public List<Payment> getFilteredPayments() {
+	public List<PaymentDao> getFilteredPayments() {
 		return filteredPayments;
 	}
 
-	public void addPaymentBooking(AjaxBehaviorEvent event) {
-		log.debug("addPaymentBooking: " + event);
-		UISelect uiSelect = (UISelect) event.getSource();
-		String val = (String)uiSelect.getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			bookingToAdd = null;
+	public Booking selectBooking(SelectEvent event) {
+		log.debug("selectBooking: " + event);
+		Object val = event.getObject();
+		if (!(val instanceof BookingDao)) {
+			return null;
 		} else {
-			bookingToAdd = findBookingById(Long.valueOf(val));
-			payment.getBookings().add(bookingToAdd);
-			bookingToAdd.getPayments().add(payment);
-			payment.updateType(bookingToAdd.getActivity());
-			uiSelect.setSubmittedValue("");
-			uiSelect.setValue(null);
-			uiSelect.setLocalValueSet(false);
+			return findBookingById(((BookingDao)val).getId());
 		}
 	}
 
-	public void selectExampleBooking(AjaxBehaviorEvent event) {
+	public Payment selectPayment(SelectEvent event) {
+		log.debug("selectPayment: " + event);
+		Object val = event.getObject();
+		if (!(val instanceof Payment)) {
+			return null;
+		} else {
+			return findPaymentById(((Payment)val).getId());
+		}
+	}
+
+	public Member selectMember(SelectEvent event) {
+		log.debug("selectPayment: " + event);
+		Object val = event.getObject();
+		if (!(val instanceof Member)) {
+			return null;
+		} else {
+			return findMemberById(((Member)val).getId());
+		}
+	}
+
+	public void selectExampleBooking(SelectEvent event) {
 		log.debug("selectExampleBooking: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
+		Object val = event.getObject();
+		if (!(val instanceof Booking)) {
 			exampleBooking = null;
 		} else {
-			exampleBooking = findBookingById(Long.valueOf(val));
-			filteredBookings.add(exampleBooking);
+			exampleBooking = findBookingById(((Booking)val).getId());
+			filteredBookings.add(bookingMap.toDao(exampleBooking));
 		}
 	}
 
-	public void selectPaymentPayer(AjaxBehaviorEvent event) {
-		log.debug("selectPaymentPayer: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			paymentPayer = null;
-		} else {
-			paymentPayer = findMemberById(Long.valueOf(val));
-			payment.setPayer(paymentPayer);
-		}
-	}
-
-	public void selectExamplePayer(AjaxBehaviorEvent event) {
+	public void selectExamplePayer(SelectEvent event) {
 		log.debug("selectExamplePayer: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
+		Object val = event.getObject();
+		if (!(val instanceof Member)) {
 			examplePayer = null;
 		} else {
-			examplePayer = findMemberById(Long.valueOf(val));
-			filteredPayers.add(examplePayer);
+			examplePayer = findMemberById(Long.valueOf(((Member)val).getId()));
+			filteredPayers.add(memberMap.toDao(examplePayer));
 		}
 	}
 
-	public void selectExampleMember(AjaxBehaviorEvent event) {
+	public void selectExampleMember(SelectEvent event) {
 		log.debug("selectExampleMember: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
+		Object val = event.getObject();
+		if (!(val instanceof Member)) {
 			exampleMember = null;
 		} else {
-			exampleMember = findMemberById(Long.valueOf(val));
-			filteredMembers.add(exampleMember);
-		}
-	}
-
-	public void selectBookingMember(AjaxBehaviorEvent event) {
-		log.debug("selectBookingMember: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			booking.setMember(null);
-		} else {
-			booking.setMember(findMemberById(Long.valueOf(val)));
-		}
-	}
-
-	public void selectMemberVollzahler(AjaxBehaviorEvent event) {
-		log.debug("selectMemberVollzahler: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			member.setVollzahler(null);
-		} else {
-			member.setVollzahler(findMemberById(Long.valueOf(val)));
-		}
-	}
-
-	public void addMemberSibling(AjaxBehaviorEvent event) {
-		log.debug("selectMemberSibling: " + event);
-		UISelect uiSelect = (UISelect) event.getSource();
-		String val = (String)uiSelect.getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			memberToAdd = null;
-		} else {
-			memberToAdd = findMemberById(Long.valueOf(val));
-			member.getSiblings().add(memberToAdd);
-			uiSelect.setSubmittedValue("");
-			uiSelect.setValue(null);
-			uiSelect.setLocalValueSet(false);
+			exampleMember = findMemberById(Long.valueOf(((Member)val).getId()));
+			filteredMembers.add(memberMap.toDao(exampleMember));
 		}
 	}
 
 	public Booking findBookingById(Long id) {
 		return bookingRepo.findById(id);
+	}
+
+	public Payment findPaymentById(Long id) {
+		return paymentRepo.findById(id);
 	}
 
 	public Member findMemberById(Long id) {

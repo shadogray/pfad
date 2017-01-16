@@ -3,8 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" xmlns:pfad="http://xmlns.jcp.org/jsf/composite/scaffold" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://primefaces.org/ui"   xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:pfad="http://xmlns.jcp.org/jsf/composite/scaffold" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<f:viewParam name="page" value='#{bookingBean.page}' />
@@ -30,7 +30,7 @@
 	<ui:define name="main">
 		<h:form id="search">
 		
-			<rich:focus preserve="true" ajaxRendered="false"/>
+			<p:focus preserve="true" ajaxRendered="false"/>
 
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
@@ -56,13 +56,12 @@
 								<f:selectItem itemLabel="#{bookingBean.exampleMember}" itemValue="#{bookingBean.exampleMember.idStr}"/>
 								<f:ajax render="@form" />
 							</h:selectOneMenu>
-							<rich:select id="bookingBeanExampleMemberSelect" tabindex="0" styleClass="fullwidth manual" rendered="#{bookingBean.exampleMember == null}"
-								mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{bookingBean.filterPayers}" 
-								var="p" itemLabel="#{p}" itemValue="#{p.id}" converter="#{memberBean.converter}" 
-								minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+							<p:autoComplete id="bookingBeanExampleMemberSelect" tabindex="0" styleClass="fullwidth manual" rendered="#{bookingBean.exampleMember == null}"
+								minQueryLenth="3" completeMethod="#{bookingBean.filterPayers}" maxResults="10"
+								var="p" itemLabel="#{p}" itemValue="#{p.id}" converter="#{memberBean.converter}" >
 								<f:selectItems value="#{bookingBean.filteredPayers}" var="mem" itemLabel="#{mem}" itemValue="#{mem}"/>
-								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{bookingBean.selectExampleMember}" render="@form" />
-							</rich:select>
+								<p:ajax immediate="true" execute="@this" listener="#{bookingBean.selectExampleMember}" render="@form" />
+							</p:autoComplete>
 							<h:message for="bookingBeanExampleMemberSelect" styleClass="error" />
 							<h:message for="bookingBeanExampleMember" styleClass="error" />
 						</h:panelGroup>
@@ -80,7 +79,7 @@
 
 						<h:outputLabel for="bookingBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
-							<h:inputText id="bookingBeanExampleComment" value="#{bookingBean.example.comment}" />
+							<p:inputText id="bookingBeanExampleComment" value="#{bookingBean.example.comment}" />
 							<h:message for="bookingBeanExampleComment" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
@@ -101,9 +100,9 @@
 				</h:panelGroup>
 			</f:validateBean>
 
-			<h:dataTable id="bookingBeanPageItems" styleClass="data-table" value="#{bookingBean.pageItems}" var="_item">
+			<p:dataTable id="bookingBeanPageItems" styleClass="data-table" value="#{bookingBean.pageItems}" var="_item">
 
-				<h:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Aktivität" />
 					</f:facet>
@@ -111,9 +110,9 @@
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingActivity" value="#{_item.activity.name}" />
 					</h:commandLink>
-				</h:column>
+				</p:column>
 
-				<h:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Start" />
 					</f:facet>
@@ -121,9 +120,9 @@
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingActivityStart" value="#{_item.activity.start}" />
 					</h:commandLink>
-				</h:column>
+				</p:column>
 
-				<h:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Teilnehmer" />
 					</f:facet>
@@ -131,9 +130,9 @@
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingMember" value="#{_item.member}" />
 					</h:commandLink>
-				</h:column>
+				</p:column>
 
-				<h:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Status" />
 					</f:facet>
@@ -141,9 +140,9 @@
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingStatus" value="#{_item.status}" />
 					</h:commandLink>
-				</h:column>
+				</p:column>
 
-				<h:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Comment" />
 					</f:facet>
@@ -151,9 +150,9 @@
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingComment" value="#{_item.comment}" />
 					</h:commandLink>
-				</h:column>
+				</p:column>
 
-			</h:dataTable>
+			</p:dataTable>
 			
 			<ui:include src="/resources/scaffold/paginator.xhtml">
 				<ui:param name="paginatorBean" value='#{bookingBean}' />

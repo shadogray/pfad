@@ -57,13 +57,13 @@ public class MemberDao extends BaseDao {
 	protected boolean support;
 	protected boolean infoMail;
 	protected boolean free;
+	protected boolean dead;
 	protected ScoutRole rolle;
 	protected Long truppId;
 	protected Long vollzahlerId;
 	protected BaseDao trupp;
-	protected BaseDao Vollzahler;
+	protected BaseDao vollzahler;
 	protected Set<BaseDao> reduced;
-	protected Long VollzahlerId;
 	protected Set<BaseDao> funktionen = new TreeSet<>();
 	protected Set<BaseDao> siblings = new TreeSet<>();
 	protected Set<BaseDao> parents = new TreeSet<>();
@@ -457,6 +457,14 @@ public class MemberDao extends BaseDao {
 		this.free = free;
 	}
 
+	public boolean isDead() {
+		return dead;
+	}
+	
+	public void setDead(boolean dead) {
+		this.dead = dead;
+	}
+	
 	public Long getTruppId() {
 		return truppId;
 	}
@@ -483,11 +491,11 @@ public class MemberDao extends BaseDao {
 
 	@Pfad
 	public BaseDao getVollzahler() {
-		return this.Vollzahler;
+		return this.vollzahler;
 	}
 
 	public void setVollzahler(final BaseDao Vollzahler) {
-		this.Vollzahler = Vollzahler;
+		this.vollzahler = Vollzahler;
 	}
 
 	@Pfad

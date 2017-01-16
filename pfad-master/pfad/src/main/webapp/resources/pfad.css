@@ -1,0 +1,12 @@
+.boolean { width: 15%; }
+
+td button {
+	padding: 0px !important;
+}
+
+.ui-inputfield {
+    margin: 0;
+    outline: medium none;
+    padding: 1px;
+    font-weight: normal;
+}

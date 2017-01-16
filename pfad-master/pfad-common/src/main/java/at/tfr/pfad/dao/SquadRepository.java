@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.apache.deltaspike.data.api.EntityGraph;
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
@@ -26,6 +27,9 @@ import at.tfr.pfad.model.Squad_;
 @Repository
 public abstract class SquadRepository implements EntityRepository<Squad, Long>, CriteriaSupport<Squad>, EntityManagerDelegate<Squad> {
 
+	@EntityGraph(paths = {"leaderFemale","leaderMale","leaders","assistants"})
+	public abstract Squad findById(Long id);
+	
 	public abstract List<Squad> findByName(String name);
 	
 	public abstract List<Squad> findByLeaderFemaleEqual(Member leader);

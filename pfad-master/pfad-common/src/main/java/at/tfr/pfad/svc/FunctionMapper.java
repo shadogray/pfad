@@ -20,6 +20,6 @@ public interface FunctionMapper {
 		@Mapping(target="shortName", source="shortString"),
 		@Mapping(target="longName", source="longString"),
 	})
-	FunctionDao functionToDao(Function function);
+	FunctionDao toDao(Function function);
 	
 }

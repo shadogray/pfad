@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.ejb.Stateless;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
@@ -23,7 +21,7 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 
 @Named
-@Stateless
+@ApplicationScoped
 public class Members {
 
 	private Logger log = Logger.getLogger(getClass());
@@ -32,11 +30,6 @@ public class Members {
 	private MemberRepository memberRepo;
 	@Inject
 	private EntityManager entityManager;
-
-	public List<Member> filtered(FacesContext facesContext, UIComponent component, final String filter) {
-		log.debug("filter: " + filter + " for: " + component.getId());
-		return filtered(filter);
-	}
 
 	public List<Member> filtered(final String filter) {
 		return filtered(filter, null);
@@ -63,7 +56,7 @@ public class Members {
 		
 		cq.where(cb.and(preds.toArray(new Predicate[preds.size()])));
 		return this.entityManager.createQuery(query.distinct(true))
-				.setHint(Graphs.FETCHGRAPH, Graphs.createHint(entityManager, "fetchAll"))
+				.setHint(Graphs.FETCHGRAPH, Graphs.createHint(entityManager, Member.FetchAll))
 				.setMaxResults(30).getResultList();
 	}
 
@@ -88,4 +81,8 @@ public class Members {
 		return list.toArray(new Predicate[list.size()]);
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Long> allIds() {
+		return (List<Long>)entityManager.createQuery("select m.id from Member m").getResultList();
+	}
 }
