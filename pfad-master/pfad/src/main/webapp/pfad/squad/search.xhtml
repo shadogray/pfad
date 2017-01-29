@@ -31,7 +31,7 @@
 						<h:outputLabel for="squadBeanExampleType" value="Type:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="squadBeanExampleType" value="#{squadBean.example.type}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{squadBean.types}" />
 							</h:selectOneMenu>
 							<h:message for="squadBeanExampleType" styleClass="error" />
@@ -47,7 +47,7 @@
 						<h:panelGroup>
 							<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanExampleLeaderFemale"
 								value="#{squadBean.example.leaderFemale}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}"
 									value="#{memberBean.selectableLeaders}" var="_item" />
 							</h:selectOneMenu>
@@ -58,7 +58,7 @@
 						<h:panelGroup>
 							<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanExampleLeaderMale"
 								value="#{squadBean.example.leaderMale}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}"
 									value="#{memberBean.selectableLeaders}" var="_item" />
 							</h:selectOneMenu>

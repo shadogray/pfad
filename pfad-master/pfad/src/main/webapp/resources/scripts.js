@@ -20,14 +20,24 @@ function test(elem, event, params) {
 }
 
 function submitSearch(event) {
-	// console.log("added search: " + event);
+	//console.log("added search: " + event);
 	if (event.which == '13') {
-		document.search.submit();
+		//console.log("enter found: " + event.which);
+		var search = $('#search\\:search');
+		if (search.length > 0) {
+			//console.log('found search: '+search.length);
+			try {
+				search.click();
+				//console.log('clicked search: '+search.length);
+			} catch (err) {
+				console.log('error happened: '+err);
+			}
+		}
 	}
 }
 
 $(function() {
-	$('#search').on('keypress', function(event) {
+	$('form#search').on('keypress', function(event) {
 		submitSearch(event);
 	});
 	$('.stopKeyPress').keypress(function(event) {

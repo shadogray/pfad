@@ -41,7 +41,7 @@
 						<h:outputLabel for="activityBeanExampleType" value="Typ:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="activityBeanExampleType" value="#{activityBean.example.type}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.types}" />
 							</h:selectOneMenu>
 							<h:message for="activityBeanExampleType" styleClass="error" />
@@ -50,8 +50,8 @@
 
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
-						<h:commandLink value="Suchen" action='#{activityBean.search}' styleClass="btn btn-primary" />
-						<h:commandLink value="Neu" action='#{activityBean.create}' styleClass="btn btn-primary" />
+						<h:commandLink id="search" value="Suchen" action='#{activityBean.search}' styleClass="btn btn-primary" />
+						<h:commandLink id="create" value="Neu" action='#{activityBean.create}' styleClass="btn btn-primary" />
 					</h:panelGroup>
 				</h:panelGroup>
 			</f:validateBean>

@@ -97,7 +97,7 @@
 				</h:panelGroup>
 				<h:panelGroup layout="block">
 					<h:selectOneMenu value="#{bookingTableBean.filterValues['squadName']}" tabindex="6">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItems value="#{squadBean.all}" var="s" itemLabel="#{s.name}" itemValue="#{s.name}"/>
 						<f:ajax render="@form" event="valueChange" />
 					</h:selectOneMenu>
@@ -131,7 +131,7 @@
 				</h:panelGroup>
 				<h:panelGroup layout="block">
 					<h:selectOneMenu value="#{bookingTableBean.filterValues['payed']}" tabindex="6">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItem itemLabel="Ja" itemValue="true"/>
 						<f:selectItem itemLabel="Nein" itemValue="false"/>
 						<f:selectItem itemLabel="Anz" itemValue="anz"/>
@@ -346,7 +346,7 @@
 							mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{paymentBean.filterBookings}" 
 							var="b" itemLabel="#{b}" itemValue="#{b.id}" p:placeholder="Buchung hinzufügen.."
 							minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-							<f:selectItem />
+							<f:selectItem noSelectionOption="true"/>
 							<f:selectItems value="#{paymentBean.filteredBookings}" var="boo" itemLabel="#{boo}" itemValue="#{boo.idStr}"/>
 							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.addPaymentBooking}" render="panelGroupEditPayment" />
 						</rich:select>

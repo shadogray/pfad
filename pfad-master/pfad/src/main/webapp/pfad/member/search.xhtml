@@ -12,7 +12,7 @@
 		<f:viewParam name="memberBeanExampleBVKey" value="#{memberBean.example.BVKey}"/>
 		<f:viewParam name="memberBeanExampleTelefon" value="#{memberBean.example.telefon}"/>
 		<f:viewParam name="memberBeanExampleTrupp" value="#{memberBean.example.trupp}" converter="#{squadBean.converter}"/>
-		<f:viewParam name="memberBeanExampleFunktionen" value="#{memberBean.functionIds}" />
+		<f:viewParam name="memberBeanExampleFunktionen" value="#{memberBean.exampleFunctions}" converter="#{functionBean.listConverter}"/>
 		<f:viewParam name="memberBeanExampleAktiv" value="#{memberBean.exampleActive}"/>
 		<f:viewParam name="memberBeanExampleFree" value="#{memberBean.exampleFree}"/>
 		<f:event type="preRenderView" listener='#{memberBean.paginate}' />
@@ -30,7 +30,7 @@
 
 	<ui:define name="main">
 
-		<h:form id="search">
+		<h:form id="search" >
 			
 			<rich:focus preserve="true" ajaxRendered="false" />
 			
@@ -68,7 +68,7 @@
 						<h:panelGroup>
 							<h:selectOneMenu converter="#{squadBean.converter}" id="squadBeanExampleTrupp"
 								value="#{memberBean.example.trupp}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{squadBean.all}" var="_item" />
 							</h:selectOneMenu>
 							<h:message for="squadBeanExampleTrupp" styleClass="error" />
@@ -77,9 +77,9 @@
 						<h:outputLabel for="memberBeanExampleFunktionen" value="Funktion:" />
 						<h:panelGroup>
 							<h:selectManyListbox converter="#{functionBean.converter}" id="memberBeanExampleFunktionen"
-								value="#{memberBean.example.funktionen}" size="3">
-								<f:selectItem />
-								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{functionBean.all}"
+								value="#{memberBean.exampleFunctions}" size="3">
+								<f:selectItem noSelectionOption="true"/>
+								<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{functionBean.allFunctions}"
 									var="_item" />
 							</h:selectManyListbox>
 							<h:message for="memberBeanExampleFunktionen" styleClass="error" />
@@ -88,7 +88,7 @@
 						<h:outputLabel for="memberBeanExampleAktiv" value="Aktiv:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="memberBeanExampleAktiv" value="#{memberBean.exampleActive}" >
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItem itemLabel="Ja" itemValue="true"/>
 								<f:selectItem itemLabel="Nein" itemValue="false"/>
 							</h:selectOneMenu>
@@ -98,7 +98,7 @@
 						<h:outputLabel for="memberBeanExampleFree" value="Frei:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="memberBeanExampleFree" value="#{memberBean.exampleFree}" >
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItem itemLabel="Ja" itemValue="true"/>
 								<f:selectItem itemLabel="Nein" itemValue="false"/>
 							</h:selectOneMenu>
@@ -107,9 +107,9 @@
 						<h:outputText />
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
-						<h:commandLink value="Suchen" action="#{memberBean.search}" styleClass="btn btn-primary" />
-						<h:commandLink value="Neu" action="#{memberBean.create}" styleClass="btn btn-primary" />
-						<h:link value="History" outcome="history" styleClass="btn btn-primary" disabled="#{!memberBean.updateAllowed}" />
+						<h:commandLink id="search" value="Suchen" action="#{memberBean.search}" styleClass="btn btn-primary" />
+						<h:commandLink id="create" value="Neu" action="#{memberBean.create}" styleClass="btn btn-primary" />
+						<h:link id="history" value="History" outcome="history" styleClass="btn btn-primary" disabled="#{!memberBean.updateAllowed}" />
 					</h:panelGroup>
 				</h:panelGroup>
 			</f:validateBean>

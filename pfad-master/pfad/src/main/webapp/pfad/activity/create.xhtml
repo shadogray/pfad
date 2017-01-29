@@ -44,7 +44,7 @@
 				<h:outputLabel for="activityBeanActivityType" value="Typ:" />
 				<h:panelGroup>
 					<h:selectOneMenu id="activityBeanActivityType" value="#{activityBean.activity.type}">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItems value="#{activityBean.types}" />
 					</h:selectOneMenu>
 					<h:message for="activityBeanActivityType" styleClass="error" />

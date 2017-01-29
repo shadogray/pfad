@@ -38,7 +38,8 @@
 	<ui:define name="footer" />
 
 	<ui:define name="main">
-		<h:form id="search" rendered="#{paymentBean.viewAllowed}">
+		<h:form id="search">
+			rendered="#{paymentBean.viewAllowed}">
 
 			<rich:focus preserve="true" ajaxRendered="false"/>
 
@@ -50,7 +51,7 @@
 						<h:outputLabel for="paymentBeanExampleType" value="Typ:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="paymentBeanExampleType" value="#{paymentBean.example.type}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{paymentBean.types}" />
 							</h:selectOneMenu>
 							<h:message for="paymentBeanExampleType" styleClass="error" />
@@ -102,7 +103,7 @@
 							<h:selectOneMenu id="paymentBeanExampleActivity" styleClass="fullwidth" p:placeholder="Aktivität.." 
 								value="#{paymentBean.exampleActivity}" converter="#{activityBean.converter}" 
 								title="Aktivität..">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a.idStr}" />
 							</h:selectOneMenu>
 							<h:message for="paymentBeanExampleActivity" styleClass="error" />
@@ -145,7 +146,7 @@
 						<h:outputLabel for="paymentBeanExampleFinished" value="Erledigt:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItem itemLabel="Ja" itemValue="true" />
 								<f:selectItem itemLabel="Nein" itemValue="false" />
 							</h:selectOneMenu>
@@ -155,7 +156,7 @@
 						<h:outputLabel for="paymentBeanExampleAconto" value="Akonto:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItem itemLabel="Ja" itemValue="true" />
 								<f:selectItem itemLabel="Nein" itemValue="false" />
 							</h:selectOneMenu>
@@ -164,10 +165,10 @@
 
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
-						<h:commandLink value="Suchen" action='#{paymentBean.search}' styleClass="btn btn-primary" />
-						<h:link value="Liste" outcome="list" styleClass="btn btn-primary" />
-						<h:commandLink value="Neu" action='#{paymentBean.create}' styleClass="btn btn-primary" />
-						<h:link value="Import" outcome="import" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
+						<h:commandLink id="search" value="Suchen" action='#{paymentBean.search}' styleClass="btn btn-primary" />
+						<h:link id="list" value="Liste" outcome="list" styleClass="btn btn-primary" />
+						<h:commandLink id="create" value="Neu" action='#{paymentBean.create}' styleClass="btn btn-primary" />
+						<h:link id="import" value="Import" outcome="import" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
 					</h:panelGroup>
 				</h:panelGroup>
 			</f:validateBean>

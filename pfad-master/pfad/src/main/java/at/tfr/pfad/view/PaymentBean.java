@@ -10,10 +10,13 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
@@ -402,6 +405,32 @@ public class PaymentBean extends BaseBean implements Serializable {
 				if (value instanceof Payment) 
 					return ""+((Payment)value).getId();
 				return ""+(value != null ? value : "");
+			}
+		};
+	}
+
+	public Converter getListConverter() {
+		return new Converter() {
+			
+			final PaymentBean ejbProxy = sessionContext.getBusinessObject(PaymentBean.class);
+			
+			@Override
+			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Collection) {
+					return ((Collection<Payment>)value).stream().filter(o->o != null)
+							.filter(f->f.getId() != null).map(f->f.getId().toString()).collect(Collectors.joining(","));
+				}
+				return "";
+			}
+			
+			@Override
+			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isNotBlank(value)) {
+					return Stream.of(value.split(",")).filter(o->o != null)
+							.map(id->ejbProxy.findById(Long.valueOf(id)))
+							.filter(o->o != null).collect(Collectors.toList());
+				}
+				return Collections.emptyList();
 			}
 		};
 	}

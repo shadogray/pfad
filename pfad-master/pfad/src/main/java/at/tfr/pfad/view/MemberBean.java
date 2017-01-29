@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,6 +79,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	private MemberValidator memberValidator;
 	private Boolean exampleActive;
 	private Boolean exampleFree;
+	private List<Function> exampleFunctions;
 	private Collection<ValidationResult> validationResults = new ArrayList<>();
 
 	/*
@@ -230,17 +232,6 @@ public class MemberBean extends BaseBean implements Serializable {
 		setMemberExample(example);
 	}
 	
-	public String getFunctionIds() {
-		return getExample().getFunktionen().stream().map(f->f.getId().toString()).collect(Collectors.joining(","));
-	}
-	
-	public void setFunctionIds(String value) {
-		if (StringUtils.isNotBlank(value)) {
-			List<Long> functionIds = Stream.of(value.split(",")).map(Long::valueOf).collect(Collectors.toList());
-			getExample().setFunktionen(new HashSet<Function>(functionRepo.findByIds(functionIds)));
-		}
-	}
-
 	public String search() {
 		this.page = 0;
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId()+"?faces-redirect=true&includeViewParams=true";
@@ -320,9 +311,9 @@ public class MemberBean extends BaseBean implements Serializable {
 			predicatesList.add(builder.equal(root.get(Member_.trupp), trupp));
 		}
 
-		if (getMemberExample().getFunktionen() != null && !getMemberExample().getFunktionen().isEmpty()
-				&& getMemberExample().getFunktionen().iterator().next() != null) {
-			predicatesList.add(root.join(Member_.funktionen).in(getMemberExample().getFunktionen()));
+		if (getExampleFunctions() != null && !getExampleFunctions().isEmpty()) {
+			predicatesList.add(root.join(Member_.funktionen).in(
+					getExampleFunctions().stream().filter(f-> f!=null && f.getId() != null).collect(Collectors.toList())));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
@@ -354,6 +345,14 @@ public class MemberBean extends BaseBean implements Serializable {
 	
 	public void setExampleFree(Boolean exampleFree) {
 		this.exampleFree = exampleFree;
+	}
+	
+	public List<Function> getExampleFunctions() {
+		return exampleFunctions;
+	}
+	
+	public void setExampleFunctions(List<Function> exampleFunctions) {
+		this.exampleFunctions = exampleFunctions;
 	}
 	
 	/*
@@ -415,6 +414,32 @@ public class MemberBean extends BaseBean implements Serializable {
 				if (value instanceof Member) 
 					return ""+((Member)value).getId();
 				return ""+(value != null ? value : "");
+			}
+		};
+	}
+
+	public Converter getListConverter() {
+		return new Converter() {
+			
+			final MemberBean ejbProxy = sessionContext.getBusinessObject(MemberBean.class);
+			
+			@Override
+			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Collection) {
+					return ((Collection<Member>)value).stream().filter(o->o != null)
+							.filter(f->f.getId() != null).map(f->f.getId().toString()).collect(Collectors.joining(","));
+				}
+				return "";
+			}
+			
+			@Override
+			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isNotBlank(value)) {
+					return Stream.of(value.split(","))
+							.map(id->ejbProxy.findById(Long.valueOf(id)))
+							.filter(o->o != null).collect(Collectors.toList());
+				}
+				return Collections.emptyList();
 			}
 		};
 	}

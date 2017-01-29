@@ -97,7 +97,7 @@
 				</h:panelGroup>
 				<h:panelGroup layout="block">
 					<h:selectOneMenu value="#{paymentTableBean.filterValues['aconto']}" tabindex="3">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItem itemLabel="Ja" itemValue="true"/>
 						<f:selectItem itemLabel="Nein" itemValue="false"/>
 						<f:ajax render="@form" event="valueChange" />
@@ -124,7 +124,7 @@
 				</h:panelGroup>
 				<h:panelGroup layout="block">
 					<h:selectOneMenu value="#{paymentTableBean.filterValues['finished']}" tabindex="4">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItem itemLabel="Ja" itemValue="true"/>
 						<f:selectItem itemLabel="Nein" itemValue="false"/>
 						<f:ajax render="@form" event="valueChange" />

@@ -9,8 +9,13 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -49,8 +54,15 @@ public class FunctionBean extends BaseBean implements Serializable {
 	 * Support creating and retrieving Function entities
 	 */
 
+	private List<Function> allFunctions;
+	
 	private Long id;
 
+	@PostConstruct
+	public void init() {
+		allFunctions = getAll();
+	}
+	
 	public Long getId() {
 		return this.id;
 	}
@@ -233,11 +245,13 @@ public class FunctionBean extends BaseBean implements Serializable {
 
 		return new Converter() {
 
+			final FunctionBean ejbProxy = sessionContext.getBusinessObject(FunctionBean.class);
+
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 				if (StringUtils.isBlank(value) || "[]".equals(value))
 					return null;
-				return entityManager.find(Function.class, Long.valueOf(value));
+				return ejbProxy.findById(Long.valueOf(value));
 			}
 
 			@Override
@@ -245,6 +259,32 @@ public class FunctionBean extends BaseBean implements Serializable {
 				if (value instanceof Function) 
 					return ""+((Function)value).getId();
 				return ""+(value != null ? value : "");
+			}
+		};
+	}
+	
+	public Converter getListConverter() {
+		return new Converter() {
+			
+			final FunctionBean ejbProxy = sessionContext.getBusinessObject(FunctionBean.class);
+			
+			@Override
+			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Collection) {
+					return ((Collection<Function>)value).stream().filter(o->o != null)
+							.filter(f->f.getId() != null).map(f->f.getId().toString()).collect(Collectors.joining(","));
+				}
+				return "";
+			}
+			
+			@Override
+			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isNotBlank(value)) {
+					return Stream.of(value.split(","))
+							.map(id->ejbProxy.findById(Long.valueOf(id)))
+							.filter(o->o != null).filter(o -> o!=null).collect(Collectors.toList());
+				}
+				return Collections.emptyList();
 			}
 		};
 	}
@@ -263,5 +303,9 @@ public class FunctionBean extends BaseBean implements Serializable {
 		Function added = this.add;
 		this.add = new Function();
 		return added;
+	}
+	
+	public List<Function> getAllFunctions() {
+		return allFunctions;
 	}
 }

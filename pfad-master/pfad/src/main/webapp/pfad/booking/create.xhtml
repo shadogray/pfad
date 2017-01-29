@@ -49,7 +49,7 @@
 					<h:selectOneMenu id="bookingBeanBookingActivity" tabindex="0" styleClass="fullwidth"
 						value="#{bookingBean.booking.activity}" converter="#{activityBean.converter}" 
 						p:placeholder="Aktivität.." title="Aktivität.." required="true" immediate="true">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItems value="#{bookingBean.activities}" var="a" itemLabel="#{a}" itemValue="#{a.idStr}" />
 					</h:selectOneMenu>
 					<h:message for="bookingBeanBookingActivity" styleClass="error" />
@@ -59,7 +59,7 @@
 				<h:outputLabel for="bookingBeanBookingMember" value="Teilnehmer:" />
 				<h:panelGroup id="bookingBeanBookingMemberPanel">
 					<h:selectOneMenu id="bookingBeanBookingMemberSelect" tabindex="0" value="#{bookingBean.booking.member}" converter="#{memberBean.converter}" rendered="#{bookingBean.booking.member != null}">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItem itemLabel="#{bookingBean.booking.member}" itemValue="#{bookingBean.booking.member}"/>
 						<f:ajax render="bookingBeanBookingMemberPanel"/>						
 					</h:selectOneMenu>
@@ -76,7 +76,7 @@
 
 				<h:outputLabel for="bookingBeanBookingSquad" value="Trupp:" />
 				<h:selectOneMenu id="bookingBeanBookingSquad" value="#{bookingBean.booking.squad}" converter="#{squadBean.converter}">
-					<f:selectItem />
+					<f:selectItem noSelectionOption="true"/>
 					<f:selectItems value="#{squadBean.all}" var="s" itemLabel="#{s}" itemValue="#{s}"/>
 				</h:selectOneMenu>
 				<h:outputText />

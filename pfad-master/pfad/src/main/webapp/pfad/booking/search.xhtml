@@ -9,7 +9,7 @@
 	<f:metadata>
 		<f:viewParam name="page" value='#{bookingBean.page}' />
 		<f:viewParam name="bookingBeanExampleActivity" value="#{bookingBean.example.activity}" converter="#{activityBean.converter}" />
-		<f:viewParam name="bookingBeanExampleMember" value="#{bookingBean.exampleMember}" converter="#{memberBean.converter}"/>
+		<f:viewParam name="bookingBeanExampleMemberSelect" value="#{bookingBean.exampleMember}" converter="#{memberBean.converter}"/>
 		<f:viewParam name="bookingBeanExampleStatus" value="#{bookingBean.example.status}"/>
 		<f:viewParam name="bookingBeanExampleComment" value="#{bookingBean.example.comment}"/>
 		<f:viewParam name="bookingBeanShowFinished" value="#{bookingBean.showFinished}"/>
@@ -42,7 +42,7 @@
 							<h:selectOneMenu id="bookingBeanExampleActivity" styleClass="fullwidth" 
 								value="#{bookingBean.example.activity}" converter="#{activityBean.converter}"
 								p:placeholder="Aktivität.." title="Aktivität.." >
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.all}" var="a"  itemLabel="#{a}" itemValue="#{a}" />
 							</h:selectOneMenu>
 							<h:message for="bookingBeanExampleActivity" styleClass="error" />
@@ -71,7 +71,7 @@
 						<h:outputLabel for="bookingBeanExampleStatus" value="Status:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="bookingBeanExampleStatus" value="#{bookingBean.example.status}">
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{bookingBean.stati}" />
 							</h:selectOneMenu>
 							<h:message for="bookingBeanExampleStatus" styleClass="error" />
@@ -92,10 +92,10 @@
 					</h:panelGrid>
 
 					<h:panelGroup styleClass="buttons">
-						<h:commandLink value="Suchen" action='#{bookingBean.search}' styleClass="btn btn-primary" />
-						<h:link value="Buchen" outcome="booking" styleClass="btn btn-primary" />
-						<h:link value="Liste" outcome="list" styleClass="btn btn-primary" />
-						<h:commandLink value="Neu" action='#{bookingBean.create}' styleClass="btn btn-primary" />
+						<h:commandLink id="search" value="Suchen" action='#{bookingBean.search}' styleClass="btn btn-primary" />
+						<h:link id="booking" value="Buchen" outcome="booking" styleClass="btn btn-primary" />
+						<h:link id="list" value="Liste" outcome="list" styleClass="btn btn-primary" />
+						<h:commandLink id="create" value="Neu" action='#{bookingBean.create}' styleClass="btn btn-primary" />
 					</h:panelGroup>
 
 				</h:panelGroup>

@@ -179,7 +179,7 @@
 				<h:outputLabel for="memberBeanMemberRolle" value="Rolle:" />
 				<h:panelGroup>
 					<h:selectOneMenu id="memberBeanMemberRolle" value="#{memberBean.member.rolle}">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItems value="#{memberBean.scoutRoles}" />
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberRolle" styleClass="error" />
@@ -189,7 +189,7 @@
 				<h:outputLabel for="memberBeanMemberTrupp" value="Trupp:" />
 				<h:panelGroup>
 					<h:selectOneMenu converter="#{squadBean.converter}" id="memberBeanMemberTrupp" value="#{memberBean.member.trupp}">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItems itemLabel="#{s}" itemValue="#{s.idStr}" value="#{squadBean.all}" var="s" />
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberTrupp" styleClass="error" />
@@ -199,7 +199,7 @@
 				<h:outputLabel for="memberBeanMemberVollzahlerPanel" value="Vollzahler:" />
 				<h:panelGroup id="memberBeanMemberVollzahlerPanel">
 					<h:selectOneMenu value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" rendered="#{memberBean.member.vollzahler != null}">
-						<f:selectItem />
+						<f:selectItem noSelectionOption="true"/>
 						<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}"/>
 						<f:ajax render="memberBeanMemberVollzahlerPanel"/>
 					</h:selectOneMenu>
@@ -248,7 +248,7 @@
 					<h:panelGrid columnClasses=",remove-column" columns="3" styleClass="data-table-footer">
 						<h:selectOneMenu converter="#{functionBean.converter}" id="memberBeanMemberFunktionenSelect"
 							value="#{requestScope['memberBeanMemberFunktionenSelect']}">
-							<f:selectItem />
+							<f:selectItem noSelectionOption="true"/>
 							<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{functionBean.all}"
 								var="_item" />
 						</h:selectOneMenu>
@@ -303,7 +303,7 @@
 							mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{memberBean.filterMembers}" 
 							var="b" itemLabel="#{b}" itemValue="#{b.id}" 
 							minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-							<f:selectItem />
+							<f:selectItem noSelectionOption="true"/>
 							<f:selectItems value="#{paymentBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}"/>
 							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.addMemberSibling}" render="memberBeanMemberSiblingsPanel" />
 						</rich:select>

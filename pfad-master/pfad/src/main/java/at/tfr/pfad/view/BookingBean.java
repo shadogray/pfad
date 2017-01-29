@@ -10,9 +10,12 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
@@ -305,9 +308,9 @@ public class BookingBean extends BaseBean implements Serializable {
 
 	public Converter getConverter() {
 
-		final BookingBean ejbProxy = this.sessionContext.getBusinessObject(BookingBean.class);
-
 		return new Converter() {
+
+			final BookingBean ejbProxy = sessionContext.getBusinessObject(BookingBean.class);
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
@@ -321,6 +324,32 @@ public class BookingBean extends BaseBean implements Serializable {
 				if (value instanceof Booking) 
 					return ""+((Booking)value).getId();
 				return ""+(value != null ? value : "");
+			}
+		};
+	}
+
+	public Converter getListConverter() {
+		return new Converter() {
+			
+			final BookingBean ejbProxy = sessionContext.getBusinessObject(BookingBean.class);
+			
+			@Override
+			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Collection) {
+					return ((Collection<Booking>)value).stream().filter(o->o != null)
+							.filter(f->f.getId() != null).map(f->f.getId().toString()).collect(Collectors.joining(","));
+				}
+				return "";
+			}
+			
+			@Override
+			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isNotBlank(value)) {
+					return Stream.of(value.split(","))
+							.map(id->ejbProxy.findById(Long.valueOf(id)))
+							.filter(o->o != null).collect(Collectors.toList());
+				}
+				return Collections.emptyList();
 			}
 		};
 	}

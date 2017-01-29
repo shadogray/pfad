@@ -10,8 +10,11 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
@@ -36,6 +39,7 @@ import at.tfr.pfad.Role;
 import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Activity_;
+import at.tfr.pfad.model.Function;
 
 /**
  * Backing bean for Activity entities.
@@ -60,8 +64,14 @@ public class ActivityBean extends BaseBean implements Serializable {
 	@Inject
 	private ActivityRepository activityRepo;
 	
+	private List<Activity> allActivities;
+	
 	private Long id;
 
+	public void init() {
+		allActivities = getAll();
+	}
+	
 	public Long getId() {
 		return this.id;
 	}
@@ -243,9 +253,9 @@ public class ActivityBean extends BaseBean implements Serializable {
 
 	public Converter getConverter() {
 
-		final ActivityBean ejbProxy = this.sessionContext.getBusinessObject(ActivityBean.class);
-
 		return new Converter() {
+
+			final ActivityBean ejbProxy = sessionContext.getBusinessObject(ActivityBean.class);
 
 			@Override
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
@@ -263,6 +273,31 @@ public class ActivityBean extends BaseBean implements Serializable {
 		};
 	}
 
+	public Converter getListConverter() {
+		return new Converter() {
+			
+			final ActivityBean ejbProxy = sessionContext.getBusinessObject(ActivityBean.class);
+
+			@Override
+			public String getAsString(FacesContext context, UIComponent component, Object value) {
+				if (value instanceof Collection) {
+					return ((Collection<Activity>)value).stream().filter(o->o != null)
+							.filter(f->f.getId() != null).map(f->f.getId().toString()).collect(Collectors.joining(","));
+				}
+				return "";
+			}
+			
+			@Override
+			public Object getAsObject(FacesContext context, UIComponent component, String value) {
+				if (StringUtils.isNotBlank(value)) {
+					return Stream.of(value.split(","))
+							.map(id->ejbProxy.findById(Long.valueOf(id)))
+							.filter(o->o != null).collect(Collectors.toList());
+				}
+				return Collections.emptyList();
+			}
+		};
+	}
 	/*
 	 * Support adding children to bidirectional, one-to-many tables
 	 */
