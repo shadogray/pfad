@@ -58,9 +58,14 @@ public class MemberValidator {
 			results.add(new ValidationResult(false, INAKTIV_ALS_LEITER+": "+squadRepo.findByResponsible(member)));
 		}
 		
-		if (member.isAktiv() && member.getVollzahler() != null && !member.equals(member.getVollzahler())
+		if (member.isAktiv() && member.getVollzahler() != null
+				&& member.getVollzahler().getVollzahler() != null) {
+			results.add(new ValidationResult(false, "Vollzahler ist KEIN Vollzahler: "+member.getVollzahler()));
+		}
+		
+		if (member.isAktiv() && member.getVollzahler() != null
 				&& !(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
-			results.add(new ValidationResult(false, "Vollzahler INAKTIV"));
+			results.add(new ValidationResult(false, "Vollzahler INAKTIV: "+member.getVollzahler()));
 		}
 		
 		if (!isNotGrinsExportable(member, leaders)) {

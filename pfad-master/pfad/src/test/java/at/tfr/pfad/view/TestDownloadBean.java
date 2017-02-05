@@ -55,6 +55,10 @@ public class TestDownloadBean {
 		vr = mv.validate(m, "", leaders);
 		assertTrue("Vollzahler auf Aktiv", !vr.stream().anyMatch(r -> r.getMessage().contains("Vollzahler")));
 		
+		vollz.setVollzahler(m);
+		vr = mv.validate(m, "", leaders);
+		assertTrue("Vollzahler ist KEIN Vollzahler", vr.stream().anyMatch(r -> r.getMessage().contains("Vollzahler")));
+		
 	}
 
 	@Test
