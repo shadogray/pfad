@@ -32,6 +32,7 @@ function submitSearch(event) {
 			} catch (err) {
 				console.log('error happened: '+err);
 			}
+			return false;
 		}
 	}
 }

@@ -57,10 +57,9 @@
 								<f:ajax render="@form" />
 							</h:selectOneMenu>
 							<rich:select id="bookingBeanExampleMemberSelect" tabindex="0" styleClass="fullwidth manual" rendered="#{bookingBean.exampleMember == null}"
-								mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{bookingBean.filterPayers}" 
+								mode="ajax" minChars="3" autocompleteMethod="#{bookingBean.filterPayers}" 
 								var="p" itemLabel="#{p}" itemValue="#{p.id}" converter="#{memberBean.converter}" 
 								minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-								<f:selectItems value="#{bookingBean.filteredPayers}" var="mem" itemLabel="#{mem}" itemValue="#{mem}"/>
 								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{bookingBean.selectExampleMember}" render="@form" />
 							</rich:select>
 							<h:message for="bookingBeanExampleMemberSelect" styleClass="error" />

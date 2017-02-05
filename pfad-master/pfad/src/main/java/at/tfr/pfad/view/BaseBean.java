@@ -183,7 +183,7 @@ public abstract class BaseBean implements Serializable {
 	
 	public List<Payment> getPayments(Booking b) {
 		if (b == null) {
-			return Collections.emptyList();
+			return new ArrayList<>();
 		}
 		if (b.getId() == null) {
 			return new ArrayList<Payment>(b.getPayments().stream().sorted((x,y) -> x.getId().compareTo(y.getId())).collect(Collectors.toList()));
@@ -215,7 +215,7 @@ public abstract class BaseBean implements Serializable {
 	
 	public List<Booking> getBookings(Payment p) {
 		if (p == null) {
-			return Collections.emptyList();
+			return new ArrayList<>();
 		}
 		if (p.getId() == null) {
 			return new ArrayList<Booking>(p.getBookings().stream().sorted((x,y) -> x.getId().compareTo(y.getId())).collect(Collectors.toList()));

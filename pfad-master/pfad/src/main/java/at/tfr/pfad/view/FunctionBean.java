@@ -284,7 +284,7 @@ public class FunctionBean extends BaseBean implements Serializable {
 							.map(id->ejbProxy.findById(Long.valueOf(id)))
 							.filter(o->o != null).filter(o -> o!=null).collect(Collectors.toList());
 				}
-				return Collections.emptyList();
+				return new ArrayList<>();
 			}
 		};
 	}
