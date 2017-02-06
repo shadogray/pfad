@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
-@WebFilter
+@WebFilter(urlPatterns="*")
 public class EncodingFilter implements Filter {
 
 	private static final String ENCODING = "encoding";
