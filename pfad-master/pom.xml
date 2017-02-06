@@ -18,6 +18,7 @@
         <deltaspike.version>1.5.4</deltaspike.version>
         <hibernate.version>4.3.1.Final</hibernate.version>
         <org.mapstruct.version>1.1.0.Beta2</org.mapstruct.version>
+        <org.wildfly.version>10.1.0.Final</org.wildfly.version>
     </properties>
 
     <dependencyManagement>
@@ -28,6 +29,13 @@
                 <version>1.0.3.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+	            <groupId>org.wildfly</groupId>
+	            <artifactId>wildfly-web</artifactId>
+	            <version>${org.wildfly.version}</version>
+	            <type>pom</type>
+	            <scope>import</scope>
             </dependency>
 
             <dependency>
