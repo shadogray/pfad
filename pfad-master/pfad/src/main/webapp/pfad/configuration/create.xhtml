@@ -62,6 +62,20 @@
 					<h:message for="configurationBeanConfigurationRole" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
+				<h:outputLabel for="configurationBeanConfigurationDescription" value="Description:" />
+				<h:panelGroup>
+					<h:inputTextarea id="configurationBeanConfigurationDescription" value="#{configurationBean.configuration.description}"
+						rows="4" style="width:95%" />
+					<h:message for="configurationBeanConfigurationDescription" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+				<h:outputLabel for="configurationBeanConfigurationHeaders" value="Headers:" />
+				<h:panelGroup>
+					<h:inputTextarea id="configurationBeanConfigurationHeaders" value="#{configurationBean.configuration.headers}"
+						rows="2" style="width:95%" />
+					<h:message for="configurationBeanConfigurationHeaders" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
 			</h:panelGrid>
 
 			<div class="buttons">

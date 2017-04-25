@@ -42,6 +42,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
 
@@ -104,6 +105,7 @@ public class DownloadBean implements Serializable {
 	private MemberValidator memberValidator;
 	@Inject
 	private EntityManager em;
+	private Configuration configuration;
 	private String query;
 	private boolean nativeQuery;
 	private List<List<?>> results = new ArrayList<>();
@@ -527,6 +529,7 @@ public class DownloadBean implements Serializable {
 			Optional<Configuration> confOpt = getQueries().stream().filter(q -> configurationId.equals(q.getId()))
 					.findFirst();
 			if (confOpt.isPresent()) {
+				configuration = confOpt.get();
 				query = confOpt.get().getCvalue();
 				nativeQuery = ConfigurationType.nativeQuery.equals(confOpt.get().getType());
 				query();
@@ -599,6 +602,7 @@ public class DownloadBean implements Serializable {
 		dynamicDataTable.setVar("line");
 		dynamicDataTable.setStyleClass("table table-striped table-bordered table-hover");
 
+		String[] headers = configuration != null ? configuration.toHeaders(list.get(0).size()) : null;
 		// Iterate over columns.
 		for (int idx = 0; idx < list.get(0).size(); idx++) {
 
@@ -609,7 +613,7 @@ public class DownloadBean implements Serializable {
 			// Create <h:outputText value="dynamicHeaders[i]"> for <f:facet
 			// name="header"> of column.
 			HtmlOutputText header = new HtmlOutputText();
-			header.setValue("" + idx);
+			header.setValue("" + (headers != null ? headers[idx] : idx));
 			column.setHeader(header);
 
 			// Create <h:outputText value="#{dynamicItem[" + i + "]}"> for the
@@ -627,5 +631,61 @@ public class DownloadBean implements Serializable {
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		return facesContext.getApplication().getExpressionFactory().createValueExpression(facesContext.getELContext(),
 				valueExpression, valueType);
+	}
+	
+	// Download Results 
+
+	public Configuration getConfiguration() {
+		return configuration;
+	}
+	
+	public String downloadResults() {
+		try {
+			Configuration config = configuration;
+			if (config == null) {
+				config = new Configuration();
+				config.setCkey("Query");
+				config.setCvalue(query);
+			}
+			ExternalContext ectx = setHeaders(config.getCkey()+"_"+new DateTime().toString("dd.mm.yyyy HH:MM"));
+			try (OutputStream os = ectx.getResponseOutputStream()) {
+				Workbook wb = generateResultsWorkbook(config, results);
+				wb.write(os);
+			}
+			FacesContext.getCurrentInstance().responseComplete();
+	
+		} catch (Exception e) {
+			log.info("executeQuery: " + e, e);
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
+		}
+		return null;
+	}
+	
+	private HSSFWorkbook generateResultsWorkbook(Configuration config, List<List<?>> results) {
+		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFSheet sheet = wb.createSheet(config.getCkey()+"_"+new DateTime().toString("dd.mm.yyyy HH:MM"));
+		CellStyle red = wb.createCellStyle();
+		
+		if (results != null && results.size() > 0) {
+			int rCount = 0;
+			HSSFRow row = sheet.createRow(rCount++);
+			
+			String[] headers = config.toHeaders(results.get(0).size());
+			for (int i = 0; i < headers.length; i++) {
+				HSSFCell c = row.createCell(i);
+				c.setCellValue(headers[i]);
+			}
+
+			for (List<?> resultRow : results) {
+				row = sheet.createRow(rCount++);
+	
+				int cCount = 0;
+				for (Object o : resultRow) {
+					row.createCell(cCount++).setCellValue(""+o);
+				}
+			}
+		}
+		return wb;
 	}
 }

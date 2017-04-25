@@ -21,6 +21,8 @@ import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
 import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -62,7 +64,13 @@ public class Configuration implements PrimaryKeyHolder, Serializable, Comparable
 	@Column(nullable = false, columnDefinition = "varchar2(16) default 'simple'")
 	@Enumerated(EnumType.STRING)
 	private ConfigurationType type;
-
+	
+	@Column(length = 4096)
+	private String description;
+	
+	@Column(length = 1024)
+	private String headers;
+	
 	@XmlID
 	public Long getId() {
 		return this.id;
@@ -98,6 +106,31 @@ public class Configuration implements PrimaryKeyHolder, Serializable, Comparable
 
 	public void setType(ConfigurationType type) {
 		this.type = type;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getHeaders() {
+		return headers;
+	}
+
+	public void setHeaders(String headers) {
+		this.headers = headers;
+	}
+	
+	public String[] toHeaders(final int count) {
+		String[] result = new String[count];
+		String[] vals = (""+headers).split(";");
+		for (int i=0; i<count; i++) {
+			result[i] = ((StringUtils.isNotBlank(headers) && vals.length > i) ? vals[i] : ""+i).trim();
+		}
+		return result;
 	}
 
 	@Override

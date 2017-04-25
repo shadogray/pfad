@@ -36,15 +36,22 @@
 		<h:form id="query">
 			<h:messages />
 			<h:panelGroup id="queryPanel">
+				<h:panelGroup layout="block" id="actionsQueries">
+					<a4j:repeat value="#{downloadBean.queries}" var="query">
+						<h:commandLink actionListener="#{downloadBean.executeQuery(query.id)}" value="#{query.ckey}"
+							styleClass="btn btn-primary" title="#{downloadBean.configuration.description}">
+							<f:ajax execute="@this" render="@form" />
+						</h:commandLink>
+					</a4j:repeat>
+				</h:panelGroup>
+				<h:panelGrid width="100%" columns="3" rendered="#{downloadBean.configuration != null}">
+					<h:outputLabel value="Query:" />
+					<h:outputText value="#{downloadBean.configuration.ckey}" />
+					<h:commandLink action="#{downloadBean.downloadResults()}" value="Download" styleClass="btn btn-primary"
+						title="Download von: #{downloadBean.configuration.ckey}"/>
+				</h:panelGrid>
+
 				<f:ajax>
-					<h:panelGroup layout="block" id="actionsQueries">
-						<a4j:repeat value="#{downloadBean.queries}" var="query">
-							<h:commandLink actionListener="#{downloadBean.executeQuery(query.id)}" value="#{query.ckey}"
-								styleClass="btn btn-primary">
-								<f:ajax execute="@this" render="@form" />
-							</h:commandLink>
-						</a4j:repeat>
-					</h:panelGroup>
 					<h:panelGroup layout="block" rendered="#{memberBean.admin}">
 						<h:panelGrid width="100%" columns="3">
 							<h:outputLabel value="Query" />
@@ -63,6 +70,7 @@
 						</h:panelGroup>
 					</h:panelGroup>
 					<h:messages id="messages" />
+
 					<h:panelGroup id="results" layout="block" rendered="#{not empty downloadBean.results}">
 						<h:panelGroup id="queryResults" layout="block" binding="#{downloadBean.dataTableGroup}" />
 					</h:panelGroup>
