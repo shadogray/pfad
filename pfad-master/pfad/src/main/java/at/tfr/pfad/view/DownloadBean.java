@@ -110,6 +110,7 @@ public class DownloadBean implements Serializable {
 	private boolean nativeQuery;
 	private List<List<?>> results = new ArrayList<>();
 	private HtmlPanelGroup dataTableGroup;
+	public static final String SafeDatePattern = "yyyy.MM.dd_HHmm";
 
 	public String downloadVorRegistrierung() throws Exception {
 		Collection<Member> leaders = squadRepo.findLeaders();
@@ -449,7 +450,7 @@ public class DownloadBean implements Serializable {
 		}
 		
 		ectx.setResponseHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+prefix+"_"
-				+ DateTime.now().toString("yyyyMMdd_HHmm") + "." + suffix);
+				+ DateTime.now().toString(SafeDatePattern) + "." + suffix);
 		return ectx;
 	}
 
@@ -647,7 +648,7 @@ public class DownloadBean implements Serializable {
 				config.setCkey("Query");
 				config.setCvalue(query);
 			}
-			ExternalContext ectx = setHeaders(config.getCkey());
+			ExternalContext ectx = setHeaders(config.getCkey()+"_"+new DateTime().toString(SafeDatePattern));
 			try (OutputStream os = ectx.getResponseOutputStream()) {
 				Workbook wb = generateResultsWorkbook(config, results);
 				wb.write(os);
@@ -664,7 +665,7 @@ public class DownloadBean implements Serializable {
 	
 	private HSSFWorkbook generateResultsWorkbook(Configuration config, List<List<?>> results) {
 		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet(config.getCkey()+"_"+new DateTime().toString("dd.MM.yyyy HH:mm"));
+		HSSFSheet sheet = wb.createSheet(config.getCkey()+"_"+new DateTime().toString(SafeDatePattern));
 		CellStyle red = wb.createCellStyle();
 		
 		if (results != null && results.size() > 0) {
