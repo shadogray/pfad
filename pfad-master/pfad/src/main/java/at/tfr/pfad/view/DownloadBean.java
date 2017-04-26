@@ -647,7 +647,7 @@ public class DownloadBean implements Serializable {
 				config.setCkey("Query");
 				config.setCvalue(query);
 			}
-			ExternalContext ectx = setHeaders(config.getCkey()+"_"+new DateTime().toString("dd.mm.yyyy HH:MM"));
+			ExternalContext ectx = setHeaders(config.getCkey());
 			try (OutputStream os = ectx.getResponseOutputStream()) {
 				Workbook wb = generateResultsWorkbook(config, results);
 				wb.write(os);
@@ -664,7 +664,7 @@ public class DownloadBean implements Serializable {
 	
 	private HSSFWorkbook generateResultsWorkbook(Configuration config, List<List<?>> results) {
 		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet(config.getCkey()+"_"+new DateTime().toString("dd.mm.yyyy HH:MM"));
+		HSSFSheet sheet = wb.createSheet(config.getCkey()+"_"+new DateTime().toString("dd.MM.yyyy HH:mm"));
 		CellStyle red = wb.createCellStyle();
 		
 		if (results != null && results.size() > 0) {
