@@ -648,7 +648,7 @@ public class DownloadBean implements Serializable {
 				config.setCkey("Query");
 				config.setCvalue(query);
 			}
-			ExternalContext ectx = setHeaders(config.getCkey()+"_"+new DateTime().toString(SafeDatePattern));
+			ExternalContext ectx = setHeaders(config.getCkey());
 			try (OutputStream os = ectx.getResponseOutputStream()) {
 				Workbook wb = generateResultsWorkbook(config, results);
 				wb.write(os);
