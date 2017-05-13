@@ -683,7 +683,7 @@ public class DownloadBean implements Serializable {
 	
 				int cCount = 0;
 				for (Object o : resultRow) {
-					row.createCell(cCount++).setCellValue(""+o);
+					row.createCell(cCount++).setCellValue(o!=null ? ""+o : "");
 				}
 			}
 		}
