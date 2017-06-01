@@ -45,6 +45,10 @@
 			<h:outputText id="bookingBeanBookingComment" value="#{bookingBean.booking.comment}" />
 			<h:outputText />
 
+			<h:outputLabel for="bookingBeanBookingRegistered" value="Registriert:" />
+			<h:selectBooleanCheckbox id="bookingBeanBookingRegistered" value="#{bookingBean.booking.registered}" />
+			<h:outputText />
+
 			<h:outputLabel for="bookingBeanBookingRevision" value="Änderung:" />
 			<h:panelGrid id="bookingBeanBookingRevision" columns="8">
 				<h:outputLabel value="Erstellt:" />

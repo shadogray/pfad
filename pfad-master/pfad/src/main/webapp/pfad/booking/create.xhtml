@@ -97,6 +97,13 @@
 				</h:panelGroup>
 				<h:outputText />
 
+				<h:outputLabel for="bookingBeanBookingRegistered" value="Registriert:" />
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="bookingBeanBookingRegistered" value="#{bookingBean.booking.registered}" />
+					<h:message for="bookingBeanBookingRegistered" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+
 				<h:outputLabel for="bookingBeanBookingRevision" value="Änderung:"/>
 				<h:panelGrid id="bookingBeanBookingRevision" columns="8" >
 					<h:outputLabel value="Erstellt:" />

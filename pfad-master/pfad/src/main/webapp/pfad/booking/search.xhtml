@@ -85,8 +85,12 @@
 						<h:outputText />
 
 						<h:outputLabel value="Abgeschl.:" />
-							<h:selectBooleanCheckbox id="bookingBeanShowFinished" value="#{bookingBean.showFinished}"/>
+						<h:selectBooleanCheckbox id="bookingBeanShowFinished" value="#{bookingBean.showFinished}"/>
 						<h:outputText />
+
+						<h:outputLabel value="Registr.:" />
+						<h:selectBooleanCheckbox id="bookingBeanShowRegistred" value="#{bookingBean.showRegistered}"/>
+						<h:selectBooleanCheckbox id="bookingBeanUnShowRegistred" value="#{bookingBean.showUnregistered}"/>
 
 					</h:panelGrid>
 

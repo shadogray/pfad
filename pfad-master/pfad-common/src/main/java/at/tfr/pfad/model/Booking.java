@@ -75,6 +75,8 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private BookingStatus status;
+	
+	private Boolean registered;
 
 	@Column
 	private String comment;
@@ -196,6 +198,14 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	
+	public Boolean getRegistered() {
+		return registered;
+	}
+	
+	public void setRegistered(Boolean registered) {
+		this.registered = registered;
 	}
 
 	public Date getChanged() {

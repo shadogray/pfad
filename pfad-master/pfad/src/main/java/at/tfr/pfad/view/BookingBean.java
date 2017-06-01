@@ -74,6 +74,8 @@ public class BookingBean extends BaseBean implements Serializable {
 	private PaymentBean paymentBean;
 
 	private boolean showFinished;
+	private boolean showRegistered;
+	private boolean showUnregistered;
 	private boolean squadBookingVisible;
 	private boolean allBookingVisible;
 	private boolean paymentPopupVisible;
@@ -102,6 +104,22 @@ public class BookingBean extends BaseBean implements Serializable {
 		this.showFinished = showFinished;
 	}
 
+	public boolean isShowRegistered() {
+		return showRegistered;
+	}
+	
+	public void setShowRegistered(boolean showRegistered) {
+		this.showRegistered = showRegistered;
+	}
+	
+	public boolean isShowUnregistered() {
+		return showUnregistered;
+	}
+	
+	public void setShowUnregistered(boolean showUnregistered) {
+		this.showUnregistered = showUnregistered;
+	}
+	
 	public List<Activity> getActivities() {
 		if (showFinished) {
 			return activityRepo.findAll();
@@ -282,6 +300,14 @@ public class BookingBean extends BaseBean implements Serializable {
 					builder.isNull(act.get(Activity_.end)),
 					builder.greaterThan(act.get(Activity_.end), new Date())));
 			predicatesList.add(builder.notEqual(act.get(Activity_.status), ActivityStatus.cancelled));
+		}
+		
+		if (showRegistered) {
+			predicatesList.add(builder.equal(root.get(Booking_.registered), true));
+		}
+
+		if (showUnregistered) {
+			predicatesList.add(builder.equal(root.get(Booking_.registered), false));
 		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
