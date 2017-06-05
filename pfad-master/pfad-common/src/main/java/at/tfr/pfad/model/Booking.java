@@ -76,6 +76,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	@Enumerated(EnumType.STRING)
 	private BookingStatus status;
 	
+	@Column(nullable = false, columnDefinition="boolean default 'false'")
 	private Boolean registered;
 
 	@Column

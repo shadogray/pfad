@@ -48,6 +48,7 @@ import org.joda.time.DateTime;
 
 import com.google.common.net.HttpHeaders;
 
+import at.tfr.pfad.ActivityType;
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.Role;
 import at.tfr.pfad.dao.ActivityRepository;
@@ -80,7 +81,7 @@ public class DownloadBean implements Serializable {
 	}
 
 	enum HeaderLocal {
-		OK, Trupp, Religion, FunktionenBaden, Trail, Gilde, AltER, InfoMail, Mitarbeit, Eltern, Kinder, KinderTrupps
+		OK, Reg, Trupp, Religion, FunktionenBaden, Trail, Gilde, AltER, InfoMail, Mitarbeit, Eltern, Kinder, KinderTrupps
 	}
 
 	enum DataStructure {
@@ -209,6 +210,9 @@ public class DownloadBean implements Serializable {
 			c.setCellValue(h);
 		}
 
+		Activity membership = activityRepo.findActive().stream()
+				.filter(a -> ActivityType.Membership.equals(a.getType())).findFirst().orElse(null);
+		 
 		Collection<Member> leaders = squadRepo.findLeaders();
 		List<Member> members = getMembers().stream().filter(filter).collect(Collectors.toList());
 
@@ -272,12 +276,19 @@ public class DownloadBean implements Serializable {
 			// and Local Data
 			if (withLocal) { // Religion, FunktionenBaden, Trail, Gilde, AltER
 
+				Booking memberBooking = null;
+				if (membership != null) {
+					memberBooking = m.getBookings().stream()
+							.filter(b -> membership.equals(b.getActivity())).findFirst().orElse(null);
+				}
+				
 				HSSFCell ok = row.createCell(cCount++);
 				if (!vr.isEmpty()) {
 					ok.setCellValue(vr.stream().map(v -> v.getMessage()).collect(Collectors.joining(",")));
 					ok.setCellStyle(red);
 				}
 
+				row.createCell(cCount++).setCellValue(memberBooking != null ? ""+Boolean.TRUE.equals(memberBooking.getRegistered()) : "");
 				row.createCell(cCount++).setCellValue(m.getTrupp() != null ? m.getTrupp().getName() : "");
 				row.createCell(cCount++).setCellValue(m.getReligion());
 				row.createCell(cCount++).setCellValue("");
