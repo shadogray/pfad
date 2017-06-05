@@ -117,23 +117,28 @@ public class DownloadBean implements Serializable {
 		Collection<Member> leaders = squadRepo.findLeaders();
 		Predicate<Member> filter = 
 				m -> (leaders.contains(m) || m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
-		return downloadData(false, filter);
+		return downloadData(new RegConfig(), filter);
 	}
 
 	public String downloadRegistrierung() throws Exception {
-		return downloadData(false, null);
+		return downloadData(new RegConfig(), null);
+	}
+
+	public String downloadNachRegistrierung() throws Exception {
+		return downloadData(new RegConfig().notRegistered(), null);
 	}
 
 	public String downloadAll() throws Exception {
-		return downloadData(true, null, sessionBean.getSquad());
+		return downloadData(new RegConfig().withLocal(), null, sessionBean.getSquad());
 	}
 
 	public String downloadAllWithBookings() throws Exception {
-		return downloadData(true, true, null, sessionBean.getSquad());
+		return downloadData(new RegConfig().withLocal().withBookings(), null, sessionBean.getSquad());
 	}
 
 	public String downloadSquad(Squad squad) throws Exception {
-		return downloadData(true, null, squad);
+		
+		return downloadData(new RegConfig().withLocal(), null, squad);
 	}
 
 	public boolean isDownloadAllowed() {
@@ -147,11 +152,7 @@ public class DownloadBean implements Serializable {
 		return false;
 	}
 
-	public String downloadData(boolean withLocal, Predicate<Member> filter, Squad... squads) throws Exception {
-		return downloadData(withLocal, false, filter, squads);
-	}
-	
-	public String downloadData(boolean withLocal, boolean withBookings, Predicate<Member> filter, Squad... squads) throws Exception {
+	public String downloadData(RegConfig config, Predicate<Member> filter, Squad... squads) throws Exception {
 		try {
 
 			if (!isDownloadAllowed(squads))
@@ -160,7 +161,7 @@ public class DownloadBean implements Serializable {
 
 			ExternalContext ectx = setHeaders("Export");
 			try (OutputStream os = ectx.getResponseOutputStream()) {
-				HSSFWorkbook wb = generateData(withLocal, withBookings, filter, squads);
+				HSSFWorkbook wb = generateData(config, filter, squads);
 				wb.write(os);
 			}
 			FacesContext.getCurrentInstance().responseComplete();
@@ -174,7 +175,7 @@ public class DownloadBean implements Serializable {
 		return "";
 	}
 
-	private HSSFWorkbook generateData(boolean withLocal, boolean withBookings, Predicate<Member> filter, Squad... squads) {
+	private HSSFWorkbook generateData(RegConfig config, Predicate<Member> filter, Squad... squads) {
 		HSSFWorkbook wb = new HSSFWorkbook();
 		HSSFSheet sheet = wb.createSheet("Personen");
 		CellStyle red = wb.createCellStyle();
@@ -195,11 +196,11 @@ public class DownloadBean implements Serializable {
 
 		List<String> headers = Arrays.asList(HeaderRegistrierung.values()).stream().map(h -> h.name())
 				.collect(Collectors.toList());
-		if (withLocal) {
+		if (config.withLocal) {
 			headers.addAll(
 					Arrays.asList(HeaderLocal.values()).stream().map(h -> h.name()).collect(Collectors.toList()));
 		}
-		if (withBookings) {
+		if (config.withBookings) {
 			headers.add("--");
 			headers.addAll(activities.stream().map(a->a.getName()).collect(Collectors.toList()));
 		}
@@ -218,13 +219,22 @@ public class DownloadBean implements Serializable {
 
 		for (Member m : members) {
 			
-			if (!withLocal && memberValidator.isNotGrinsExportable(m, leaders))
+			if (!config.withLocal && memberValidator.isNotGrinsExportable(m, leaders))
 				continue;
 
 			if (squads != null && squads.length > 0) {
 				if (!Stream.of(squads).anyMatch(s -> s.equals(m.getTrupp()))) {
 					continue;
 				}
+			}
+
+			Booking memberBooking = null;
+			if (membership != null) {
+				memberBooking = m.getBookings().stream()
+						.filter(b -> membership.equals(b.getActivity())).findFirst().orElse(null);
+			}
+			if (memberBooking != null && Boolean.TRUE.equals(memberBooking.getRegistered())) {
+				continue;
 			}
 
 			List<ValidationResult> vr = memberValidator.validate(m, getFunktionen(m), leaders);
@@ -267,21 +277,15 @@ public class DownloadBean implements Serializable {
 			// Email
 			row.createCell(cCount++).setCellValue(m.getEmail());
 			// Religion
-			row.createCell(cCount++).setCellValue(withLocal ? m.getReligion() : ""); // do not return Religion
+			row.createCell(cCount++).setCellValue(config.withLocal ? m.getReligion() : ""); // do not return Religion
 			// Telefon
 			row.createCell(cCount++).setCellValue(m.getTelefon());
 			// Funktionen
 			row.createCell(cCount++).setCellValue(getFunktionen(m));
 
 			// and Local Data
-			if (withLocal) { // Religion, FunktionenBaden, Trail, Gilde, AltER
+			if (config.withLocal) { // Religion, FunktionenBaden, Trail, Gilde, AltER
 
-				Booking memberBooking = null;
-				if (membership != null) {
-					memberBooking = m.getBookings().stream()
-							.filter(b -> membership.equals(b.getActivity())).findFirst().orElse(null);
-				}
-				
 				HSSFCell ok = row.createCell(cCount++);
 				if (!vr.isEmpty()) {
 					ok.setCellValue(vr.stream().map(v -> v.getMessage()).collect(Collectors.joining(",")));
@@ -305,7 +309,7 @@ public class DownloadBean implements Serializable {
 						.map(s -> s.getTrupp() != null ? s.getTrupp().getName() : "").collect(Collectors.joining(",")));
 			}
 			
-			if (withBookings) {
+			if (config.withBookings) {
 				row.createCell(cCount++).setCellValue("");
 				for (Activity a : activities) {
 					Optional<Booking> bOpt = m.getBookings().stream()
@@ -699,5 +703,37 @@ public class DownloadBean implements Serializable {
 			}
 		}
 		return wb;
+	}
+	
+	class RegConfig {
+		boolean withLocal;
+		boolean notRegistered;
+		boolean withBookings;
+		
+		public RegConfig() {
+			// TODO Auto-generated constructor stub
+		}
+
+		public RegConfig(boolean withLocal, boolean notRegistered, boolean withBookings) {
+			super();
+			this.withLocal = withLocal;
+			this.notRegistered = notRegistered;
+			this.withBookings = withBookings;
+		}
+
+		public RegConfig notRegistered() {
+			notRegistered = true;
+			return this;
+		}
+		
+		public RegConfig withLocal() {
+			withLocal = true;
+			return this;
+		}
+		
+		public RegConfig withBookings() {
+			withBookings = true;
+			return this;
+		}
 	}
 }
