@@ -219,7 +219,7 @@ public class DownloadBean implements Serializable {
 
 		for (Member m : members) {
 			
-			if (!config.withLocal && memberValidator.isNotGrinsExportable(m, leaders))
+			if (!config.withLocal && !memberValidator.isGrinsExportable(m, leaders))
 				continue;
 
 			if (squads != null && squads.length > 0) {

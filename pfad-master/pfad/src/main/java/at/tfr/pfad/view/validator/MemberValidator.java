@@ -37,9 +37,9 @@ public class MemberValidator {
 	private SquadRepository squadRepo;
 	
 
-	public boolean isNotGrinsExportable(Member m, Collection<Member> leaders) {
-		return !m.isAktiv() || !(leaders.contains(m)
-				|| m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
+	public boolean isGrinsExportable(Member m, Collection<Member> leaders) {
+		return m.isAktiv() || leaders.contains(m)
+				|| m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg()));
 	}
 
 	public List<ValidationResult> validate(Member member, final Collection<Member> leaders) {
@@ -68,7 +68,7 @@ public class MemberValidator {
 			results.add(new ValidationResult(false, "Vollzahler INAKTIV: "+member.getVollzahler()));
 		}
 		
-		if (!isNotGrinsExportable(member, leaders)) {
+		if (isGrinsExportable(member, leaders)) {
 			if (member.getGebJahr() < 1900 || member.getGebMonat() < 1 || member.getGebTag() < 1) {
 				results.add(new ValidationResult(false, GEB_UNVOLL));
 			}
