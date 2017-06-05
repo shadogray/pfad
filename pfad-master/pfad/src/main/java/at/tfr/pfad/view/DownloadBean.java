@@ -233,7 +233,7 @@ public class DownloadBean implements Serializable {
 				memberBooking = m.getBookings().stream()
 						.filter(b -> membership.equals(b.getActivity())).findFirst().orElse(null);
 			}
-			if (memberBooking != null && Boolean.TRUE.equals(memberBooking.getRegistered())) {
+			if (config.notRegistered && memberBooking != null && Boolean.TRUE.equals(memberBooking.getRegistered())) {
 				continue;
 			}
 
