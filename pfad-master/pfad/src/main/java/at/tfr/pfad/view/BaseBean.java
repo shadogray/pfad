@@ -129,7 +129,7 @@ public abstract class BaseBean implements Serializable {
 	protected Member member;
 
 	private Payment paymentExample = new Payment();
-	private Booking bookingExample = new Booking();
+	private Booking bookingExample = new Booking(null);
 	private Member memberExample = new Member();
 	
 	protected Booking bookingToAdd;

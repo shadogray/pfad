@@ -77,7 +77,7 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	private BookingStatus status;
 	
 	@Column(nullable = false, columnDefinition="boolean default 'false'")
-	private Boolean registered;
+	private Boolean registered = false;
 
 	@Column
 	private String comment;
@@ -94,6 +94,13 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 	@Column
 	protected String createdBy;
 
+	public Booking() {
+	}
+	
+	public Booking(Boolean registered) {
+		this.registered = registered;
+	}
+	
 	@XmlID
 	public Long getId() {
 		return this.id;
