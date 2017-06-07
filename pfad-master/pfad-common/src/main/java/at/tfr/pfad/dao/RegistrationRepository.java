@@ -64,20 +64,12 @@ public abstract class RegistrationRepository implements EntityRepository<Registr
 	@Query("select e.id from Registration e")
 	protected abstract QueryResult<Long> queryAllIdsIntern();
 	
-	@EntityGraph("fetchAll")
 	@Query("select e from Registration e where e.id in (?1)")
 	protected abstract QueryResult<Registration> fetch(Collection<Long> registrationIds);
 	
-	@EntityGraph("fetchAll")
 	@Query("select e from Registration e")
 	protected abstract QueryResult<Registration> fetchAllIntern();
 	
-	@EntityGraph("fetchAll")
-	public List<Registration> findActive() {
-		return criteria().eq(Registration_.aktiv, true).orderAsc(Registration_.name).orderAsc(Registration_.vorname)
-				.orderAsc(Registration_.gebJahr).orderAsc(Registration_.gebMonat).getResultList();
-	}
-
 	@Query(named="Registration.distName")
 	public abstract List<String> findDistinctName();
 

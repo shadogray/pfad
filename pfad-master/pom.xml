@@ -19,6 +19,7 @@
         <hibernate.version>4.3.1.Final</hibernate.version>
         <org.mapstruct.version>1.1.0.Beta2</org.mapstruct.version>
         <org.wildfly.version>10.1.0.Final</org.wildfly.version>
+        <org.primefaces.version>6.1</org.primefaces.version>
     </properties>
 
     <dependencyManagement>
@@ -147,6 +148,11 @@
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>1.9.2</version>
+            </dependency>
+            <dependency>
+	            <groupId>org.primefaces</groupId>
+	            <artifactId>primefaces</artifactId>
+	            <version>${org.primefaces.version}</version>
             </dependency>
 
             <dependency>
