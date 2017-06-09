@@ -53,7 +53,7 @@
 					<h:link outcome="view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemDatum" value="#{_item.created}" >
-							<f:convertDateTime dateStyle="dd.mm.yyyy"/>
+							<f:convertDateTime pattern="dd.mm.yyyy"/>
 						</h:outputText>
 					</h:link>
 				</h:column>
