@@ -73,6 +73,15 @@
 				</h:column>
 				<h:column>
 					<f:facet name="header">
+						<h:outputText value="Sex" />
+					</f:facet>
+					<h:link outcome="create">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemSex" value="#{_item.geschlecht}" title="#{_item.toPrettyLines()}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
 					<h:link outcome="create">
