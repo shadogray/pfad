@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
 	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j"  
 	xmlns:o="http://omnifaces.org/ui" xmlns:ds="http://deltaspike.apache.org/jsf">
 
@@ -55,7 +55,9 @@
 					<li><h:link outcome="/pfad/payment/search" value="Zahlungen" /></li>
 					<li><h:link outcome="/pfad/payment/list" value="ZahlgsListe" /></li>
 					<li><h:link outcome="/pfad/function/search" value="Funktionen" /></li>
-					<li><h:link outcome="/pfad/registration/search" value="Registrierungen" /></li>
+					<c:if test="#{sessionBean.registrierungAllowed}">
+						<li><h:link outcome="/pfad/registration/search" value="Registrierungen" /></li>
+					</c:if>
 					<li><h:link outcome="/pfad/configuration/search" value="Konfig" /></li>
 					<li><h:link outcome="/pfad/actions" value="Aktionen" /></li>
 					<li><h:commandLink action="#{loginBean.logout()}" value="Beenden" /></li>

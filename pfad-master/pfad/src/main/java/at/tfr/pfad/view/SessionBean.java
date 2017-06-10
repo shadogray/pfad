@@ -72,6 +72,10 @@ public class SessionBean implements Serializable {
 		return userSession.isCallerInRole(Role.leiter.name());
 	}
 	
+	public boolean isRegistrierung() {
+		return userSession.isCallerInRole(Role.registrierung.name());
+	}
+	
 	public Squad isResponsibleFor() {
 		if (isLeiter()) {
 			String name = userSession.getCallerPrincipal().getName();
@@ -81,6 +85,10 @@ public class SessionBean implements Serializable {
 			}
 		}
 		return null;
+	}
+	
+	public boolean isRegistrierungAllowed() {
+		return isAdmin() || isGruppe() || isRegistrierung();
 	}
 	
 	public Squad getSquad() {

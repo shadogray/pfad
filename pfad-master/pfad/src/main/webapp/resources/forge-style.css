@@ -260,6 +260,21 @@ footer p {
 	max-width: 200px;
 }
 
+#content table .component90 {
+	width: 90%;
+	text-align: left;
+	vertical-align: top;
+	max-width: 800px;
+}
+
+.width70 {
+	width: 70em;
+}
+
+.width80 {
+	width: 80em;
+}
+
 #content table .component input {
 	width: 95%;
 	padding: 5px 7px;

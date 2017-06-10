@@ -116,6 +116,9 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 
 	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean storno;
+	
+	@Column
+	protected String comment;
 
 	@Column
 	protected Date changed;
@@ -343,6 +346,14 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 		this.telefon = Telefon;
 	}
 
+	public String getComment() {
+		return comment;
+	}
+	
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	
 	@Override
 	public Date getChanged() {
 		return changed;
@@ -477,6 +488,35 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 			result += ", religion: " + religion;
 		if (telefon != null && !telefon.trim().isEmpty())
 			result += ", telefon: " + telefon;
+		return result;
+	}
+	
+	public String toPrettyLines() {
+		String result = "Anmeldung: \n";
+		if (anrede != null && !anrede.trim().isEmpty())
+			result += titel + " ";
+		if (name != null && !name.trim().isEmpty())
+			result += name;
+		if (vorname != null && !vorname.trim().isEmpty())
+			result += " " + vorname;
+		result += "\n";
+		result += "Geboren: " + gebTag + "." + gebMonat + "." + gebJahr;
+		result += "\n";
+		if (strasse != null && !strasse.trim().isEmpty())
+			result += "Anschrift: " + strasse;
+		if (plz != null && !plz.trim().isEmpty())
+			result += ", " + plz;
+		if (ort != null && !ort.trim().isEmpty())
+			result += ", " + ort;
+		result += "\n";
+		result += "aktiv: " + aktiv + ", storno: " + storno;
+		result += "\n";
+		if (email != null && !email.trim().isEmpty())
+			result += "email: " + email;
+		if (telefon != null && !telefon.trim().isEmpty())
+			result += ", telefon: " + telefon;
+		result += "\n";
+		result += "Kommentar: " + (comment!=null ? comment : "");
 		return result;
 	}
 	

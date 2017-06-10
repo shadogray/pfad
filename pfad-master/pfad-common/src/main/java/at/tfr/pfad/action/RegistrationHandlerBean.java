@@ -27,6 +27,7 @@ public class RegistrationHandlerBean {
 		log.info("req: remote=" + req.getRemoteAddr() + ", parms=" + req.getParameterMap().entrySet().stream()
 				.map(e -> "" + e.getKey() + ":" + StringUtils.join(e.getValue(), ",")).collect(Collectors.joining()));
 		Registration reg = new Registration();
+		reg.setAktiv(true);
 		reg.setCreated(new Date());
 		reg.setCreatedBy(req.getRemoteAddr());
 		req.getParameterMap().entrySet().stream()

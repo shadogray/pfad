@@ -26,7 +26,12 @@
 				<h:panelGroup id="searchPanel" styleClass="search">
 
 					<h:panelGroup styleClass="buttons">
-						<h:commandLink id="search" value="Suchen" action="#{registrationBean.paginate}" styleClass="btn btn-primary" />
+						<h:link id="search" value="Suchen" outcome="search" styleClass="btn btn-primary" >
+							<f:param name="all" value="false" />
+						</h:link>
+						<h:commandLink id="all" value="Alle" action="#{registrationBean.paginate}" styleClass="btn btn-primary" >
+							<f:setPropertyActionListener value="true" target="#{registrationBean.all}"/>
+						</h:commandLink>
 					</h:panelGroup>
 				</h:panelGroup>
 
@@ -35,53 +40,107 @@
 					<f:facet name="header">
 						<h:outputText value="Nr" />
 					</f:facet>
-					<h:outputText name="id" value="#{registrationBean.dataModel.rowIndex+1}" />
+					<h:outputText name="id" value="#{registrationBean.dataModel.rowIndex+1}"/>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
-						<h:outputText value="Id" />
+						<h:outputText value="RegDatum" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="create">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemBVKey" value="#{_item.id}" />
+						<h:outputText id="itemDatum" value="#{_item.created}" title="#{_item.toPrettyLines()}" >
+							<f:convertDateTime patten="dd.mm.yyyy"/>
+						</h:outputText>
 					</h:link>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
-						<h:outputText value="Datum" />
+						<h:outputText value="Aktiv" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="create">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemDatum" value="#{_item.created}" >
-							<f:convertDateTime pattern="dd.mm.yyyy"/>
-						</h:outputText>
+						<h:outputText id="itemAktiv" value="#{_item.aktiv}" title="#{_item.toPrettyLines()}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Storno" />
+					</f:facet>
+					<h:link outcome="create">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemStorno" value="#{_item.storno}" title="#{_item.toPrettyLines()}" />
 					</h:link>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="create">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemName" value="#{_item.name}" />
+						<h:outputText id="itemName" value="#{_item.name}" title="#{_item.toPrettyLines()}" />
 					</h:link>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Vorname" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="create">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemVorname" value="#{_item.vorname}" />
+						<h:outputText id="itemVorname" value="#{_item.vorname}" title="#{_item.toPrettyLines()}" />
 					</h:link>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="GebJahr" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="create">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemJahr" value="#{_item.gebJahr}" />
+						<h:outputText id="itemJahr" value="#{_item.gebJahr}" title="#{_item.toPrettyLines()}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Schuleintritt" />
+					</f:facet>
+					<h:link outcome="create">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemSchoolEntry" value="#{_item.schoolEntry}" title="#{_item.toPrettyLines()}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Telefon" />
+					</f:facet>
+					<h:link outcome="create">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemTelefon" value="#{_item.telefon}" title="#{_item.toPrettyLines()}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Email" />
+					</f:facet>
+					<h:link outcome="create">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemEmail" value="#{_item.email}" title="#{_item.toPrettyLines()}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="PLZ" />
+					</f:facet>
+					<h:link outcome="create">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemPLZ" value="#{_item.PLZ}" title="#{_item.toPrettyLines()}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Ort" />
+					</f:facet>
+					<h:link outcome="create">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemOrt" value="#{_item.ort}" title="#{_item.toPrettyLines()}" />
 					</h:link>
 				</h:column>
 			</h:dataTable>
