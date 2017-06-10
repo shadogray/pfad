@@ -11,17 +11,10 @@
 		<f:event type="preRenderView" listener='#{registrationBean.retrieve}' />
 	</f:metadata>
 
-	<ui:param name="pageTitle" value="Person erstellen/bearbeiten" />
+	<ui:param name="pageTitle" value="Anmeldung bearbeiten" />
 
 	<ui:define name="header">
-		<c:choose>
-			<c:when test='#{!empty registrationBean.id}'>
-				Person ändern
-			</c:when>
-			<c:otherwise>
-				Person erstellen
-			</c:otherwise>
-		</c:choose>
+		Anmeldung bearbeiten
 	</ui:define>
 
 	<ui:define name="subheader">
