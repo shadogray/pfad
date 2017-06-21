@@ -11,17 +11,10 @@
 		<f:event type="preRenderView" listener='#{registrationBean.retrieve}' />
 	</f:metadata>
 
-	<ui:param name="pageTitle" value="Person erstellen/bearbeiten" />
+	<ui:param name="pageTitle" value="Anmeldung bearbeiten" />
 
 	<ui:define name="header">
-		<c:choose>
-			<c:when test='#{!empty registrationBean.id}'>
-				Person ändern
-			</c:when>
-			<c:otherwise>
-				Person erstellen
-			</c:otherwise>
-		</c:choose>
+		Anmeldung bearbeiten
 	</ui:define>
 
 	<ui:define name="subheader">
@@ -43,11 +36,20 @@
 
 			<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
 
-				<h:outputLabel for="registrationBeanMemberAnrede" value="Anrede:" />
+				<h:outputLabel for="regBeanRegAnrede" value="Anrede:" />
 				<h:panelGroup>
-					<rich:autocomplete id="registrationBeanMemberAnrede" value="#{registrationBean.registration.anrede}" mode="lazyClient"
+					<rich:autocomplete id="regBeanRegAnrede" value="#{registrationBean.registration.anrede}" mode="lazyClient"
 						autofill="false" autocompleteList="#{memberBean.distinctAnrede}" clientFilterFunction="autoFilter" />
-					<h:message for="registrationBeanMemberAnrede" styleClass="error" />
+					<h:message for="regBeanRegAnrede" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+
+				<h:outputLabel for="regBeanRegGeschlecht" value="Geschlecht:" />
+				<h:panelGroup>
+					<h:selectOneMenu id="regBeanRegGeschlecht" value="#{registrationBean.registration.geschlecht}" required="true">
+						<f:selectItems value="#{memberBean.sexes}" />
+					</h:selectOneMenu>
+					<h:message for="regBeanRegGeschlecht" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
@@ -71,34 +73,44 @@
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberGebTag" value="Geb Tag:" />
+				<h:outputLabel for="regBeanRegSchoolEntry" value="Schuleintritt:" />
 				<h:panelGroup>
-					<h:inputText id="registrationBeanMemberGebTag" value="#{registrationBean.registration.gebTag}" p:placeholder="numerisch"
+					<h:inputText id="regBeanRegSchoolEntry" value="#{registrationBean.registration.schoolEntry}" p:placeholder="numerisch"
+						title="Jahr des Schuleintritts">
+						<f:validateLongRange minimum="2000" maximum="3000" />
+					</h:inputText>
+					<h:message for="regBeanRegSchoolEntry" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+
+				<h:outputLabel for="regBeanRegGebTag" value="Geb Tag:" />
+				<h:panelGroup>
+					<h:inputText id="regBeanRegGebTag" value="#{registrationBean.registration.gebTag}" p:placeholder="numerisch"
 						title="Tag des Monats, Zahl">
 						<f:validateLongRange minimum="0" maximum="31" />
 					</h:inputText>
-					<h:message for="registrationBeanMemberGebTag" styleClass="error" />
+					<h:message for="regBeanRegGebTag" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberGebMonat" value="Geb Monat:" />
+				<h:outputLabel for="regBeanRegGebMonat" value="Geb Monat:" />
 				<h:panelGroup>
-					<h:selectOneMenu id="registrationBeanMemberGebMonat" value="#{registrationBean.registration.gebMonat}" title="Monat des Jahres, Zahl">
+					<h:selectOneMenu id="regBeanRegGebMonat" value="#{registrationBean.registration.gebMonat}" title="Monat des Jahres, Zahl">
 						<f:selectItem itemLabel="undef.." itemValue="0"/>
 						<f:selectItems value="#{memberBean.months}" var="m" itemLabel="#{m}" itemValue="#{m.idx}"/>
 					</h:selectOneMenu>
-					<h:message for="registrationBeanMemberGebMonat" styleClass="error" />
+					<h:message for="regBeanRegGebMonat" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberGebJahr" value="Geb Jahr:" />
+				<h:outputLabel for="regBeanRegGebJahr" value="Geb Jahr:" />
 				<h:panelGroup>
-					<h:inputText id="registrationBeanMemberGebJahr" value="#{registrationBean.registration.gebJahr}" p:placeholder="numerisch"
+					<h:inputText id="regBeanRegGebJahr" value="#{registrationBean.registration.gebJahr}" p:placeholder="numerisch"
 						title="Jahr, Zahl">
 						<f:validateRequired />
 						<f:validator validatorId="gebJahrValidator" />
 					</h:inputText>
-					<h:message for="registrationBeanMemberGebJahr" styleClass="error" />
+					<h:message for="regBeanRegGebJahr" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
@@ -122,64 +134,74 @@
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberStrasse" value="Strasse:" />
+				<h:outputLabel for="regBeanRegStrasse" value="Strasse:" />
 				<h:panelGroup>
-					<rich:autocomplete id="registrationBeanMemberStrasse" value="#{registrationBean.registration.strasse}" mode="lazyClient"
-						autocompleteList="#{registrationBean.distinctStrasse}" clientFilterFunction="autoFilter" />
-					<h:message for="registrationBeanMemberStrasse" styleClass="error" />
+					<rich:autocomplete id="regBeanRegStrasse" value="#{registrationBean.registration.strasse}" mode="lazyClient"
+						autocompleteList="#{memberBean.distinctStrasse}" clientFilterFunction="autoFilter" />
+					<h:message for="regBeanRegStrasse" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberPLZ" value="PLZ:" />
+				<h:outputLabel for="regBeanRegPLZ" value="PLZ:" />
 				<h:panelGroup>
-					<rich:autocomplete id="registrationBeanMemberPLZ" value="#{registrationBean.registration.PLZ}" mode="lazyClient"
-						autocompleteList="#{registrationBean.distinctPLZ}" clientFilterFunction="autoFilter" />
-					<h:message for="registrationBeanMemberPLZ" styleClass="error" />
+					<rich:autocomplete id="regBeanRegPLZ" value="#{registrationBean.registration.PLZ}" mode="lazyClient"
+						autocompleteList="#{memberBean.distinctPLZ}" clientFilterFunction="autoFilter" />
+					<h:message for="regBeanRegPLZ" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberOrt" value="Ort:" />
+				<h:outputLabel for="regBeanRegOrt" value="Ort:" />
 				<h:panelGroup>
-					<rich:autocomplete id="registrationBeanMemberOrt" value="#{registrationBean.registration.ort}" mode="lazyClient"
-						autocompleteList="#{registrationBean.distinctOrt}" clientFilterFunction="autoFilter" />
-					<h:message for="registrationBeanMemberOrt" styleClass="error" />
+					<rich:autocomplete id="regBeanRegOrt" value="#{registrationBean.registration.ort}" mode="lazyClient"
+						autocompleteList="#{memberBean.distinctOrt}" clientFilterFunction="autoFilter" />
+					<h:message for="regBeanRegOrt" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberGeschlecht" value="Geschlecht:" />
+				<h:outputText />
+				<h:outputText />
+				<h:outputText />
+				
+				<h:outputLabel for="regBeanRegEmail" value="Email:" />
 				<h:panelGroup>
-					<h:selectOneMenu id="registrationBeanMemberGeschlecht" value="#{registrationBean.registration.geschlecht}" required="true">
-						<f:selectItems value="#{memberBean.sexes}" />
-					</h:selectOneMenu>
-					<h:message for="registrationBeanMemberGeschlecht" styleClass="error" />
+					<h:inputText id="regBeanRegEmail" value="#{registrationBean.registration.email}" />
+					<h:message for="regBeanRegEmail" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberEmail" value="Email:" />
+				<h:outputLabel for="regBeanRegTelefon" value="Telefon:" />
 				<h:panelGroup>
-					<h:inputText id="registrationBeanMemberEmail" value="#{registrationBean.registration.email}" />
-					<h:message for="registrationBeanMemberEmail" styleClass="error" />
+					<h:inputText id="regBeanRegTelefon" value="#{registrationBean.registration.telefon}" />
+					<h:message for="regBeanRegTelefon" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="registrationBeanMemberTelefon" value="Telefon:" />
+			</h:panelGrid>
+			
+			<h:panelGrid columns="2" width="100em" columnClasses="label2,component90">
+				<h:outputLabel for="regBeanRegComment" value="Kommentar:" />
 				<h:panelGroup>
-					<h:inputText id="registrationBeanMemberTelefon" value="#{registrationBean.registration.telefon}" />
-					<h:message for="registrationBeanMemberTelefon" styleClass="error" />
+					<h:inputTextarea id="regBeanRegComment" value="#{registrationBean.registration.comment}" rows="5" cols="120" styleClass="width70"/>
+					<h:message for="regBeanRegComment" styleClass="error" />
 				</h:panelGroup>
-				<h:outputText />
-
 			</h:panelGrid>
 
 			<h:outputStylesheet>
 			.boolean { width: 15%; }
 			</h:outputStylesheet>
-			<h:panelGrid columns="8" style="width: 100%;" columnClasses="boolean,boolean">
-				<h:outputLabel for="registrationBeanMemberAktiv" value="Aktiv:" />
+			<h:panelGrid columns="6" style="width: 100%;" columnClasses="boolean,boolean,boolean,boolean">
+				<h:outputLabel for="regBeanRegAktiv" value="Aktiv:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="registrationBeanMemberAktiv" value="#{registrationBean.registration.aktiv}" />
-					<h:message for="registrationBeanMemberAktiv" styleClass="error" />
+					<h:selectBooleanCheckbox id="regBeanRegAktiv" value="#{registrationBean.registration.aktiv}" />
+					<h:message for="regBeanRegAktiv" styleClass="error" />
 				</h:panelGroup>
+				<h:outputLabel for="regBeanRegStorno" value="Storno:" />
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="regBeanRegStorno" value="#{registrationBean.registration.storno}" />
+					<h:message for="regBeanRegStorno" styleClass="error" />
+				</h:panelGroup>
+				<h:panelGroup/>
+				<h:panelGroup/>
 			</h:panelGrid>
 			
 			<h:panelGrid columns="8" style="width: 100%;">
