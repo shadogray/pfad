@@ -46,6 +46,8 @@
 			<role-name>leiter</role-name>
 			<role-name>kassier</role-name>
 			<role-name>vorstand</role-name>
+			<role-name>registrierung</role-name>
+			<role-name>anmeldung</role-name>
 		</auth-constraint>
 		<user-data-constraint>
 			<description>SSL</description>
@@ -86,6 +88,15 @@
         <description>Vorstand</description>
         <role-name>vorstand</role-name>
     </security-role>
+    <security-role>
+    	<description>Registrierung</description>
+    	<role-name>registrierung</role-name>
+    </security-role>
+    <security-role>
+    	<description>Anmeldung</description>
+    	<role-name>anmeldung</role-name>
+    </security-role>
+
 	<welcome-file-list>
 		<welcome-file>/index.html</welcome-file>
 	</welcome-file-list>

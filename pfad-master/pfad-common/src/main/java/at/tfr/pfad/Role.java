@@ -8,5 +8,5 @@
 package at.tfr.pfad;
 
 public enum Role {
-	admin, gruppe, leiter, kassier, vorstand, registrierung, none;
+	admin, gruppe, leiter, kassier, vorstand, registrierung, anmeldung, none;
 }

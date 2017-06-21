@@ -13,6 +13,7 @@ import javax.inject.Named;
 
 import at.tfr.pfad.dao.RegistrationRepository;
 import at.tfr.pfad.model.Registration;
+import at.tfr.pfad.view.SessionBean;
 
 @Named
 @ViewScoped
@@ -52,7 +53,7 @@ public class RegistrationBean implements Serializable {
 	}
 
 	public boolean isUpdateAllowed() {
-		return sessionBean.isAdmin() || sessionBean.isGruppe() || sessionBean.isRegistrierung();
+		return sessionBean.isAdmin() || sessionBean.isGruppe() || sessionBean.isRegistrierung() || sessionBean.isAnmeldung();
 	}
 	
 	public javax.faces.model.DataModel<Registration> getDataModel() {
