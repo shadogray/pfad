@@ -43,6 +43,10 @@ public class RegistrationHandlerBean {
 	}
 
 	public Registration apply(Registration reg, String param, String value) {
+		if (value != null) {
+			value = value.trim();
+		}
+		
 		try {
 			switch (param) {
 			case "vornameKind":
