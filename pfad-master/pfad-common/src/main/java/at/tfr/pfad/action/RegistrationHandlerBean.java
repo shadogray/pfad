@@ -65,7 +65,7 @@ public class RegistrationHandlerBean {
 				reg.setGebJahr(Integer.valueOf(value));
 				break;
 			case "schuleintritt":
-				reg.setGebJahr(Integer.valueOf(value));
+				reg.setSchoolEntry(Integer.valueOf(value));
 				break;
 			case "vornameErziehungsberechtigter":
 				reg.setParentVorname(value);
