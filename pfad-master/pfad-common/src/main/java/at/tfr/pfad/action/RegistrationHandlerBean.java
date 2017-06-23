@@ -2,7 +2,10 @@ package at.tfr.pfad.action;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -56,16 +59,16 @@ public class RegistrationHandlerBean {
 				reg.setName(value);
 				break;
 			case "geburtstag":
-				reg.setGebTag(Integer.valueOf(value));
+				reg.setGebTag(asInteger(param, value, reg));
 				break;
 			case "geburtsmonat":
-				reg.setGebMonat(Integer.valueOf(value));
+				reg.setGebMonat(asInteger(param, value, reg));
 				break;
 			case "geburtsjahr":
-				reg.setGebJahr(Integer.valueOf(value));
+				reg.setGebJahr(asInteger(param, value, reg));
 				break;
 			case "schuleintritt":
-				reg.setSchoolEntry(Integer.valueOf(value));
+				reg.setSchoolEntry(asInteger(param, value, reg));
 				break;
 			case "vornameErziehungsberechtigter":
 				reg.setParentVorname(value);
@@ -95,6 +98,22 @@ public class RegistrationHandlerBean {
 			log.info("cannot convert: " + param + " : " + value + " err: " + e);
 		}
 		return reg;
+	}
+
+	public Integer asInteger(String key, String value, Registration reg) {
+		if (value == null) 
+			return null;
+		value = value.trim();
+		if (Pattern.compile("[^\\d]+").matcher(value).find()) {
+			if (reg.getComment() == null) 
+				reg.setComment("");
+			
+			log.info("found invalid: key="+key+", value="+value);
+			reg.setComment(reg.getComment() + "Fehler: "+key+"="+value+"\n");
+			value = Stream.of(value.split(" ")).filter(s->s.trim().length() > 0)
+					.map(String::trim).filter(s -> s.matches("\\d+")).findFirst().orElse(value);
+		}
+		return Integer.valueOf(value);
 	}
 	
 }
