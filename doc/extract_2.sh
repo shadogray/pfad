@@ -1,0 +1,1 @@
+perl -0 -pe 's/vornameKind:\s+(.*?)\nnachnameKind:\s+(.*?)\ngeburtsdatum:\s+(.*?)\nschuleintritt:\s+(.*?)\nvornameErziehungsberechtigter:\s+(.*?)\nnachnameErziehungsberechtigter:\s+(.*?)\nadresse:\s+(.*?)\ntelefon:\s+(.*?)\nemail:\s+(.*?)\nAngemeldet:\s+(.*?)\n/$10;$1;$2;$3;$4;$5;$6;$7;$8;$9;/g' $*
