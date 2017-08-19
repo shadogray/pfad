@@ -16,7 +16,7 @@
         <deltaspike.version>1.5.4</deltaspike.version>
         <hibernate.version>5.0.7.Final</hibernate.version>
         <org.mapstruct.version>1.1.0.Beta2</org.mapstruct.version>
-        <org.primefaces.version>6.0</org.primefaces.version>
+        <org.primefaces.version>6.1</org.primefaces.version>
         <google.guava.version>20.0</google.guava.version>
     </properties>
     <dependencyManagement>
