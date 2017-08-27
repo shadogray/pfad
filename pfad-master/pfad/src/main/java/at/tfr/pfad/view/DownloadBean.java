@@ -534,9 +534,11 @@ public class DownloadBean implements Serializable {
 	}
 
 	public List<Configuration> getQueries() {
-		return configRepo.findByTypeOrderByCkeyAsc(ConfigurationType.query).stream()
+		return configRepo.findAll().stream()
+				.filter(c -> c.getCkey() != null && (c.getType() == ConfigurationType.query || c.getType() == ConfigurationType.nativeQuery))
 				.filter(q -> sessionBean.isAdmin() || Role.none.equals(q.getRole())
 						|| sessionBean.getUserSession().isCallerInRole(q.getRole().name()))
+				.sorted((x,y) -> x.getCkey().compareTo(y.getCkey()))
 				.collect(Collectors.toList());
 	}
 
