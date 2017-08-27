@@ -548,8 +548,8 @@ public class DownloadBean implements Serializable {
 					.findFirst();
 			if (confOpt.isPresent()) {
 				configuration = confOpt.get();
-				query = confOpt.get().getCvalue();
-				nativeQuery = ConfigurationType.nativeQuery.equals(confOpt.get().getType());
+				query = configuration.getCvalue();
+				nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
 				query();
 			}
 		} catch (Exception e) {
@@ -564,6 +564,9 @@ public class DownloadBean implements Serializable {
 		Query q = null;
 		if (dataTableGroup != null) {
 			dataTableGroup.getChildren().clear();
+		}
+		if (configuration != null) {
+			nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
 		}
 		try {
 			results = new ArrayList<>();
