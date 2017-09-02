@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.ejb.EJBObject;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.model.CollectionDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -41,6 +41,7 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.PaymentUI;
 import at.tfr.pfad.model.Payment_;
+import at.tfr.pfad.svc.BookingDao;
 import at.tfr.pfad.svc.PaymentDao;
 
 /**
@@ -219,6 +220,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	 */
 
 	private List<PaymentUI> pageItems;
+	private javax.faces.model.DataModel<PaymentUI> dataModel;
 
 	private Boolean exampleFinished;
 	private Boolean exampleAconto;
@@ -306,6 +308,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 		
 		bookingRepo.findByPaymentIds(pageItems.stream().map(p->p.getId()).collect(Collectors.toList()));
 		pageItems.forEach(pui->pui.setBookings(pui.getPayment().getBookings()));
+		dataModel = new CollectionDataModel<PaymentUI>(pageItems);
 	}
 
 	private Predicate[] getSearchPredicates(Root<Payment> root) {
@@ -355,6 +358,15 @@ public class PaymentBean extends BaseBean implements Serializable {
 		if (examplePaymentDateEnd != null) {
 			predicatesList.add(builder.lessThanOrEqualTo(root.get(Payment_.paymentDate), examplePaymentDateEnd));
 		}
+		
+		Payment pex = getPaymentExample();
+		if (StringUtils.isNotBlank(pex.getPayerIBAN())) {
+			predicatesList.add(builder.like(root.get(Payment_.payerIBAN), "%"+pex.getPayerIBAN()+"%"));
+		}
+
+		if (StringUtils.isNotBlank(pex.getComment())) {
+			predicatesList.add(builder.like(root.get(Payment_.comment), "%"+pex.getComment()+"%"));
+		}
 
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
 	}
@@ -363,6 +375,10 @@ public class PaymentBean extends BaseBean implements Serializable {
 		return this.pageItems;
 	}
 
+	public javax.faces.model.DataModel<PaymentUI> getDataModel() {
+		return dataModel;
+	}
+	
 	public long getCount() {
 		return this.count;
 	}
@@ -445,6 +461,22 @@ public class PaymentBean extends BaseBean implements Serializable {
 			setId(Long.valueOf(((Payment)event.getObject()).getId()));
 			retrieve();
 		}
+	}
+	
+	@Override
+	public List<BookingDao> filterBookings(final String filter) {
+		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
+			if (payment != null && payment.getBookings().size() > 0) {
+				Booking b = payment.getBookings().iterator().next();
+				filteredBookings = bookings.filtered(filter, b.getActivity(), b.getMember().getStrasse())
+						.stream().map(fb -> bookingMap.toDao(fb)).collect(Collectors.toList());
+				filteredBookings.removeIf(fb -> payment.getBookings().stream().anyMatch(pb -> pb.getId().equals(fb.getId())));
+			} else {
+				filteredBookings = bookings.filtered(filter)
+						.stream().map(fb -> bookingMap.toDao(fb)).collect(Collectors.toList());
+			}
+		}
+		return filteredBookings;
 	}
 	
 }

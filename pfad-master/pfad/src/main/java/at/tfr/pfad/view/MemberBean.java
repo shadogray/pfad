@@ -16,12 +16,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ejb.EJBObject;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.model.CollectionDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -258,6 +258,7 @@ public class MemberBean extends BaseBean implements Serializable {
 	 */
 
 	private List<Member> pageItems;
+	private javax.faces.model.DataModel<Member> dataModel;
 
 	public int getPage() {
 		return this.page;
@@ -316,6 +317,7 @@ public class MemberBean extends BaseBean implements Serializable {
 						builder.asc(root.get(Member_.vorname)), builder.asc(root.get(Member_.id))));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
+		dataModel = new CollectionDataModel<>(pageItems);
 	}
 
 	private Predicate[] getSearchPredicates(Root<Member> root) {
@@ -373,7 +375,11 @@ public class MemberBean extends BaseBean implements Serializable {
 	}
 
 	public List<Member> getPageItems() {
-		return this.pageItems;
+		return pageItems;
+	}
+	
+	public javax.faces.model.DataModel<Member> getDataModel() {
+		return dataModel;
 	}
 
 	public long getCount() {

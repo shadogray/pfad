@@ -114,6 +114,12 @@
 			<p:dataTable id="memberBeanPageItems" styleClass="table table-bordered" value="#{memberBean.pageItems}" var="_item">
 				<p:column>
 					<f:facet name="header">
+						<h:outputText value="Nr" />
+					</f:facet>
+					<h:outputText name="id" value="#{memberBean.dataModel.rowIndex+1}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
 						<h:outputText value="BV Key" />
 					</f:facet>
 					<h:link outcome="view">

@@ -48,5 +48,5 @@ public abstract class PaymentRepository implements EntityRepository<Payment, Lon
 
 	@Query(named = "PaymentsForBooking")
 	public abstract List<Payment> findByBooking(Booking b);
-	
+
 }

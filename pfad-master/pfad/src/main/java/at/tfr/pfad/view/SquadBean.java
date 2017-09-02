@@ -19,6 +19,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.model.CollectionDataModel;
+import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.persistence.FetchType;
@@ -69,6 +71,8 @@ public class SquadBean extends BaseBean implements Serializable {
 	}
 
 	private Squad squad;
+	private javax.faces.model.DataModel<Member> scouts;
+	private javax.faces.model.DataModel<Member> assistants;
 
 	public Squad getSquad() {
 		return this.squad;
@@ -76,6 +80,14 @@ public class SquadBean extends BaseBean implements Serializable {
 
 	public void setSquad(Squad squad) {
 		this.squad = squad;
+	}
+	
+	public javax.faces.model.DataModel<Member> getAssistants() {
+		return assistants;
+	}
+	
+	public javax.faces.model.DataModel<Member> getScouts() {
+		return scouts;
 	}
 
 	public String create() {
@@ -93,6 +105,9 @@ public class SquadBean extends BaseBean implements Serializable {
 		} else {
 			this.squad = findById(getId());
 		}
+		
+		scouts = new CollectionDataModel<>(squad.getScouts());
+		assistants = new CollectionDataModel<>(squad.getAssistants());
 	}
 
 	public Squad findById(Long id) {

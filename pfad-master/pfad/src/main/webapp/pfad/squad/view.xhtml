@@ -48,7 +48,13 @@
 			<h:outputText />
 			<h:outputLabel for="squadBeanSquadAssistants" value="Assistants:" />
 			<p:dataTable id="squadBeanSquadAssistants" styleClass="data-table"
-				value="#{forgeview:asList(squadBean.squad.assistants)}" var="_item">
+				value="#{squadBean.assistants}" var="_item">
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Nr" />
+					</f:facet>
+					<h:outputText value="#{squadBean.assistants.rowIndex+1}" />
+				</p:column>
 				<p:column>
 					<f:facet name="header">
 						<h:outputText value="BV-Key" />
@@ -107,7 +113,13 @@
 			<h:outputText />
 			<h:outputLabel for="squadBeanSquadScouts" value="Scouts:" />
 			<p:dataTable id="squadBeanSquadScouts" styleClass="data-table"
-				value="#{forgeview:asList(squadBean.squad.scouts)}" var="_item">
+				value="#{squadBean.scouts}" var="_item">
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Nr" />
+					</f:facet>
+					<h:outputText value="#{squadBean.scouts.rowIndex+1}" />
+				</p:column>
 				<p:column>
 					<f:facet name="header">
 						<h:outputText value="BV Key" />

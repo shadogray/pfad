@@ -28,35 +28,33 @@ public class FunctionEndpoint extends EndpointBase<Function> {
 
 	@Inject
 	private FunctionMapper fm;
-	
-//	@POST
-//	@Consumes("application/json")
-//	public Response create(FunctionDao dao) {
-//		em.persist(entity);
-//		return Response.created(
-//				UriBuilder.fromResource(FunctionEndpoint.class)
-//						.path(String.valueOf(entity.getId())).build()).build();
-//	}
-//
-//	@DELETE
-//	@Path("/{id:[0-9][0-9]*}")
-//	public Response deleteById(@PathParam("id") Long id) {
-//		Function entity = em.find(Function.class, id);
-//		if (entity == null) {
-//			return Response.status(Status.NOT_FOUND).build();
-//		}
-//		em.remove(entity);
-//		return Response.noContent().build();
-//	}
+
+	// @POST
+	// @Consumes("application/json")
+	// public Response create(FunctionDao dao) {
+	// em.persist(entity);
+	// return Response.created(
+	// UriBuilder.fromResource(FunctionEndpoint.class)
+	// .path(String.valueOf(entity.getId())).build()).build();
+	// }
+	//
+	// @DELETE
+	// @Path("/{id:[0-9][0-9]*}")
+	// public Response deleteById(@PathParam("id") Long id) {
+	// Function entity = em.find(Function.class, id);
+	// if (entity == null) {
+	// return Response.status(Status.NOT_FOUND).build();
+	// }
+	// em.remove(entity);
+	// return Response.noContent().build();
+	// }
 
 	@GET
 	@Path("/{id:[0-9][0-9]*}")
 	@Produces("application/json")
 	public Response findById(@PathParam("id") Long id) {
 		TypedQuery<Function> findByIdQuery = em
-				.createQuery(
-						"SELECT DISTINCT f FROM Function f WHERE f.id = :entityId ORDER BY f.id",
-						Function.class);
+				.createQuery("SELECT DISTINCT f FROM Function f WHERE f.id = :entityId ORDER BY f.id", Function.class);
 		findByIdQuery.setParameter("entityId", id);
 		Function entity;
 		try {
@@ -67,16 +65,14 @@ public class FunctionEndpoint extends EndpointBase<Function> {
 		if (entity == null) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
-		return Response.ok(fm.functionToDao(entity)).build();
+		return Response.ok(fm.toDao(entity)).build();
 	}
 
 	@GET
 	@Produces("application/json")
-	public List<FunctionDao> listAll(@QueryParam("start") Integer startPosition,
-			@QueryParam("max") Integer maxResult) {
-		TypedQuery<Function> findAllQuery = em.createQuery(
-				"SELECT DISTINCT f FROM Function f ORDER BY f.function, f.key, f.id",
-				Function.class);
+	public List<FunctionDao> listAll(@QueryParam("start") Integer startPosition, @QueryParam("max") Integer maxResult) {
+		TypedQuery<Function> findAllQuery = em
+				.createQuery("SELECT DISTINCT f FROM Function f ORDER BY f.function, f.key, f.id", Function.class);
 		if (startPosition != null) {
 			findAllQuery.setFirstResult(startPosition);
 		}
@@ -84,32 +80,32 @@ public class FunctionEndpoint extends EndpointBase<Function> {
 			findAllQuery.setMaxResults(maxResult);
 		}
 		final List<Function> results = findAllQuery.getResultList();
-		return results.stream().map(f -> fm.functionToDao(f)).collect(Collectors.toList());
+		return results.stream().map(f -> fm.toDao(f)).collect(Collectors.toList());
 	}
 
-//	@PUT
-//	@Path("/{id:[0-9][0-9]*}")
-//	@Consumes("application/json")
-//	public Response update(@PathParam("id") Long id, Function entity) {
-//		if (entity == null) {
-//			return Response.status(Status.BAD_REQUEST).build();
-//		}
-//		if (id == null) {
-//			return Response.status(Status.BAD_REQUEST).build();
-//		}
-//		if (!id.equals(entity.getId())) {
-//			return Response.status(Status.CONFLICT).entity(entity).build();
-//		}
-//		if (em.find(Function.class, id) == null) {
-//			return Response.status(Status.NOT_FOUND).build();
-//		}
-//		try {
-//			entity = em.merge(entity);
-//		} catch (OptimisticLockException e) {
-//			return Response.status(Response.Status.CONFLICT)
-//					.entity(e.getEntity()).build();
-//		}
-//
-//		return Response.noContent().build();
-//	}
+	// @PUT
+	// @Path("/{id:[0-9][0-9]*}")
+	// @Consumes("application/json")
+	// public Response update(@PathParam("id") Long id, Function entity) {
+	// if (entity == null) {
+	// return Response.status(Status.BAD_REQUEST).build();
+	// }
+	// if (id == null) {
+	// return Response.status(Status.BAD_REQUEST).build();
+	// }
+	// if (!id.equals(entity.getId())) {
+	// return Response.status(Status.CONFLICT).entity(entity).build();
+	// }
+	// if (em.find(Function.class, id) == null) {
+	// return Response.status(Status.NOT_FOUND).build();
+	// }
+	// try {
+	// entity = em.merge(entity);
+	// } catch (OptimisticLockException e) {
+	// return Response.status(Response.Status.CONFLICT)
+	// .entity(e.getEntity()).build();
+	// }
+	//
+	// return Response.noContent().build();
+	// }
 }

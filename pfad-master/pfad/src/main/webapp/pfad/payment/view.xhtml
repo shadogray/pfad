@@ -101,6 +101,10 @@
 				</h:panelGroup>
 				<h:outputText />
 	
+				<h:outputLabel for="paymentBeanPaymentIBAN" value="IBAN:" />
+				<h:inputText id="paymentBeanPaymentIBAN" value="#{paymentBean.payment.payerIBAN}" styleClass="fullwidth" readonly="true"/>
+				<h:outputText />
+	
 				<h:outputLabel for="paymentBeanPaymentComment" value="Bemerkung:" />
 				<p:inputTextarea id="paymentBeanPaymentComment" value="#{paymentBean.payment.comment}" rows="3" styleClass="fullwidth" readonly="true"/>
 				<h:outputText />

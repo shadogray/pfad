@@ -83,7 +83,7 @@ public class DownloadBean implements Serializable {
 	}
 
 	enum DataStructure {
-		XLS, CSV
+		XLS, CSV, XLSX
 	}
 	
 	@Inject
@@ -137,7 +137,7 @@ public class DownloadBean implements Serializable {
 	}
 
 	public boolean isDownloadAllowed(Squad... squads) {
-		if (sessionBean.isAdmin() || sessionBean.isGruppe() || (sessionBean.isLeiter() && squads != null
+		if (sessionBean.isAdmin() || sessionBean.isGruppe() || sessionBean.isVorstand() || (sessionBean.isLeiter() && squads != null
 				&& Stream.of(squads).allMatch(s -> squadBean.isDownloadAllowed(s))))
 			return true;
 		return false;
@@ -154,7 +154,7 @@ public class DownloadBean implements Serializable {
 				throw new SecurityException(
 						"user may not download: " + sessionBean.getUserSession().getCallerPrincipal());
 
-			ExternalContext ectx = setHeaders();
+			ExternalContext ectx = setHeaders("Export");
 			try (OutputStream os = ectx.getResponseOutputStream()) {
 				HSSFWorkbook wb = generateData(withLocal, withBookings, filter, squads);
 				wb.write(os);
@@ -176,6 +176,7 @@ public class DownloadBean implements Serializable {
 		CellStyle red = wb.createCellStyle();
 		red.setFillForegroundColor(HSSFColor.RED.index);
 		red.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		squads = Stream.of(squads).filter(s->s != null).collect(Collectors.toList()).toArray(new Squad[]{});
 
 		// non-filtered members
 		if (filter == null) {
@@ -405,32 +406,48 @@ public class DownloadBean implements Serializable {
 
 	private List<Member> getMembers() {
 		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
-		UserSession userSess = sessionBean.getUserSession();
-		if (userSess.isCallerInRole(Role.admin.name()) || userSess.isCallerInRole(Role.gruppe.name()))
+		if (sessionBean.isAdmin() || sessionBean.isGruppe() || sessionBean.isVorstand())
 			return members;
-		if (userSess.isCallerInRole(Role.leiter.name())) {
-			List<Squad> squads = squadRepo.findByName(userSess.getCallerPrincipal().getName());
-			members = members.stream().filter(m -> m.getTrupp() != null && squads.contains(m.getTrupp()))
+		if (sessionBean.isLeiter()) {
+			Squad squad = sessionBean.getSquad();
+			members = members.stream().filter(m -> m.getTrupp() != null && m.getTrupp().equals(squad))
 					.collect(Collectors.toList());
 		}
 		return members;
 	}
 
-	private ExternalContext setHeaders() {
-		ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-		ectx.responseReset();
+	public static ExternalContext setHeaders(String prefix) {
 		DataStructure dataStructure = DataStructure.XLS;
 		String encoding = "UTF8";
+		return setHeaders(prefix, dataStructure, encoding);
+	}
 
-		if (DataStructure.XLS.equals(dataStructure)) {
+	public static ExternalContext setHeaders(String prefix, DataStructure dataStructure) {
+		return setHeaders(prefix, dataStructure, "UTF-8");
+	}
+	
+	public static ExternalContext setHeaders(String prefix, DataStructure dataStructure, String encoding) {
+		ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
+		ectx.responseReset();
+
+		String suffix = dataStructure != null ? dataStructure.name().toLowerCase() : "bin";
+
+		switch (dataStructure) {
+		case XLS:
 			ectx.setResponseContentType("application/excel");
 			ectx.setResponseCharacterEncoding("binary");
-		} else {
+			break;
+		case XLSX:
+			ectx.setResponseContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			ectx.setResponseCharacterEncoding("binary");
+			break;
+		default:
 			ectx.setResponseContentType("application/csv");
 			ectx.setResponseCharacterEncoding(encoding);
 		}
-		ectx.setResponseHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Export_"
-				+ DateTime.now().toString("yyyyMMdd_HHmm") + "." + dataStructure.name().toLowerCase());
+		
+		ectx.setResponseHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+prefix+"_"
+				+ DateTime.now().toString("yyyyMMdd_HHmm") + "." + suffix);
 		return ectx;
 	}
 

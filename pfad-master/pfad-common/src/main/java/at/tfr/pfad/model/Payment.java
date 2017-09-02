@@ -1,12 +1,10 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -29,7 +27,12 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.joda.time.DateTime;
@@ -38,11 +41,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.dao.AuditListener;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
 
 @Audited(withModifiedFlag = true)
 @NamedQueries({@NamedQuery(name = "PaymentsForBooking", query = "select p from Payment p where ?1 member of p.bookings order by p.id")})
@@ -75,6 +73,7 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 	@Column(name = "payer_id", insertable = false, updatable = false)
 	private Long payerId;
 
+	@Column
 	private Float amount;
 
 	@Column
@@ -86,6 +85,9 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 
 	@Column(columnDefinition = "boolean default false not null")
 	private Boolean aconto;
+	
+	@Column
+	private String payerIBAN;
 
 	@Column
 	private String comment;
@@ -180,6 +182,14 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 		this.aconto = aconto;
 	}
 
+	public String getPayerIBAN() {
+		return payerIBAN;
+	}
+	
+	public void setPayerIBAN(String payerIBAN) {
+		this.payerIBAN = payerIBAN;
+	}
+	
 	public String getComment() {
 		return comment;
 	}
@@ -285,10 +295,15 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 		if (paymentDate != null) {
 			result += ", " + new DateTime(paymentDate).toString("dd.MM.yyyy");
 		}
-		if (aconto != null && aconto) {
+		if (Boolean.TRUE.equals(finished)) {
+			result += ", BEZ";
+		} else if (Boolean.TRUE.equals(aconto)) {
 			result += ", ANZ";
 		}
-		result += ", " + (finished != null && finished ? "finished" : "offen");
+		if (StringUtils.isNotBlank(payerIBAN)) {
+			result += ", " + payerIBAN;
+		}
+		result += ", " + (Boolean.TRUE.equals(finished) ? "bezahlt" : "offen");
 		if (comment != null && !comment.trim().isEmpty())
 			result += ", " + comment;
 		return result;
@@ -312,10 +327,11 @@ public class Payment implements PrimaryKeyHolder, Serializable, Auditable, Prese
 		if (payer != null) {
 			result += payer.toShortString();
 		}
-		if (Boolean.FALSE.equals(finished) && Boolean.TRUE.equals(aconto)) {
+		if (Boolean.TRUE.equals(finished)) {
+			result += ", BEZ";
+		} else if (Boolean.TRUE.equals(aconto)) {
 			result += ", ANZ";
 		}
-		result += ", " + (Boolean.TRUE.equals(finished) ? "FIN" : "");
 		return result;
 	}
 	
