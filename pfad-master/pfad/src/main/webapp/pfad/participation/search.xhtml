@@ -43,6 +43,24 @@
 							<h:message for="participationBeanExampleMember" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
+						<h:outputLabel for="participationBeanExamplePhase" value="Phase:" />
+						<h:panelGroup>
+							<h:selectOneMenu id="participationBeanExamplePhase" value="#{participationBean.trainingPhase}" >
+								<f:selectItem />
+								<f:selectItems value="#{trainingBean.phases}"/>
+							</h:selectOneMenu>
+							<h:message for="participationBeanExamplePhase" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+						<h:outputLabel for="participationBeanExampleForm" value="Form:" />
+						<h:panelGroup>
+							<h:selectOneMenu id="participationBeanExampleForm" value="#{participationBean.trainingForm}" >
+								<f:selectItem />
+								<f:selectItems value="#{trainingBean.forms}"/>
+							</h:selectOneMenu>
+							<h:message for="participationBeanExampleForm" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
 						<h:outputLabel for="participationBeanExampleStart" value="Start:" />
 						<h:panelGroup>
 							<p:calendar id="participationBeanExampleStart" value="#{participationBean.example.start}" pattern="dd.MM.yyyy">

@@ -34,6 +34,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.ParticipationCostType;
 import at.tfr.pfad.ParticipationStatus;
+import at.tfr.pfad.TrainingForm;
+import at.tfr.pfad.TrainingPhase;
 import at.tfr.pfad.dao.ParticipationRepository;
 import at.tfr.pfad.model.Participation;
 import at.tfr.pfad.model.Participation_;
@@ -76,6 +78,8 @@ public class ParticipationBean extends BaseBean implements Serializable {
 	}
 
 	private Participation participation;
+	private TrainingForm trainingForm;
+	private TrainingPhase trainingPhase;
 
 	public Participation getParticipation() {
 		return this.participation;
@@ -83,6 +87,22 @@ public class ParticipationBean extends BaseBean implements Serializable {
 
 	public void setParticipation(Participation Participation) {
 		this.participation = Participation;
+	}
+
+	public TrainingForm getTrainingForm() {
+		return trainingForm;
+	}
+
+	public void setTrainingForm(TrainingForm trainingForm) {
+		this.trainingForm = trainingForm;
+	}
+
+	public TrainingPhase getTrainingPhase() {
+		return trainingPhase;
+	}
+
+	public void setTrainingPhase(TrainingPhase trainingPhase) {
+		this.trainingPhase = trainingPhase;
 	}
 
 	public String create() {
@@ -229,6 +249,14 @@ public class ParticipationBean extends BaseBean implements Serializable {
 	
 		if (exampleMember != null) {
 			predicatesList.add(builder.equal(root.get(Participation_.member), exampleMember));
+		}
+		
+		if (trainingForm != null) {
+			predicatesList.add(builder.equal(root.get(Participation_.training).get(Training_.form), trainingForm));
+		}
+	
+		if (trainingPhase != null) {
+			predicatesList.add(builder.equal(root.get(Participation_.training).get(Training_.phase), trainingPhase));
 		}
 	
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);

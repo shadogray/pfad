@@ -34,8 +34,20 @@
 						<h:outputText />
 						<h:outputLabel for="trainingBeanExamplePhase" value="Phase:" />
 						<h:panelGroup>
-							<h:inputText id="trainingBeanExamplePhase" value="#{trainingBean.example.phase}" />
+							<h:selectOneMenu id="trainingBeanExamplePhase" value="#{trainingBean.example.phase}" >
+								<f:selectItem />
+								<f:selectItems value="#{trainingBean.phases}"/>
+							</h:selectOneMenu>
 							<h:message for="trainingBeanExamplePhase" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+						<h:outputLabel for="trainingBeanExampleForm" value="Form:" />
+						<h:panelGroup>
+							<h:selectOneMenu id="trainingBeanExampleForm" value="#{trainingBean.example.form}" >
+								<f:selectItem />
+								<f:selectItems value="#{trainingBean.forms}"/>
+							</h:selectOneMenu>
+							<h:message for="trainingBeanExampleForm" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 					</h:panelGrid>
