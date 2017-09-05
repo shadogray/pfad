@@ -48,6 +48,7 @@
 			<role-name>vorstand</role-name>
 			<role-name>registrierung</role-name>
 			<role-name>anmeldung</role-name>
+			<role-name>training</role-name>
 		</auth-constraint>
 		<user-data-constraint>
 			<description>SSL</description>
