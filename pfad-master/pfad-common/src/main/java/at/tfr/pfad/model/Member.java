@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -223,7 +224,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	@ManyToMany(mappedBy = "siblings")
 	@OrderBy("Name, Vorname")
-	protected Set<Member> parents = new HashSet<>();
+	protected Set<Member> parents = new TreeSet<>();
 
 	@OneToMany(mappedBy = "payer")
 	@OrderBy(value = "id DESC")
@@ -231,8 +232,12 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	@OneToMany(mappedBy = "member")
 	@OrderBy(value = "id DESC")
-	private Set<Booking> bookings = new HashSet<Booking>();
+	private Set<Booking> bookings = new TreeSet<>();
 
+	@OneToMany(mappedBy="member")
+	@OrderBy(value = "id DESC")
+	private Set<Participation> participations = new TreeSet<>();
+	
 	@XmlID
 	public Long getId() {
 		return this.id;
@@ -754,6 +759,20 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public void setBookings(final Set<Booking> bookings) {
 		this.bookings = bookings;
+	}
+	
+	@XmlTransient
+	public Set<Participation> getParticipations() {
+		return participations;
+	}
+	
+	@XmlTransient
+	public List<Long> getParticipationIds() {
+		return participations.stream().map(Participation::getId).collect(Collectors.toList());
+	}
+
+	public void setParticipations(Set<Participation> participations) {
+		this.participations = participations;
 	}
 
 	@Pfad

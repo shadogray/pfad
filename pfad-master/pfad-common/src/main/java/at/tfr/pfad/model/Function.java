@@ -16,15 +16,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
-
-import org.hibernate.envers.Audited;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Audited(withModifiedFlag = true)
 @Entity

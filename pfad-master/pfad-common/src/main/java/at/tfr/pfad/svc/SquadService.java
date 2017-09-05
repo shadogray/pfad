@@ -8,7 +8,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import at.tfr.pfad.dao.SquadRepository;
-import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 
 @Stateless

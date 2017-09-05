@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:a4j="http://richfaces.org/a4j"  
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"  
 	xmlns:o="http://omnifaces.org/ui" xmlns:ds="http://deltaspike.apache.org/jsf">
 
 <h:head>
@@ -10,14 +10,12 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<h:outputStylesheet name="bootstrap.css" />
 	<h:outputStylesheet name="forge-style.css" />
-	<h:outputScript name="jquery-1.12.1.min.js" />
 	<h:outputScript name="scripts.js" />
 </h:head>
 
 <h:body>
 
 	<ds:windowId />
-	<a4j:log level="ALL" popup="true" width="800" height="600" rendered="false" />
 	<ui:debug rendered="#{true || facesContext.application.projectStage == 'Development'}" />
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
@@ -57,6 +55,10 @@
 					<li><h:link outcome="/pfad/function/search" value="Funktionen" /></li>
 					<c:if test="#{sessionBean.registrierungAllowed}">
 						<li><h:link outcome="/pfad/registration/search" value="Anmeldungen" /></li>
+					</c:if>
+					<c:if test="#{sessionBean.trainingAllowed}">
+						<li><h:link outcome="/pfad/training/search" value="Trainings" /></li>
+						<li><h:link outcome="/pfad/participation/search" value="Teilnahmen" /></li>
 					</c:if>
 					<li><h:link outcome="/pfad/configuration/search" value="Konfig" /></li>
 					<li><h:link outcome="/pfad/actions" value="Aktionen" /></li>

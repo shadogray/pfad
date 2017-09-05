@@ -1,12 +1,10 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -28,6 +26,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
@@ -37,11 +39,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.dao.AuditListener;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
 
 @Audited(withModifiedFlag = true)
 @NamedQueries({@NamedQuery(name = "PaymentsForBooking", query = "select p from Payment p where ?1 member of p.bookings order by p.id")})

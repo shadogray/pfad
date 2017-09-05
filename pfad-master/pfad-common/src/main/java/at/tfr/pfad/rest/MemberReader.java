@@ -18,7 +18,6 @@ import javax.ws.rs.ext.Providers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import at.tfr.pfad.dao.MemberRepository;
-import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
 
 @Provider

@@ -1,6 +1,5 @@
 package at.tfr.pfad;
 
-import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;

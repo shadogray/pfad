@@ -9,7 +9,6 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,12 +29,20 @@ import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.Members;
+import at.tfr.pfad.dao.ParticipationRepository;
 import at.tfr.pfad.dao.PaymentRepository;
+import at.tfr.pfad.dao.TrainingRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Participation;
 import at.tfr.pfad.model.Payment;
+import at.tfr.pfad.model.Training;
 
+/**
+ * @author u0x27vo
+ *
+ */
 public abstract class BaseBean implements Serializable {
 
 	protected Logger log = Logger.getLogger(getClass());
@@ -60,6 +67,10 @@ public abstract class BaseBean implements Serializable {
 	protected transient BookingRepository bookingRepo;
 	@Inject
 	protected transient PaymentRepository paymentRepo;
+	@Inject
+	protected transient TrainingRepository trainingRepo;
+	@Inject
+	protected transient ParticipationRepository participationRepo;
 	
 	protected int page;
 	protected long count;
@@ -91,6 +102,10 @@ public abstract class BaseBean implements Serializable {
 
 	public boolean isVorstand() {
 		return sessionBean.isVorstand();
+	}
+	
+	public boolean isTrainer() {
+		return sessionBean.isTrainer();
 	}
 
 	public boolean isViewAllowed() {
@@ -141,6 +156,8 @@ public abstract class BaseBean implements Serializable {
 	protected Payment examplePayment = null;
 	protected Member examplePayer = null;
 	protected Member paymentPayer = null;
+	protected Training exampleTraining = null;
+	protected Participation exampleParticipation = null;
 	protected List<Member> filteredMembers = new ArrayList<>();
 	protected List<Member> filteredPayers = new ArrayList<>();
 	protected List<Booking> filteredBookings = new ArrayList<>();
@@ -271,6 +288,22 @@ public abstract class BaseBean implements Serializable {
 		this.paymentPayer = paymentPayer;
 	}
 	
+	public Training getExampleTraining() {
+		return exampleTraining;
+	}
+
+	public void setExampleTraining(Training exampleTraining) {
+		this.exampleTraining = exampleTraining;
+	}
+
+	public Participation getExampleParticipation() {
+		return exampleParticipation;
+	}
+
+	public void setExampleParticipation(Participation exampleParticipation) {
+		this.exampleParticipation = exampleParticipation;
+	}
+
 	public List<Booking> filterBookings(FacesContext facesContext, UIComponent component, final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
 			filteredBookings = bookings.filtered(facesContext, component, filter);

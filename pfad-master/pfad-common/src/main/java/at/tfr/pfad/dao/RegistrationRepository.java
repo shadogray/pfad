@@ -9,7 +9,6 @@ package at.tfr.pfad.dao;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -23,8 +22,6 @@ import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
 import at.tfr.pfad.model.Registration;
 import at.tfr.pfad.model.Registration_;
-import at.tfr.pfad.model.Squad;
-import at.tfr.pfad.model.Squad_;
 
 @ApplicationScoped
 @Repository

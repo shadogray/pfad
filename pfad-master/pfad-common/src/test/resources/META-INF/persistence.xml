@@ -10,6 +10,8 @@
 		<class>at.tfr.pfad.model.Configuration</class>
 		<class>at.tfr.pfad.model.Activity</class>
 		<class>at.tfr.pfad.model.Squad</class>
+		<class>at.tfr.pfad.model.Training</class>
+		<class>at.tfr.pfad.model.Participation</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />

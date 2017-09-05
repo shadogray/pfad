@@ -6,7 +6,6 @@ import org.apache.commons.beanutils.ConvertUtilsBean;
 
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Function;
-import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.svc.MemberDao;
 

@@ -19,7 +19,6 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.svc.BaseDao;
 import at.tfr.pfad.svc.BaseDaoMapper;
-import at.tfr.pfad.svc.MemberDao;
 import at.tfr.pfad.svc.SquadDao;
 import at.tfr.pfad.svc.SquadMapper;
 

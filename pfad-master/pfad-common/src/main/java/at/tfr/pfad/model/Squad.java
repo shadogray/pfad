@@ -30,6 +30,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.envers.Audited;
 
@@ -37,12 +42,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import at.tfr.pfad.SquadType;
 import at.tfr.pfad.dao.AuditListener;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 @NamedQueries({
 		@NamedQuery(name = "Squad.leadersFemale", query = "select s.leaderFemale from Squad s"),
