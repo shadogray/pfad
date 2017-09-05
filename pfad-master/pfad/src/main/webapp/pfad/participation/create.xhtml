@@ -58,12 +58,12 @@
 					<h:message for="participationBeanParticipationCostType" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
-				<h:outputLabel for="participationBeanParticipationStatus" value="Status:" />
+				<h:outputLabel for="participationBeanParticipationAmount" value="Betrag:" />
 				<h:panelGroup>
-					<h:selectOneMenu id="participationBeanParticipationStatus" value="#{participationBean.participation.status}" >
-						<f:selectItems value="#{participationBean.stati}"/>
-					</h:selectOneMenu>
-					<h:message for="participationBeanParticipationStatus" styleClass="error" />
+					<h:inputText id="participationBeanParticipationAmount" value="#{participationBean.participation.amount}" >
+						<f:convertNumber maxFractionDigits="2" minFractionDigits="2"/>
+					</h:inputText>
+					<h:message for="participationBeanParticipationAmount" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 				<h:outputLabel for="participationBeanParticipationStart" value="Start:" />
@@ -80,6 +80,14 @@
 						<f:convertDateTime pattern="dd.MM.yyyy"/>
 					</p:calendar>
 					<h:message for="participationBeanParticipationEnd" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+				<h:outputLabel for="participationBeanParticipationStatus" value="Status:" />
+				<h:panelGroup>
+					<h:selectOneMenu id="participationBeanParticipationStatus" value="#{participationBean.participation.status}" >
+						<f:selectItems value="#{participationBean.stati}"/>
+					</h:selectOneMenu>
+					<h:message for="participationBeanParticipationStatus" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 			</h:panelGrid>
