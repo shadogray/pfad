@@ -359,7 +359,7 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 	}
 
 	public RegistrationStatus getStatus() {
-		return status;
+		return member != null ? RegistrationStatus.Mitglied : status;
 	}
 	
 	public void setStatus(RegistrationStatus status) {
