@@ -54,7 +54,7 @@
 				<p:column headerText="RegDatum" sortBy="#{r.created}">
 					<h:link outcome="create">
 						<f:param name="id" value="#{r.id}" />
-						<h:outputText value="#{r.created}" title="#{r.toPrettyLines()}">
+						<h:outputText value="#{r.created}">
 							<f:convertDateTime patten="dd.mm.yyyy" />
 						</h:outputText>
 					</h:link>
@@ -62,15 +62,15 @@
 				<p:column headerText="Änderung" sortBy="#{r.changed}">
 					<h:link outcome="create">
 						<f:param name="id" value="#{r.id}" />
-						<h:outputText value="#{r.changed}" title="#{r.toPrettyLines()}">
+						<h:outputText value="#{r.changed}">
 							<f:convertDateTime patten="dd.mm.yyyy" />
 						</h:outputText>
 					</h:link>
 				</p:column>
-				<p:column headerText="Person">
+				<p:column headerText="Person" rendered="#{registrationBean.all}">
 					<h:link outcome="create">
 						<f:param name="id" value="#{r.id}" />
-						<h:outputText value="#{r.member.toShortString()}" title="#{r.toPrettyLines()}" />
+						<h:outputText value="#{r.member.toShortString()}" />
 					</h:link>
 				</p:column>
 				<p:column headerText="Aktiv" sortBy="#{r.aktiv}">
@@ -78,7 +78,7 @@
 						<f:facet name="output">
 							<h:link outcome="create">
 								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.aktiv}" title="#{r.toPrettyLines()}" />
+								<h:outputText value="#{r.aktiv}" />
 							</h:link>
 						</f:facet>
 						<f:facet name="input">
@@ -91,7 +91,7 @@
 						<f:facet name="output">
 							<h:link outcome="create">
 								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.storno}" title="#{r.toPrettyLines()}" />
+								<h:outputText value="#{r.storno}" />
 							</h:link>
 						</f:facet>
 						<f:facet name="input">
@@ -105,7 +105,7 @@
 							<h:panelGroup styleClass="#{r.status}">
 								<h:link outcome="create">
 									<f:param name="id" value="#{r.id}" />
-									<h:outputText value="#{r.status}" title="#{r.toPrettyLines()}" />
+									<h:outputText value="#{r.status}" />
 								</h:link>
 							</h:panelGroup>
 						</f:facet>
@@ -123,7 +123,7 @@
 						<f:facet name="output">
 							<h:link outcome="create">
 								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.geschlecht}" title="#{r.toPrettyLines()}" />
+								<h:outputText value="#{r.geschlecht}" />
 							</h:link>
 						</f:facet>
 						<f:facet name="input">
@@ -203,13 +203,13 @@
 							<h:panelGroup rendered="#{r.parent != null}">
 								<h:link outcome="../member/view">
 									<f:param name="id" value="#{r.id}" />
-									<h:outputText value="#{r.parent.toShortString()}" title="#{r.toPrettyLines()}" />
+									<h:outputText value="#{r.parent.toShortString()}" />
 								</h:link>
 							</h:panelGroup>
 							<h:panelGroup rendered="#{r.parent == null}">
 								<h:link outcome="create">
 									<f:param name="id" value="#{r.id}" />
-									<h:outputText value="#{r.parentName} #{r.parentVorname}" title="#{r.toPrettyLines()}" />
+									<h:outputText value="#{r.parentName} #{r.parentVorname}" />
 								</h:link>
 							</h:panelGroup>
 						</f:facet>
@@ -217,7 +217,7 @@
 							<h:panelGroup rendered="#{r.parent != null}">
 								<h:link outcome="../member/view">
 									<f:param name="id" value="#{r.id}" />
-									<h:outputText value="#{r.parent.toShortString()}" title="#{r.toPrettyLines()}" />
+									<h:outputText value="#{r.parent.toShortString()}" />
 								</h:link>
 							</h:panelGroup>
 							<h:panelGroup rendered="#{r.parent == null}">
@@ -238,7 +238,7 @@
 						<f:facet name="output">
 							<h:link outcome="create">
 								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.telefon}" title="#{r.toPrettyLines()}" />
+								<h:outputText value="#{r.telefon}" />
 							</h:link>
 						</f:facet>
 						<f:facet name="input">
@@ -251,7 +251,7 @@
 						<f:facet name="output">
 							<h:link outcome="create">
 								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.email}" title="#{r.toPrettyLines()}" />
+								<h:outputText value="#{r.email}" />
 							</h:link>
 						</f:facet>
 						<f:facet name="input">
@@ -264,7 +264,7 @@
 						<f:facet name="output">
 							<h:link outcome="create">
 								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.PLZ}" title="#{r.toPrettyLines()}" />
+								<h:outputText value="#{r.PLZ}" />
 							</h:link>
 						</f:facet>
 						<f:facet name="input">
@@ -278,7 +278,7 @@
 						<f:facet name="output">
 							<h:link outcome="create">
 								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.ort}" title="#{r.toPrettyLines()}" />
+								<h:outputText value="#{r.ort}" />
 							</h:link>
 						</f:facet>
 						<f:facet name="input">
