@@ -177,7 +177,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}" filterBy="#{r.gebJahr}" filterMatchMode="gte">
+				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}" filterBy="#{r.gebJahr}" filterMatchMode="lte">
 					<f:facet name="filter">
 		                <h:inputText onchange="PF('regItemTable').filter()">
 							<f:converter converterId="javax.faces.Integer"/>
@@ -198,7 +198,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Schuleintr." sortBy="#{r.schoolEntry}" filterBy="#{r.schoolEntry}" filterMatchMode="gte">
+				<p:column headerText="Schuleintr." sortBy="#{r.schoolEntry}" filterBy="#{r.schoolEntry}" filterMatchMode="lte">
 					<f:facet name="filter">
 		                <h:inputText onchange="PF('regItemTable').filter()">
 							<f:converter converterId="javax.faces.Integer"/>
