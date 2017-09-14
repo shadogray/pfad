@@ -161,14 +161,6 @@
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="memberBeanMemberReligion" value="Religion:" />
-				<h:panelGroup>
-					<rich:autocomplete id="memberBeanMemberReligion" value="#{memberBean.member.religion}" mode="lazyClient"
-						autocompleteList="#{memberBean.distinctReligion}" clientFilterFunction="autoFilter" />
-					<h:message for="memberBeanMemberReligion" styleClass="error" />
-				</h:panelGroup>
-				<h:outputText />
-
 				<h:outputLabel for="memberBeanMemberTelefon" value="Telefon:" />
 				<h:panelGroup>
 					<h:inputText id="memberBeanMemberTelefon" value="#{memberBean.member.telefon}" />
@@ -176,14 +168,8 @@
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="memberBeanMemberRolle" value="Rolle:" />
-				<h:panelGroup>
-					<h:selectOneMenu id="memberBeanMemberRolle" value="#{memberBean.member.rolle}">
-						<f:selectItem noSelectionOption="true"/>
-						<f:selectItems value="#{memberBean.scoutRoles}" />
-					</h:selectOneMenu>
-					<h:message for="memberBeanMemberRolle" styleClass="error" />
-				</h:panelGroup>
+				<h:outputText />
+				<h:outputText />
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberTrupp" value="Trupp:" />
@@ -193,28 +179,6 @@
 						<f:selectItems itemLabel="#{s}" itemValue="#{s.idStr}" value="#{squadBean.all}" var="s" />
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberTrupp" styleClass="error" />
-				</h:panelGroup>
-				<h:outputText />
-
-				<h:outputLabel for="memberBeanMemberVollzahlerPanel" value="Vollzahler:" />
-				<h:panelGroup id="memberBeanMemberVollzahlerPanel">
-					<h:selectOneMenu value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" rendered="#{memberBean.member.vollzahler != null}">
-						<f:selectItem noSelectionOption="true"/>
-						<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}"/>
-						<f:ajax render="memberBeanMemberVollzahlerPanel"/>
-					</h:selectOneMenu>
-					<h:panelGroup rendered="#{memberBean.member.vollzahler == null}">
-						<rich:select id="memberBeanMemberVollzahler" tabindex="0" styleClass="fullwidth manual"
-							p:placeholder="Geschwisterkind, Suche nach Name, Vorname..." title="Das aktive(!) Geschwisterkind bitte hier auswählen.." 
-							value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" enableManualInput="false"
-							selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{memberBean.filterMembers}" var="b" itemValue="#{b.idStr}"
-							itemLabel="#{b}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-							<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}" />
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.selectMemberVollzahler}"
-								render="memberBeanMemberVollzahlerPanel" />
-						</rich:select>
-					</h:panelGroup>
-					<h:message for="memberBeanMemberVollzahler" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
@@ -258,6 +222,28 @@
 							styleClass="add-button" />
 						<h:outputText />
 					</h:panelGrid>
+				</h:panelGroup>
+				<h:outputText />
+
+				<h:outputLabel for="memberBeanMemberVollzahlerPanel" value="Vollzahler:" />
+				<h:panelGroup id="memberBeanMemberVollzahlerPanel">
+					<h:selectOneMenu value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" rendered="#{memberBean.member.vollzahler != null}">
+						<f:selectItem noSelectionOption="true"/>
+						<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}"/>
+						<f:ajax render="memberBeanMemberVollzahlerPanel"/>
+					</h:selectOneMenu>
+					<h:panelGroup rendered="#{memberBean.member.vollzahler == null}">
+						<rich:select id="memberBeanMemberVollzahler" tabindex="0" styleClass="fullwidth manual"
+							p:placeholder="Geschwisterkind, Suche nach Name, Vorname..." title="Das aktive(!) Geschwisterkind bitte hier auswählen.." 
+							value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" enableManualInput="false"
+							selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{memberBean.filterMembers}" var="b" itemValue="#{b.idStr}"
+							itemLabel="#{b}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
+							<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}" />
+							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.selectMemberVollzahler}"
+								render="memberBeanMemberVollzahlerPanel" />
+						</rich:select>
+					</h:panelGroup>
+					<h:message for="memberBeanMemberVollzahler" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 

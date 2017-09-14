@@ -2,6 +2,8 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +21,7 @@ import org.jboss.logging.Logger;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
 
+import at.tfr.pfad.RegistrationStatus;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.RegistrationRepository;
 import at.tfr.pfad.model.Member;
@@ -47,6 +50,7 @@ public class RegistrationBean implements Serializable {
 		if ((sessionBean.isAdmin() || sessionBean.isRegistrierung() || sessionBean.isAnmeldung()) && id == null) {
 			registration = new Registration();
 			registration.setAktiv(true);
+			registration.setStatus(RegistrationStatus.Erstellt);
 		} else {
 			registration = regRepo.findBy(id);
 		}
@@ -188,5 +192,9 @@ public class RegistrationBean implements Serializable {
 
 	public void setAll(boolean all) {
 		this.all = all;
+	}
+	
+	public List<RegistrationStatus> getStati() {
+		return Arrays.asList(RegistrationStatus.values());
 	}
 }

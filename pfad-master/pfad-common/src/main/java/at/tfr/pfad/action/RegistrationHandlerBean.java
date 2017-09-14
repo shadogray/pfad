@@ -14,6 +14,7 @@ import javax.servlet.ServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 
+import at.tfr.pfad.RegistrationStatus;
 import at.tfr.pfad.dao.RegistrationRepository;
 import at.tfr.pfad.model.Registration;
 
@@ -32,6 +33,7 @@ public class RegistrationHandlerBean {
 		reg.setAktiv(true);
 		reg.setCreated(new Date());
 		reg.setCreatedBy(req.getRemoteAddr());
+		reg.setStatus(RegistrationStatus.Erstellt);
 		req.getParameterMap().entrySet().stream()
 				.forEach(e -> apply(reg, e.getKey(), StringUtils.join(e.getValue(), ",")));
 		

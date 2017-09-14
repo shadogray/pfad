@@ -736,3 +736,29 @@ h4.page-header {
 .height35 {
 	height: 35px;
 }
+
+.Erstellt {
+	background-color: lightgrey !important;
+}
+.ZusageOK {
+	background-color: #558000 !important;
+}
+.ZusageGes {
+	background-color: #99e600 !important;
+}
+.BleibtAufListe {
+	background-color: #33ccff !important;
+}
+.Doppelt {
+	background-color: #9933ff !important;
+}
+.AbsageGes {
+	background-color: #ff6666 !important;
+}
+.KeinInteresse {
+	background-color: red !important;
+}
+.Mitglied {
+	background-color: #cc6699 !important;
+}
+

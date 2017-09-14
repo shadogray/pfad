@@ -34,6 +34,7 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import at.tfr.pfad.Pfad;
+import at.tfr.pfad.RegistrationStatus;
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.AuditListener;
 
@@ -117,6 +118,10 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 
 	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean storno;
+	
+	@Column(length = 32)
+	@Enumerated(EnumType.STRING)
+	protected RegistrationStatus status;
 	
 	@ManyToOne
 	protected Member parent;
@@ -353,6 +358,14 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 		this.telefon = Telefon;
 	}
 
+	public RegistrationStatus getStatus() {
+		return status;
+	}
+	
+	public void setStatus(RegistrationStatus status) {
+		this.status = status;
+	}
+	
 	public String getComment() {
 		return comment;
 	}

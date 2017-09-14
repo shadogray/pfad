@@ -40,7 +40,7 @@
 			</h:panelGroup>
 
 			<p:dataTable id="registrationBeanPageItems" styleClass="data-table" value="#{registrationBean.dataModel}" var="r"
-				editable="true" sortMode="multiple">
+				editable="true" sortMode="multiple" rowStyleClass="#{r.status}">
 
 				<p:ajax event="rowEdit" listener="#{registrationBean.onRowEdit}" update=":search:messages" />
 				<p:ajax event="rowEditCancel" listener="#{registrationBean.onRowCancel}" update=":search:messages" />
@@ -96,6 +96,25 @@
 						</f:facet>
 						<f:facet name="input">
 							<p:selectBooleanCheckbox value="#{r.aktiv}" />
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+				<p:column headerText="Status" sortBy="#{r.status}" >
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:panelGroup styleClass="#{r.status}">
+								<h:link outcome="create">
+									<f:param name="id" value="#{r.id}" />
+									<h:outputText value="#{r.status}" title="#{r.toPrettyLines()}" />
+								</h:link>
+							</h:panelGroup>
+						</f:facet>
+						<f:facet name="input">
+							<h:panelGroup styleClass="#{r.status}">
+								<p:selectOneMenu value="#{r.status}" >
+									<f:selectItems value="#{registrationBean.stati}" />
+								</p:selectOneMenu>
+							</h:panelGroup>
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
