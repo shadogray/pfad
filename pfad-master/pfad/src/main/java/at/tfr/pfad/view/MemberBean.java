@@ -462,32 +462,64 @@ public class MemberBean extends BaseBean implements Serializable {
 		return memberRepo.findDistinctName();
 	}
 
+	public List<String> getDistinctNameLike(String name) {
+		return memberRepo.findDistinctNameLike(("%"+name+"%").toLowerCase());
+	}
+
 	public List<String> getDistinctVorname() {
 		return memberRepo.findDistinctVorname();
+	}
+
+	public List<String> getDistinctVornameLike(String vorname) {
+		return memberRepo.findDistinctVornameLike(("%"+vorname+"%").toLowerCase());
 	}
 
 	public List<String> getDistinctPLZ() {
 		return memberRepo.findDistinctPLZ();
 	}
 
+	public List<String> getDistinctPLZLike(String plz) {
+		return memberRepo.findDistinctPLZLike(("%"+plz+"%").toLowerCase());
+	}
+
 	public List<String> getDistinctOrt() {
 		return memberRepo.findDistinctOrt();
+	}
+
+	public List<String> getDistinctOrtLike(String ort) {
+		return memberRepo.findDistinctOrtLike(("%"+ort+"%").toLowerCase());
 	}
 
 	public List<String> getDistinctStrasse() {
 		return memberRepo.findDistinctStrasse();
 	}
 
+	public List<String> getDistinctStrasseLike(String strasse) {
+		return memberRepo.findDistinctStrasseLike(("%"+strasse+"%").toLowerCase());
+	}
+
 	public List<String> getDistinctTitel() {
 		return memberRepo.findDistinctTitel();
+	}
+
+	public List<String> getDistinctTitelLike(String titel) {
+		return memberRepo.findDistinctTitelLike(("%"+titel+"%").toLowerCase());
 	}
 
 	public List<String> getDistinctAnrede() {
 		return memberRepo.findDistinctAnrede();
 	}
 
+	public List<String> getDistinctAnredeLike(String anrede) {
+		return memberRepo.findDistinctAnredeLike(("%"+anrede+"%").toLowerCase());
+	}
+
 	public List<String> getDistinctReligion() {
 		return memberRepo.findDistinctReligion();
+	}
+	
+	public List<String> getDistinctReligionLike(String religion) {
+		return memberRepo.findDistinctReligionLike(("%"+religion+"%").toLowerCase());
 	}
 	
 	public String logout() {

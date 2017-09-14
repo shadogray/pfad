@@ -10,8 +10,6 @@ package at.tfr.pfad.dao;
 import java.util.Collection;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.apache.deltaspike.data.api.EntityGraph;
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
@@ -23,7 +21,6 @@ import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 import at.tfr.pfad.model.Registration;
 import at.tfr.pfad.model.Registration_;
 
-@ApplicationScoped
 @Repository
 public abstract class RegistrationRepository implements EntityRepository<Registration, Long>, CriteriaSupport<Registration>, EntityManagerDelegate<Registration> {
 

@@ -9,8 +9,6 @@ package at.tfr.pfad.dao;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
@@ -22,7 +20,6 @@ import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
 
-@ApplicationScoped
 @Repository
 public abstract class SquadRepository implements EntityRepository<Squad, Long>, CriteriaSupport<Squad>, EntityManagerDelegate<Squad> {
 

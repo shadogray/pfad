@@ -3,7 +3,6 @@ package at.tfr.pfad.dao;
 import java.util.Collection;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -17,7 +16,6 @@ import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Payment;
 
-@ApplicationScoped
 @Repository
 public abstract class BookingRepository implements EntityRepository<Booking, Long>, CriteriaSupport<Booking>, EntityManagerDelegate<Booking> {
 

@@ -10,8 +10,6 @@ package at.tfr.pfad.dao;
 import java.util.Collection;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.apache.deltaspike.data.api.EntityGraph;
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
@@ -25,7 +23,6 @@ import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
 
-@ApplicationScoped
 @Repository
 public abstract class MemberRepository implements EntityRepository<Member, Long>, CriteriaSupport<Member>, EntityManagerDelegate<Member> {
 
@@ -34,6 +31,8 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 		return findBy(id);
 	}
 
+	public abstract List<Member> findByNameAndVornameAndStrasseAndOrt(String name, String vorname, String strasse, String ort);
+	
 	public List<Member> fetchAll() {
 		return fetchAll(0, Integer.MAX_VALUE);
 	}
@@ -50,7 +49,7 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat)
 				.getResultList();
 	}
-
+	
 	protected QueryResult<Member> queryAllIntern(int start, int max) {
 		return queryAllIntern()
 				.firstResult(start)
@@ -88,25 +87,49 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 	@Query(named="Member.distName")
 	public abstract List<String> findDistinctName();
 
+	@Query(named="Member.distNameLike")
+	public abstract List<String> findDistinctNameLike(String name);
+
 	@Query(named="Member.distVorname")
 	public abstract List<String> findDistinctVorname();
+
+	@Query(named="Member.distVornameLike")
+	public abstract List<String> findDistinctVornameLike(String vorname);
 
 	@Query(named="Member.distPLZ")
 	public abstract List<String> findDistinctPLZ();
 
+	@Query(named="Member.distPLZLike")
+	public abstract List<String> findDistinctPLZLike(String plz);
+
 	@Query(named="Member.distOrt")
 	public abstract List<String> findDistinctOrt();
+
+	@Query(named="Member.distOrtLike")
+	public abstract List<String> findDistinctOrtLike(String ort);
 
 	@Query(named="Member.distStrasse")
 	public abstract List<String> findDistinctStrasse();
 
+	@Query(named="Member.distStrasseLike")
+	public abstract List<String> findDistinctStrasseLike(String strasse);
+
 	@Query(named="Member.distTitel")
 	public abstract List<String> findDistinctTitel();
+
+	@Query(named="Member.distTitelLike")
+	public abstract List<String> findDistinctTitelLike(String titel);
 
 	@Query(named="Member.distAnrede")
 	public abstract List<String> findDistinctAnrede();
 
+	@Query(named="Member.distAnredeLike")
+	public abstract List<String> findDistinctAnredeLike(String anrede);
+
 	@Query(named="Member.distReligion")
 	public abstract List<String> findDistinctReligion();
+
+	@Query(named="Member.distReligionLike")
+	public abstract List<String> findDistinctReligionLike(String religion);
 
 }

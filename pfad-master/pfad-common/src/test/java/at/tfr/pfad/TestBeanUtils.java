@@ -20,8 +20,7 @@ public class TestBeanUtils {
 		
 		Member orig = new Member();
 		orig.setName("Name");
-		orig.setParents(new HashSet<Member>());
-		orig.getParents().add(new Member());
+		orig.addParent(new Member());
 
 		MemberDao clone = Beans.copyProperties(orig, new MemberDao());
 		assertEquals("copy failed", orig.getName(), clone.getName());

@@ -8,6 +8,7 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -56,14 +58,23 @@ import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.AuditListener;
 
 @NamedQueries({ 
-		@NamedQuery(name = "Member.distName", query = "select distinct m.name from Member m order by m.name"),
-		@NamedQuery(name = "Member.distVorname", query = "select distinct m.vorname from Member m order by m.vorname"),
-		@NamedQuery(name = "Member.distPLZ", query = "select distinct m.plz from Member m order by m.plz"),
-		@NamedQuery(name = "Member.distOrt", query = "select distinct m.ort from Member m order by m.ort"),
-		@NamedQuery(name = "Member.distStrasse", query = "select distinct m.strasse from Member m order by m.strasse"),
-		@NamedQuery(name = "Member.distTitel", query = "select distinct m.titel from Member m order by m.titel"),
-		@NamedQuery(name = "Member.distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
-		@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m order by m.religion"), })
+	@NamedQuery(name = "Member.distName", query = "select distinct m.name from Member m order by m.name"),
+	@NamedQuery(name = "Member.distNameLike", query = "select distinct m.name from Member m where lower(m.name) like ?1 order by m.name"),
+	@NamedQuery(name = "Member.distVorname", query = "select distinct m.vorname from Member m order by m.vorname"),
+	@NamedQuery(name = "Member.distVornameLike", query = "select distinct m.vorname from Member m where lower(m.vorname) like ?1 order by m.vorname"),
+	@NamedQuery(name = "Member.distPLZ", query = "select distinct m.plz from Member m order by m.plz"),
+	@NamedQuery(name = "Member.distPLZLike", query = "select distinct m.plz from Member m where lower(m.plz) like ?1 order by m.plz"),
+	@NamedQuery(name = "Member.distOrt", query = "select distinct m.ort from Member m order by m.ort"),
+	@NamedQuery(name = "Member.distOrtLike", query = "select distinct m.ort from Member m where lower(m.ort) like ?1 order by m.ort"),
+	@NamedQuery(name = "Member.distStrasse", query = "select distinct m.strasse from Member m order by m.strasse"),
+	@NamedQuery(name = "Member.distStrasseLike", query = "select distinct m.strasse from Member m where lower(m.strasse) like ?1 order by m.strasse"),
+	@NamedQuery(name = "Member.distTitel", query = "select distinct m.titel from Member m order by m.titel"),
+	@NamedQuery(name = "Member.distTitelLike", query = "select distinct m.titel from Member m where lower(m.titel) like ?1 order by m.titel"),
+	@NamedQuery(name = "Member.distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
+	@NamedQuery(name = "Member.distAnredeLike", query = "select distinct m.anrede from Member m where lower(m.anrede) like ?1 order by m.anrede"),
+	@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m order by m.religion"),
+	@NamedQuery(name = "Member.distReligionLike", query = "select distinct m.religion from Member m where lower(m.religion) like ?1 order by m.religion"), 
+	})
 @NamedEntityGraphs({
 		@NamedEntityGraph(name = "fetchAll", 
 				attributeNodes = { @NamedAttributeNode("funktionen"),
@@ -217,12 +228,12 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@ManyToMany(fetch = FetchType.EAGER)
 	protected Set<Function> funktionen = new HashSet<>();
 
-	@ManyToMany
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "member_member", joinColumns = @JoinColumn(name = "member_id"), inverseJoinColumns = @JoinColumn(name = "siblings_id"))
 	@OrderBy("Name, Vorname")
 	protected Set<Member> siblings = new HashSet<>();
 
-	@ManyToMany(mappedBy = "siblings")
+	@ManyToMany(mappedBy = "siblings", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@OrderBy("Name, Vorname")
 	protected Set<Member> parents = new TreeSet<>();
 
@@ -234,7 +245,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@OrderBy(value = "id DESC")
 	private Set<Booking> bookings = new TreeSet<>();
 
-	@OneToMany(mappedBy="member")
+	@OneToMany(mappedBy = "member")
 	@OrderBy(value = "id DESC")
 	private Set<Participation> participations = new TreeSet<>();
 	
@@ -610,8 +621,19 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		return parents;
 	}
 
-	public void setParents(Set<Member> parents) {
+	protected void setParents(Set<Member> parents) {
 		this.parents = parents;
+	}
+	
+	public Member addParents(Collection<Member> parents) {
+		parents.iterator().forEachRemaining(p -> addParent(p));
+		return this;
+	}
+	
+	public Member addParent(Member parent) {
+		parent.getSiblings().add(this);
+		getParents().add(parent);
+		return this;
 	}
 
 	@Override

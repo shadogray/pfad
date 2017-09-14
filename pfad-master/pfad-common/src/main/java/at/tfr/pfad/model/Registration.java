@@ -18,8 +18,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -115,6 +117,12 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 
 	@Column(columnDefinition = "boolean default 'false' not null")
 	protected boolean storno;
+	
+	@ManyToOne
+	protected Member parent;
+	
+	@OneToOne
+	protected Member member;
 	
 	@Column
 	protected String comment;
@@ -353,6 +361,22 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 		this.comment = comment;
 	}
 	
+	public Member getParent() {
+		return parent;
+	}
+
+	public void setParent(Member parent) {
+		this.parent = parent;
+	}
+
+	public Member getMember() {
+		return member;
+	}
+
+	public void setMember(Member member) {
+		this.member = member;
+	}
+
 	@Override
 	public Date getChanged() {
 		return changed;
@@ -492,6 +516,13 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 	
 	public String toPrettyLines() {
 		String result = "Anmeldung: \n";
+		if (member != null) {
+			result += "\n";
+			result += "Umwandlung durchgeführt: " + member.toShortString();
+			result += "\n";
+			result += "Keine Bearbeitung mehr möglich!!\n";
+			result += "\n";
+		}
 		if (anrede != null && !anrede.trim().isEmpty())
 			result += titel + " ";
 		if (name != null && !name.trim().isEmpty())
@@ -501,6 +532,13 @@ public class Registration implements PrimaryKeyHolder, Serializable, Comparable<
 		result += "\n";
 		result += "Geboren: " + gebTag + "." + gebMonat + "." + gebJahr;
 		result += "\n";
+		if (parent != null) {
+			result += "\n";
+			result += "Eltern: " + parent.toShortString();
+			result += "\n";
+			result += "\n";
+		}
+		
 		if (strasse != null && !strasse.trim().isEmpty())
 			result += "Anschrift: " + strasse;
 		if (plz != null && !plz.trim().isEmpty())

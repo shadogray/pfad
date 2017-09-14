@@ -384,16 +384,6 @@ select.manual {
 	background-color: #eeeeee;
 }
 
-#content .data-table tbody tr:hover, #content .data-table tfoot tr:hover {
-	background-color: #d2e8f2;
-}
-
-#content .data-table tbody tr a {
-	display: block;
-	color: #5b5b5b;
-	text-decoration: none;
-}
-
 #content .remove-column {
 	width: 1%;
 	text-align: center;

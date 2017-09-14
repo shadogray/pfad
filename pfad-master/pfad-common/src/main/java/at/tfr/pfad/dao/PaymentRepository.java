@@ -3,7 +3,6 @@ package at.tfr.pfad.dao;
 import java.util.Collection;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -15,7 +14,6 @@ import org.apache.deltaspike.data.api.Repository;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Payment;
 
-@ApplicationScoped
 @Repository
 public abstract class PaymentRepository implements EntityRepository<Payment, Long>, EntityManagerDelegate<Payment> {
 
