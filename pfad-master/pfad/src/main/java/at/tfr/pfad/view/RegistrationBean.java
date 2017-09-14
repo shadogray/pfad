@@ -3,12 +3,10 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.enterprise.event.Reception;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
@@ -18,7 +16,6 @@ import javax.inject.Named;
 import javax.validation.ValidationException;
 
 import org.jboss.logging.Logger;
-import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
 
 import at.tfr.pfad.RegistrationStatus;
@@ -159,8 +156,8 @@ public class RegistrationBean implements Serializable {
 				|| sessionBean.isAnmeldung();
 	}
 
-	public List<Registration> getDataModel() {
-		return dataModel;
+	public ListDataModel<Registration> getDataModel() {
+		return new ListDataModel<Registration>(dataModel);
 	}
 
 	public List<Registration> getFilteredDataModel() {
