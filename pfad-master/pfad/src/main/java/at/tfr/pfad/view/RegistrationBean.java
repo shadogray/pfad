@@ -42,6 +42,7 @@ public class RegistrationBean implements Serializable {
 	private MemberRepository memberRepo;
 	private Registration example;
 	private List<Registration> dataModel;
+	private List<Registration> filteredDataModel = new ArrayList<>();
 	private Long id;
 	private Registration registration;
 	private boolean all;
@@ -158,8 +159,16 @@ public class RegistrationBean implements Serializable {
 				|| sessionBean.isAnmeldung();
 	}
 
-	public javax.faces.model.DataModel<Registration> getDataModel() {
-		return new ListDataModel<>(dataModel);
+	public List<Registration> getDataModel() {
+		return dataModel;
+	}
+
+	public List<Registration> getFilteredDataModel() {
+		return filteredDataModel;
+	}
+	
+	public void setFilteredDataModel(List<Registration> filteredDataModel) {
+		this.filteredDataModel = filteredDataModel;
 	}
 
 	public Registration getExample() {

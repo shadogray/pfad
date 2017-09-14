@@ -2,8 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
-	xmlns:pass="http://xmlns.jcp.org/jsf/passthrough" xmlns:o="http://omnifaces.org/ui"
-	template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:pass="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<f:viewParam name="all" value="#{registrationBean.all}" />
@@ -39,7 +38,8 @@
 				</h:panelGroup>
 			</h:panelGroup>
 
-			<p:dataTable id="registrationBeanPageItems" styleClass="data-table" value="#{registrationBean.dataModel}" var="r"
+			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table" value="#{registrationBean.dataModel}" 
+				filteredValue="#{registrationBean.filteredDataModel}" var="r"
 				editable="true" sortMode="multiple" rowStyleClass="#{r.status}">
 
 				<p:ajax event="rowEdit" listener="#{registrationBean.onRowEdit}" update=":search:messages" />
@@ -99,7 +99,13 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Status" sortBy="#{r.status}" >
+				<p:column headerText="Stat" sortBy="#{r.status}" filterBy="#{r.status}" filterMatchMode="exact" >
+		            <f:facet name="filter">
+		                <p:selectOneMenu onchange="PF('regItemTable').filter()" panelStyle="width:10em" scrollHeight="150" >
+		                	<f:selectItem noSelectionOption="true"/>
+		                    <f:selectItems value="#{registrationBean.stati}" />
+		                </p:selectOneMenu>
+		            </f:facet>
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:panelGroup styleClass="#{r.status}">
@@ -118,7 +124,13 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="M/W" sortBy="#{r.geschlecht}">
+				<p:column headerText="M/W" sortBy="#{r.geschlecht}" filterBy="#{r.geschlecht}" filterMatchMode="exact">
+		            <f:facet name="filter">
+		                <p:selectOneMenu onchange="PF('regItemTable').filter()">
+		                	<f:selectItem noSelectionOption="true"/>
+		                    <f:selectItems value="#{memberBean.sexes}" />
+		                </p:selectOneMenu>
+		            </f:facet>
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -133,7 +145,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Name" sortBy="#{r.name}">
+				<p:column headerText="Name" sortBy="#{r.name}" filterBy="#{r.name}" filterMatchMode="contains">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -149,7 +161,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Vorname" sortBy="#{r.vorname}">
+				<p:column headerText="Vorname" sortBy="#{r.vorname}" filterBy="#{r.vorname}" filterMatchMode="contains">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -165,7 +177,12 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}">
+				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}" filterBy="#{r.gebJahr}" filterMatchMode="gte">
+					<f:facet name="filter">
+		                <h:inputText onchange="PF('regItemTable').filter()">
+							<f:convertNumber />
+						</h:inputText>
+					</f:facet>
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -181,7 +198,12 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Schuleintr." sortBy="#{r.schoolEntry}">
+				<p:column headerText="Schuleintr." sortBy="#{r.schoolEntry}" filterBy="#{r.schoolEntry}" filterMatchMode="gte">
+					<f:facet name="filter">
+		                <h:inputText onchange="PF('regItemTable').filter()">
+							<f:convertNumber />
+						</h:inputText>
+					</f:facet>
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -233,7 +255,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Telefon" sortBy="#{r.telefon}">
+				<p:column headerText="Telefon" sortBy="#{r.telefon}" filterBy="#{r.telefon}" filterMatchMode="contains">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -246,7 +268,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Email" sortBy="#{r.email}">
+				<p:column headerText="Email" sortBy="#{r.email}" filterBy="#{r.email}" filterMatchMode="contains">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
