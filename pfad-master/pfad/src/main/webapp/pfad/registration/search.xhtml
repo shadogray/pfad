@@ -22,15 +22,57 @@
 		<h:form id="search">
 
 			<p:growl id="messages" showDetail="true" />
+			<p:focus/>
+
+			<f:ajax immediate="true" listener="#{registrationBean.paginate()}" render="@form">
+				<h:panelGrid columns="8">
+				
+					<p:outputLabel value="Name:"/>
+					<p:inputText value="#{registrationBean.example.name}" style="width:10em;"/>
+	
+					<p:outputLabel value="Vorname:"/>
+					<p:inputText value="#{registrationBean.example.vorname}" style="width:10em;"/>
+	
+					<p:outputLabel value="Telefon:"/>
+					<p:inputText value="#{registrationBean.example.telefon}" style="width:10em;"/>
+	
+					<p:outputLabel value="Email:"/>
+					<p:inputText value="#{registrationBean.example.email}" style="width:10em;"/>
+	
+					<p:outputLabel value="Geschlecht:"/>
+					<p:selectOneMenu value="#{registrationBean.example.geschlecht}">
+						<f:selectItem noSelectionOption="true" />
+						<f:selectItems value="#{memberBean.sexes}" />
+					</p:selectOneMenu>
+	
+					<p:outputLabel value="Bis GebJahr:"/>
+					<p:selectOneMenu value="#{registrationBean.example.gebJahr}">
+						<f:selectItem noSelectionOption="true" />
+						<f:selectItems value="#{registrationBean.distinctGebJahr}" />
+					</p:selectOneMenu>
+	
+					<p:outputLabel value="Bis SchulEintritt:"/>
+					<p:selectOneMenu value="#{registrationBean.example.schoolEntry}">
+						<f:selectItem noSelectionOption="true" />
+						<f:selectItems value="#{registrationBean.distinctSchoolEntry}" />
+					</p:selectOneMenu>
+	
+					<p:outputLabel value="Status:"/>
+					<p:selectCheckboxMenu value="#{registrationBean.filterStati}"  multiple="true" panelStyle="width:250px">
+						<f:selectItems value="#{registrationBean.stati}" />
+					</p:selectCheckboxMenu>
+	
+				</h:panelGrid>
+			</f:ajax>
 
 			<h:panelGroup id="searchPanel" styleClass="search">
 				<h:panelGroup styleClass="buttons">
-					<h:link id="search" value="Suchen" outcome="search" styleClass="btn btn-primary">
+					<h:commandButton id="search" value="Suchen" outcome="search" styleClass="btn btn-primary">
 						<f:param name="all" value="false" />
-					</h:link>
-					<h:link id="all" value="Alle" action="#{registrationBean.paginate}" styleClass="btn btn-primary">
+					</h:commandButton>
+					<h:commandButton id="all" value="Alle" action="#{registrationBean.paginate}" styleClass="btn btn-primary">
 						<f:param name="all" value="true" />
-					</h:link>
+					</h:commandButton>
 					<h:link id="create" value="Anlegen" outcome="create" styleClass="btn btn-primary"
 						disabled="#{!registrationBean.updateAllowed}">
 						<f:param name="id" value="" />
@@ -38,9 +80,9 @@
 				</h:panelGroup>
 			</h:panelGroup>
 
-			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table" value="#{registrationBean.dataModel}" 
-				filteredValue="#{registrationBean.filteredDataModel}" var="r"
-				editable="true" sortMode="multiple" rowStyleClass="#{r.status}">
+			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table"
+				value="#{registrationBean.dataModel}" var="r" editable="true"
+				sortMode="multiple" rowStyleClass="#{r.status}">
 
 				<p:ajax event="rowEdit" listener="#{registrationBean.onRowEdit}" update=":search:messages" />
 				<p:ajax event="rowEditCancel" listener="#{registrationBean.onRowCancel}" update=":search:messages" />
@@ -99,13 +141,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Stat" sortBy="#{r.status}" filterBy="#{r.status}" filterMatchMode="exact" >
-		            <f:facet name="filter">
-		                <p:selectOneMenu onchange="PF('regItemTable').filter()" panelStyle="width:10em" scrollHeight="150" >
-		                	<f:selectItem noSelectionOption="true"/>
-		                    <f:selectItems value="#{registrationBean.stati}" />
-		                </p:selectOneMenu>
-		            </f:facet>
+				<p:column headerText="Stat" sortBy="#{r.status}" >
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:panelGroup styleClass="#{r.status}">
@@ -117,20 +153,14 @@
 						</f:facet>
 						<f:facet name="input">
 							<h:panelGroup styleClass="#{r.status}">
-								<p:selectOneMenu value="#{r.status}" >
+								<p:selectOneMenu value="#{r.status}">
 									<f:selectItems value="#{registrationBean.stati}" />
 								</p:selectOneMenu>
 							</h:panelGroup>
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="M/W" sortBy="#{r.geschlecht}" filterBy="#{r.geschlecht}" filterMatchMode="exact">
-		            <f:facet name="filter">
-		                <p:selectOneMenu onchange="PF('regItemTable').filter()">
-		                	<f:selectItem noSelectionOption="true"/>
-		                    <f:selectItems value="#{memberBean.sexes}" />
-		                </p:selectOneMenu>
-		            </f:facet>
+				<p:column headerText="M/W" sortBy="#{r.geschlecht}">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -145,7 +175,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Name" sortBy="#{r.name}" filterBy="#{r.name}" filterMatchMode="contains">
+				<p:column headerText="Name" sortBy="#{r.name}">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -161,7 +191,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Vorname" sortBy="#{r.vorname}" filterBy="#{r.vorname}" filterMatchMode="contains">
+				<p:column headerText="Vorname" sortBy="#{r.vorname}">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -177,12 +207,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}" filterBy="#{r.gebJahr}" filterMatchMode="lte">
-					<f:facet name="filter">
-		                <h:inputText onchange="PF('regItemTable').filter()">
-							<f:converter converterId="javax.faces.Integer"/>
-						</h:inputText>
-					</f:facet>
+				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -198,12 +223,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Schuleintr." sortBy="#{r.schoolEntry}" filterBy="#{r.schoolEntry}" filterMatchMode="lte">
-					<f:facet name="filter">
-		                <h:inputText onchange="PF('regItemTable').filter()">
-							<f:converter converterId="javax.faces.Integer"/>
-						</h:inputText>
-					</f:facet>
+				<p:column headerText="Schuleintr." sortBy="#{r.schoolEntry}">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -247,15 +267,15 @@
 									cache="true" maxResults="20">
 									<f:validateLength minimum="2" />
 								</p:autoComplete>
-								<p:autoComplete id="parentVorname" value="#{r.parentVorname}" completeMethod="#{memberBean.getDistinctVornameLike}"
-									cache="true" maxResults="20">
+								<p:autoComplete id="parentVorname" value="#{r.parentVorname}"
+									completeMethod="#{memberBean.getDistinctVornameLike}" cache="true" maxResults="20">
 									<f:validateLength minimum="2" />
 								</p:autoComplete>
 							</h:panelGroup>
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Telefon" sortBy="#{r.telefon}" filterBy="#{r.telefon}" filterMatchMode="contains">
+				<p:column headerText="Telefon" sortBy="#{r.telefon}">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">
@@ -268,7 +288,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Email" sortBy="#{r.email}" filterBy="#{r.email}" filterMatchMode="contains">
+				<p:column headerText="Email" sortBy="#{r.email}">
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create">

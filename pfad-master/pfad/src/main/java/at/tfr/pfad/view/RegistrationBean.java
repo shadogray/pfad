@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -23,6 +24,7 @@ import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.RegistrationRepository;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Registration;
+import at.tfr.pfad.view.convert.RegistrationStatusConverter;
 
 @Named
 @ViewScoped
@@ -37,13 +39,25 @@ public class RegistrationBean implements Serializable {
 	private RegistrationRepository regRepo;
 	@Inject
 	private MemberRepository memberRepo;
-	private Registration example;
+	private Registration example = new Registration();
+	private RegistrationStatus[] filterStati;
+	private List<Integer> distinctGebJahr = new ArrayList<>();
+	private List<Integer> distinctSchoolEntry = new ArrayList<>();
 	private List<Registration> dataModel;
 	private List<Registration> filteredDataModel = new ArrayList<>();
 	private Long id;
 	private Registration registration;
 	private boolean all;
 
+	@PostConstruct
+	public void init() {
+		distinctGebJahr = regRepo.findDistinctGebJahr();
+		distinctSchoolEntry = regRepo.findDistinctSchoolEntry();
+		filterStati = new RegistrationStatus[] 
+				{ RegistrationStatus.Erstellt, RegistrationStatus.ZusageOK, RegistrationStatus.ZusageGes, RegistrationStatus.BleibtAufListe, RegistrationStatus.AbsageGes}; 
+	}
+	
+	
 	public void retrieve() {
 		if ((sessionBean.isAdmin() || sessionBean.isRegistrierung() || sessionBean.isAnmeldung()) && id == null) {
 			registration = new Registration();
@@ -58,8 +72,7 @@ public class RegistrationBean implements Serializable {
 		if (!isUpdateAllowed()) {
 			dataModel = new ArrayList<>();
 		} else {
-			dataModel = all ? regRepo.fetchAll()
-					: regRepo.fetchAll().stream().filter(r -> r.isAktiv()).collect(Collectors.toList());
+			dataModel = regRepo.queryBy(example, filterStati, (all ? null : Boolean.TRUE), (all ? null : Boolean.FALSE));
 		}
 	}
 
@@ -175,7 +188,23 @@ public class RegistrationBean implements Serializable {
 	public void setExample(Registration example) {
 		this.example = example;
 	}
+	
+	public RegistrationStatus[] getFilterStati() {
+		return filterStati;
+	}
+	
+	public void setFilterStati(RegistrationStatus[] filterStati) {
+		this.filterStati = filterStati;
+	}
 
+	public List<Integer> getDistinctGebJahr() {
+		return distinctGebJahr;
+	}
+	
+	public List<Integer> getDistinctSchoolEntry() {
+		return distinctSchoolEntry;
+	}
+	
 	public Long getId() {
 		return id;
 	}

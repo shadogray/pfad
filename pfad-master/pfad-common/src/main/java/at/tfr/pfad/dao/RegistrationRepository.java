@@ -16,8 +16,10 @@ import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
 import org.apache.deltaspike.data.api.QueryResult;
 import org.apache.deltaspike.data.api.Repository;
+import org.apache.deltaspike.data.api.criteria.Criteria;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
+import at.tfr.pfad.RegistrationStatus;
 import at.tfr.pfad.model.Registration;
 import at.tfr.pfad.model.Registration_;
 
@@ -52,6 +54,64 @@ public abstract class RegistrationRepository implements EntityRepository<Registr
 				.maxResults(max);
 	}
 	
+	public List<Registration> queryBy(Registration reg) {
+		return queryBy(reg);
+	}
+	
+	public List<Registration> queryBy(Registration reg, RegistrationStatus[] stati) {
+		return queryBy(reg, stati, null, null);
+	}
+	
+	public List<Registration> queryBy(Registration reg, RegistrationStatus[] stati, Boolean aktiv, Boolean storno) {
+		Criteria<Registration, Registration> crit = criteria();
+		if (aktiv != null) {
+			crit = crit.eq(Registration_.aktiv, aktiv);
+		}
+		if (storno != null) {
+			crit = crit.eq(Registration_.storno, storno);
+		}
+		if (reg.getGeschlecht() != null) {
+			crit = crit.eq(Registration_.geschlecht, reg.getGeschlecht());
+		}
+		if (reg.getName() != null) {
+			crit = crit.likeIgnoreCase(Registration_.name, "%"+reg.getName()+"%");
+		}
+		if (reg.getVorname() != null) {
+			crit = crit.likeIgnoreCase(Registration_.vorname, "%"+reg.getVorname()+"%");
+		}
+		if (reg.getStrasse() != null) {
+			crit = crit.likeIgnoreCase(Registration_.strasse, "%"+reg.getStrasse()+"%");
+		}
+		if (reg.getOrt() != null) {
+			crit = crit.likeIgnoreCase(Registration_.ort, "%"+reg.getOrt()+"%");
+		}
+		if (reg.getPLZ() != null) {
+			crit = crit.likeIgnoreCase(Registration_.plz, "%"+reg.getPLZ()+"%");
+		}
+		if (reg.getParentName() != null) {
+			crit = crit.likeIgnoreCase(Registration_.parentName, "%"+reg.getParentName()+"%");
+		}
+		if (reg.getParentVorname() != null) {
+			crit = crit.likeIgnoreCase(Registration_.parentVorname, "%"+reg.getParentVorname()+"%");
+		}
+		if (reg.getTelefon() != null) {
+			crit = crit.likeIgnoreCase(Registration_.telefon, "%"+reg.getTelefon()+"%");
+		}
+		if (reg.getEmail() != null) {
+			crit = crit.likeIgnoreCase(Registration_.email, "%"+reg.getEmail() +"%");
+		}
+		if (reg.getGebJahr() > 0) {
+			crit = crit.ltOrEq(Registration_.gebJahr, reg.getGebJahr());
+		}
+		if (reg.getSchoolEntry() > 0) {
+			crit = crit.ltOrEq(Registration_.schoolEntry, reg.getSchoolEntry());
+		}
+		if (stati != null && stati.length > 0) {
+			crit = crit.in(Registration_.status, stati);
+		}
+		return crit.getResultList();
+	}
+	
 	@Query("select e from Registration e")
 	protected abstract QueryResult<Registration> queryAllIntern();
 	
@@ -78,5 +138,11 @@ public abstract class RegistrationRepository implements EntityRepository<Registr
 
 	@Query(named="Registration.distStrasse")
 	public abstract List<String> findDistinctStrasse();
+
+	@Query(named="Registration.distGebJahr")
+	public abstract List<Integer> findDistinctGebJahr();
+
+	@Query(named="Registration.distSchoolEntry")
+	public abstract List<Integer> findDistinctSchoolEntry();
 
 }
