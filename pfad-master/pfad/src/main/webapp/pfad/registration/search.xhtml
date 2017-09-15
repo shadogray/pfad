@@ -67,12 +67,12 @@
 
 			<h:panelGroup id="searchPanel" styleClass="search">
 				<h:panelGroup styleClass="buttons">
-					<h:commandButton id="search" value="Suchen" outcome="search" styleClass="btn btn-primary">
+					<p:commandButton id="search" value="Suchen" outcome="search" styleClass="btn btn-primary">
 						<f:param name="all" value="false" />
-					</h:commandButton>
-					<h:commandButton id="all" value="Alle" action="#{registrationBean.paginate}" styleClass="btn btn-primary">
+					</p:commandButton>
+					<p:commandButton id="all" value="Alle" action="#{registrationBean.paginate}" styleClass="btn btn-primary">
 						<f:param name="all" value="true" />
-					</h:commandButton>
+					</p:commandButton>
 					<h:link id="create" value="Anlegen" outcome="create" styleClass="btn btn-primary"
 						disabled="#{!registrationBean.updateAllowed}">
 						<f:param name="id" value="" />
