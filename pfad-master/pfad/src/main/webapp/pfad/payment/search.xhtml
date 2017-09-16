@@ -85,13 +85,13 @@
 						<h:outputLabel for="paymentBeanPaymentPaymentDateStart" value="Datum-Von:" />
 						<p:calendar id="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}" pattern="dd.MM.yyyy" >
 							<f:convertDateTime pattern="dd.MM.yyyy"/>
-							<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							<f:ajax event="dateSelect" listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
 						 </p:calendar>
 						<h:outputText />
 						<h:outputLabel for="paymentBeanPaymentPaymentDateEnd" value="Datum-Bis:" />
 						<p:calendar id="paymentBeanPaymentPaymentDateEnd" value="#{paymentBean.examplePaymentDateEnd}" pattern="dd.MM.yyyy" >
 							<f:convertDateTime pattern="dd.MM.yyyy"/>
-							<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							<f:ajax event="dateSelect" listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
 						</p:calendar>
 						<h:outputText />
 

@@ -189,4 +189,8 @@ public class Configuration implements PrimaryKeyHolder, Serializable, Comparable
 			result += ", cvalue: " + cvalue;
 		return result;
 	}
+	
+	public String toTitle() {
+		return description + "\n\nAbfrage: \n" + cvalue;
+	}
 }

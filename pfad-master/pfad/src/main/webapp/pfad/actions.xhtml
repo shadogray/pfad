@@ -41,7 +41,7 @@
 				<h:panelGroup layout="block" id="actionsQueries">
 					<a4j:repeat value="#{downloadBean.queries}" var="query">
 						<h:commandLink actionListener="#{downloadBean.executeQuery(query.id)}" value="#{query.ckey}"
-							styleClass="btn btn-primary" title="#{downloadBean.configuration.description}">
+							styleClass="btn btn-primary" title="#{query.toTitle()}">
 							<f:ajax execute="@this" render="@form" />
 						</h:commandLink>
 					</a4j:repeat>
@@ -61,7 +61,7 @@
 								<h:outputLabel value="NativeQuery" />
 								<h:selectBooleanCheckbox value="#{downloadBean.nativeQuery}" immediate="true" />
 							</h:panelGroup>
-							<h:commandLink actionListener="#{downloadBean.query()}" value="Query" styleClass="btn btn-primary">
+							<h:commandLink actionListener="#{downloadBean.executeQuery()}" value="Query" styleClass="btn btn-primary" title="Abfrage: #{downloadBean.query}">
 								<f:ajax execute="@form" render="results messages" />
 							</h:commandLink>
 						</h:panelGrid>

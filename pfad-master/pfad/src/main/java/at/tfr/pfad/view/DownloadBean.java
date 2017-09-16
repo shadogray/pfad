@@ -550,7 +550,7 @@ public class DownloadBean implements Serializable {
 				configuration = confOpt.get();
 				query = configuration.getCvalue();
 				nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
-				query();
+				executeQuery();
 			}
 		} catch (Exception e) {
 			log.info("executeQuery: " + e, e);
@@ -560,7 +560,7 @@ public class DownloadBean implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public String query() {
+	public String executeQuery() {
 		Query q = null;
 		if (dataTableGroup != null) {
 			dataTableGroup.getChildren().clear();
