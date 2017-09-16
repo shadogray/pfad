@@ -3,8 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<f:viewParam name="page" value='#{paymentBean.page}' />
@@ -39,20 +39,20 @@
 
 	<ui:define name="main">
 		<h:form id="search">
-			rendered="#{paymentBean.viewAllowed}">
 
-			<rich:focus preserve="true" ajaxRendered="false"/>
+			<p:focus/>
 
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
-					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
+					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required,label2,component2,required,label2,component2,required" columns="12">
 
 						<h:outputLabel for="paymentBeanExampleType" value="Typ:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="paymentBeanExampleType" value="#{paymentBean.example.type}">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{paymentBean.types}" />
+								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
 							</h:selectOneMenu>
 							<h:message for="paymentBeanExampleType" styleClass="error" />
 						</h:panelGroup>
@@ -60,19 +60,10 @@
 
 						<h:outputLabel for="paymentBeanExamplePayer" value="Zahler:" />
 						<h:panelGroup id="paymentBeanExamplePayerPanel">
-							<h:selectOneMenu id="paymentBeanExamplePayer" value="#{paymentBean.examplePayer}" converter="#{memberBean.converter}" rendered="#{paymentBean.examplePayer != null}">
-								<f:selectItem itemLabel="löschen.." noSelectionOption="true"/>
-								<f:selectItem itemLabel="#{paymentBean.examplePayer}" itemValue="#{paymentBean.examplePayer.idStr}"/>
-								<f:ajax render="paymentBeanExamplePayerPanel" />
-							</h:selectOneMenu>
-							<rich:select id="paymentBeanExamplePayerSelect" styleClass="fullwidth manual" rendered="#{paymentBean.examplePayer == null}"
-								mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{paymentBean.filterPayers}" 
-								var="p" itemLabel="#{p}" itemValue="#{p.id}" converter="#{memberBean.converter}" 
-								minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-								<f:selectItems value="#{paymentBean.filteredPayers}" var="mem" itemLabel="#{mem}" itemValue="#{mem}"/>
-								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExamplePayer}" render="paymentBeanExamplePayerPanel" />
-							</rich:select>
-							<h:message for="paymentBeanExamplePayerSelect" styleClass="error" />
+							<p:autoComplete id="paymentBeanExamplePayer" value="#{paymentBean.examplePayer}" completeMethod="#{members.filtered}" 
+								var="p" itemLabel="#{p}" itemValue="#{p.idStr}" converter="#{memberBean.converter}" >
+								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							</p:autoComplete>
 							<h:message for="paymentBeanExamplePayer" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
@@ -80,94 +71,100 @@
 						<h:outputLabel for="paymentBeanAmountFrom" value="Betrag-Von:" />
 						<h:inputText id="paymentBeanAmountFrom" value="#{paymentBean.amountFrom}" style="width: 10em;">
 							<f:convertNumber maxFractionDigits="2" />
+							<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
 						</h:inputText>
 						<h:message for="paymentBeanAmountFrom"/>
 						
 						<h:outputLabel for="paymentBeanAmountTo" value="Betrag-Bis: " />
 						<h:inputText id="paymentBeanAmountTo" value="#{paymentBean.amountTo}" style="width: 10em;">
 							<f:convertNumber maxFractionDigits="2" />
+							<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
 						</h:inputText>
 						<h:message for="paymentBeanAmountTo"/>
 
 						<h:outputLabel for="paymentBeanPaymentPaymentDateStart" value="Datum-Von:" />
-						<rich:calendar id="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}"
-							datePattern="dd.MM.yyyy" />
+						<p:calendar id="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}" pattern="dd.MM.yyyy" >
+							<f:convertDateTime pattern="dd.MM.yyyy"/>
+							<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+						 </p:calendar>
 						<h:outputText />
-						<h:outputLabel for="paymentBeanPaymentPaymentDateEnd" value="Datum-Von:" />
-						<rich:calendar id="paymentBeanPaymentPaymentDateEnd" value="#{paymentBean.examplePaymentDateEnd}"
-							datePattern="dd.MM.yyyy" />
+						<h:outputLabel for="paymentBeanPaymentPaymentDateEnd" value="Datum-Bis:" />
+						<p:calendar id="paymentBeanPaymentPaymentDateEnd" value="#{paymentBean.examplePaymentDateEnd}" pattern="dd.MM.yyyy" >
+							<f:convertDateTime pattern="dd.MM.yyyy"/>
+							<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+						</p:calendar>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleActivity" value="Aktivität:" />
 						<h:panelGroup>
-							<h:selectOneMenu id="paymentBeanExampleActivity" styleClass="fullwidth" p:placeholder="Aktivität.." 
+							<p:selectOneMenu id="paymentBeanExampleActivity" styleClass="fullwidth" p:placeholder="Aktivität.." 
 								value="#{paymentBean.exampleActivity}" converter="#{activityBean.converter}" 
 								title="Aktivität..">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a.idStr}" />
-							</h:selectOneMenu>
+								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							</p:selectOneMenu>
 							<h:message for="paymentBeanExampleActivity" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel value="Buchung:" />
 						<h:panelGroup id="paymentBeanExampleBookingPanel">
-							<h:selectOneMenu id="paymentBeanExampleBooking" value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}" rendered="#{paymentBean.exampleBooking != null}">
-								<f:selectItem itemLabel="löschen.." noSelectionOption="true"/>
-								<f:selectItem itemLabel="#{paymentBean.exampleBooking}" itemValue="#{paymentBean.exampleBooking.idStr}"/>
-								<f:ajax render="paymentBeanExampleBookingPanel" />
-							</h:selectOneMenu>
-							<rich:select id="paymentBeanExampleBookingSelect" styleClass="fullwidth manual" rendered="#{paymentBean.exampleBooking == null}"
-								mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{paymentBean.filterBookings}" 
-								var="b" itemLabel="#{b}" itemValue="#{b.id}" converter="#{bookingBean.converter}" 
-								minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-								<f:selectItems value="#{paymentBean.filteredBookings}" var="boo" itemLabel="#{boo}" itemValue="#{boo}"/>
-								<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{paymentBean.selectExampleBooking}" render="paymentBeanExampleBookingPanel" />
-							</rich:select>
-							<h:message for="paymentBeanExampleBookingSelect" styleClass="error" />
+							<p:autoComplete id="paymentBeanExampleBooking" value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}" 
+								completeMethod="#{bookings.filtered}">
+								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							</p:autoComplete>
 							<h:message for="paymentBeanExampleBooking" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleIBAN" value="IBAN:" />
 						<h:panelGroup>
-							<h:inputText id="paymentBeanExampleIBAN" value="#{paymentBean.example.payerIBAN}" />
+							<h:inputText id="paymentBeanExampleIBAN" value="#{paymentBean.example.payerIBAN}" >
+								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							</h:inputText>
 							<h:message for="paymentBeanExampleIBAN" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
-							<h:inputText id="paymentBeanExampleComment" value="#{paymentBean.example.comment}" />
+							<h:inputText id="paymentBeanExampleComment" value="#{paymentBean.example.comment}" >
+								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							</h:inputText>
 							<h:message for="paymentBeanExampleComment" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleFinished" value="Erledigt:" />
 						<h:panelGroup>
-							<h:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}">
+							<p:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItem itemLabel="Ja" itemValue="true" />
 								<f:selectItem itemLabel="Nein" itemValue="false" />
-							</h:selectOneMenu>
+								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							</p:selectOneMenu>
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleAconto" value="Akonto:" />
 						<h:panelGroup>
-							<h:selectOneMenu id="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}">
+							<p:selectOneMenu id="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItem itemLabel="Ja" itemValue="true" />
 								<f:selectItem itemLabel="Nein" itemValue="false" />
-							</h:selectOneMenu>
+								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							</p:selectOneMenu>
 						</h:panelGroup>
 						<h:outputText />
 
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
-						<h:commandLink id="search" value="Suchen" action='#{paymentBean.search}' styleClass="btn btn-primary" />
+						<h:commandLink id="search" value="Suchen" action='#{paymentBean.paginate}' styleClass="btn btn-primary" >
+							<f:ajax execute="@all" listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+						</h:commandLink>
 						<h:link id="list" value="Liste" outcome="list" styleClass="btn btn-primary" />
-						<h:commandLink id="create" value="Neu" action='#{paymentBean.create}' styleClass="btn btn-primary" />
+						<h:link id="create" value="Neu" outcome="create" styleClass="btn btn-primary" />
 						<h:link id="import" value="Import" outcome="import" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}" />
 					</h:panelGroup>
 				</h:panelGroup>

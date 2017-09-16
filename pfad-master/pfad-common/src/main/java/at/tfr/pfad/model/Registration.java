@@ -39,13 +39,13 @@ import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.AuditListener;
 
 @NamedQueries({ 
-		@NamedQuery(name = "Registration.distName", query = "select distinct r.name from Registration r order by r.name"),
-		@NamedQuery(name = "Registration.distVorname", query = "select distinct r.vorname from Registration r order by r.vorname"),
-		@NamedQuery(name = "Registration.distPLZ", query = "select distinct r.plz from Registration r order by r.plz"),
-		@NamedQuery(name = "Registration.distOrt", query = "select distinct r.ort from Registration r order by r.ort"),
-		@NamedQuery(name = "Registration.distStrasse", query = "select distinct r.strasse from Registration r order by r.strasse"),
-		@NamedQuery(name = "Registration.distGebJahr", query = "select distinct r.gebJahr from Registration r order by r.gebJahr desc"),
-		@NamedQuery(name = "Registration.distSchoolEntry", query = "select distinct r.schoolEntry from Registration r order by r.schoolEntry"),
+		@NamedQuery(name = "Registration.distName", query = "select distinct r.name from Registration r where r.name is not null order by r.name"),
+		@NamedQuery(name = "Registration.distVorname", query = "select distinct r.vorname from Registration r where r.vorname is not null order by r.vorname"),
+		@NamedQuery(name = "Registration.distPLZ", query = "select distinct r.plz from Registration r where r.plz is not null order by r.plz"),
+		@NamedQuery(name = "Registration.distOrt", query = "select distinct r.ort from Registration r where r.ort is not null order by r.ort"),
+		@NamedQuery(name = "Registration.distStrasse", query = "select distinct r.strasse from Registration r where r.strasse is not null order by r.strasse"),
+		@NamedQuery(name = "Registration.distGebJahr", query = "select distinct r.gebJahr from Registration r where r.gebJahr is not null order by r.gebJahr desc"),
+		@NamedQuery(name = "Registration.distSchoolEntry", query = "select distinct r.schoolEntry from Registration r where r.schoolEntry is not null order by r.schoolEntry"),
 	})
 @Audited(withModifiedFlag = true)
 @Entity

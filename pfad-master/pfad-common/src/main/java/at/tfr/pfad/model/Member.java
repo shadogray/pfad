@@ -58,21 +58,21 @@ import at.tfr.pfad.Sex;
 import at.tfr.pfad.dao.AuditListener;
 
 @NamedQueries({ 
-	@NamedQuery(name = "Member.distName", query = "select distinct m.name from Member m order by m.name"),
+	@NamedQuery(name = "Member.distName", query = "select distinct m.name from Member m where m.name is not null order by m.name"),
 	@NamedQuery(name = "Member.distNameLike", query = "select distinct m.name from Member m where lower(m.name) like ?1 order by m.name"),
-	@NamedQuery(name = "Member.distVorname", query = "select distinct m.vorname from Member m order by m.vorname"),
+	@NamedQuery(name = "Member.distVorname", query = "select distinct m.vorname from Member m where m.vorname is not null order by m.vorname"),
 	@NamedQuery(name = "Member.distVornameLike", query = "select distinct m.vorname from Member m where lower(m.vorname) like ?1 order by m.vorname"),
-	@NamedQuery(name = "Member.distPLZ", query = "select distinct m.plz from Member m order by m.plz"),
+	@NamedQuery(name = "Member.distPLZ", query = "select distinct m.plz from Member m where m.plz is not null order by m.plz"),
 	@NamedQuery(name = "Member.distPLZLike", query = "select distinct m.plz from Member m where lower(m.plz) like ?1 order by m.plz"),
-	@NamedQuery(name = "Member.distOrt", query = "select distinct m.ort from Member m order by m.ort"),
+	@NamedQuery(name = "Member.distOrt", query = "select distinct m.ort from Member m where m.ort is not null order by m.ort"),
 	@NamedQuery(name = "Member.distOrtLike", query = "select distinct m.ort from Member m where lower(m.ort) like ?1 order by m.ort"),
-	@NamedQuery(name = "Member.distStrasse", query = "select distinct m.strasse from Member m order by m.strasse"),
+	@NamedQuery(name = "Member.distStrasse", query = "select distinct m.strasse from Member m where m.strasse is not null order by m.strasse"),
 	@NamedQuery(name = "Member.distStrasseLike", query = "select distinct m.strasse from Member m where lower(m.strasse) like ?1 order by m.strasse"),
-	@NamedQuery(name = "Member.distTitel", query = "select distinct m.titel from Member m order by m.titel"),
+	@NamedQuery(name = "Member.distTitel", query = "select distinct m.titel from Member m where m.titel is not null order by m.titel"),
 	@NamedQuery(name = "Member.distTitelLike", query = "select distinct m.titel from Member m where lower(m.titel) like ?1 order by m.titel"),
-	@NamedQuery(name = "Member.distAnrede", query = "select distinct m.anrede from Member m order by m.anrede"),
+	@NamedQuery(name = "Member.distAnrede", query = "select distinct m.anrede from Member m where m.anrede is not null order by m.anrede"),
 	@NamedQuery(name = "Member.distAnredeLike", query = "select distinct m.anrede from Member m where lower(m.anrede) like ?1 order by m.anrede"),
-	@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m order by m.religion"),
+	@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m where m.religion is not null order by m.religion"),
 	@NamedQuery(name = "Member.distReligionLike", query = "select distinct m.religion from Member m where lower(m.religion) like ?1 order by m.religion"), 
 	})
 @NamedEntityGraphs({

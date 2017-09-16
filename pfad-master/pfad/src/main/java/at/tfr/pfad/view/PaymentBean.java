@@ -76,11 +76,6 @@ public class PaymentBean extends BaseBean implements Serializable {
 				throw new SecurityException("View prohibit for: "+sessionBean.getUser());
 			}
 			
-			FacesContext ctx = FacesContext.getCurrentInstance();
-			if (ctx.isPostback() && !ctx.getPartialViewContext().isAjaxRequest()) {
-				return;
-			}
-	
 			if (id == null) {
 				payment = getPaymentExample();
 			} else {
@@ -264,10 +259,6 @@ public class PaymentBean extends BaseBean implements Serializable {
 
 	public void paginate() {
 
-		if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
-			return;
-		}
-		
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 
 		// Populate this.count
@@ -468,13 +459,17 @@ public class PaymentBean extends BaseBean implements Serializable {
 	
 	@Override
 	public List<Booking> filterBookings(FacesContext facesContext, UIComponent component, final String filter) {
+		return filterBookings(facesContext, component, filter);
+	}
+
+	public List<Booking> filterBookings(final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
 			if (payment != null && payment.getBookings().size() > 0) {
 				Booking b = payment.getBookings().iterator().next();
-				filteredBookings = bookings.filtered(facesContext, component, filter, b.getActivity(), b.getMember().getStrasse());
+				filteredBookings = bookings.filtered(filter, b.getActivity(), b.getMember().getStrasse());
 				filteredBookings.removeAll(payment.getBookings());
 			} else {
-				filteredBookings = bookings.filtered(facesContext, component, filter);
+				filteredBookings = bookings.filtered(filter);
 			}
 		}
 		return filteredBookings;

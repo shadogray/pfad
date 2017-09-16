@@ -77,6 +77,8 @@ public class MemberBean extends BaseBean implements Serializable {
 	private MemberValidator memberValidator;
 	private Boolean exampleActive;
 	private Boolean exampleFree;
+	private Boolean exampleSupport;
+	private Boolean exampleInfoMail;
 	private List<Function> exampleFunctions;
 	private Collection<ValidationResult> validationResults = new ArrayList<>();
 
@@ -237,10 +239,6 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	public void paginate() {
 
-		if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
-			return;
-		}
-
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 
 		// Populate this.count
@@ -297,11 +295,20 @@ public class MemberBean extends BaseBean implements Serializable {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.telefon)), '%' + Telefon.toLowerCase() + '%'));
 		}
+		if (getMemberExample().getGeschlecht() != null) {
+			predicatesList.add(builder.equal(root.get(Member_.geschlecht), getMemberExample().getGeschlecht()));
+		}
 		if (exampleActive != null) {
 			predicatesList.add(builder.equal(root.get(Member_.aktiv), exampleActive));
 		}
 		if (exampleFree != null) {
 			predicatesList.add(builder.equal(root.get(Member_.free), exampleFree));
+		}
+		if (exampleSupport != null) {
+			predicatesList.add(builder.equal(root.get(Member_.support), exampleSupport));
+		}
+		if (exampleInfoMail != null) {
+			predicatesList.add(builder.equal(root.get(Member_.infoMail), exampleInfoMail));
 		}
 
 		Squad trupp = getMemberExample().getTrupp();
@@ -343,6 +350,22 @@ public class MemberBean extends BaseBean implements Serializable {
 	
 	public void setExampleFree(Boolean exampleFree) {
 		this.exampleFree = exampleFree;
+	}
+	
+	public Boolean getExampleSupport() {
+		return exampleSupport;
+	}
+	
+	public void setExampleSupport(Boolean exampleSupport) {
+		this.exampleSupport = exampleSupport;
+	}
+	
+	public Boolean getExampleInfoMail() {
+		return exampleInfoMail;
+	}
+	
+	public void setExampleInfoMail(Boolean exampleInfoMail) {
+		this.exampleInfoMail = exampleInfoMail;
 	}
 	
 	public List<Function> getExampleFunctions() {

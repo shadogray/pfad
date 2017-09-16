@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:ds="http://deltaspike.apache.org/jsf">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
+	xmlns:ds="http://deltaspike.apache.org/jsf">
 
 <h:head>
-	<title>#{empty pageTitle ? 'Pfad' : pageTitle}</title>
+	<f:facet name="first">
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=10" />
+		<title>#{empty pageTitle ? 'Pfad' : pageTitle}</title>
+	</f:facet>
 	<link rel="icon" href='#{resource["favicon.ico"]}' />
-	<meta http-equiv="X-UA-Compatible" content="IE=10" />
 	<h:outputStylesheet name="bootstrap.css" />
 	<h:outputStylesheet name="forge-style.css" />
 	<h:outputScript name="scripts.js" />
@@ -15,17 +19,18 @@
 <h:body>
 
 	<ds:windowId />
-	<ui:debug rendered="#{true || facesContext.application.projectStage == 'Development'}" />
+	<ui:debug />
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
 				<h:link id="brandLink" outcome="/pfad/index.xhtml" styleClass="brand">
 					<h:outputText value="Willkommen in der Pfad-DB" rendered="#{request.userPrincipal !=null}" />
-                    <h:outputText value=",  #{request.userPrincipal}" rendered="#{request.userPrincipal != null}" />
-                    <h:panelGroup rendered="#{sessionBean.registrationEndDate != null}" style="white-space: nowrap;">
+					<h:outputText value=",  #{request.userPrincipal}" rendered="#{request.userPrincipal != null}" />
+					<h:panelGroup rendered="#{sessionBean.registrationEndDate != null}" style="white-space: nowrap;">
 						<h:outputText value="  --  Registrierung Ende: " />
 						<h:outputText value="#{sessionBean.registrationEndDate}" converter="javax.faces.DateTime" />
 					</h:panelGroup>
+					<f:ajax listener="#{sessionBean.toggleLog()}"/>
 				</h:link>
 				<div class="nav-collapse collapse">
 					<ul class="nav">

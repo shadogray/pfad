@@ -38,6 +38,14 @@ public class Bookings implements Serializable {
 
 	public List<Booking> filtered(FacesContext facesContext, UIComponent component, final String filter, Activity activity, String strasse) {
 		log.debug("filter: " + filter + " for: " + component.getId());
+		return filtered(filter, activity, strasse);
+	}
+
+	public List<Booking> filtered(final String filter) {
+		return filtered(filter, null, null);
+	}
+
+	public List<Booking> filtered(final String filter, Activity activity, String strasse) {
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Booking> cq = cb.createQuery(Booking.class);
 		Root<Booking> root = cq.from(Booking.class);

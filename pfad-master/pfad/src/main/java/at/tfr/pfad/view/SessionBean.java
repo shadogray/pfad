@@ -29,6 +29,7 @@ public class SessionBean implements Serializable {
 	private Logger log = Logger.getLogger(getClass());
 	private List<Configuration> config;
 	private Date registrationEndDate;
+	private boolean logActive;
 	@Inject
 	protected UserSession userSession;
 	@Inject
@@ -137,6 +138,18 @@ public class SessionBean implements Serializable {
 		return registrationEndDate;
 	}
 
+	public boolean isLogActive() {
+		return logActive;
+	}
+	
+	public void setLogActive(boolean logActive) {
+		this.logActive = logActive;
+	}
+	
+	public void toggleLog() {
+		logActive = !logActive;
+	}
+	
 	class PfadPrincipal implements Principal {
 		private String name = "anonymous";
 		public PfadPrincipal(String name) {
