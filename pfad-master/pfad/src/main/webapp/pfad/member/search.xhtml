@@ -81,7 +81,7 @@
 						<h:outputLabel for="mbeFunktionen" value="Funktion:" />
 						<h:panelGroup>
 							<p:selectCheckboxMenu id="mbeFunktionen"  value="#{memberBean.exampleFunctions}" multiple="true" converter="#{functionBean.converter}">
-								<f:selectItems value="#{functionBean.allFunctions}" var="f" itemLabel="#{f.name}" itemValue="#{f.idStr}" itemDescription="#{f.toString()}"/>
+								<f:selectItems value="#{functionBean.allFunctions}" var="f" itemLabel="#{f.name}" itemValue="#{f.idStr}" itemDescription="#{configurationBean.getDescription(f.key)}" />
 								<f:ajax listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 							</p:selectCheckboxMenu>
 							<h:message for="mbeFunktionen" styleClass="error" />
