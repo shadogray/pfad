@@ -91,7 +91,7 @@
 					</f:facet>
 					<h:link outcome="/pfad/function/view">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemFunction" value="#{_item.function}" />
+						<h:outputText value="#{_item.function}" />
 					</h:link>
 				</h:column>
 				<h:column>
@@ -100,13 +100,13 @@
 					</f:facet>
 					<h:link outcome="/pfad/function/view">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemKey" value="#{_item.key}" />
+						<h:outputText value="#{_item.key}" />
 					</h:link>
 				</h:column>
 				<h:column>
 					<h:link outcome="/pfad/function/view">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemKey" value="#{configurationBean.getValue(_item.key)}" />
+						<h:outputText value="#{configurationBean.getValue(_item.key)}" />
 					</h:link>
 				</h:column>
 			</h:dataTable>
