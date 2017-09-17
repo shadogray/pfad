@@ -185,7 +185,7 @@
 					<p:selectCheckboxMenu id="memberBeanMemberFunktionen" value="#{memberBean.memberFunctions}" multiple="true"
 						converter="#{functionBean.converter}" title="#{configurationBean.getDescription('funktionen')}">
 						<f:selectItems value="#{functionBean.allFunctions}" var="f" itemLabel="#{f.function}(#{f.key})"
-							itemValue="#{f.idStr}" itemDescription="#{f.toString()}" />
+							itemValue="#{f.idStr}" itemDescription="#{configurationBean.getDescription(f.key)}" />
 						<f:ajax />
 					</p:selectCheckboxMenu>
 				</h:panelGroup>
