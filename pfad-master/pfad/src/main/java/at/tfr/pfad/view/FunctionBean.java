@@ -46,7 +46,7 @@ import at.tfr.pfad.model.Function_;
 @Named
 @Stateful
 @ViewScoped
-public class FunctionBean extends BaseBean implements Serializable {
+public class FunctionBean extends BaseBean<Function> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

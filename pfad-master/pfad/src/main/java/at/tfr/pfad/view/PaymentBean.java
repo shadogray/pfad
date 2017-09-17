@@ -53,7 +53,7 @@ import at.tfr.pfad.model.Payment_;
 @Named
 @Stateful
 @ViewScoped
-public class PaymentBean extends BaseBean implements Serializable {
+public class PaymentBean extends BaseBean<Payment> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -459,7 +459,7 @@ public class PaymentBean extends BaseBean implements Serializable {
 	
 	@Override
 	public List<Booking> filterBookings(FacesContext facesContext, UIComponent component, final String filter) {
-		return filterBookings(facesContext, component, filter);
+		return filterBookings(filter);
 	}
 
 	public List<Booking> filterBookings(final String filter) {

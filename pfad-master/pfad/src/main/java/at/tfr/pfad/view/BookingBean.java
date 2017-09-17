@@ -60,7 +60,7 @@ import at.tfr.pfad.model.Squad;
 @Named
 @Stateful
 @ViewScoped
-public class BookingBean extends BaseBean implements Serializable {
+public class BookingBean extends BaseBean<Booking> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

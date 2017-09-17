@@ -3,12 +3,12 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui" xmlns:pass="http://xmlns.jcp.org/jsf/passthrough"
+	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<o:viewParam name="id" value='#{memberBean.id}' />
-		<f:event type="preRenderView" listener='#{memberBean.retrieve}' />
+		<f:viewAction action='#{memberBean.retrieve}' />
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="Person erstellen/bearbeiten" />
@@ -30,22 +30,16 @@
 	<ui:define name="footer" />
 
 	<ui:define name="main">
-		<h:outputScript>
-	$().ready(function() {
-		$('#create:save').keypress(function() {
-			document.create.submit();
-		});
-	});
-	</h:outputScript>
 		<h:form id="create">
 			<h:messages globalOnly="true" styleClass="error" />
-			<rich:focus ajaxRendered="false"/>
+			<p:focus />
 
 			<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
 
 				<h:outputLabel for="memberBeanMemberBVKey" value="BV Key:" />
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberBVKey" value="#{memberBean.member.BVKey}" p:placeholder="nur bei Externen!" />
+					<h:inputText id="memberBeanMemberBVKey" value="#{memberBean.member.BVKey}"
+						pass:placeholder="#{configurationBean.getValue('BVKey')}" title="#{configurationBean.getDescription('BVKey')}" />
 					<h:message for="memberBeanMemberBVKey" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
@@ -56,44 +50,44 @@
 
 				<h:outputLabel for="memberBeanMemberAnrede" value="Anrede:" />
 				<h:panelGroup>
-					<rich:autocomplete id="memberBeanMemberAnrede" value="#{memberBean.member.anrede}" mode="lazyClient"
-						autofill="false" autocompleteList="#{memberBean.distinctAnrede}" clientFilterFunction="autoFilter" />
+					<p:autoComplete id="memberBeanMemberAnrede" value="#{memberBean.member.anrede}" completeMethod="#{memberBean.getDistinctAnredeLike}" 
+						placeholder="#{configurationBean.getValue('anrede')}" title="#{configurationBean.getDescription('anrede')}" />
 					<h:message for="memberBeanMemberAnrede" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberTitel" value="Titel:" />
 				<h:panelGroup>
-					<rich:autocomplete id="memberBeanMemberTitel" value="#{memberBean.member.titel}" mode="lazyClient" aotofill="false"
-						autocompleteList="#{memberBean.distinctTitel}" clientFilterFunction="autoFilter" />
+					<p:autoComplete id="memberBeanMemberTitel" value="#{memberBean.member.titel}" completeMethod="#{memberBean.getDistinctTitelLike}" 
+						placeholder="#{configurationBean.getValue('titel')}" title="#{configurationBean.getDescription('titel')}" />
 					<h:message for="memberBeanMemberTitel" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="Vorname" value="Vorname:" />
 				<h:panelGroup>
-					<rich:autocomplete id="Vorname" value="#{memberBean.member.vorname}" mode="lazyClient" autofill="false"
-						autocompleteList="#{memberBean.distinctVorname}" clientFilterFunction="autoFilter">
+					<p:autoComplete id="Vorname" value="#{memberBean.member.vorname}" completeMethod="#{memberBean.getDistinctVornameLike}" 
+						placeholder="#{configurationBean.getValue('vorname')}" title="#{configurationBean.getDescription('vorname')}">
 						<f:validateLength minimum="2" />
-					</rich:autocomplete>
+					</p:autoComplete>
 					<h:message for="Vorname" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="Name" value="Name:" />
 				<h:panelGroup>
-					<rich:autocomplete id="Name" value="#{memberBean.member.name}" mode="lazyClient" autofill="false"
-						autocompleteList="#{memberBean.distinctName}" clientFilterFunction="autoFilter">
+					<p:autoComplete id="Name" value="#{memberBean.member.name}" completeMethod="#{memberBean.getDistinctNameLike}"
+						placeholder="#{configurationBean.getValue('name')}" title="#{configurationBean.getDescription('name')}">
 						<f:validateLength minimum="2" />
-					</rich:autocomplete>
+					</p:autoComplete>
 					<h:message for="Name" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberGebTag" value="Geb Tag:" />
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberGebTag" value="#{memberBean.member.gebTag}" p:placeholder="numerisch"
-						title="Tag des Monats, Zahl">
+					<h:inputText id="memberBeanMemberGebTag" value="#{memberBean.member.gebTag}"
+						pass:placeholder="#{configurationBean.getValue('gebTag')}" title="#{configurationBean.getDescription('gebTag')}" >
 						<f:validateLongRange minimum="0" maximum="31" />
 					</h:inputText>
 					<h:message for="memberBeanMemberGebTag" styleClass="error" />
@@ -102,9 +96,10 @@
 
 				<h:outputLabel for="memberBeanMemberGebMonat" value="Geb Monat:" />
 				<h:panelGroup>
-					<h:selectOneMenu id="memberBeanMemberGebMonat" value="#{memberBean.member.gebMonat}" title="Monat des Jahres, Zahl">
-						<f:selectItem itemLabel="undef.." itemValue="0"/>
-						<f:selectItems value="#{memberBean.months}" var="m" itemLabel="#{m}" itemValue="#{m.idx}"/>
+					<h:selectOneMenu id="memberBeanMemberGebMonat" value="#{memberBean.member.gebMonat}"
+						title="#{configurationBean.getDescription('gebMonat')}">
+						<f:selectItem itemLabel="undef.." itemValue="0" />
+						<f:selectItems value="#{memberBean.months}" var="m" itemLabel="#{m}" itemValue="#{m.idx}" />
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberGebMonat" styleClass="error" />
 				</h:panelGroup>
@@ -112,8 +107,8 @@
 
 				<h:outputLabel for="memberBeanMemberGebJahr" value="Geb Jahr:" />
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberGebJahr" value="#{memberBean.member.gebJahr}" p:placeholder="numerisch"
-						title="Jahr, Zahl">
+					<h:inputText id="memberBeanMemberGebJahr" value="#{memberBean.member.gebJahr}"
+						pass:placeholder="#{configurationBean.getValue('gebJahr')}" title="#{configurationBean.getDescription('gebJahr')}" >
 						<f:validateRequired />
 						<f:validator validatorId="gebJahrValidator" />
 					</h:inputText>
@@ -123,31 +118,32 @@
 
 				<h:outputLabel for="memberBeanMemberStrasse" value="Strasse:" />
 				<h:panelGroup>
-					<rich:autocomplete id="memberBeanMemberStrasse" value="#{memberBean.member.strasse}" mode="lazyClient"
-						autocompleteList="#{memberBean.distinctStrasse}" clientFilterFunction="autoFilter" />
+					<p:autoComplete id="memberBeanMemberStrasse" value="#{memberBean.member.strasse}" completeMethod="#{memberBean.getDistinctStrasseLike}" 
+						 placeholder="#{configurationBean.getValue('strasse')}" title="#{configurationBean.getDescription('strasse')}" />
 					<h:message for="memberBeanMemberStrasse" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberPLZ" value="PLZ:" />
 				<h:panelGroup>
-					<rich:autocomplete id="memberBeanMemberPLZ" value="#{memberBean.member.PLZ}" mode="lazyClient"
-						autocompleteList="#{memberBean.distinctPLZ}" clientFilterFunction="autoFilter" />
+					<p:autoComplete id="memberBeanMemberPLZ" value="#{memberBean.member.PLZ}" completeMethod="#{memberBean.getDistinctPLZLike}" 
+						 placeholder="#{configurationBean.getValue('PLZ')}" title="#{configurationBean.getDescription('PLZ')}" />
 					<h:message for="memberBeanMemberPLZ" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberOrt" value="Ort:" />
 				<h:panelGroup>
-					<rich:autocomplete id="memberBeanMemberOrt" value="#{memberBean.member.ort}" mode="lazyClient"
-						autocompleteList="#{memberBean.distinctOrt}" clientFilterFunction="autoFilter" />
+					<p:autoComplete id="memberBeanMemberOrt" value="#{memberBean.member.ort}" completeMethod="#{memberBean.getDistinctOrtLike}" 
+						placeholder="#{configurationBean.getValue('ort')}" title="#{configurationBean.getDescription('ort')}" />
 					<h:message for="memberBeanMemberOrt" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberGeschlecht" value="Geschlecht:" />
 				<h:panelGroup>
-					<h:selectOneMenu id="memberBeanMemberGeschlecht" value="#{memberBean.member.geschlecht}" required="true">
+					<h:selectOneMenu id="memberBeanMemberGeschlecht" value="#{memberBean.member.geschlecht}" required="true"
+						title="#{configurationBean.getDescription('geschlecht')}">
 						<f:selectItems value="#{memberBean.sexes}" />
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberGeschlecht" styleClass="error" />
@@ -156,14 +152,16 @@
 
 				<h:outputLabel for="memberBeanMemberEmail" value="Email:" />
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberEmail" value="#{memberBean.member.email}" />
+					<h:inputText id="memberBeanMemberEmail" value="#{memberBean.member.email}"
+						pass:placeholder="#{configurationBean.getValue('email')}" title="#{configurationBean.getDescription('email')}" />
 					<h:message for="memberBeanMemberEmail" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberTelefon" value="Telefon:" />
 				<h:panelGroup>
-					<h:inputText id="memberBeanMemberTelefon" value="#{memberBean.member.telefon}" />
+					<h:inputText id="memberBeanMemberTelefon" value="#{memberBean.member.telefon}"
+						pass:placeholder="#{configurationBean.getValue('telefon')}" title="#{configurationBean.getDescription('telefon')}" />
 					<h:message for="memberBeanMemberTelefon" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
@@ -174,8 +172,8 @@
 
 				<h:outputLabel for="memberBeanMemberTrupp" value="Trupp:" />
 				<h:panelGroup>
-					<h:selectOneMenu converter="#{squadBean.converter}" id="memberBeanMemberTrupp" value="#{memberBean.member.trupp}">
-						<f:selectItem noSelectionOption="true"/>
+					<h:selectOneMenu converter="#{squadBean.converter}" id="memberBeanMemberTrupp" value="#{memberBean.member.trupp}" title="#{configurationBean.getDescription('trupp')}">
+						<f:selectItem noSelectionOption="true" />
 						<f:selectItems itemLabel="#{s}" itemValue="#{s.idStr}" value="#{squadBean.all}" var="s" />
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberTrupp" styleClass="error" />
@@ -184,73 +182,29 @@
 
 				<h:outputLabel for="memberBeanMemberFunktionen" value="Funktionen:" />
 				<h:panelGroup>
-					<ui:param name="_collection" value="#{memberBean.member.funktionen}" />
-					<h:dataTable id="memberBeanMemberFunktionen" styleClass="data-table" value="#{forgeview:asList(_collection)}"
-						var="_item">
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="Funktion" />
-							</f:facet>
-							<h:link outcome="/pfad/function/view">
-								<f:param name="id" value="#{_item.id}" />
-								<h:outputText id="itemFunction" value="#{_item.function}" />
-							</h:link>
-						</h:column>
-						<h:column>
-							<f:facet name="header">
-								<h:outputText value="Key" />
-							</f:facet>
-							<h:link outcome="/pfad/function/view">
-								<f:param name="id" value="#{_item.id}" />
-								<h:outputText id="itemKey" value="#{_item.key}" />
-							</h:link>
-						</h:column>
-						<h:column footerClass="remove-column" headerClass="remove-column">
-							<h:commandLink action="#{_collection.remove(_item)}" styleClass="remove-button" />
-						</h:column>
-					</h:dataTable>
-					<h:panelGrid columnClasses=",remove-column" columns="3" styleClass="data-table-footer">
-						<h:selectOneMenu converter="#{functionBean.converter}" id="memberBeanMemberFunktionenSelect"
-							value="#{requestScope['memberBeanMemberFunktionenSelect']}">
-							<f:selectItem noSelectionOption="true"/>
-							<f:selectItems itemLabel="#{forgeview:display(_item)}" itemValue="#{_item}" value="#{functionBean.all}"
-								var="_item" />
-						</h:selectOneMenu>
-						<h:commandLink action="#{_collection.add(requestScope['memberBeanMemberFunktionenSelect'])}"
-							id="memberBeanMemberFunktionenAdd"
-							onclick="if (document.getElementById('create:memberBeanMemberFunktionenSelect').selectedIndex &lt; 1) { alert('Must select a Function'); return false; }"
-							styleClass="add-button" />
-						<h:outputText />
-					</h:panelGrid>
+					<p:selectCheckboxMenu id="memberBeanMemberFunktionen" value="#{memberBean.memberFunctions}" multiple="true"
+						converter="#{functionBean.converter}" title="#{configurationBean.getDescription('funktionen')}">
+						<f:selectItems value="#{functionBean.allFunctions}" var="f" itemLabel="#{f.function}(#{f.key})"
+							itemValue="#{f.idStr}" itemDescription="#{f.toString()}" />
+						<f:ajax />
+					</p:selectCheckboxMenu>
 				</h:panelGroup>
 				<h:outputText />
 
-				<h:outputLabel for="memberBeanMemberVollzahlerPanel" value="Vollzahler:" />
-				<h:panelGroup id="memberBeanMemberVollzahlerPanel">
-					<h:selectOneMenu value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" rendered="#{memberBean.member.vollzahler != null}">
-						<f:selectItem noSelectionOption="true"/>
-						<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}"/>
-						<f:ajax render="memberBeanMemberVollzahlerPanel"/>
-					</h:selectOneMenu>
-					<h:panelGroup rendered="#{memberBean.member.vollzahler == null}">
-						<rich:select id="memberBeanMemberVollzahler" tabindex="0" styleClass="fullwidth manual"
-							p:placeholder="Geschwisterkind, Suche nach Name, Vorname..." title="Das aktive(!) Geschwisterkind bitte hier auswählen.." 
-							value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}" enableManualInput="false"
-							selectFirst="false" mode="ajax" minChars="3" autocompleteMethod="#{memberBean.filterMembers}" var="b" itemValue="#{b.idStr}"
-							itemLabel="#{b}" minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-							<f:selectItems value="#{memberBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}" />
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.selectMemberVollzahler}"
-								render="memberBeanMemberVollzahlerPanel" />
-						</rich:select>
-					</h:panelGroup>
+				<h:outputLabel for="memberBeanMemberVollzahler" value="Vollzahler:" />
+				<h:panelGroup id="memberBeanMemberVollzahler">
+					<p:autoComplete value="#{memberBean.member.vollzahler}" converter="#{memberBean.converter}"
+						completeMethod="#{members.filtered}" var="m" itemLabel="#{m}" itemValue="#{m.idStr}" maxResults="20"
+						 placeholder="#{configurationBean.getValue('vollzahler')}" title="#{configurationBean.getDescription('vollzahler')}">
+						<p:ajax event="itemSelect" process="@this" update="memberBeanMemberVollzahler" />
+					</p:autoComplete>
 					<h:message for="memberBeanMemberVollzahler" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="memberBeanMemberSiblingsPanel" value="Kinder:" />
 				<h:panelGroup id="memberBeanMemberSiblingsPanel">
-					<ui:param name="_collection" value="#{memberBean.member.siblings}" />
-					<h:dataTable id="memberBeanMemberSiblings" styleClass="data-table" value="#{forgeview:asList(_collection)}"
+					<h:dataTable id="memberBeanMemberSiblings" styleClass="data-table" value="#{memberBean.member.siblings}"
 						var="_item">
 						<h:column>
 							<f:facet name="header">
@@ -284,73 +238,68 @@
 						</h:column>
 					</h:dataTable>
 					<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer">
-						<rich:select id="memberBeanMemberSiblingsSelect" styleClass="fullwidth manual" 
-							p:placeholder="Kinder, Suche nach Name, Vorname..." title="Kinder des Erziehungsberechtigten bitte hier auswählen.."
-							mode="ajax" minChars="3" selectFirst="false" autocompleteMethod="#{memberBean.filterMembers}" 
-							var="b" itemLabel="#{b}" itemValue="#{b.id}" 
-							minListHeight="1" maxListHeight="100" listWidth="35em" showButton="false">
-							<f:selectItem noSelectionOption="true"/>
-							<f:selectItems value="#{paymentBean.filteredMembers}" var="mem" itemLabel="#{mem}" itemValue="#{mem.idStr}"/>
-							<a4j:ajax event="selectitem" immediate="true" execute="@this" listener="#{memberBean.addMemberSibling}" render="memberBeanMemberSiblingsPanel" />
-						</rich:select>
-						<h:message for="memberBeanMemberSiblingsSelect"/>
+						<p:autoComplete id="memberBeanMemberSiblingsSelect" value="#{memberBean.alwaysNull}"
+							converter="#{memberBean.converter}" completeMethod="#{members.filtered}" var="m" itemLabel="#{m.toShortString()}"
+							itemValue="#{m.idStr}" pass:placeholder="Kinder, Suche nach Name, Vorname..."
+							  placeholder="#{configurationBean.getValue('siblings')}" title="#{configurationBean.getDescription('siblings')}" maxResults="20">
+							<p:ajax event="itemSelect" process="@this" listener="#{memberBean.addMemberSibling}"
+								update="memberBeanMemberSiblingsPanel" />
+						</p:autoComplete>
+						<h:message for="memberBeanMemberSiblingsSelect" />
 					</h:panelGrid>
 				</h:panelGroup>
 				<h:outputText />
 
 			</h:panelGrid>
 
-			<h:outputStylesheet>
-			.boolean { width: 15%; }
-			</h:outputStylesheet>
-			<h:panelGrid columns="8" style="width: 100%;" columnClasses="boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean">
+			<h:panelGrid columns="8" columnClasses="boolean,boolean,boolean,boolean,boolean,boolean,boolean,boolean">
 				<h:outputLabel for="memberBeanMemberAktiv" value="Aktiv:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberAktiv" value="#{memberBean.member.aktiv}" />
+					<h:selectBooleanCheckbox id="memberBeanMemberAktiv" value="#{memberBean.member.aktiv}" title="#{configurationBean.getDescription('aktiv')}" />
 					<h:message for="memberBeanMemberAktiv" styleClass="error" />
 				</h:panelGroup>
 				<h:outputLabel for="memberBeanMemberAktivExtern" value="AktivExtern:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberAktivExtern" value="#{memberBean.member.aktivExtern}" />
+					<h:selectBooleanCheckbox id="memberBeanMemberAktivExtern" value="#{memberBean.member.aktivExtern}" title="#{configurationBean.getDescription('aktivExtern')}" />
 					<h:message for="memberBeanMemberAktivExtern" styleClass="error" />
 				</h:panelGroup>
 				<h:outputLabel for="memberBeanMemberTrail" value="Trail:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberTrail" value="#{memberBean.member.trail}" />
+					<h:selectBooleanCheckbox id="memberBeanMemberTrail" value="#{memberBean.member.trail}" title="#{configurationBean.getDescription('trail')}" />
 					<h:message for="memberBeanMemberTrail" styleClass="error" />
 				</h:panelGroup>
 				<h:outputLabel for="memberBeanMemberGilde" value="Gilde:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberGilde" value="#{memberBean.member.gilde}" />
+					<h:selectBooleanCheckbox id="memberBeanMemberGilde" value="#{memberBean.member.gilde}" title="#{configurationBean.getDescription('gilde')}" />
 					<h:message for="memberBeanMemberGilde" styleClass="error" />
 				</h:panelGroup>
 				<h:outputLabel for="memberBeanMemberAltER" value="Alt ER:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberAltER" value="#{memberBean.member.altER}" />
+					<h:selectBooleanCheckbox id="memberBeanMemberAltER" value="#{memberBean.member.altER}" title="#{configurationBean.getDescription('altER')}" />
 					<h:message for="memberBeanMemberAltER" styleClass="error" />
 				</h:panelGroup>
 				<h:outputLabel for="memberBeanMemberInfoMail" value="InfoMail:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberInfoMail" value="#{memberBean.member.infoMail}" />
+					<h:selectBooleanCheckbox id="memberBeanMemberInfoMail" value="#{memberBean.member.infoMail}" title="#{configurationBean.getDescription('infoMail')}" />
 					<h:message for="memberBeanMemberInfoMail" styleClass="error" />
 				</h:panelGroup>
 				<h:outputLabel for="memberBeanMemberSupport" value="Mitarb.:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberSupport" value="#{memberBean.member.support}" />
+					<h:selectBooleanCheckbox id="memberBeanMemberSupport" value="#{memberBean.member.support}" title="#{configurationBean.getDescription('support')}" />
 					<h:message for="memberBeanMemberSupport" styleClass="error" />
 				</h:panelGroup>
 				<h:outputLabel for="memberBeanMemberFree" value="Frei:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberFree" value="#{memberBean.member.free}" title="Zahlungsbefreit"/>
+					<h:selectBooleanCheckbox id="memberBeanMemberFree" value="#{memberBean.member.free}" title="#{configurationBean.getDescription('free')}" />
 					<h:message for="memberBeanMemberFree" styleClass="error" />
 				</h:panelGroup>
 				<h:outputLabel for="memberBeanMemberDead" value="Verstorben:" />
 				<h:panelGroup>
-					<h:selectBooleanCheckbox id="memberBeanMemberDead" value="#{memberBean.member.dead}" title="Verstorben"/>
+					<h:selectBooleanCheckbox id="memberBeanMemberDead" value="#{memberBean.member.dead}" title="#{configurationBean.getDescription('dead')}" />
 					<h:message for="memberBeanMemberDead" styleClass="error" />
 				</h:panelGroup>
 			</h:panelGrid>
-			<h:panelGrid columns="8" style="width: 100%;">
+			<h:panelGrid columns="8">
 				<h:outputLabel value="Erstellt:" />
 				<h:outputText value="#{memberBean.member.created}" converter="javax.faces.DateTime" />
 				<h:outputLabel value="Von:" />

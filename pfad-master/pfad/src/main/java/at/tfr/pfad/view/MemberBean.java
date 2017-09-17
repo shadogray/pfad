@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +49,7 @@ import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.util.CollectionUtil;
 import at.tfr.pfad.view.ViewUtils.Month;
 import at.tfr.pfad.view.validator.MemberValidator;
 import at.tfr.pfad.view.validator.ValidationResult;
@@ -63,7 +66,7 @@ import at.tfr.pfad.view.validator.ValidationResult;
 @Named
 @Stateful
 @ViewScoped
-public class MemberBean extends BaseBean implements Serializable {
+public class MemberBean extends BaseBean<Member> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -100,10 +103,6 @@ public class MemberBean extends BaseBean implements Serializable {
 
 	public void retrieve() {
 
-		if (FacesContext.getCurrentInstance().isPostback()) {
-			return;
-		}
-
 		if (this.id == null) {
 			this.member = getMemberExample();
 		} else {
@@ -129,6 +128,14 @@ public class MemberBean extends BaseBean implements Serializable {
 	/*
 	 * support updating and deleting Member entities
 	 */
+	
+	public Set<Function> getMemberFunctions() {
+		return new TreeSet<Function>(member.getFunktionen());
+	}
+	
+	public void setMemberFunctions(Set<Function> functions) {
+		CollectionUtil.synchronize(member.getFunktionen(), functions);
+	}
 
 	@Transactional
 	public String update() {

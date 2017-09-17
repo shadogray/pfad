@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -46,7 +47,7 @@ import at.tfr.pfad.model.Configuration_;
 @Named
 @Stateful
 @ViewScoped
-public class ConfigurationBean extends BaseBean implements Serializable {
+public class ConfigurationBean extends BaseBean<Configuration> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -58,7 +59,13 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 	 */
 
 	private Long id;
+	private List<Configuration> allConfigs;
 
+	@PostConstruct
+	public void init() {
+		allConfigs = configRepo.findAll();
+	}
+	
 	public Long getId() {
 		return this.id;
 	}
@@ -282,5 +289,19 @@ public class ConfigurationBean extends BaseBean implements Serializable {
 
 	public List<Role> getRoles() {
 		return Arrays.asList(Role.values());
+	}
+	
+	public List<Configuration> getAllConfigs() {
+		return allConfigs;
+	}
+	
+	public String getValue(String key) {
+		return allConfigs.stream().filter(c -> ConfigurationType.simple.equals(c.getType()) && c.getCkey().equalsIgnoreCase(key))
+				.map(Configuration::getCvalue).findAny().orElse("");
+	}
+
+	public String getDescription(String key) {
+		return allConfigs.stream().filter(c -> ConfigurationType.simple.equals(c.getType()) && c.getCkey().equalsIgnoreCase(key))
+				.map(Configuration::getDescription).findAny().orElse("");
 	}
 }

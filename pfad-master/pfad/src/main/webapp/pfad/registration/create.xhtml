@@ -8,7 +8,7 @@
 
 	<f:metadata>
 		<o:viewParam name="id" value='#{registrationBean.id}' />
-		<f:event type="preRenderView" listener='#{registrationBean.retrieve}' />
+		<f:viewAction action="#{registrationBean.retrieve()}" />
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="Anmeldung bearbeiten" />

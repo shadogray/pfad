@@ -49,6 +49,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -817,5 +818,9 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	
 	public void setDead(boolean dead) {
 		this.dead = dead;
+	}
+	
+	public DateTime geburtstag() {
+		return new DateTime(gebJahr, gebMonat > 0 ? gebMonat : 1, gebTag > 0 ? gebTag : 1, 0, 0);
 	}
 }

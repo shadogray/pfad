@@ -49,7 +49,7 @@ import at.tfr.pfad.model.Squad_;
 @Named
 @Stateful
 @ViewScoped
-public class SquadBean extends BaseBean implements Serializable {
+public class SquadBean extends BaseBean<Squad> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

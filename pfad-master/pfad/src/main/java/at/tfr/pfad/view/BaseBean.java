@@ -25,6 +25,7 @@ import javax.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
+import org.primefaces.event.SelectEvent;
 import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.dao.BookingRepository;
@@ -43,7 +44,7 @@ import at.tfr.pfad.model.Training;
  * @author u0x27vo
  *
  */
-public abstract class BaseBean implements Serializable {
+public abstract class BaseBean<T> implements Serializable {
 
 	protected Logger log = Logger.getLogger(getClass());
 	
@@ -162,6 +163,7 @@ public abstract class BaseBean implements Serializable {
 	protected List<Member> filteredPayers = new ArrayList<>();
 	protected List<Booking> filteredBookings = new ArrayList<>();
 	protected List<Payment> filteredPayments = new ArrayList<>();
+	protected T alwaysNull;
 
 	{
 		log.debug("inited");
@@ -429,18 +431,11 @@ public abstract class BaseBean implements Serializable {
 		}
 	}
 
-	public void addMemberSibling(AjaxBehaviorEvent event) {
+	public void addMemberSibling(SelectEvent event) {
 		log.debug("selectMemberSibling: " + event);
-		UISelect uiSelect = (UISelect) event.getSource();
-		String val = (String)uiSelect.getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			memberToAdd = null;
-		} else {
-			memberToAdd = findMemberById(Long.valueOf(val));
+		if (event.getObject() instanceof Member) {
+			memberToAdd = findMemberById(((Member)event.getObject()).getId());
 			member.getSiblings().add(memberToAdd);
-			uiSelect.setSubmittedValue("");
-			uiSelect.setValue(null);
-			uiSelect.setLocalValueSet(false);
 		}
 	}
 
@@ -487,5 +482,13 @@ public abstract class BaseBean implements Serializable {
 	
 	public SessionContext getSessionContext() {
 		return sessionContext;
+	}
+	
+	public T getAlwaysNull() {
+		return alwaysNull;
+	}
+	
+	public void setAlwaysNull(T alwaysNull) {
+		//this.alwaysNull = alwaysNull;
 	}
 }

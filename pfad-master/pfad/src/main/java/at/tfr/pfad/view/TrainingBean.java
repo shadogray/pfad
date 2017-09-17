@@ -50,7 +50,7 @@ import at.tfr.pfad.model.Training_;
 @Named
 @Stateful
 @ViewScoped
-public class TrainingBean extends BaseBean implements Serializable {
+public class TrainingBean extends BaseBean<Training> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

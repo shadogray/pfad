@@ -32,10 +32,9 @@ public class MemberValidator {
 	public static String INAKTIV_IM_TRUPP = "Inaktives Mitlgied im Trupp";
 	public static String KEIN_TRUPP_FUNKTION = "Weder Trupp noch Funktion";
 	public static String INAKTIV_ALS_LEITER = "Inaktiv als Leiter/Assistent";
-	
+
 	@Inject
 	private SquadRepository squadRepo;
-	
 
 	public boolean isGrinsExportable(Member m, Collection<Member> leaders) {
 		return m.isAktiv() || leaders.contains(m)
@@ -45,29 +44,36 @@ public class MemberValidator {
 	public List<ValidationResult> validate(Member member, final Collection<Member> leaders) {
 		return validate(member, "", leaders);
 	}
-	
+
 	public List<ValidationResult> validate(Member member, final String funktionen, final Collection<Member> leaders) {
 		List<ValidationResult> results = new ArrayList<>();
-		
-		List<Function> funcExp = member.getFunktionen().stream().filter(f->f.getExportReg()).collect(Collectors.toList());
+
+		List<Function> funcExp = member.getFunktionen().stream().filter(f -> f.getExportReg())
+				.collect(Collectors.toList());
 		if (!member.isAktiv() && !funcExp.isEmpty()) {
-			results.add(new ValidationResult(false, "Inaktiv mit "+funcExp));
+			results.add(new ValidationResult(false, "Inaktiv mit " + funcExp));
 		}
-		
+
 		if (!member.isAktiv() && leaders.contains(member)) {
-			results.add(new ValidationResult(false, INAKTIV_ALS_LEITER+": "+squadRepo.findByResponsible(member)));
+			results.add(new ValidationResult(false, INAKTIV_ALS_LEITER + ": " + squadRepo.findByResponsible(member)));
 		}
-		
-		if (member.isAktiv() && member.getVollzahler() != null
-				&& member.getVollzahler().getVollzahler() != null) {
-			results.add(new ValidationResult(false, "Vollzahler ist KEIN Vollzahler: "+member.getVollzahler()));
+
+		if (member.isAktiv() && member.getVollzahler() != null && member.getVollzahler().getVollzahler() != null) {
+			results.add(new ValidationResult(false, "Vollzahler ist KEIN Vollzahler: " + member.getVollzahler()
+					+ " (dessen Vollzahler: " + member.getVollzahler().getVollzahler() + ")"));
 		}
-		
+
 		if (member.isAktiv() && member.getVollzahler() != null
 				&& !(member.getVollzahler().isAktiv() || member.getVollzahler().isAktivExtern())) {
-			results.add(new ValidationResult(false, "Vollzahler INAKTIV: "+member.getVollzahler()));
+			results.add(new ValidationResult(false, "Vollzahler INAKTIV: " + member.getVollzahler()));
 		}
-		
+
+		if (member.isAktiv() && member.getVollzahler() != null
+				&& member.getVollzahler().geburtstag().isBefore(member.geburtstag())) {
+			results.add(new ValidationResult(false,
+					"Vollzahler SOLL älter sein, als das ermäßigte Mitglied: " + member.getVollzahler()));
+		}
+
 		if (isGrinsExportable(member, leaders)) {
 			if (member.getGebJahr() < 1900 || member.getGebMonat() < 1 || member.getGebTag() < 1) {
 				results.add(new ValidationResult(false, GEB_UNVOLL));
@@ -79,16 +85,16 @@ public class MemberValidator {
 			if (!member.isAktiv()) {
 				results.add(new ValidationResult(false, INAKTIV_IM_TRUPP));
 			}
-			
+
 			SquadType type = member.getTrupp().getType();
 			if (type == null) {
 				results.add(new ValidationResult(false, "INVALID SquadType==Null"));
 			} else {
-				if ((new DateTime().getYear() - member.getGebJahr()) < type.getMin()-1) {
-					results.add(new ValidationResult(false, ZU_JUNG+type));
+				if ((new DateTime().getYear() - member.getGebJahr()) < type.getMin() - 1) {
+					results.add(new ValidationResult(false, ZU_JUNG + type));
 				}
-				if ((new DateTime().getYear() - member.getGebJahr()) > type.getMax()+1) {
-					results.add(new ValidationResult(false, ZU_ALT+type));
+				if ((new DateTime().getYear() - member.getGebJahr()) > type.getMax() + 1) {
+					results.add(new ValidationResult(false, ZU_ALT + type));
 				}
 			}
 		} else {
@@ -96,7 +102,7 @@ public class MemberValidator {
 				results.add(new ValidationResult(false, KEIN_TRUPP_FUNKTION));
 			}
 		}
-		
+
 		return results;
 	}
 
