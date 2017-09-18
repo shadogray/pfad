@@ -766,7 +766,7 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	}
 
 	public String toUiString() {
-		StringBuilder result = new StringBuilder(getClass().getSimpleName()).append(":\n");
+		StringBuilder result = new StringBuilder("Person:\n");
 		if (bvKey != null && !bvKey.trim().isEmpty())
 			result.append("\tBV-Key: \t").append(bvKey).append("\n");
 		result.append("\nName:   \n");
