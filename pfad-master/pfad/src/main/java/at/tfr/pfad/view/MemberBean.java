@@ -83,6 +83,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	private Boolean exampleSupport;
 	private Boolean exampleInfoMail;
 	private List<Function> exampleFunctions;
+	private List<Squad> exampleTrupps;
 	private Collection<ValidationResult> validationResults = new ArrayList<>();
 
 	/*
@@ -135,6 +136,11 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	
 	public void setMemberFunctions(Set<Function> functions) {
 		CollectionUtil.synchronize(member.getFunktionen(), functions);
+		updateMemberOnChange();
+	}
+	
+	public void updateMemberOnChange() {
+			member.setAktiv(member.getTrupp() != null || member.getFunktionen().stream().anyMatch(f -> f.getExportReg()));
 	}
 
 	@Transactional
@@ -322,6 +328,10 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 		if (trupp != null) {
 			predicatesList.add(builder.equal(root.get(Member_.trupp), trupp));
 		}
+		
+		if (exampleTrupps != null && !exampleTrupps.isEmpty()) {
+			predicatesList.add(root.get(Member_.trupp).in(exampleTrupps));
+		}
 
 		if (getExampleFunctions() != null && !getExampleFunctions().isEmpty()) {
 			predicatesList.add(root.join(Member_.funktionen).in(
@@ -381,6 +391,14 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	
 	public void setExampleFunctions(List<Function> exampleFunctions) {
 		this.exampleFunctions = exampleFunctions;
+	}
+	
+	public List<Squad> getExampleTrupps() {
+		return exampleTrupps;
+	}
+	
+	public void setExampleTrupps(List<Squad> exampleTrupps) {
+		this.exampleTrupps = exampleTrupps;
 	}
 	
 	/*

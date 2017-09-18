@@ -172,9 +172,11 @@
 
 				<h:outputLabel for="memberBeanMemberTrupp" value="Trupp:" />
 				<h:panelGroup>
-					<h:selectOneMenu converter="#{squadBean.converter}" id="memberBeanMemberTrupp" value="#{memberBean.member.trupp}" title="#{configurationBean.getDescription('trupp')}">
+					<h:selectOneMenu converter="#{squadBean.converter}" id="memberBeanMemberTrupp" value="#{memberBean.member.trupp}" immediate="true" 
+						title="#{configurationBean.getDescription('trupp')}">
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems itemLabel="#{s}" itemValue="#{s.idStr}" value="#{squadBean.all}" var="s" />
+						<f:ajax listener="#{memberBean.updateMemberOnChange()}" render="@this memberBeanMemberAktiv"/>
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberTrupp" styleClass="error" />
 				</h:panelGroup>
@@ -183,10 +185,10 @@
 				<h:outputLabel for="memberBeanMemberFunktionen" value="Funktionen:" />
 				<h:panelGroup>
 					<p:selectCheckboxMenu id="memberBeanMemberFunktionen" value="#{memberBean.memberFunctions}" multiple="true"
-						converter="#{functionBean.converter}" title="#{configurationBean.getDescription('funktionen')}">
+						converter="#{functionBean.converter}" title="#{configurationBean.getDescription('funktionen')}" immediate="true">
 						<f:selectItems value="#{functionBean.allFunctions}" var="f" itemLabel="#{f.function}(#{f.key})"
 							itemValue="#{f.idStr}" itemDescription="#{configurationBean.getDescription(f.key)}" />
-						<f:ajax />
+						<f:ajax render="memberBeanMemberAktiv" />
 					</p:selectCheckboxMenu>
 				</h:panelGroup>
 				<h:outputText />

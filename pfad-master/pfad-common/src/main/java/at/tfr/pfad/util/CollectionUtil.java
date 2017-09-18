@@ -10,13 +10,14 @@ public class CollectionUtil {
 	 * @param target e.g. the persistent ManyToOne or ManyToMany reference 
 	 * @param newSet the new reference set of elements to establish
 	 */
-	public static <T> void synchronize(Collection<T> target, Collection<T> newSet) {
+	public static <T> Collection<T> synchronize(Collection<T> target, Collection<T> newSet) {
 		Iterator<T> iter = target.iterator();
 		while (iter.hasNext()) {
 			T next = iter.next();
 			if (!newSet.contains(next))
 				iter.remove();
 		}
-		newSet.iterator().forEachRemaining(f -> { if (!target.contains(f)) newSet.add(f); });
+		newSet.iterator().forEachRemaining(f -> { if (!target.contains(f)) target.add(f); });
+		return target;
 	}
 }

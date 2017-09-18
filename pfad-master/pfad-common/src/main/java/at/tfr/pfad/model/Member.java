@@ -568,8 +568,8 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		return this.trupp;
 	}
 
-	public void setTrupp(final Squad Trupp) {
-		this.trupp = Trupp;
+	public void setTrupp(final Squad trupp) {
+		this.trupp = trupp;
 	}
 
 	@Pfad

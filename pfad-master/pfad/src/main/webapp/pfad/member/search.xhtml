@@ -69,18 +69,16 @@
 						
 						<h:outputLabel for="squadBeanExampleTrupp" value="Trupp:" />
 						<h:panelGroup>
-							<p:selectOneMenu converter="#{squadBean.converter}" id="squadBeanExampleTrupp"
-								value="#{memberBean.example.trupp}">
-								<f:selectItem noSelectionOption="true"/>
+							<p:selectCheckboxMenu id="squadBeanExampleTrupp" value="#{memberBean.exampleTrupps}" converter="#{squadBean.converter}" multiple="true" >
 								<f:selectItems itemLabel="#{_item}" itemValue="#{_item.idStr}" value="#{squadBean.all}" var="_item" />
 								<f:ajax listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
-							</p:selectOneMenu>
+							</p:selectCheckboxMenu>
 							<h:message for="squadBeanExampleTrupp" styleClass="error" />
 						</h:panelGroup>
 
 						<h:outputLabel for="mbeFunktionen" value="Funktion:" />
 						<h:panelGroup>
-							<p:selectCheckboxMenu id="mbeFunktionen"  value="#{memberBean.exampleFunctions}" multiple="true" converter="#{functionBean.converter}">
+							<p:selectCheckboxMenu id="mbeFunktionen"  value="#{memberBean.exampleFunctions}" converter="#{functionBean.converter}" multiple="true" >
 								<f:selectItems value="#{functionBean.allFunctions}" var="f" itemLabel="#{f.name}" itemValue="#{f.idStr}" itemDescription="#{configurationBean.getDescription(f.key)}" />
 								<f:ajax listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 							</p:selectCheckboxMenu>
@@ -143,80 +141,82 @@
 				</h:panelGroup>
 			</f:validateBean>
 
-			<h:dataTable id="memberBeanPageItems" styleClass="data-table" value="#{memberBean.dataModel}" var="_item" >
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="Nr" />
-					</f:facet>
-					<h:outputText name="id" value="#{memberBean.dataModel.rowIndex+1}" />
-				</h:column>
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="BV Key" />
-					</f:facet>
-					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemBVKey" value="#{_item.BVKey}" />
-					</h:link>
-				</h:column>
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="Name" />
-					</f:facet>
-					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemName" value="#{_item.name}" />
-					</h:link>
-				</h:column>
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="Vorname" />
-					</f:facet>
-					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemVorname" value="#{_item.vorname}" />
-					</h:link>
-				</h:column>
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="Aktiv" />
-					</f:facet>
-					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
-					</h:link>
-				</h:column>
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="Frei" />
-					</f:facet>
-					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemFrei" value="#{_item.free}" />
-					</h:link>
-				</h:column>
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="Trupp" />
-					</f:facet>
-					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemTrupp" value="#{_item.trupp.name}" />
-					</h:link>
-				</h:column>
-				<h:column>
-					<f:facet name="header">
-						<h:outputText value="GebJahr" />
-					</f:facet>
-					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemJahr" value="#{_item.gebJahr}" />
-					</h:link>
-				</h:column>
-			</h:dataTable>
-			<ui:include src="/resources/scaffold/paginator.xhtml">
-				<ui:param name="paginatorBean" value='#{memberBean}' />
-			</ui:include>
+			<h:panelGroup id="memberBeanPageItems">
+				<h:dataTable id="memberBeanPageItemsTable" styleClass="data-table" value="#{memberBean.dataModel}" var="_item" >
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Nr" />
+						</f:facet>
+						<h:outputText name="id" value="#{memberBean.dataModel.rowIndex+1}" />
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="BV Key" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemBVKey" value="#{_item.BVKey}" />
+						</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Name" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemName" value="#{_item.name}" />
+						</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Vorname" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemVorname" value="#{_item.vorname}" />
+						</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Aktiv" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
+						</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Frei" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemFrei" value="#{_item.free}" />
+						</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Trupp" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemTrupp" value="#{_item.trupp.name}" />
+						</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="GebJahr" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemJahr" value="#{_item.gebJahr}" />
+						</h:link>
+					</h:column>
+				</h:dataTable>
+				<ui:include src="/resources/scaffold/paginator.xhtml">
+					<ui:param name="paginatorBean" value='#{memberBean}' />
+				</ui:include>
+			</h:panelGroup>
 		</h:form>
 
 	</ui:define>
