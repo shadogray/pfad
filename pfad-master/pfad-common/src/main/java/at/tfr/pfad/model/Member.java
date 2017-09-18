@@ -765,6 +765,39 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 		return result;
 	}
 
+	public String toUiString() {
+		StringBuilder result = new StringBuilder(getClass().getSimpleName()).append(":\n");
+		if (bvKey != null && !bvKey.trim().isEmpty())
+			result.append("\tBV-Key: \t").append(bvKey).append("\n");
+		result.append("\nName:   \n");
+		result.append("\tAnrede:  \t").append(anrede).append("\n");
+		result.append("\tTitel:   \t").append(titel).append("\n");
+		result.append("\tName:    \t").append(name).append("\n");
+		result.append("\tVorname: \t").append(vorname).append("\n");
+		
+		// Address
+		result.append("\nAdresse:\n");
+		result.append("\tStrasse: \t").append(strasse).append("\n");
+		result.append("\tPLZ:     \t").append(plz).append("\n");
+		result.append("\tOrt:     \t").append(ort).append("\n");
+
+		// Communications
+		result.append("\nKontakt:\n");
+		result.append("\tEmail:   \t").append(email).append("\n");
+		result.append("\tTelefon: \t").append(telefon).append("\n");
+		
+		// GebDatum
+		result.append("\nPersönliches:\n");
+		result.append("\tGebTag:  \t").append(geburtstag().toString("dd.MM.yyyy")).append("\n");
+		result.append("\tGeschlecht:\t").append(geschlecht).append("\n");
+		result.append("\tAktiv:   \t").append(aktiv).append("\n");
+		result.append("\tAktivExtern:\t").append(aktivExtern).append("\n");
+		result.append("\tTrupp:   \t").append(trupp).append("\n");
+		result.append("\tVollzahler:\t").append(Vollzahler).append("\n");
+		
+		return result.toString();
+	}
+
 	/**
 	 * Inverse relationship, add will not be persisted.
 	 * 

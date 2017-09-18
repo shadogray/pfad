@@ -147,13 +147,13 @@
 						<f:facet name="header">
 							<h:outputText value="Nr" />
 						</f:facet>
-						<h:outputText name="id" value="#{memberBean.dataModel.rowIndex+1}" />
+						<h:outputText name="id" value="#{memberBean.dataModel.rowIndex+1}" title="#{_item.toUiString()}" />
 					</h:column>
 					<h:column>
 						<f:facet name="header">
 							<h:outputText value="BV Key" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" >
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemBVKey" value="#{_item.BVKey}" />
 						</h:link>
@@ -162,7 +162,7 @@
 						<f:facet name="header">
 							<h:outputText value="Name" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" title="#{_item.toUiString()}">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemName" value="#{_item.name}" />
 						</h:link>
@@ -171,7 +171,7 @@
 						<f:facet name="header">
 							<h:outputText value="Vorname" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" title="#{_item.toUiString()}">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemVorname" value="#{_item.vorname}" />
 						</h:link>
