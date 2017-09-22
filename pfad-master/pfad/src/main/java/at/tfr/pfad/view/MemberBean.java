@@ -152,6 +152,19 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 		
 		log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
 
+		if (member.getSiblings() != null && !member.getSiblings().isEmpty()) {
+			List<Member> siblings = new ArrayList<>();
+			siblings.addAll(member.getSiblings());
+			member.getSiblings().clear();
+			siblings.iterator().forEachRemaining(s -> {
+				s = memberRepo.findBy(s.getId());
+				if (!s.getParents().contains(member)) {
+					s.getParents().add(member);
+					member.getSiblings().add(s);
+				}
+			});
+		}
+		
 		try {
 			if (id == null) {
 				entityManager.persist(member);
