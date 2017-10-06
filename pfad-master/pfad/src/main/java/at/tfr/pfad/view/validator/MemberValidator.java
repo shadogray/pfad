@@ -69,7 +69,7 @@ public class MemberValidator {
 		}
 
 		if (member.isAktiv() && member.getVollzahler() != null
-				&& member.getVollzahler().geburtstag().isBefore(member.geburtstag())) {
+				&& member.getVollzahler().geburtstag().isAfter(member.geburtstag())) {
 			results.add(new ValidationResult(false,
 					"Vollzahler SOLL älter sein, als das ermäßigte Mitglied: " + member.getVollzahler()));
 		}
