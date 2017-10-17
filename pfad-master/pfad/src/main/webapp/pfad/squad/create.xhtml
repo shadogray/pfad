@@ -55,7 +55,7 @@
 					<h:message for="squadBeanSquadLogin" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
-				<h:outputLabel for="squadBeanSquadLeaderFemale" value="LeaderFemale:" />
+				<h:outputLabel for="squadBeanSquadLeaderFemale" value="Leiterin:" />
 				<h:panelGroup>
 					<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanSquadLeaderFemale"
 						value="#{squadBean.squad.leaderFemale}">
@@ -66,7 +66,7 @@
 					<h:message for="squadBeanSquadLeaderFemale" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
-				<h:outputLabel for="squadBeanSquadLeaderMale" value="LeaderMale:" />
+				<h:outputLabel for="squadBeanSquadLeaderMale" value="Leiter:" />
 				<h:panelGroup>
 					<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanSquadLeaderMale"
 						value="#{squadBean.squad.leaderMale}">
@@ -77,7 +77,7 @@
 					<h:message for="squadBeanSquadLeaderMale" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
-				<h:outputLabel for="squadBeanSquadAssistants" value="Assistants:" />
+				<h:outputLabel for="squadBeanSquadAssistants" value="Assistenten:" />
 				<h:panelGroup>
 					<ui:param name="_collection" value="#{squadBean.squad.assistants}" />
 					<h:dataTable id="squadBeanSquadAssistants" styleClass="data-table" value="#{forgeview:asList(_collection)}"

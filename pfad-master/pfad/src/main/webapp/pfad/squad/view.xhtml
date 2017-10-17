@@ -13,7 +13,7 @@
 	<ui:param name="pageTitle" value="View Squad" />
 
 	<ui:define name="header">
-		Squad
+		Trupp
 	</ui:define>
 
 	<ui:define name="subheader">
@@ -32,14 +32,14 @@
 			<h:outputLabel for="squadBeanSquadLogin" value="Login:" />
 			<h:outputText id="squadBeanSquadLogin" value="#{squadBean.squad.login}" />
 			<h:outputText />
-			<h:outputLabel for="squadBeanSquadLeaderFemale" value="LeaderFemale:" />
+			<h:outputLabel for="squadBeanSquadLeaderFemale" value="Leiterin:" />
 			<h:link id="squadBeanSquadLeaderFemale" outcome="/member/view" rendered="#{!empty squadBean.squad.leaderFemale}"
 				value="#{squadBean.squad.leaderFemale}">
 				<f:param name="id" value="#{squadBean.squad.leaderFemale.id}" />
 			</h:link>
 			<h:outputText value="" rendered="#{empty squadBean.squad.leaderFemale}" />
 			<h:outputText />
-			<h:outputLabel for="squadBeanSquadLeaderMale" value="LeaderMale:" />
+			<h:outputLabel for="squadBeanSquadLeaderMale" value="Leiter:" />
 			<h:link id="squadBeanSquadLeaderMale" outcome="/member/view" rendered="#{!empty squadBean.squad.leaderMale}"
 				value="#{squadBean.squad.leaderMale}">
 				<f:param name="id" value="#{squadBean.squad.leaderMale.id}" />
@@ -60,7 +60,7 @@
 			</h:panelGroup>
 			<h:outputText />
 
-			<h:outputLabel for="squadBeanSquadAssistants" value="Assistants:" />
+			<h:outputLabel for="squadBeanSquadAssistants" value="Assistenten:" />
 			<h:dataTable id="squadBeanSquadAssistants" styleClass="data-table"
 				value="#{squadBean.assistants}" var="_item">
 				<h:column>
@@ -125,7 +125,7 @@
 				</h:column>
 			</h:dataTable>
 			<h:outputText />
-			<h:outputLabel for="squadBeanSquadScouts" value="Scouts:" />
+			<h:outputLabel for="squadBeanSquadScouts" value="Kinder:" />
 			<h:dataTable id="squadBeanSquadScouts" styleClass="data-table"
 				value="#{squadBean.scouts}" var="_item">
 				<h:column>
