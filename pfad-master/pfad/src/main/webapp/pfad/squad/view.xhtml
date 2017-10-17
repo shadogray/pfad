@@ -46,6 +46,20 @@
 			</h:link>
 			<h:outputText value="" rendered="#{empty squadBean.squad.leaderMale}" />
 			<h:outputText />
+
+			<h:outputText />
+			<h:panelGroup styleClass="buttons">
+				<h:form>
+					<h:link value="View All" outcome="search" styleClass="btn btn-primary" />
+					<h:link value="Edit" outcome="create" includeViewParams="true" styleClass="btn btn-primary"
+						disabled="#{!squadBean.updateAllowed}" />
+					<h:link value="Neu" outcome="create" styleClass="btn btn-primary" />
+					<h:commandLink value="Download" action="#{downloadBean.downloadSquad(squadBean.squad)}" styleClass="btn btn-primary"
+						disabled="#{!squadBean.updateAllowed}" rendered="#{squadBean.updateAllowed}" />
+				</h:form>
+			</h:panelGroup>
+			<h:outputText />
+
 			<h:outputLabel for="squadBeanSquadAssistants" value="Assistants:" />
 			<h:dataTable id="squadBeanSquadAssistants" styleClass="data-table"
 				value="#{squadBean.assistants}" var="_item">
@@ -178,16 +192,6 @@
 			<h:outputText />
 		</h:panelGrid>
 
-		<h:form>
-			<div class="buttons">
-				<h:link value="View All" outcome="search" styleClass="btn btn-primary" />
-				<h:link value="Edit" outcome="create" includeViewParams="true" styleClass="btn btn-primary"
-					disabled="#{!squadBean.updateAllowed}" />
-				<h:link value="Neu" outcome="create" styleClass="btn btn-primary" />
-				<h:commandLink value="Download" action="#{downloadBean.downloadSquad(squadBean.squad)}" styleClass="btn btn-primary"
-					disabled="#{!squadBean.updateAllowed}" rendered="#{squadBean.updateAllowed}" />
-			</div>
-		</h:form>
 	</ui:define>
 
 </ui:composition>
