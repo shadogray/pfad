@@ -106,7 +106,6 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 
 		if (this.id == null) {
 			this.member = getMemberExample();
-			this.member.setAktiv(true);
 		} else {
 			if (this.member == null || !this.member.getId().equals(id)) {
 				this.member = findById(getId());
