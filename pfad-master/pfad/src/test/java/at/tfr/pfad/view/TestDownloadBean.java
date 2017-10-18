@@ -159,6 +159,7 @@ public class TestDownloadBean {
 		Squad trupp = new Squad();
 		trupp.setType(SquadType.GUSP);
 		m.setTrupp(trupp);
+		m.setAktiv(false); // will be true by setTrupp!!
 
 		vr = mv.validate(m, "", leaders);
 		assertTrue(MemberValidator.INAKTIV_IM_TRUPP, vr.stream().anyMatch(r -> r.getMessage().contains(MemberValidator.INAKTIV_IM_TRUPP)));
