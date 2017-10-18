@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
+import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -29,6 +31,7 @@ import org.primefaces.event.SelectEvent;
 import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.dao.BookingRepository;
+import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.Members;
 import at.tfr.pfad.dao.ParticipationRepository;
 import at.tfr.pfad.dao.PaymentRepository;
@@ -64,6 +67,8 @@ public abstract class BaseBean<T> implements Serializable {
 	protected transient Members members;
 	@Inject
 	protected transient Payments payments;
+	@Inject
+	protected transient MemberRepository memberRepo;
 	@Inject
 	protected transient BookingRepository bookingRepo;
 	@Inject
@@ -490,5 +495,33 @@ public abstract class BaseBean<T> implements Serializable {
 	
 	public void setAlwaysNull(T alwaysNull) {
 		//this.alwaysNull = alwaysNull;
+	}
+	
+	public void info(String message) {
+		info(null, message);
+	}
+	
+	public void info(String id, String message) {
+		uiMessage(id, FacesMessage.SEVERITY_INFO, message, null);
+	}
+
+	public void warn(String message) {
+		warn(null, message);
+	}
+	
+	public void warn(String id, String message) {
+		uiMessage(id, FacesMessage.SEVERITY_WARN, message, null);
+	}
+
+	public void error(String message) {
+		error(null, message);
+	}
+	
+	public void error(String id, String message) {
+		uiMessage(id, FacesMessage.SEVERITY_ERROR, message, null);
+	}
+
+	public void uiMessage(String id, Severity severity, String message, String detail) {
+		FacesContext.getCurrentInstance().addMessage(id, new FacesMessage(severity, message, detail));
 	}
 }

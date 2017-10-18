@@ -29,16 +29,12 @@ import at.tfr.pfad.view.convert.RegistrationStatusConverter;
 @Named
 @ViewScoped
 @Stateful
-public class RegistrationBean implements Serializable {
+public class RegistrationBean extends BaseBean {
 
 	private Logger log = Logger.getLogger(getClass());
 	
 	@Inject
-	private SessionBean sessionBean;
-	@Inject
 	private RegistrationRepository regRepo;
-	@Inject
-	private MemberRepository memberRepo;
 	private Registration example = new Registration();
 	private RegistrationStatus[] filterStati;
 	private List<Integer> distinctGebJahr = new ArrayList<>();
@@ -69,17 +65,16 @@ public class RegistrationBean implements Serializable {
 	}
 
 	public void paginate() {
-		if (!isUpdateAllowed()) {
-			dataModel = new ArrayList<>();
-		} else {
-			dataModel = regRepo.queryBy(example, filterStati, (all ? null : Boolean.TRUE), (all ? null : Boolean.FALSE));
-		}
+		// Belli: sollen alle sehen können
+		dataModel = regRepo.queryBy(example, filterStati, (all ? null : Boolean.TRUE), (all ? null : Boolean.FALSE));
 	}
 
 	public void update() {
 		if (isUpdateAllowed()) {
 			registration = regRepo.saveAndFlush(registration);
 			id = registration.getId();
+		} else {
+			error("Keine Berechtigung zur Änderung für Benutzer: " + sessionBean.getUser() + "!");
 		}
 	}
 
@@ -90,14 +85,12 @@ public class RegistrationBean implements Serializable {
 		} else {
 			registration = (Registration) event.getObject();
 			update();
-			FacesMessage msg = new FacesMessage("Anmeldung geändert: ", registration.toFullString());
-			FacesContext.getCurrentInstance().addMessage(null, msg);
+			info("Anmeldung geändert: ", registration.toFullString());
 		}
 	}
 
 	public void onRowCancel(RowEditEvent event) {
-		FacesMessage msg = new FacesMessage("Änderung Abgebrochen", "" + event.getObject());
-		FacesContext.getCurrentInstance().addMessage(null, msg);
+		info("Änderung Abgebrochen", "" + event.getObject());
 	}
 	
 	public void convertToMember() {

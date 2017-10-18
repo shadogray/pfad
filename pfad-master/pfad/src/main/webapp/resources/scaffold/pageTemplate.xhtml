@@ -57,9 +57,7 @@
 					<li><h:link outcome="/pfad/payment/search" value="Zahlungen" /></li>
 					<li><h:link outcome="/pfad/payment/list" value="ZahlgsListe" /></li>
 					<li><h:link outcome="/pfad/function/search" value="Funktionen" /></li>
-					<c:if test="#{sessionBean.registrierungAllowed}">
-						<li><h:link outcome="/pfad/registration/search" value="Anmeldungen" /></li>
-					</c:if>
+					<li><h:link outcome="/pfad/registration/search" value="Anmeldungen" /></li>
 					<c:if test="#{sessionBean.trainingAllowed}">
 						<li><h:link outcome="/pfad/training/search" value="Trainings" /></li>
 						<li><h:link outcome="/pfad/participation/search" value="Teilnahmen" /></li>
