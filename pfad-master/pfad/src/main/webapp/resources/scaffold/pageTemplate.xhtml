@@ -64,6 +64,7 @@
 					</c:if>
 					<li><h:link outcome="/pfad/configuration/search" value="Konfig" /></li>
 					<li><h:link outcome="/pfad/actions" value="Aktionen" /></li>
+					<li><a href="#{configurationBean.getValue('handbuchUrl')}" >Handbuch</a></li>
 					<li><h:commandLink action="#{loginBean.logout()}" value="Beenden" /></li>
 					<li><h:outputLink value="#{request.contextPath}/apidocs/" target="apidocs">API</h:outputLink></li>
 				</ul>
