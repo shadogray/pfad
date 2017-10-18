@@ -176,7 +176,7 @@
 						title="#{configurationBean.getDescription('trupp')}">
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems itemLabel="#{s}" itemValue="#{s.idStr}" value="#{squadBean.all}" var="s" />
-						<f:ajax listener="#{memberBean.updateMemberOnChange()}" render="@this memberBeanMemberAktiv"/>
+						<f:ajax listener="#{memberBean.updateMemberOnChange()}" execute="@this" render="@this memberBeanMemberAktiv"/>
 					</h:selectOneMenu>
 					<h:message for="memberBeanMemberTrupp" styleClass="error" />
 				</h:panelGroup>

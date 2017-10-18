@@ -570,6 +570,9 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public void setTrupp(final Squad trupp) {
 		this.trupp = trupp;
+		if (trupp != null) {
+			aktiv = true;
+		}
 	}
 
 	@Pfad
@@ -598,6 +601,9 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public void setFunktionen(final Set<Function> Funktionen) {
 		this.funktionen = Funktionen;
+		if (this.funktionen != null && this.funktionen.stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg()))) {
+			aktiv = true;
+		}
 	}
 
 	@Pfad
