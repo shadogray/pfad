@@ -146,26 +146,24 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	@Transactional
 	public String update() {
 
-		if (!isUpdateAllowed()) {
-			throw new SecurityException("Update denied for: "+sessionBean.getUser());
-		}
-		
-		log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
-
-		if (member.getSiblings() != null && !member.getSiblings().isEmpty()) {
-			List<Member> siblings = new ArrayList<>();
-			siblings.addAll(member.getSiblings());
-			member.getSiblings().clear();
-			siblings.iterator().forEachRemaining(s -> {
-				s = memberRepo.findBy(s.getId());
-				if (!s.getParents().contains(member)) {
-					s.getParents().add(member);
-					member.getSiblings().add(s);
-				}
-			});
-		}
-		
 		try {
+			if (!isUpdateAllowed()) {
+				throw new SecurityException("Update denied for: "+sessionBean.getUser());
+			}
+			
+			log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
+	
+			if (member.getSiblings() != null && !member.getSiblings().isEmpty()) {
+				List<Member> siblings = new ArrayList<>(member.getSiblings());
+				for (Member sibling : siblings) {
+					sibling = memberRepo.findBy(sibling.getId());
+					if (sibling.equals(member) || sibling.getSiblings().contains(member)) {
+						throw new IllegalArgumentException("Cannot add Parent as Child: parent="+member+", childToAdd: "+memberToAdd);
+					}
+					member.getSiblings().add(sibling);
+				}
+			}
+			
 			if (id == null) {
 				entityManager.persist(member);
 				id = member.getId();
@@ -455,6 +453,14 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 				.filter(m -> (m.isAktiv() || m.isAktivExtern()) && m.getVollzahler() == null).sorted().collect(Collectors.toList());
 	}
 
+	public List<Member> filteredNoVollzahler(final String filter) {
+		return members.filtered(filter).stream().filter(m -> !m.equals(member) && !member.equals(m.getVollzahler())).collect(Collectors.toList());
+	}
+	
+	public List<Member> filteredNoParents(final String filter) {
+		return members.filtered(filter).stream().filter(m -> !m.equals(member) && !m.getParents().contains(member)).collect(Collectors.toList());
+	}
+	
 	public Converter getConverter() {
 
 		final MemberBean ejbProxy = this.sessionContext.getBusinessObject(MemberBean.class);

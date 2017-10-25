@@ -437,10 +437,18 @@ public abstract class BaseBean<T> implements Serializable {
 	}
 
 	public void addMemberSibling(SelectEvent event) {
-		log.debug("selectMemberSibling: " + event);
-		if (event.getObject() instanceof Member) {
-			memberToAdd = findMemberById(((Member)event.getObject()).getId());
-			member.getSiblings().add(memberToAdd);
+		try {
+			log.debug("selectMemberSibling: " + event);
+			if (event.getObject() instanceof Member) {
+				memberToAdd = findMemberById(((Member)event.getObject()).getId());
+				if (memberToAdd.equals(member) || memberToAdd.getSiblings().contains(member)) {
+					throw new IllegalArgumentException("Cannot add Parent as Child: parent="+member+", childToAdd: "+memberToAdd);
+				}
+				member.getSiblings().add(memberToAdd);
+			}
+		} catch (Exception e) {
+			log.info(e.getMessage(), e);
+			warn(e.getMessage());
 		}
 	}
 
