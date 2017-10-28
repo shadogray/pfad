@@ -117,7 +117,7 @@ public class DownloadBean implements Serializable {
 		Collection<Member> leaders = squadRepo.findLeaders();
 		Predicate<Member> filter = 
 				m -> (leaders.contains(m) || m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
-		return downloadData(new RegConfig(), filter);
+		return downloadData(new RegConfig().asVorRegistrierung(), filter);
 	}
 
 	public String downloadRegistrierung() throws Exception {
@@ -320,13 +320,13 @@ public class DownloadBean implements Serializable {
 
 		}
 
-		formatGruppeSheet(wb.createSheet("Gruppe"));
-		formatStatusSheet(wb.createSheet("Status"));
+		formatGruppeSheet(wb.createSheet("Gruppe"), config);
+		formatStatusSheet(wb.createSheet("Status"), config);
 
 		return wb;
 	}
 
-	private HSSFSheet formatGruppeSheet(HSSFSheet sheet) {
+	private HSSFSheet formatGruppeSheet(HSSFSheet sheet, RegConfig config) {
 		// Key Name Heim1 Straße1 Plz1 Ort1 Heim2 Straße2 Plz2 Ort2 BIC IBAN
 		// Bezirk Web Mail
 		// Gründungsjahr Verein Letzte Wahl GFm Letzte Wahl GFw Letzte Wahl ER
@@ -367,7 +367,7 @@ public class DownloadBean implements Serializable {
 		return sheet;
 	}
 
-	private HSSFSheet formatStatusSheet(HSSFSheet sheet) {
+	private HSSFSheet formatStatusSheet(HSSFSheet sheet, RegConfig config) {
 		int rCount = 0;
 		// "Export_" + DateTime.now().toString("yyyy.mm.dd"));
 		// Die Auswertung wurde mit folgenden Optionen erstellt:
@@ -384,7 +384,11 @@ public class DownloadBean implements Serializable {
 		// GRINS Art HR
 		row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("GRINS Art");
-		row.createCell(1).setCellValue(configRepo.getValue("GRINS_Art", "HR"));
+		if (config.vorRegistrierung) {
+			row.createCell(1).setCellValue(configRepo.getValue("GRINS_Art_VorReg", "VR"));
+		} else {
+			row.createCell(1).setCellValue(configRepo.getValue("GRINS_Art", "HR"));
+		}
 		// Benutzer reg
 		row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("Benutzer");
@@ -714,6 +718,7 @@ public class DownloadBean implements Serializable {
 		boolean withLocal;
 		boolean notRegistered;
 		boolean withBookings;
+		boolean vorRegistrierung;
 		
 		public RegConfig() {
 			// TODO Auto-generated constructor stub
@@ -738,6 +743,11 @@ public class DownloadBean implements Serializable {
 		
 		public RegConfig withBookings() {
 			withBookings = true;
+			return this;
+		}
+		
+		public RegConfig asVorRegistrierung() {
+			vorRegistrierung = true;
 			return this;
 		}
 	}
