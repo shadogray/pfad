@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
-	xmlns:pass="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:pass="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplateClean.xhtml">
 
 	<f:metadata>
 		<f:viewParam name="all" value="#{registrationBean.all}" />
@@ -65,7 +65,8 @@
 				</h:panelGrid>
 			</f:ajax>
 
-			<h:panelGroup id="searchPanel" styleClass="search">
+			<h:panelGrid id="searchPanel" styleClass="search" columns="3">
+				<h:outputText value="" />
 				<h:panelGroup styleClass="buttons">
 					<p:commandButton id="search" value="Suchen" outcome="search" update="regBeanItemTable" styleClass="btn btn-primary">
 						<f:param name="all" value="false" />
@@ -78,7 +79,8 @@
 						<f:param name="id" value="" />
 					</h:link>
 				</h:panelGroup>
-			</h:panelGroup>
+				<h:outputText value="" />
+			</h:panelGrid>
 
 			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table"
 				value="#{registrationBean.dataModel}" var="r" editable="true"

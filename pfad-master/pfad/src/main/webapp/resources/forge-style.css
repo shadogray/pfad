@@ -15,7 +15,21 @@ body {
 	width: inherit;
 	min-width: 900px;
 	/*max-width: 1280px;*/
+  margin-right: auto;
+  margin-left: auto;
+  *zoom: 1;
 }
+
+.container:before,
+.container:after {
+  display: table;
+  content: "";
+}
+
+.container:after {
+  clear: both;
+}
+
 
 #container {
 	margin: 0 auto;
@@ -135,17 +149,17 @@ footer p {
 /*
  * Navigation
  */
-#navigation {
+.leftNavigation {
 	float: left;
 	margin-left: 10px;
 	margin-top: 30px;
 }
 
-#navigation h3 {
+.leftNavigation h3 {
 	margin: 0 0 10px 10px;
 }
 
-#navigation ul {
+.leftNavigation ul {
 	padding: 1px;
 	border-radius: 5px;
 	text-align: left;
@@ -154,11 +168,11 @@ footer p {
 	box-shadow: 0px 1px 3px #afafaf;
 }
 
-#navigation ul li {
+.leftNavigation ul li {
 	list-style: none;
 }
 
-#navigation a, #navigation li.nav-header, #navigation li.nav-header a {
+.leftNavigation a, .leftNavigation li.nav-header, .leftNavigation li.nav-header a {
 	display: block;
 	color: #867F10;
 	font-weight: bold;
@@ -167,44 +181,44 @@ footer p {
 	padding-left: 10px;
 }
 
-#navigation li.nav-header {
+.leftNavigation li.nav-header {
 	margin-top: 5px;
 }
 
-#navigation a {
+.leftNavigation a {
 	padding-left: 15px;
 	color: #444444;
 }
 
-#navigation li.nav-header a {
+.leftNavigation li.nav-header a {
 	margin-left: -10px;
 	margin-top: 5px;
 	color: #867F10;
 }
 
-#navigation li.nav-header a:hover {
+.leftNavigation li.nav-header a:hover {
 	color: #6a640b;
 }
 
-#navigation a:hover, #navigation a.current:hover {
+.leftNavigation a:hover, .leftNavigation a.current:hover {
 	border-radius: 0px;
 	background-color: #edecec;
 	color: #0E5974;
 	text-decoration: none;
 }
 
-#navigation a.current {
+.leftNavigation a.current {
 	border-radius: 0px;
 	background-color: #DDDDDD;
 	color: #0E5974;
 	text-decoration: none;
 }
 
-#navigation a#homeLink {
+.leftNavigation a#homeLink {
 	border: none;
 }
 
-#navigation a#homeLink:hover {
+.leftNavigation a#homeLink:hover {
 	background-color: transparent;
 	border: none;
 	text-decoration: none;
@@ -213,12 +227,12 @@ footer p {
 /*
  * Content
  */
-#content {
+.content {
 	margin-left: 160px;
 	padding-left: 10px;
 }
 
-#content .search {
+.content .search {
 	display: block;
 	background-image: url(#{request.contextPath}/resources/search.png);
 	background-position: 30px 3px;
@@ -227,40 +241,40 @@ footer p {
 	padding-left: 70px;
 }
 
-#content .search .buttons {
+.content .search .buttons {
 	text-align: left;
 	padding-left: 25%;
 }
 
-#content table .label {
+.content table .label {
 	width: 25%;
 	text-align: left;
 	vertical-align: top;
 	white-space: nowrap;
 }
 
-#content table .component {
+.content table .component {
 	width: 75%;
 	text-align: left;
 	vertical-align: top;
 	max-width: 400px;
 }
 
-#content table .label2 {
+.content table .label2 {
 	width: 10%;
 	text-align: left;
 	vertical-align: top;
 	white-space: nowrap;
 }
 
-#content table .component2 {
+.content table .component2 {
 	/*width: 35%;*/
 	text-align: left;
 	vertical-align: top;
 	max-width: 200px;
 }
 
-#content table .component90 {
+.content table .component90 {
 	width: 90%;
 	text-align: left;
 	vertical-align: top;
@@ -275,7 +289,7 @@ footer p {
 	width: 80em;
 }
 
-#content table .component input {
+.content table .component input {
 	width: 95%;
 	padding: 5px 7px;
 }
@@ -293,7 +307,7 @@ input.rf-sel-inp {
 	padding: 5px 7px;
 }
 
-#content table .component select {
+.content table .component select {
 	width: 96.6%;
 	padding: 5px 7px;
 }
@@ -308,12 +322,12 @@ select.manual {
 	padding: 5 7px;
 }
 
-#content table .component input[type="checkbox"], #content table .component .rf-cal-inp, #content table .component .rf-insl-inp,
-	#content table .component .rf-insp-inp {
+.content table .component input[type="checkbox"], .content table .component .rf-cal-inp, .content table .component .rf-insl-inp,
+	.content table .component .rf-insp-inp {
 	width: auto;
 }
 
-#content .boolean-false {
+.content .boolean-false {
 	display: inline-block;
 	width: 15px;
 	height: 15px;
@@ -322,7 +336,7 @@ select.manual {
 	background-image: url(#{request.contextPath}/resources/false.png);
 }
 
-#content .boolean-true {
+.content .boolean-true {
 	display: inline-block;
 	width: 15px;
 	height: 15px;
@@ -331,11 +345,11 @@ select.manual {
 	background-image: url(#{request.contextPath}/resources/true.png);
 }
 
-#content .data-table .boolean-true {
+.content .data-table .boolean-true {
 	margin: auto;
 }
 
-#content .data-table .boolean-false {
+.content .data-table .boolean-false {
 	margin: auto;
 }
 
@@ -344,12 +358,12 @@ select.manual {
 	font-size: 10pt;
 }
 
-#content .error {
+.content .error {
 	color: red;
 	font-size: 10pt;
 }
 
-#content table .required {
+.content table .required {
 	width: 1%;
 	color: red;
 	padding-top: 7pt;
@@ -358,38 +372,38 @@ select.manual {
 	font-weight: bold;
 }
 
-#content .data-table {
+.content .data-table {
 	width: 100%;
 	border: 1px solid #cccccc;
 	margin-bottom: 7px;
 }
 
-#content .data-table thead th {
+.content .data-table thead th {
 	background-color: #dddddd;
 	border-bottom: 1px solid #cccccc;
 }
 
-#content .data-table thead th, #content .data-table tbody td, #content .data-table tfoot td {
+.content .data-table thead th, .content .data-table tbody td, .content .data-table tfoot td {
 	text-align: left;
 	padding-left: 4px;
 	padding-top: 2px;
 	padding-bottom: 2px;
 }
 
-#content .data-table tfoot td {
+.content .data-table tfoot td {
 	padding-right: 4px;
 }
 
-#content .data-table tbody tr:nth-child(2n) {
+.content .data-table tbody tr:nth-child(2n) {
 	background-color: #eeeeee;
 }
 
-#content .remove-column {
+.content .remove-column {
 	width: 1%;
 	text-align: center;
 }
 
-#content .data-table .remove-button {
+.content .data-table .remove-button {
 	display: block;
 	width: 15px;
 	height: 15px;
@@ -398,25 +412,25 @@ select.manual {
 	background-repeat: no-repeat;
 }
 
-#content .data-table-footer {
+.content .data-table-footer {
 	width: 80%;
 	margin-left: 50px;
 	margin-top: 5px;
 }
 
-#content .data-table-footer select {
+.content .data-table-footer select {
 	width: 95%;
 	/*height: 30px;*/
 	vertical-align: middle;
 	margin-right: 5px;
 }
 
-#content .data-table tfoot select {
+.content .data-table tfoot select {
 	line-height: 30px;
 	vertical-align: middle;
 }
 
-#content .add-button {
+.content .add-button {
 	display: block;
 	width: 15px;
 	height: 15px;
@@ -425,35 +439,35 @@ select.manual {
 	background-repeat: no-repeat;
 }
 
-#content .buttons {
+.content .buttons {
 	display: block;
 	text-align: center;
 	margin-top: 25px;
 	margin-bottom: 10px;
 }
 
-#content .button, #content .buttons a {
+.content .button, .content .buttons a {
 	text-decoration: none;
 	margin-right: 5px;
 	background-color: #979026;
 }
 
-#content .button:hover, #content .buttons a:hover {
+.content .button:hover, .content .buttons a:hover {
 	background-color: #979026;
 }
 
-#content .paginator {
+.content .paginator {
 	display: block;
 	text-align: right;
 	padding-bottom: 5px;
 }
 
-#content .paginator-content {
+.content .paginator-content {
 	margin-left: 5px;
 	margin-right: 5px;
 }
 
-#content h1 {
+.content h1 {
 	border-bottom: 1px solid #ffffff;
 	font-family: 'Open Sans', sans-serif;
 	font-size: 49px;
@@ -462,7 +476,7 @@ select.manual {
 	padding-bottom: 10px;
 }
 
-#content h2 {
+.content h2 {
 	color: #867f10;
 	line-height: 46px;
 	padding-top: 5px;
@@ -470,7 +484,7 @@ select.manual {
 	position: relative;
 }
 
-#content h2.success {
+.content h2.success {
 	color: #5d8a10;
 	line-height: 46px;
 	padding: 5px 0 20px 35px;
@@ -478,7 +492,7 @@ select.manual {
 	background: url(true.png) no-repeat 0px 15px transparent;
 }
 
-#content p {
+.content p {
 	padding-left: 25px;
 }
 
@@ -569,8 +583,15 @@ p.logo {
 
 .navbar .brand {
 	font-weight: bold;
+	font-size: 20px;
 	text-shadow: 0 1px 0 #000;
 	text-decoration: none;
+	display: block;
+	float: left;
+	padding: 8px 20px 12px;
+	margin-left: -20px;
+	line-height: 1;
+	color: #999999;
 }
 
 .navbar-inner {
@@ -578,8 +599,32 @@ p.logo {
 	border-top: 2px solid #000000;
 }
 
-.navbar-fixed-top .brand {
-	color: #FFF;
+.navbar-fixed-top {
+	position: fixed;
+	right: 0;
+	left: 0;
+	z-index: 1030;
+	margin-bottom: 0;
+}
+
+.navbar-fixed-top .navbar-inner {
+	padding-right: 0;
+	padding-left: 0;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
+}
+
+.navbar-fixed-top .container {
+	width: 940px;
+}
+
+.navbar-fixed-top {
+	top: 0;
+}
+
+.top {
+	vertical-align: top;
 }
 
 /* Carousel */
@@ -740,25 +785,31 @@ h4.page-header {
 .Erstellt {
 	background-color: white !important;
 }
+
 .ZusageOK {
 	background-color: #558000 !important;
 }
+
 .ZusageGes {
 	background-color: #99e600 !important;
 }
+
 .BleibtAufListe {
 	background-color: #33ccff !important;
 }
+
 .Doppelt {
 	background-color: #9933ff !important;
 }
+
 .AbsageGes {
 	background-color: #ff6666 !important;
 }
+
 .KeinInteresse {
 	background-color: red !important;
 }
+
 .Mitglied {
 	background-color: #cc6699 !important;
 }
-

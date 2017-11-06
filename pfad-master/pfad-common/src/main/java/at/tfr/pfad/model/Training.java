@@ -33,7 +33,7 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "handler", "hibernateLazyInitializer" })
-public class Training implements PrimaryKeyHolder, Comparable<Training>, Auditable, Serializable, Presentable {
+public class Training extends BaseEntity implements Comparable<Training>, Auditable, Presentable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "training_seq")
@@ -185,31 +185,6 @@ public class Training implements PrimaryKeyHolder, Comparable<Training>, Auditab
 			result += " " + phase.toString();
 		if (form != null)
 			result += ", " + form.toString();
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Training)) {
-			return false;
-		}
-		Training other = (Training) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
 

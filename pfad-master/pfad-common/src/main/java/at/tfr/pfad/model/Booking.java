@@ -49,7 +49,7 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Presentable, Comparable<Booking> {
+public class Booking extends BaseEntity implements Auditable, Presentable, Comparable<Booking> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "booking_seq")
@@ -120,31 +120,6 @@ public class Booking implements PrimaryKeyHolder, Auditable, Serializable, Prese
 
 	public void setVersion(final int version) {
 		this.version = version;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Booking)) {
-			return false;
-		}
-		Booking other = (Booking) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
 	}
 
 	@XmlTransient

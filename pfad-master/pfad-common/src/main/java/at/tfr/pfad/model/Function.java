@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Function implements PrimaryKeyHolder, Serializable, Presentable, Comparable<Function> {
+public class Function extends BaseEntity implements Presentable, Comparable<Function> {
 
 	public static final String PTA = "P"; // Pfadfinder Trotz Allem
 	public static final String ZBV = "ZBV"; // Zur besonderen Verwendung
@@ -81,31 +81,6 @@ public class Function implements PrimaryKeyHolder, Serializable, Presentable, Co
 
 	public void setVersion(final int version) {
 		this.version = version;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Function)) {
-			return false;
-		}
-		Function other = (Function) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
 	}
 
 	public String getFunction() {

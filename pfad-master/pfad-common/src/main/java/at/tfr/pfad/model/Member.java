@@ -47,6 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.AuditMappedBy;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.joda.time.DateTime;
@@ -91,13 +92,14 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "handler", "hibernateLazyInitializer" })
-public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member>, Auditable, Presentable {
+public class Member extends BaseEntity implements Comparable<Member>, Auditable, Presentable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq")
 	@SequenceGenerator(name = "member_seq", sequenceName = "member_seq", allocationSize = 1, initialValue = 1)
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
+	
 	@Version
 	@Column(name = "version")
 	protected int version;
@@ -203,21 +205,22 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@Column(insertable = false, updatable = false, name = "Trupp_id")
 	protected Long truppId;
 
-	@NotAudited
+	@NotAudited // inverse side!
 	@ManyToMany(mappedBy = "assistants")
 	protected Set<Squad> squads;
 
-	@NotAudited
+	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "leaderFemale")
 	protected Set<Squad> femaleGuided;
 
-	@NotAudited
+	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "leaderMale")
 	protected Set<Squad> maleGuided;
 
 	@ManyToOne
 	protected Member Vollzahler;
 
+	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "Vollzahler")
 	@OrderBy("Name, Vorname")
 	protected Set<Member> reduced;
@@ -229,23 +232,27 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 	@ManyToMany(fetch = FetchType.EAGER)
 	protected Set<Function> funktionen = new HashSet<>();
 
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@ManyToMany
 	@JoinTable(name = "member_member", joinColumns = @JoinColumn(name = "member_id"), inverseJoinColumns = @JoinColumn(name = "siblings_id"))
 	@OrderBy("Name, Vorname")
 	protected Set<Member> siblings = new HashSet<>();
 
-	@ManyToMany(mappedBy = "siblings", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@NotAudited // inverse side!
+	@ManyToMany(mappedBy = "siblings")
 	@OrderBy("Name, Vorname")
 	protected Set<Member> parents = new TreeSet<>();
 
+	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "payer")
 	@OrderBy(value = "id DESC")
 	private Set<Payment> payments;
 
+	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "member")
 	@OrderBy(value = "id DESC")
 	private Set<Booking> bookings = new TreeSet<>();
 
+	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "member")
 	@OrderBy(value = "id DESC")
 	private Set<Participation> participations = new TreeSet<>();
@@ -269,31 +276,6 @@ public class Member implements PrimaryKeyHolder, Serializable, Comparable<Member
 
 	public void setVersion(final int version) {
 		this.version = version;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Member)) {
-			return false;
-		}
-		Member other = (Member) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
 	}
 
 	@Pfad

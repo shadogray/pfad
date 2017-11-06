@@ -48,6 +48,14 @@ public class MemberValidator {
 	public List<ValidationResult> validate(Member member, final String funktionen, final Collection<Member> leaders) {
 		List<ValidationResult> results = new ArrayList<>();
 
+		if (StringUtils.isBlank(member.getName())) {
+			results.add(new ValidationResult(false, "Name darf nicht leer sein."));
+		}
+		
+		if (StringUtils.isBlank(member.getVorname())) {
+			results.add(new ValidationResult(false, "Vorname darf nicht leer sein."));
+		}
+		
 		List<Function> funcExp = member.getFunktionen().stream().filter(f -> f.getExportReg())
 				.collect(Collectors.toList());
 		if (!member.isAktiv() && !funcExp.isEmpty()) {
@@ -74,7 +82,7 @@ public class MemberValidator {
 					"Vollzahler SOLL älter sein, als das ermäßigte Mitglied: " + member.getVollzahler()));
 		}
 
-		if (isGrinsExportable(member, leaders)) {
+		if (member.getTrupp() != null || isGrinsExportable(member, leaders)) {
 			if (member.getGebJahr() < 1900 || member.getGebMonat() < 1 || member.getGebTag() < 1) {
 				results.add(new ValidationResult(false, GEB_UNVOLL));
 			}

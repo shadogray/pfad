@@ -32,7 +32,7 @@
 	<ui:define name="main">
 		<h:form id="create">
 			<h:panelGrid id="messages" columns="2" rendered="#{!empty memberBean.validationResults}">
-				<h:messages styleClass="error" />
+				<p:messages />
 				<ui:repeat value="#{memberBean.validationResults}" var="vr">
 					<h:outputLabel value="ACHTUNG:" styleClass="error"/>
 					<h:outputText value="#{vr.message}" styleClass="error"/>

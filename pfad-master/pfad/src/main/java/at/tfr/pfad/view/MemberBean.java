@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
-import javax.faces.application.FacesMessage;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -33,17 +34,14 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.richfaces.component.UISelect;
 import org.richfaces.model.CollectionDataModel;
 
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
-import at.tfr.pfad.dao.FunctionRepository;
-import at.tfr.pfad.dao.MemberRepository;
-import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
@@ -70,12 +68,6 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Inject
-	private SquadRepository squadRepo;
-	@Inject
-	private MemberRepository memberRepo;
-	@Inject
-	private FunctionRepository functionRepo;
 	@Inject
 	private MemberValidator memberValidator;
 	private Boolean exampleActive;
@@ -143,7 +135,6 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 			member.setAktiv(member.getTrupp() != null || member.getFunktionen().stream().anyMatch(f -> f.getExportReg()));
 	}
 
-	@Transactional
 	public String update() {
 
 		try {
@@ -153,6 +144,18 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 			
 			log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
 	
+			if (StringUtils.isEmpty(member.getBVKey())) {
+				member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
+			}
+			validateMember(member, true);
+			
+			if (id == null) {
+				entityManager.persist(member);
+				id = member.getId();
+			} else {
+				member = entityManager.merge(member);
+			}
+			
 			if (member.getSiblings() != null && !member.getSiblings().isEmpty()) {
 				List<Member> siblings = new ArrayList<>(member.getSiblings());
 				for (Member sibling : siblings) {
@@ -164,33 +167,16 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 				}
 			}
 			
-			if (id == null) {
-				entityManager.persist(member);
-				id = member.getId();
-
-				if (StringUtils.isEmpty(member.getBVKey())) {
-					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
-				}
-				validateMember(member, true);
-				
-				if (member.getId() != null) {
-					return "view?faces-redirect=true&id=" + member.getId();
-				}
-				return "search?faces-redirect=true";
-			} else {
-				if (StringUtils.isEmpty(member.getBVKey())) {
-					member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
-				}
-
-				member = entityManager.merge(member);
-				validateMember(member, true);
-
+			memberRepo.flush();
+			
+			if (member.getId() != null) {
 				return "view?faces-redirect=true&id=" + member.getId();
 			}
-			
+			return "search?faces-redirect=true";
+
 		} catch (Exception e) {
-			log.info("update: "+e, e);
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
+			log.info("update: id="+id+", member="+member+" : "+e, e);
+			error(e.getMessage());
 			return null;
 		}
 	}
@@ -199,7 +185,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 		Collection<Member> leaders = squadRepo.findLeaders();
 		List<ValidationResult> vr = memberValidator.validate(member, leaders);
 		if (!vr.isEmpty() && toMessages) {
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(vr.toString()));
+			warn(vr.toString());
 		}
 		return vr;
 	}
@@ -208,7 +194,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 		return isAdmin() || isGruppe() || isVorstand() || (isLeiter() && !isRegistrationEnd());
 	}
 
-	@Transactional
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public String delete() {
 
 		if (!isDeleteAllowed())
@@ -218,13 +204,16 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 
 		try {
 			Member deletableEntity = findById(getId());
+			Hibernate.initialize(deletableEntity.getTrupp());
+			Hibernate.initialize(deletableEntity.getVollzahler());
+			Hibernate.initialize(deletableEntity.getSiblings());
 
 			this.entityManager.remove(deletableEntity);
 			this.entityManager.flush();
 			return "search?faces-redirect=true";
 		} catch (Exception e) {
 			log.info("update: "+e, e);
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
+			error(e.getMessage());
 			return null;
 		}
 	}

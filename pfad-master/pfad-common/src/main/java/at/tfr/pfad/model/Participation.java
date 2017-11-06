@@ -38,7 +38,7 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "handler", "hibernateLazyInitializer" })
-public class Participation implements PrimaryKeyHolder, Comparable<Participation>, Auditable, Serializable, Presentable {
+public class Participation extends BaseEntity implements Comparable<Participation>, Auditable, Presentable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "participation_seq")
@@ -221,31 +221,6 @@ public class Participation implements PrimaryKeyHolder, Comparable<Participation
 	@Override
 	public String getLongString() {
 		return toString();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Participation)) {
-			return false;
-		}
-		Participation other = (Participation) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
 	}
 
 	@Override

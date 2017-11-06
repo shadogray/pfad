@@ -53,7 +53,7 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
-public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Serializable, Presentable {
+public class Squad extends BaseEntity implements Comparable<Squad>, Auditable, Presentable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "squad_seq")
@@ -120,31 +120,6 @@ public class Squad implements PrimaryKeyHolder, Comparable<Squad>, Auditable, Se
 
 	public void setVersion(final int version) {
 		this.version = version;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Squad)) {
-			return false;
-		}
-		Squad other = (Squad) obj;
-		if (id != null) {
-			if (!id.equals(other.id)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
 	}
 
 	public SquadType getType() {

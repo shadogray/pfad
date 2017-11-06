@@ -35,6 +35,7 @@ import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.Members;
 import at.tfr.pfad.dao.ParticipationRepository;
 import at.tfr.pfad.dao.PaymentRepository;
+import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.dao.TrainingRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
@@ -73,6 +74,8 @@ public abstract class BaseBean<T> implements Serializable {
 	protected transient BookingRepository bookingRepo;
 	@Inject
 	protected transient PaymentRepository paymentRepo;
+	@Inject
+	protected transient SquadRepository squadRepo;
 	@Inject
 	protected transient TrainingRepository trainingRepo;
 	@Inject
