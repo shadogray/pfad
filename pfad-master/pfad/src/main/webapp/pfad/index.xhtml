@@ -10,6 +10,18 @@
 	</ui:define>
 
 	<ui:define name="main">
+
+		<h:outputScript target="body">
+			//<![CDATA[
+			console.log('found width='+window.innerWidth);
+			if (window.innerWidth < 1024) {
+				window.location = '../app/index.html';
+			} else {
+				window.location = './member/search.xhtml';
+			}
+			//]]>
+		</h:outputScript>
+
 		<h2 class="success">Die Datenbank is aktiv.</h2>
 		<p></p>
 	</ui:define>

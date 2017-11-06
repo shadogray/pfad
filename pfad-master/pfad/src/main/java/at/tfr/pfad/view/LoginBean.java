@@ -36,9 +36,9 @@ public class LoginBean {
 			request.login(this.username, this.password);
 		} catch (ServletException e) {
 			context.addMessage(null, new FacesMessage("Login failed."));
-			return "error";
+			return "login";
 		}
-		return "/prot/index";
+		return "/pfad/index?faces-redirect=true";
 	}
 
 	public String logout() {
@@ -49,6 +49,6 @@ public class LoginBean {
 		} catch (Exception e) {
 			context.addMessage(null, new FacesMessage("Logout failed."));
 		}
-		return "/index.html";
+		return "/pfad/index?faces-redirect=true";
 	}
 }

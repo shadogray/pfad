@@ -37,7 +37,7 @@ function submitSearch(event) {
 	}
 }
 
-$(function() {
+$(document).ready(function() {
 	$('form#search').on('keypress', function(event) {
 		submitSearch(event);
 	});

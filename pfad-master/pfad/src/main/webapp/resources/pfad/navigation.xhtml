@@ -6,32 +6,32 @@
 <cc:interface />
 <cc:implementation>
 	<h:panelGroup id="navigation" styleClass="leftNavigation"  rendered="#{sessionBean.userSession.callerPrincipal != 'anonymous'}">
-		<h:link id="homeLink" outcome="/pfad/index.xhtml">
-			<img style="max-width: 10em;" src='#{resource["forge-logo.png"]}' alt="Forge... get hammered" border="0" />
-		</h:link>
-		<ul>
-			<li><a href="/pfad/app/app.html#Members"><b>MOBILE</b></a></li>
-			<li><h:link outcome="/pfad/member/search" value="Personen" /></li>
-			<li><h:link outcome="/pfad/squad/search" value="Trupps" /></li>
-			<li><h:link outcome="/pfad/activity/search" value="Aktivitäten" /></li>
-			<li><h:link outcome="/pfad/booking/search" value="Buchungen" /></li>
-			<li><h:link outcome="/pfad/booking/list" value="BuchgsListe" /></li>
-			<li><h:link outcome="/pfad/payment/search" value="Zahlungen" /></li>
-			<li><h:link outcome="/pfad/payment/list" value="ZahlgsListe" /></li>
-			<li><h:link outcome="/pfad/function/search" value="Funktionen" /></li>
-			<li><h:link outcome="/pfad/registration/search" value="Anmeldungen" /></li>
-			<c:if test="#{sessionBean.trainingAllowed}">
-				<li><h:link outcome="/pfad/training/search" value="Trainings" /></li>
-				<li><h:link outcome="/pfad/participation/search" value="Teilnahmen" /></li>
-			</c:if>
-			<li><h:link outcome="/pfad/configuration/search" value="Konfig" /></li>
-			<li><h:link outcome="/pfad/actions" value="Aktionen" /></li>
-			<li><a href="#{configurationBean.getValue('handbuchUrl')}">Handbuch</a></li>
-			<li><h:link outcome="/pfad/member/search" value="Beenden">
-					<f:ajax listener="#{loginBean.logout()}" />
-				</h:link></li>
-			<li><h:outputLink value="#{request.contextPath}/apidocs/" target="apidocs">API</h:outputLink></li>
-		</ul>
+		<h:form id="navigationForm">
+			<h:link id="homeLink" outcome="/pfad/index.xhtml">
+				<img style="max-width: 10em;" src='#{resource["forge-logo.png"]}' alt="Forge... get hammered" border="0" />
+			</h:link>
+			<ul>
+				<li><a href="/pfad/app/app.html#Members"><b>MOBILE</b></a></li>
+				<li><h:link outcome="/pfad/member/search" value="Personen" /></li>
+				<li><h:link outcome="/pfad/squad/search" value="Trupps" /></li>
+				<li><h:link outcome="/pfad/activity/search" value="Aktivitäten" /></li>
+				<li><h:link outcome="/pfad/booking/search" value="Buchungen" /></li>
+				<li><h:link outcome="/pfad/booking/list" value="BuchgsListe" /></li>
+				<li><h:link outcome="/pfad/payment/search" value="Zahlungen" /></li>
+				<li><h:link outcome="/pfad/payment/list" value="ZahlgsListe" /></li>
+				<li><h:link outcome="/pfad/function/search" value="Funktionen" /></li>
+				<li><h:link outcome="/pfad/registration/search" value="Anmeldungen" /></li>
+				<c:if test="#{sessionBean.trainingAllowed}">
+					<li><h:link outcome="/pfad/training/search" value="Trainings" /></li>
+					<li><h:link outcome="/pfad/participation/search" value="Teilnahmen" /></li>
+				</c:if>
+				<li><h:link outcome="/pfad/configuration/search" value="Konfig" /></li>
+				<li><h:link outcome="/pfad/actions" value="Aktionen" /></li>
+				<li><a href="#{configurationBean.getValue('handbuchUrl')}">Handbuch</a></li>
+				<li><h:commandLink action="#{loginBean.logout()}" value="Beenden"/></li>
+				<li><h:outputLink value="#{request.contextPath}/apidocs/" target="apidocs">API</h:outputLink></li>
+			</ul>
+		</h:form>
 	</h:panelGroup>
 </cc:implementation>
 </html>

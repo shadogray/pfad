@@ -65,22 +65,18 @@
 				</h:panelGrid>
 			</f:ajax>
 
-			<h:panelGrid id="searchPanel" styleClass="search" columns="3">
-				<h:outputText value="" />
-				<h:panelGroup styleClass="buttons">
-					<p:commandButton id="search" value="Suchen" outcome="search" update="regBeanItemTable" styleClass="btn btn-primary">
-						<f:param name="all" value="false" />
-					</p:commandButton>
-					<p:commandButton id="all" value="Alle" action="#{registrationBean.paginate}" update="regBeanItemTable" styleClass="btn btn-primary">
-						<f:param name="all" value="true" />
-					</p:commandButton>
-					<h:link id="create" value="Anlegen" outcome="create" styleClass="btn btn-primary"
-						disabled="#{!registrationBean.updateAllowed}">
-						<f:param name="id" value="" />
-					</h:link>
-				</h:panelGroup>
-				<h:outputText value="" />
-			</h:panelGrid>
+			<h:panelGroup styleClass="buttons" layout="block">
+				<p:commandButton id="search" value="Suchen" outcome="search" update="regBeanItemTable" styleClass="btn btn-primary">
+					<f:param name="all" value="false" />
+				</p:commandButton>
+				<p:commandButton id="all" value="Alle" action="#{registrationBean.paginate}" update="regBeanItemTable" styleClass="btn btn-primary">
+					<f:param name="all" value="true" />
+				</p:commandButton>
+				<h:link id="create" value="Anlegen" outcome="create" styleClass="btn btn-primary"
+					disabled="#{!registrationBean.updateAllowed}">
+					<f:param name="id" value="" />
+				</h:link>
+			</h:panelGroup>
 
 			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table"
 				value="#{registrationBean.dataModel}" var="r" editable="true"
