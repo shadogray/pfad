@@ -37,12 +37,12 @@ public class SessionBean implements Serializable {
 	@Inject
 	private SquadRepository squadRepo;
 	private Squad squad;
+	private boolean squadTested;
 	
 	@PostConstruct
 	public void init() {
 		config = configRepo.findAll();
 		registrationEndDate = getRegistrationEndDate();
-		squad = isResponsibleFor();
 	}
 
 	public List<Configuration> getConfig() {
@@ -105,6 +105,10 @@ public class SessionBean implements Serializable {
 	}
 	
 	public Squad getSquad() {
+		if (!squadTested) {
+			squadTested = true;
+			squad = isResponsibleFor();
+		}
 		return squad;
 	}
 

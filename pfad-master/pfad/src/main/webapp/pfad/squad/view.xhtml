@@ -55,7 +55,7 @@
 						disabled="#{!squadBean.updateAllowed}" />
 					<h:link value="Neu" outcome="create" styleClass="btn btn-primary" />
 					<h:commandLink value="Download" action="#{downloadBean.downloadSquad(squadBean.squad)}" styleClass="btn btn-primary"
-						disabled="#{!squadBean.updateAllowed}" rendered="#{squadBean.updateAllowed}" />
+						rendered="#{squadBean.downloadAllowed}" />
 				</h:form>
 			</h:panelGroup>
 			<h:outputText />

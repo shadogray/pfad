@@ -1,6 +1,5 @@
 package at.tfr.pfad.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -99,6 +98,7 @@ public class Payment extends BaseEntity implements Auditable, Presentable, Compa
 	@Column
 	protected String createdBy;
 
+	@Audited
 	@ManyToMany
 	private Set<Booking> bookings = new HashSet<Booking>();
 

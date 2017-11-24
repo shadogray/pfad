@@ -133,12 +133,11 @@ public class DownloadBean implements Serializable {
 	}
 
 	public String downloadAllWithBookings() throws Exception {
-		return downloadData(new RegConfig().withLocal().withBookings(), null, sessionBean.getSquad());
+		return downloadData(new RegConfig().withLocal().withBookings(), x->true, sessionBean.getSquad());
 	}
 
 	public String downloadSquad(Squad squad) throws Exception {
-		
-		return downloadData(new RegConfig().withLocal(), null, squad);
+		return downloadData(new RegConfig().withLocal(), x ->true, squad);
 	}
 
 	public boolean isDownloadAllowed() {

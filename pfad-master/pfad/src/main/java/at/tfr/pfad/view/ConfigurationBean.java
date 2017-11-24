@@ -302,6 +302,7 @@ public class ConfigurationBean extends BaseBean<Configuration> implements Serial
 
 	public String getDescription(String key) {
 		return allConfigs.stream().filter(c -> ConfigurationType.simple.equals(c.getType()) && c.getCkey().equalsIgnoreCase(key))
+				.filter(c -> c.getDescription() != null)
 				.map(Configuration::getDescription).findAny().orElse("");
 	}
 }

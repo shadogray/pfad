@@ -229,9 +229,11 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 	@Column(insertable = false, updatable = false, name = "Vollzahler_id")
 	protected Long VollzahlerId;
 
+	@Audited
 	@ManyToMany(fetch = FetchType.EAGER)
 	protected Set<Function> funktionen = new HashSet<>();
 
+	@Audited
 	@ManyToMany
 	@JoinTable(name = "member_member", joinColumns = @JoinColumn(name = "member_id"), inverseJoinColumns = @JoinColumn(name = "siblings_id"))
 	@OrderBy("Name, Vorname")

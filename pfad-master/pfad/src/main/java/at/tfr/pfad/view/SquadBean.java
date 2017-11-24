@@ -128,6 +128,10 @@ public class SquadBean extends BaseBean<Squad> implements Serializable {
 				|| (sessionContext.getCallerPrincipal().getName().equals(squad.getLogin()) && !isRegistrationEnd());
 	}
 
+	public boolean isDownloadAllowed() {
+		return isDownloadAllowed(squad);
+	}
+	
 	public boolean isDownloadAllowed(Squad squad) {
 		return isAdmin() || isGruppe() || isVorstand()
 				|| sessionContext.getCallerPrincipal().getName().equalsIgnoreCase(squad.getLogin());
