@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -59,6 +60,7 @@ public class Training extends BaseEntity implements Comparable<Training>, Audita
 	@Column
 	private String description;
 
+	@NotAudited // inverse side!
 	@Column
 	@OneToMany(mappedBy="training")
 	private Set<Participation> participations;

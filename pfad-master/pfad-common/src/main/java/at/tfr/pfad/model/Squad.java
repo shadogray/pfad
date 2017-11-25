@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -97,6 +98,7 @@ public class Squad extends BaseEntity implements Comparable<Squad>, Auditable, P
 	@JoinTable(name = "squad_member", joinColumns = @JoinColumn(name = "squad_id"), inverseJoinColumns = @JoinColumn(name = "assistants_id"))
 	private Set<Member> assistants = new HashSet<Member>();
 
+	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "trupp")
 	@OrderBy("Name, Vorname")
 	private Set<Member> scouts = new HashSet<Member>();

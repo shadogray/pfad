@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -57,6 +58,7 @@ public class Activity extends BaseEntity implements Auditable, Presentable {
 	@Column(name = "version")
 	private int version;
 
+	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "activity")
 	private Set<Booking> bookings = new HashSet<Booking>();
 
