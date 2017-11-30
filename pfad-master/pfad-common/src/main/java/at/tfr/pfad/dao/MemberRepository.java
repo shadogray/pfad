@@ -7,8 +7,12 @@
 
 package at.tfr.pfad.dao;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+
+import javax.persistence.criteria.JoinType;
 
 import org.apache.deltaspike.data.api.EntityGraph;
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
@@ -18,6 +22,7 @@ import org.apache.deltaspike.data.api.QueryResult;
 import org.apache.deltaspike.data.api.Repository;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
+import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
@@ -49,6 +54,9 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat)
 				.getResultList();
 	}
+
+	@Query(named="Member.withFunction")
+	public abstract List<Member> findByFunction(Function function);
 	
 	protected QueryResult<Member> queryAllIntern(int start, int max) {
 		return queryAllIntern()

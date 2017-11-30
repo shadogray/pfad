@@ -10,6 +10,7 @@ package at.tfr.pfad.view.validator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
@@ -19,9 +20,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import at.tfr.pfad.SquadType;
+import at.tfr.pfad.dao.FunctionRepository;
+import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Squad;
 
 @Stateless
 public class MemberValidator {
@@ -34,7 +38,11 @@ public class MemberValidator {
 	public static String INAKTIV_ALS_LEITER = "Inaktiv als Leiter/Assistent";
 
 	@Inject
+	private MemberRepository memberRepo;
+	@Inject
 	private SquadRepository squadRepo;
+	@Inject 
+	private FunctionRepository functionRepo;
 
 	public boolean isGrinsExportable(Member m, Collection<Member> leaders) {
 		return m.isAktiv() || leaders.contains(m)
@@ -61,6 +69,12 @@ public class MemberValidator {
 		if (!member.isAktiv() && !funcExp.isEmpty()) {
 			results.add(new ValidationResult(false, "Inaktiv mit " + funcExp));
 		}
+		
+		// Assistenten in einer Stufe oder ‚ZBV‘, beides ist nicht sinnvoll
+		List<Squad> trupps = squadRepo.findByAssistant(member);
+		if (!trupps.isEmpty() && funcExp.stream().anyMatch(f -> "ZBV".equals(f.getKey())) ) {
+			results.add(new ValidationResult(false, "ZBV und Assistent in "+ trupps + " - Nicht sinnvoll!: " + squadRepo.findByResponsible(member)));
+		}
 
 		if (!member.isAktiv() && leaders.contains(member)) {
 			results.add(new ValidationResult(false, INAKTIV_ALS_LEITER + ": " + squadRepo.findByResponsible(member)));
@@ -76,11 +90,11 @@ public class MemberValidator {
 			results.add(new ValidationResult(false, "Vollzahler INAKTIV: " + member.getVollzahler()));
 		}
 
-		if (member.isAktiv() && member.getVollzahler() != null
-				&& member.getVollzahler().geburtstag().isAfter(member.geburtstag())) {
-			results.add(new ValidationResult(false,
-					"Vollzahler SOLL älter sein, als das ermäßigte Mitglied: " + member.getVollzahler()));
-		}
+//		if (member.isAktiv() && member.getVollzahler() != null
+//				&& member.getVollzahler().geburtstag().isAfter(member.geburtstag())) {
+//			results.add(new ValidationResult(false,
+//					"Vollzahler SOLL älter sein, als das ermäßigte Mitglied: " + member.getVollzahler()));
+//		}
 
 		if (member.getTrupp() != null || isGrinsExportable(member, leaders)) {
 			if (member.getGebJahr() < 1900 || member.getGebMonat() < 1 || member.getGebTag() < 1) {
@@ -111,7 +125,27 @@ public class MemberValidator {
 			}
 		}
 
+		// Es kann nur eine GFW oder GFM geben! Für Kathi Fosen würde ein GFA passend sein
+		if (!member.getFunktionen().isEmpty()) {
+			
+			Predicate<Function> gfmOrGfw = f -> "GFW".equals(f.getKey()) || "GFM".equals(f.getKey());
+			
+			if (member.getFunktionen().stream().anyMatch(gfmOrGfw)) {
+				Collection<Function> functs = functionRepo.findAll().stream().filter(gfmOrGfw).collect(Collectors.toList());
+				for (Function funct : functs) {
+					if (member.getFunktionen().contains(funct)) {
+						List<Member> gfmOrGfws = memberRepo.findByFunction(funct).stream().
+								filter(m -> member != m && m.getFunktionen().contains(funct)).collect(Collectors.toList());
+						if (!gfmOrGfws.isEmpty()) {
+							results.add(new ValidationResult(false, "Nur ein GFM o. GFW zulässig: "+gfmOrGfws+" : "+funct));
+						}
+					}
+				}
+			}
+		}
+		
 		return results;
 	}
+	
 
 }

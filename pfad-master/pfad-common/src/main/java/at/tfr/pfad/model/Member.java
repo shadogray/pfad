@@ -76,6 +76,7 @@ import at.tfr.pfad.dao.AuditListener;
 	@NamedQuery(name = "Member.distAnredeLike", query = "select distinct m.anrede from Member m where lower(m.anrede) like ?1 order by m.anrede"),
 	@NamedQuery(name = "Member.distReligion", query = "select distinct m.religion from Member m where m.religion is not null order by m.religion"),
 	@NamedQuery(name = "Member.distReligionLike", query = "select distinct m.religion from Member m where lower(m.religion) like ?1 order by m.religion"), 
+	@NamedQuery(name = "Member.withFunction", query = "select m from Member m where ?1 member of m.funktionen"),
 	})
 @NamedEntityGraphs({
 		@NamedEntityGraph(name = "fetchAll", 
