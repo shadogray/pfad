@@ -105,7 +105,7 @@ public class MemberValidator {
 		if (member.getTrupp() != null) {
 
 			if (!member.isAktiv()) {
-				results.add(new ValidationResult(false, INAKTIV_IM_TRUPP));
+				results.add(new ValidationResult(false, INAKTIV_IM_TRUPP + ": " + member.getTrupp()));
 			}
 
 			SquadType type = member.getTrupp().getType();

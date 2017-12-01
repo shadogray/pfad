@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -32,6 +33,10 @@ public class TestDownloadBean {
 	private DownloadBean db = new DownloadBean();
 	private Collection<Member> leaders = new ArrayList<Member>();
 	private MemberValidator mv = new MemberValidator();
+	
+	{
+		BeanProvider.injectFields(mv);
+	}
 	
 	@Test
 	public void testValidationVollzahler() throws Exception {

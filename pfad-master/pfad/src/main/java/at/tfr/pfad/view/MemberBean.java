@@ -308,6 +308,11 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.telefon)), '%' + Telefon.toLowerCase() + '%'));
 		}
+		String Strasse = getMemberExample().getStrasse();
+		if (Strasse != null && !"".equals(Strasse)) {
+			predicatesList
+					.add(builder.like(builder.lower(root.get(Member_.strasse)), '%' + Strasse.toLowerCase() + '%'));
+		}
 		if (getMemberExample().getGeschlecht() != null) {
 			predicatesList.add(builder.equal(root.get(Member_.geschlecht), getMemberExample().getGeschlecht()));
 		}

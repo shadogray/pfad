@@ -791,10 +791,12 @@ input[type="color"],
   color: #555555;
 }
 
+/*
 input,
 textarea {
   width: 210px;
 }
+*/
 
 textarea {
   height: auto;

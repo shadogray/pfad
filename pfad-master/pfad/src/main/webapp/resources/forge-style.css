@@ -1,4 +1,10 @@
 @charset "UTF-8";
+
+/* Bootstrap overrides:
+input textarea {
+	width: inherit !important;
+}
+
 /* Core styles for the page */
 body {
 	margin: 0;
@@ -268,7 +274,21 @@ footer p {
 }
 
 .content table .component2 {
-	/*width: 35%;*/
+	width: 35%;
+	text-align: left;
+	vertical-align: top;
+	max-width: 200px;
+}
+
+.content table .label3 {
+	width: 5%;
+	text-align: left;
+	vertical-align: top;
+	white-space: nowrap;
+}
+
+.content table .component3 {
+	width: 20%;
 	text-align: left;
 	vertical-align: top;
 	max-width: 200px;
@@ -773,6 +793,42 @@ h2.page-header {
 
 h4.page-header {
 	font-size: 16px;
+}
+
+.w10 {
+	width: 10px;
+}
+
+.w15 {
+	width: 15px;
+}
+
+.w20 {
+	width: 20px;
+}
+
+.w25 {
+	width: 25px;
+}
+
+.w30 {
+	width: 30px;
+}
+
+.w35 {
+	width: 35px;
+}
+
+.w40 {
+	width: 40px;
+}
+
+.w50 {
+	width: 50px;
+}
+
+.w60 {
+	width: 60px;
 }
 
 .fullwidth, td.component2 input, td.component2 .rf-au {
