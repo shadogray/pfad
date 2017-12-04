@@ -34,7 +34,7 @@ public class ProcessorBean implements Serializable {
 		doBackup();
 	}
 
-	@Schedule(persistent = false, hour = "*", minute = "0", second = "0")
+	@Schedule(persistent = false, hour = "0", minute = "0", second = "5")
 	public void doBackup() {
 		try {
 			Configuration test = configRepo.findOptionalByCkey("test");
