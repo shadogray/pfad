@@ -54,10 +54,17 @@
 							</p:inputText>
 						</h:panelGroup>
 
-						<h:panelGrid columns="6" width="100%">
-							<h:outputLabel for="mbeTelefon" value="Telefon:" styleClass="w50"/>
+						<h:panelGrid columns="8" width="100%">
+							<h:outputLabel for="mbeTelefon" value="Tel:" styleClass="w30"/>
 							<h:panelGroup>
-								<h:inputText id="mbeTelefon" value="#{memberBean.example.telefon}" styleClass="w100">
+								<h:inputText id="mbeTelefon" value="#{memberBean.example.telefon}" styleClass="w80">
+									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+								</h:inputText>
+							</h:panelGroup>
+
+							<h:outputLabel for="mbeEmail" value="Email:" styleClass="w40"/>
+							<h:panelGroup>
+								<h:inputText id="mbeEmail" value="#{memberBean.example.email}" styleClass="w80">
 									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 								</h:inputText>
 							</h:panelGroup>
@@ -222,6 +229,24 @@
 						<h:link outcome="view">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemStrasse" value="#{_item.strasse}" />
+						</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Tel" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemTelefon" value="#{_item.telefon}" />
+						</h:link>
+					</h:column>
+					<h:column>
+						<f:facet name="header">
+							<h:outputText value="Email" />
+						</f:facet>
+						<h:link outcome="view">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemEmail" value="#{_item.email}" />
 						</h:link>
 					</h:column>
 				</h:dataTable>

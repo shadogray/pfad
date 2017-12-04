@@ -310,6 +310,11 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 			predicatesList
 					.add(builder.like(builder.lower(root.get(Member_.telefon)), '%' + Telefon.toLowerCase() + '%'));
 		}
+		String Email = getMemberExample().getEmail();
+		if (Email != null && !"".equals(Email)) {
+			predicatesList
+					.add(builder.like(builder.lower(root.get(Member_.email)), '%' + Email.toLowerCase() + '%'));
+		}
 		String Strasse = getMemberExample().getStrasse();
 		if (Strasse != null && !"".equals(Strasse)) {
 			predicatesList
