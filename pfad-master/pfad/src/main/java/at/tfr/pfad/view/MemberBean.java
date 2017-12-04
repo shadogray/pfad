@@ -144,9 +144,6 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 			
 			log.info("updated " + member + " by " + sessionContext.getCallerPrincipal());
 	
-			if (StringUtils.isEmpty(member.getBVKey())) {
-				member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
-			}
 			validateMember(member, true);
 			
 			if (id == null) {
@@ -156,6 +153,11 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 				member = entityManager.merge(member);
 			}
 			
+			// add BV-Key after persist!!
+			if (StringUtils.isEmpty(member.getBVKey())) {
+				member.setBVKey(Configuration.BADEN_KEYPFX + member.getId());
+			}
+
 			if (member.getSiblings() != null && !member.getSiblings().isEmpty()) {
 				List<Member> siblings = new ArrayList<>(member.getSiblings());
 				for (Member sibling : siblings) {
