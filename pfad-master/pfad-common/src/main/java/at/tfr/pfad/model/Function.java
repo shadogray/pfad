@@ -102,6 +102,10 @@ public class Function extends BaseEntity implements Presentable, Comparable<Func
 	public Boolean getExportReg() {
 		return exportReg;
 	}
+	
+	public boolean isExportReg() {
+		return Boolean.TRUE.equals(exportReg);
+	}
 
 	public void setExportReg(Boolean exportReg) {
 		this.exportReg = Boolean.TRUE.equals(exportReg);
@@ -109,6 +113,10 @@ public class Function extends BaseEntity implements Presentable, Comparable<Func
 
 	public Boolean getFree() {
 		return free;
+	}
+
+	public boolean isFree() {
+		return Boolean.TRUE.equals(free);
 	}
 
 	public void setFree(Boolean free) {

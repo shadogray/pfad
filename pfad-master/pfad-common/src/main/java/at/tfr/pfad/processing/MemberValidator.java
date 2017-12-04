@@ -5,7 +5,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  */
 
-package at.tfr.pfad.view.validator;
+package at.tfr.pfad.processing;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +26,7 @@ import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.util.ValidationResult;
 
 @Stateless
 public class MemberValidator {
@@ -36,6 +37,7 @@ public class MemberValidator {
 	public static String INAKTIV_IM_TRUPP = "Inaktives Mitlgied im Trupp";
 	public static String KEIN_TRUPP_FUNKTION = "Weder Trupp noch Funktion";
 	public static String INAKTIV_ALS_LEITER = "Inaktiv als Leiter/Assistent";
+	public static String INAKTIV_ALS_FUNKTION = "Inaktiv als Funktion";
 
 	@Inject
 	private MemberRepository memberRepo;
@@ -73,7 +75,7 @@ public class MemberValidator {
 				results.add(new ValidationResult(false, "Bei Aktiven darf PLZ nicht leer sein."));
 		}
 		
-		List<Function> funcExp = member.getFunktionen().stream().filter(f -> f.getExportReg())
+		List<Function> funcExp = member.getFunktionen().stream().filter(f -> f.isExportReg())
 				.collect(Collectors.toList());
 		if (!member.isAktiv() && !funcExp.isEmpty()) {
 			results.add(new ValidationResult(false, "Inaktiv mit " + funcExp));
@@ -85,8 +87,10 @@ public class MemberValidator {
 			results.add(new ValidationResult(false, "ZBV und Assistent in "+ trupps + " - Nicht sinnvoll!: " + squadRepo.findByResponsible(member)));
 		}
 
-		if (!member.isAktiv() && leaders.contains(member)) {
-			results.add(new ValidationResult(false, INAKTIV_ALS_LEITER + ": " + squadRepo.findByResponsible(member)));
+		if (!member.isAktiv()) {
+			if (leaders.contains(member)) {
+				results.add(new ValidationResult(false, INAKTIV_ALS_LEITER + ": " + squadRepo.findByResponsible(member)));
+			}
 		}
 
 		if (member.isAktiv() && member.getVollzahler() != null && member.getVollzahler().getVollzahler() != null) {

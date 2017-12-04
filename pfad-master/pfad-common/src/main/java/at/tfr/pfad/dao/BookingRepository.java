@@ -2,6 +2,7 @@ package at.tfr.pfad.dao;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -14,6 +15,7 @@ import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 
 @Repository
@@ -56,4 +58,6 @@ public abstract class BookingRepository implements EntityRepository<Booking, Lon
 		return list;
 	}
 	
+	public abstract List<Booking> findByMemberAndActivityOrderByIdDesc(Member member, Activity activity);
+
 }

@@ -1,4 +1,4 @@
-package at.tfr.pfad.view;
+package at.tfr.pfad.util;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -102,6 +102,10 @@ public class SessionBean implements Serializable {
 	
 	public boolean isTrainingAllowed() {
 		return isAdmin() || isGruppe() || isTrainer();
+	}
+	
+	public boolean isRegActionsAllowed() {
+		return isAdmin() || isGruppe();
 	}
 	
 	public Squad getSquad() {

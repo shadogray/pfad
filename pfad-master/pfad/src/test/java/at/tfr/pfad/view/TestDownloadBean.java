@@ -24,8 +24,8 @@ import at.tfr.pfad.SquadType;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
-import at.tfr.pfad.view.validator.MemberValidator;
-import at.tfr.pfad.view.validator.ValidationResult;
+import at.tfr.pfad.processing.MemberValidator;
+import at.tfr.pfad.util.ValidationResult;
 
 @RunWith(CdiTestRunner.class)
 public class TestDownloadBean {

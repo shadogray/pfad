@@ -16,23 +16,27 @@
 	<ui:define name="main">
 		<h:form id="download">
 			<h:messages />
-			<h:panelGroup styleClass="buttons">
-				<h:outputLabel value="Registrierungs-Daten" />
+			<h:panelGrid styleClass="buttons" columns="8">
+				<h:commandLink value="Download Gesamt" action="#{downloadBean.downloadAll()}" styleClass="btn btn-primary"
+					disabled="#{!downloadBean.downloadAllowed}" />
 				<h:commandLink value="Download Vor-Registrierung" action="#{downloadBean.downloadVorRegistrierung()}"
 					styleClass="btn btn-primary" disabled="#{!downloadBean.downloadAllowed}" />
                 <h:commandLink value="Download Registrierung" action="#{downloadBean.downloadRegistrierung()}"
                     styleClass="btn btn-primary" disabled="#{!downloadBean.downloadAllowed}" />
                 <h:commandLink value="Download Nach-Registrierung" action="#{downloadBean.downloadNachRegistrierung()}"
                     styleClass="btn btn-primary" disabled="#{!downloadBean.downloadAllowed}" />
-			</h:panelGroup>
+                <h:outputLabel value="Nur NeuReg:" />
+                <h:selectBooleanCheckbox value="#{downloadBean.notRegisteredOnly}" immediate="true" disabled="#{!sessionBean.regActionsAllowed}"/>
+                <h:outputLabel value="Mit RegUpdate:" />
+                <h:selectBooleanCheckbox value="#{downloadBean.updateRegistered}" immediate="true" disabled="#{!sessionBean.regActionsAllowed}"/>
 
-			<h:panelGroup styleClass="buttons">
-				<h:outputLabel value="Daten gesamt" />
-				<h:commandLink value="Download Gesamt" action="#{downloadBean.downloadAll()}" styleClass="btn btn-primary"
-					disabled="#{!downloadBean.downloadAllowed}" />
 				<h:commandLink value="Download MitBuchgn" action="#{downloadBean.downloadAllWithBookings()}" styleClass="btn btn-primary"
 					disabled="#{!downloadBean.downloadAllowed}" />
-			</h:panelGroup>
+				<h:outputText value="" />
+				<h:outputText value="" />
+				<h:outputText value="" />
+			</h:panelGrid>
+
 		</h:form>
 
 		<h:form id="query">

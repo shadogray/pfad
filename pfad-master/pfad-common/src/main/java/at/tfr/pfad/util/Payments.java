@@ -1,4 +1,4 @@
-package at.tfr.pfad.view;
+package at.tfr.pfad.util;
 
 import java.util.ArrayList;
 import java.util.List;

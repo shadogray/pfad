@@ -43,6 +43,9 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Participation;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Training;
+import at.tfr.pfad.util.Bookings;
+import at.tfr.pfad.util.Payments;
+import at.tfr.pfad.util.SessionBean;
 
 /**
  * @author u0x27vo

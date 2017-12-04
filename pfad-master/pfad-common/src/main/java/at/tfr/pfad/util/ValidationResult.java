@@ -1,4 +1,4 @@
-package at.tfr.pfad.view.validator;
+package at.tfr.pfad.util;
 
 public class ValidationResult {
 

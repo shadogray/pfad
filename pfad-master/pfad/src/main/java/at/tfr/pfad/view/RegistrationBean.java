@@ -1,10 +1,8 @@
 package at.tfr.pfad.view;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
@@ -20,11 +18,9 @@ import org.jboss.logging.Logger;
 import org.primefaces.event.RowEditEvent;
 
 import at.tfr.pfad.RegistrationStatus;
-import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.RegistrationRepository;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Registration;
-import at.tfr.pfad.view.convert.RegistrationStatusConverter;
 
 @Named
 @ViewScoped

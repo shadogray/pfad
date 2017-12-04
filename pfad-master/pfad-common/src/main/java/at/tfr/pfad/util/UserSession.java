@@ -1,4 +1,4 @@
-package at.tfr.pfad.view;
+package at.tfr.pfad.util;
 
 import java.io.Serializable;
 import java.security.Principal;

@@ -62,8 +62,12 @@ import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
-import at.tfr.pfad.view.validator.MemberValidator;
-import at.tfr.pfad.view.validator.ValidationResult;
+import at.tfr.pfad.processing.MemberValidator;
+import at.tfr.pfad.processing.RegistrationDataGenerator;
+import at.tfr.pfad.processing.RegistrationDataGenerator.DataStructure;
+import at.tfr.pfad.processing.RegistrationDataGenerator.RegConfig;
+import at.tfr.pfad.util.SessionBean;
+import at.tfr.pfad.util.ValidationResult;
 
 @Named
 @SessionScoped
@@ -71,42 +75,22 @@ import at.tfr.pfad.view.validator.ValidationResult;
 public class DownloadBean implements Serializable {
 
 	private Logger log = Logger.getLogger(getClass());
-
-	enum HeaderRegistrierung {
-		BVKey, GruppenSchlussel, PersonenKey, Titel, Name, Vorname, Anrede, GebTag, GebMonat, GebJahr, Straße, PLZ, Ort, Geschlecht, Aktiv, Vollzahler, Email, Religion, Telefon, Funktionen,
-	}
-
-	enum HeaderGruppe {
-		Key, Name, Heim1, Straße1, Plz1, Ort1, Heim2, Straße2, Plz2, Ort2, BIC, IBAN, Bezirk, Web, Mail, Gruendungsjahr, Verein, Letzte_Wahl_GFm, Letzte_Wahl_GFw, Letzte_Wahl_ER, ZVR, BLZ, KontoNr;
-	}
-
-	enum HeaderLocal {
-		OK, Reg, Trupp, Religion, FunktionenBaden, Trail, Gilde, AltER, InfoMail, Mitarbeit, Eltern, Kinder, KinderTrupps
-	}
-
-	enum DataStructure {
-		XLS, CSV, XLSX
-	}
 	
 	@Inject
-	private MemberRepository membRepo;
+	private SessionBean sessionBean;
+	@Inject
+	private SquadBean squadBean;
 	@Inject
 	private SquadRepository squadRepo;
 	@Inject
 	private ConfigurationRepository configRepo;
 	@Inject
-	private ActivityRepository activityRepo;
-	@Inject
-	private BookingRepository bookingRepo;
-	@Inject
-	private SquadBean squadBean;
-	@Inject
-	private SessionBean sessionBean;
-	@Inject
-	private MemberValidator memberValidator;
-	@Inject
 	private EntityManager em;
+	@Inject
+	private RegistrationDataGenerator regDataGenerator;
 	private Configuration configuration;
+	private boolean updateRegistered;
+	private boolean notRegisteredOnly;
 	private String query;
 	private boolean nativeQuery;
 	private List<List<?>> results = new ArrayList<>();
@@ -121,11 +105,11 @@ public class DownloadBean implements Serializable {
 	}
 
 	public String downloadRegistrierung() throws Exception {
-		return downloadData(new RegConfig(), null);
+		return downloadData(new RegConfig().withUpdateRegistered(updateRegistered), null);
 	}
 
 	public String downloadNachRegistrierung() throws Exception {
-		return downloadData(new RegConfig().notRegistered(), null);
+		return downloadData(new RegConfig().withUpdateRegistered(updateRegistered).notRegistered(notRegisteredOnly), null);
 	}
 
 	public String downloadAll() throws Exception {
@@ -151,6 +135,22 @@ public class DownloadBean implements Serializable {
 		return false;
 	}
 
+	public boolean isUpdateRegistered() {
+		return updateRegistered;
+	}
+	
+	public void setUpdateRegistered(boolean updateRegistered) {
+		this.updateRegistered = updateRegistered;
+	}
+	
+	public boolean isNotRegisteredOnly() {
+		return notRegisteredOnly;
+	}
+	
+	public void setNotRegisteredOnly(boolean notRegisteredOnly) {
+		this.notRegisteredOnly = notRegisteredOnly;
+	}
+	
 	public String downloadData(RegConfig config, Predicate<Member> filter, Squad... squads) throws Exception {
 		try {
 
@@ -160,7 +160,7 @@ public class DownloadBean implements Serializable {
 
 			ExternalContext ectx = setHeaders("Export");
 			try (OutputStream os = ectx.getResponseOutputStream()) {
-				HSSFWorkbook wb = generateData(config, filter, squads);
+				HSSFWorkbook wb = regDataGenerator.generateData(config, filter, squads);
 				wb.write(os);
 			}
 			FacesContext.getCurrentInstance().responseComplete();
@@ -174,268 +174,6 @@ public class DownloadBean implements Serializable {
 		return "";
 	}
 
-	private HSSFWorkbook generateData(RegConfig config, Predicate<Member> filter, Squad... squads) {
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet("Personen");
-		CellStyle red = wb.createCellStyle();
-		red.setFillForegroundColor(HSSFColor.RED.index);
-		red.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-		squads = Stream.of(squads).filter(s->s != null).collect(Collectors.toList()).toArray(new Squad[]{});
-
-		// non-filtered members
-		if (filter == null) {
-			filter = m -> true;
-		}
-		
-		int rCount = 0;
-		HSSFRow row = sheet.createRow(rCount++);
-		
-		List<Activity> activities = activityRepo.findAll().stream().filter(a->!a.isFinished())
-				.sorted((a,b) -> a.getName().compareTo(b.getName())).collect(Collectors.toList());
-
-		List<String> headers = Arrays.asList(HeaderRegistrierung.values()).stream().map(h -> h.name())
-				.collect(Collectors.toList());
-		if (config.withLocal) {
-			headers.addAll(
-					Arrays.asList(HeaderLocal.values()).stream().map(h -> h.name()).collect(Collectors.toList()));
-		}
-		if (config.withBookings) {
-			headers.add("--");
-			headers.addAll(activities.stream().map(a->a.getName()).collect(Collectors.toList()));
-		}
-
-		for (int i = 0; i < headers.size(); i++) {
-			String h = transformHeaders(headers, i);
-			HSSFCell c = row.createCell(i);
-			c.setCellValue(h);
-		}
-
-		Activity membership = activityRepo.findActive().stream()
-				.filter(a -> ActivityType.Membership.equals(a.getType())).findFirst().orElse(null);
-		 
-		Collection<Member> leaders = squadRepo.findLeaders();
-		List<Member> members = getMembers().stream().filter(filter).collect(Collectors.toList());
-
-		for (Member m : members) {
-			
-			if (!config.withLocal && !memberValidator.isGrinsExportable(m, leaders))
-				continue;
-
-			if (squads != null && squads.length > 0) {
-				if (!Stream.of(squads).anyMatch(s -> s.equals(m.getTrupp()))) {
-					continue;
-				}
-			}
-
-			Booking memberBooking = null;
-			if (membership != null) {
-				memberBooking = m.getBookings().stream()
-						.filter(b -> membership.equals(b.getActivity())).findFirst().orElse(null);
-			}
-			if (config.notRegistered && memberBooking != null && Boolean.TRUE.equals(memberBooking.getRegistered())) {
-				continue;
-			}
-
-			List<ValidationResult> vr = memberValidator.validate(m, getFunktionen(m), leaders);
-
-			row = sheet.createRow(rCount++);
-
-			int cCount = 0;
-			// BVKeyBVKey
-			row.createCell(cCount++).setCellValue(m.getBVKey());
-			// GruppenSchlussel
-			row.createCell(cCount++).setCellValue(m.getGruppenSchluessel());
-			// PersonenKey
-			row.createCell(cCount++).setCellValue(m.getPersonenKey());
-			// Titel
-			row.createCell(cCount++).setCellValue(m.getTitel());
-			// Name
-			row.createCell(cCount++).setCellValue(m.getName());
-			// Vorname
-			row.createCell(cCount++).setCellValue(m.getVorname());
-			// Anrede
-			row.createCell(cCount++).setCellValue(m.getAnrede());
-			// GebTag
-			row.createCell(cCount++).setCellValue(m.getGebTag());
-			// GebMonat
-			row.createCell(cCount++).setCellValue(m.getGebMonat());
-			// GebJahr
-			row.createCell(cCount++).setCellValue(m.getGebJahr());
-			// Straße
-			row.createCell(cCount++).setCellValue(m.getStrasse());
-			// PLZ
-			row.createCell(cCount++).setCellValue(m.getPLZ());
-			// Ort
-			row.createCell(cCount++).setCellValue(m.getOrt());
-			// Geschlecht
-			row.createCell(cCount++).setCellValue(m.getGeschlecht() != null ? m.getGeschlecht().name() : "");
-			// Aktiv
-			row.createCell(cCount++).setCellValue(m.isAktiv() ? "J" : "N");
-			// Vollzahler
-			row.createCell(cCount++).setCellValue(m.getFunktionen().stream().anyMatch(f->Function.PTA.equals(f.getKey())) ? "P" : (m.getVollzahler() != null ? m.getVollzahler().getBVKey() : "N"));
-			// Email
-			row.createCell(cCount++).setCellValue(m.getEmail());
-			// Religion
-			row.createCell(cCount++).setCellValue(config.withLocal ? m.getReligion() : ""); // do not return Religion
-			// Telefon
-			row.createCell(cCount++).setCellValue(m.getTelefon());
-			// Funktionen
-			row.createCell(cCount++).setCellValue(getFunktionen(m));
-
-			// and Local Data
-			if (config.withLocal) { // Religion, FunktionenBaden, Trail, Gilde, AltER
-
-				HSSFCell ok = row.createCell(cCount++);
-				if (!vr.isEmpty()) {
-					ok.setCellValue(vr.stream().map(v -> v.getMessage()).collect(Collectors.joining(",")));
-					ok.setCellStyle(red);
-				}
-
-				row.createCell(cCount++).setCellValue(memberBooking != null ? ""+Boolean.TRUE.equals(memberBooking.getRegistered()) : "");
-				row.createCell(cCount++).setCellValue(m.getTrupp() != null ? m.getTrupp().getName() : "");
-				row.createCell(cCount++).setCellValue(m.getReligion());
-				row.createCell(cCount++).setCellValue("");
-				row.createCell(cCount++).setCellValue(m.isTrail() ? "X" : "");
-				row.createCell(cCount++).setCellValue(m.isGilde() ? "X" : "");
-				row.createCell(cCount++).setCellValue(m.isAltER() ? "X" : "");
-				row.createCell(cCount++).setCellValue(m.isInfoMail() ? "X" : "");
-				row.createCell(cCount++).setCellValue(m.isSupport() ? "X" : "");
-				// Eltern, Kinder, KinderTrupps
-				row.createCell(cCount++).setCellValue(!m.getSiblings().isEmpty() ? "X" : "");
-				row.createCell(cCount++)
-						.setCellValue(m.getSiblings().stream().map(s -> s.toString()).collect(Collectors.joining(",")));
-				row.createCell(cCount++).setCellValue(m.getSiblings().stream()
-						.map(s -> s.getTrupp() != null ? s.getTrupp().getName() : "").collect(Collectors.joining(",")));
-			}
-			
-			if (config.withBookings) {
-				row.createCell(cCount++).setCellValue("");
-				for (Activity a : activities) {
-					Optional<Booking> bOpt = m.getBookings().stream()
-							.filter(b-> b.isValid() && a.equals(b.getActivity())).findAny();
-					row.createCell(cCount++).setCellValue(bOpt.isPresent() ? ""+a.getName() : "");
-				}
-			}
-
-		}
-
-		formatGruppeSheet(wb.createSheet("Gruppe"), config);
-		formatStatusSheet(wb.createSheet("Status"), config);
-
-		return wb;
-	}
-
-	private HSSFSheet formatGruppeSheet(HSSFSheet sheet, RegConfig config) {
-		// Key Name Heim1 Straße1 Plz1 Ort1 Heim2 Straße2 Plz2 Ort2 BIC IBAN
-		// Bezirk Web Mail
-		// Gründungsjahr Verein Letzte Wahl GFm Letzte Wahl GFw Letzte Wahl ER
-		// ZVR BLZ KontoNr
-		// BAD Baden Marchetstraße 7 2500 Baden 0 0 www.ontrail.at
-		// vorstand@ontrail.at
-		// 22.06.14 22.06.14 2015-11-18 0 0
-		List<String> headers = transformGruppeHeaders();
-		HSSFRow row = sheet.createRow(0);
-		for (int i = 0; i < headers.size(); i++) {
-			row.createCell(i).setCellValue(headers.get(i));
-		}
-		row = sheet.createRow(1);
-		int cCount = 0;
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Key.name(), "BAD"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Name.name(), "Baden"));
-		row.createCell(cCount++)
-				.setCellValue(configRepo.getValue(HeaderGruppe.Heim1.name(), "Fritz Fangl Pfadfinderheim"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Straße1.name(), "Marchetstraße 7"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Plz1.name(), "2500"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Ort1.name(), "Baden"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Heim2.name(), ""));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Straße2.name(), ""));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Plz2.name(), ""));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Ort2.name(), ""));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.BIC.name(), ""));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.IBAN.name(), ""));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Bezirk.name(), "Baden"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Web.name(), "www.ontrail.at"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Mail.name(), "vorstand@ontrail.at"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Gruendungsjahr.name(), "1930"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Verein.name(), ""));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_GFw.name(), "22.06.2014"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_GFm.name(), "22.06.2014"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.Letzte_Wahl_ER.name(), "18.11.2015"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.ZVR.name(), "545163933"));
-		row.createCell(cCount++).setCellValue(configRepo.getValue(HeaderGruppe.BLZ.name(), "20205"));
-		return sheet;
-	}
-
-	private HSSFSheet formatStatusSheet(HSSFSheet sheet, RegConfig config) {
-		int rCount = 0;
-		// "Export_" + DateTime.now().toString("yyyy.mm.dd"));
-		// Die Auswertung wurde mit folgenden Optionen erstellt:
-		HSSFRow row = sheet.createRow(rCount++);
-		row.createCell(0).setCellValue("Die Auswertung wurde mit folgenden Optionen erstellt:");
-		// Gruppenkürzel BAD
-		row = sheet.createRow(rCount++);
-		row.createCell(0).setCellValue("Gruppenkürzel");
-		row.createCell(1).setCellValue(configRepo.getValue(HeaderGruppe.Key.name(), "BAD"));
-		// Auswertung vom 23.12.2015 10:22
-		row = sheet.createRow(rCount++);
-		row.createCell(0).setCellValue("Auswertung vom");
-		row.createCell(1).setCellValue(DateTime.now().toString("dd.MM.yyyy HH:mm"));
-		// GRINS Art HR
-		row = sheet.createRow(rCount++);
-		row.createCell(0).setCellValue("GRINS Art");
-		if (config.vorRegistrierung) {
-			row.createCell(1).setCellValue(configRepo.getValue("GRINS_Art_VorReg", "VR"));
-		} else {
-			row.createCell(1).setCellValue(configRepo.getValue("GRINS_Art", "HR"));
-		}
-		// Benutzer reg
-		row = sheet.createRow(rCount++);
-		row.createCell(0).setCellValue("Benutzer");
-		row.createCell(1).setCellValue(sessionBean.getUser().getName());
-		// Akzeptierte Fehler
-		row = sheet.createRow(rCount++);
-		row.createCell(0).setCellValue("Akzeptierte Fehler");
-		row.createCell(1).setCellValue("");
-
-		return sheet;
-	}
-
-	private List<String> transformGruppeHeaders() {
-		return Stream.of(HeaderGruppe.values())
-				.map(h -> h.name().replaceAll("_", " ").replaceAll("ue", "ü").replaceAll("oe", "ö"))
-				.collect(Collectors.toList());
-	}
-
-	private String transformHeaders(List<String> headers, int i) {
-		String h = headers.get(i);
-		switch (h) {
-		case "Vollzahler":
-			h = "Ermäßigt";
-			break;
-		case "BVKey":
-			h = "BV-Key";
-			break;
-		case "GruppenSchlussel":
-			h = "GruppenSchlüssel";
-			break;
-		case "PLZ":
-			h = "Postleitzahl";
-			break;
-		}
-		return h;
-	}
-
-	private List<Member> getMembers() {
-		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
-		if (sessionBean.isAdmin() || sessionBean.isGruppe() || sessionBean.isVorstand())
-			return members;
-		if (sessionBean.isLeiter()) {
-			Squad squad = sessionBean.getSquad();
-			members = members.stream().filter(m -> m.getTrupp() != null && m.getTrupp().equals(squad))
-					.collect(Collectors.toList());
-		}
-		return members;
-	}
 
 	public static ExternalContext setHeaders(String prefix) {
 		DataStructure dataStructure = DataStructure.XLS;
@@ -472,46 +210,6 @@ public class DownloadBean implements Serializable {
 		return ectx;
 	}
 
-	private String getFunktionen(Member m) {
-		List<String> functions = new ArrayList<>();
-		if (m.getTrupp() != null) {
-			functions.add(m.getTrupp().getType().getKey(m.getGeschlecht()));
-		}
-
-		Collection<Function> funktionen = m.getFunktionen().stream()
-				.filter(f -> f.getKey() != null).collect(Collectors.toList());
-		
-		List<String> toLead = squadRepo.findByLeaderFemaleEqualOrLeaderMaleEqual(m).stream()
-				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
-		
-		List<String> toAss = squadRepo.findByAssistant(m).stream()
-				.map(s -> "AS" + s.getType().getKey(m.getGeschlecht())).collect(Collectors.toList());
-		
-		if (!funktionen.isEmpty()) {
-			functions.addAll(funktionen.stream()
-					.filter(f -> !Function.PTA.equals(f.getKey()))
-					.filter(f -> Boolean.FALSE.equals(f.getNoFunction()))
-					.map(f -> f.getKey()).collect(Collectors.toList()));
-		}
-
-		// Sobald aber jemand die Bezeichnung SF oder AS vor der Stufenbezeichnung hat, dann ist er definitiv kein ZBV mehr
-		if (!toLead.isEmpty() || !toAss.isEmpty()) {
-			funktionen = funktionen.stream()
-					.filter(f -> !f.getKey().equals(Function.ZBV)).collect(Collectors.toList());
-		}
-		
-		if (!funktionen.stream().anyMatch(f -> Boolean.TRUE.equals(f.getLeader()))) {
-			if (!functions.stream().anyMatch(f->(f.startsWith("SF") || f.startsWith("GF")))) {
-				functions.addAll(toLead);
-				functions.addAll(toAss);
-			}
-		}
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(functions.stream().distinct().collect(Collectors.joining(",")));
-		return sb.toString().trim();
-	}
-	
 	public String getQuery() {
 		return query;
 	}
@@ -713,41 +411,4 @@ public class DownloadBean implements Serializable {
 		return wb;
 	}
 	
-	class RegConfig {
-		boolean withLocal;
-		boolean notRegistered;
-		boolean withBookings;
-		boolean vorRegistrierung;
-		
-		public RegConfig() {
-			// TODO Auto-generated constructor stub
-		}
-
-		public RegConfig(boolean withLocal, boolean notRegistered, boolean withBookings) {
-			super();
-			this.withLocal = withLocal;
-			this.notRegistered = notRegistered;
-			this.withBookings = withBookings;
-		}
-
-		public RegConfig notRegistered() {
-			notRegistered = true;
-			return this;
-		}
-		
-		public RegConfig withLocal() {
-			withLocal = true;
-			return this;
-		}
-		
-		public RegConfig withBookings() {
-			withBookings = true;
-			return this;
-		}
-		
-		public RegConfig asVorRegistrierung() {
-			vorRegistrierung = true;
-			return this;
-		}
-	}
 }

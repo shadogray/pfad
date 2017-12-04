@@ -44,6 +44,7 @@ import org.richfaces.model.SortField;
 import com.google.common.collect.Lists;
 
 import at.tfr.pfad.model.PrimaryKeyHolder;
+import at.tfr.pfad.util.SessionBean;
 
 public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends ExtendedDataModel<U> implements Arrangeable {
 

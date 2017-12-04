@@ -21,8 +21,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.Part;
 import javax.transaction.SystemException;
-import javax.transaction.Transactional;
-import javax.transaction.UserTransaction;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +38,7 @@ import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.processing.ProcessData;
 import at.tfr.pfad.processing.ProcessExcelPayments;
-import at.tfr.pfad.view.DownloadBean.DataStructure;
+import at.tfr.pfad.processing.RegistrationDataGenerator;
 
 @Named
 @ViewScoped
@@ -136,7 +134,7 @@ public class PaymentImportBean implements Serializable {
 	}
 	
 	public void download() throws IOException {
-		DownloadBean.setHeaders(fileName, DataStructure.XLSX);
+		DownloadBean.setHeaders(fileName, RegistrationDataGenerator.DataStructure.XLSX);
 		OutputStream os = FacesContext.getCurrentInstance().getExternalContext().getResponseOutputStream();
 		os.write(resultContent);
 		FacesContext.getCurrentInstance().responseComplete();

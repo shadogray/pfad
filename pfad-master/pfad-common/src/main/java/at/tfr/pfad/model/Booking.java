@@ -189,6 +189,10 @@ public class Booking extends BaseEntity implements Auditable, Presentable, Compa
 	public void setRegistered(Boolean registered) {
 		this.registered = registered;
 	}
+	
+	public boolean isRegistered() {
+		return Boolean.TRUE.equals(registered);
+	}
 
 	public Date getChanged() {
 		return changed;
