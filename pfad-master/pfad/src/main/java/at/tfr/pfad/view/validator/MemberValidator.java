@@ -64,6 +64,15 @@ public class MemberValidator {
 			results.add(new ValidationResult(false, "Vorname darf nicht leer sein."));
 		}
 		
+		if (member.isAktiv()) {
+			if (StringUtils.isBlank(member.getStrasse()))
+				results.add(new ValidationResult(false, "Bei Aktiven darf Strasse nicht leer sein."));
+			if (StringUtils.isBlank(member.getOrt()))
+				results.add(new ValidationResult(false, "Bei Aktiven darf Ort nicht leer sein."));
+			if (StringUtils.isBlank(member.getPLZ()))
+				results.add(new ValidationResult(false, "Bei Aktiven darf PLZ nicht leer sein."));
+		}
+		
 		List<Function> funcExp = member.getFunktionen().stream().filter(f -> f.getExportReg())
 				.collect(Collectors.toList());
 		if (!member.isAktiv() && !funcExp.isEmpty()) {
