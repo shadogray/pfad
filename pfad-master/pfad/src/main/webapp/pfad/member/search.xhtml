@@ -38,7 +38,7 @@
 
 					<p:focus />
 			
-					<h:panelGrid columnClasses="label3,component3,label3,component3,label3,component3" columns="7">
+					<h:panelGrid columnClasses="label3,component3,label3,component3" columns="5">
 					
 						<h:outputLabel for="mbeName" value="Name:" />
 						<h:panelGroup>
@@ -54,24 +54,24 @@
 							</p:inputText>
 						</h:panelGroup>
 
-						<h:outputLabel for="mbeTelefon" value="Telefon:" />
-						<h:panelGroup>
-							<h:inputText id="mbeTelefon" value="#{memberBean.example.telefon}" >
-								<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
-							</h:inputText>
-						</h:panelGroup>
-
-						<h:panelGrid columns="4" columnClasses="w10,w15,w10,w10" width="100%">
-							<h:outputLabel for="mbeStrasse" value="Strasse:" />
+						<h:panelGrid columns="6" width="100%">
+							<h:outputLabel for="mbeTelefon" value="Telefon:" styleClass="w50"/>
 							<h:panelGroup>
-								<h:inputText id="mbeStrasse" value="#{memberBean.example.strasse}" >
+								<h:inputText id="mbeTelefon" value="#{memberBean.example.telefon}" styleClass="w100">
+									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+								</h:inputText>
+							</h:panelGroup>
+
+							<h:outputLabel for="mbeStrasse" value="Strasse:" styleClass="w50"/>
+							<h:panelGroup>
+								<h:inputText id="mbeStrasse" value="#{memberBean.example.strasse}" styleClass="w100">
 									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 								</h:inputText>
 							</h:panelGroup>
 							
-							<h:outputLabel for="mbeBVKey" value="BVKey:" />
+							<h:outputLabel for="mbeBVKey" value="BVKey:" styleClass="w40"/>
 							<h:panelGroup>
-								<h:inputText id="mbeBVKey" value="#{memberBean.example.BVKey}" >
+								<h:inputText id="mbeBVKey" value="#{memberBean.example.BVKey}" styleClass="w50">
 									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 								</h:inputText>
 							</h:panelGroup>
@@ -95,7 +95,6 @@
 							<h:message for="mbeFunktionen" styleClass="error" />
 						</h:panelGroup>
 
-						<h:outputLabel value="" />
 						<h:panelGroup>
 							<h:panelGrid columns="20">
 							
@@ -196,15 +195,6 @@
 						<h:link outcome="view">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
-						</h:link>
-					</h:column>
-					<h:column>
-						<f:facet name="header">
-							<h:outputText value="Frei" />
-						</f:facet>
-						<h:link outcome="view">
-							<f:param name="id" value="#{_item.id}" />
-							<h:outputText id="itemFrei" value="#{_item.free}" />
 						</h:link>
 					</h:column>
 					<h:column>

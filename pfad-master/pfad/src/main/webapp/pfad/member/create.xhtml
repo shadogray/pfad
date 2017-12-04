@@ -31,13 +31,15 @@
 
 	<ui:define name="main">
 		<h:form id="create">
+			
+			<p:messages />
 			<h:panelGrid id="messages" columns="2" rendered="#{!empty memberBean.validationResults}">
-				<p:messages />
 				<ui:repeat value="#{memberBean.validationResults}" var="vr">
 					<h:outputLabel value="ACHTUNG:" styleClass="error"/>
 					<h:outputText value="#{vr.message}" styleClass="error"/>
 				</ui:repeat>
 			</h:panelGrid>
+			
 			<p:focus />
 
 			<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
