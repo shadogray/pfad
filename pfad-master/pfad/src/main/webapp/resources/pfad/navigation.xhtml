@@ -27,6 +27,9 @@
 				</c:if>
 				<li><h:link outcome="/pfad/configuration/search" value="Konfig" /></li>
 				<li><h:link outcome="/pfad/actions" value="Aktionen" /></li>
+				<li><h:link outcome="/pfad/mailer" value="Mails" /></li>
+				<li><h:link outcome="/pfad/mail/mailtemplate" value="Templates" /></li>
+				<li><h:link outcome="/pfad/mail/mailmessage" value="Messages" /></li>
 				<li><a href="#{configurationBean.getValue('handbuchUrl')}">Handbuch</a></li>
 				<li><h:commandLink action="#{loginBean.logout()}" value="Beenden"/></li>
 				<li><h:outputLink value="#{request.contextPath}/apidocs/" target="apidocs">API</h:outputLink></li>

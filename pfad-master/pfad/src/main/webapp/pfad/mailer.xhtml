@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
+	xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui" 
+	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+	template="/resources/scaffold/pageTemplate.xhtml">
+
+	<ui:param name="pageTitle" value="Mailer" />
+	<f:metadata>
+		<f:viewParam name="id" value="#{mailerBean.mailTemplate}" converter="#{mailerBean.converter}"/>
+	</f:metadata>
+
+	<ui:define name="header">
+	</ui:define>
+	<ui:define name="subheader">Mailer</ui:define>
+	<ui:define name="footer" />
+
+	<ui:define name="main">
+		<h:form id="mailer">
+			
+			<p:messages autoUpdate="true"/>
+			<p:focus/>
+
+			<h:panelGrid columns="2" >
+
+				<h:outputLabel value="Template: "/>
+				<h:panelGroup>
+					<p:autoComplete value="#{mailerBean.mailTemplate}" completeMethod="#{mailTemplates.filtered}" emptyMessage="..." 
+						var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}" converter="#{mailerBean.converter}">
+						<p:ajax process="@this" update="@form"/>
+					</p:autoComplete>
+					<h:outputLabel value="Template Name:" />
+					<h:inputText value="#{mailerBean.mailTemplate.name}" />
+				</h:panelGroup>			
+
+				<h:outputLabel value="Mail: "/>			
+				<h:panelGrid columns="6" width="100%">
+					<h:outputLabel value="Sender:" />
+					<h:outputText value="#{mailerBean.from}"/>
+					<h:outputLabel value="Alias:" />
+					<h:outputText value="#{mailerBean.aliasConf.cvalue}"/>
+					<h:outputLabel value="Username:" />
+					<h:outputText value="#{mailerBean.username}"/>
+					<h:outputLabel value="CC:" />
+					<h:outputText value="#{mailerBean.ccConf.cvalue}"/>
+					<h:outputLabel value="BCC:" />
+					<h:outputText value="#{mailerBean.bccConf.cvalue}"/>
+				</h:panelGrid>
+				
+				<h:outputLabel value="Query: "/>			
+				<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" />
+	
+				<h:outputLabel value="Subject: "/>			
+				<p:inputText value="#{mailerBean.mailTemplate.subject}" />
+				
+				<h:outputLabel value="Text: "/>			
+				<p:editor value="#{mailerBean.mailTemplate.text}"/>
+
+				<h:outputLabel value="Aktionen: "/>			
+				<h:panelGrid columns="3" with="100%">	
+					<h:commandButton value="Vorbereiten" action="#{mailerBean.executeQuery}"/>
+					<h:commandButton value="Template Speicher" action="#{mailerBean.saveTemplate}"/>
+					<h:commandButton value="Mails Versenden!!" action="#{mailerBean.sendMessages}"/>
+				</h:panelGrid>
+			</h:panelGrid>
+
+
+			<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v" >
+				<p:columns value="#{mailerBean.valueKeys}" var="e">
+					<h:outputText value="#{v[e]}" />
+				</p:columns>
+			</p:dataTable>
+			
+			
+			<p:dataTable id="mailMessages" rendered="#{mailerBean.mailMessages != null}"  value="#{mailerBean.mailMessages}" var="m">
+				<p:column>
+					<f:facet name="header">An</f:facet>
+					<h:outputText value="#{m.receiver}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">Subject</f:facet>
+					<h:outputText value="#{m.subject}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">Mitglied</f:facet>
+					<h:outputText value="#{m.member}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">Nachricht</f:facet>
+					<h:outputText value="#{fn:substring(m.text,0,20)}" title="#{m.text}"/>
+				</p:column>
+			</p:dataTable>
+		
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

@@ -141,6 +141,8 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 	}
 
 	public String getCvalue() {
+		if ((""+ckey).toLowerCase().contains("password")) 
+			return "********";
 		return cvalue;
 	}
 
@@ -148,6 +150,10 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 		this.cvalue = cvalue;
 	}
 
+	public String getCvalueIntern() {
+		return cvalue;
+	}
+	
 	@Override
 	public int compareTo(Configuration o) {
 		if (this.id != null && o.id != null) 

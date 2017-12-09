@@ -17,8 +17,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import at.tfr.pfad.dao.MailTemplateRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.MailTemplate;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Squad;
@@ -32,6 +34,8 @@ public class TestPfadPersistence {
 	private EntityManagerFactory emf;
 	@Inject
 	private MemberRepository memberRepo;
+	@Inject
+	private MailTemplateRepository templateRepo;
 
 	@Before
 	public void init() {
@@ -138,6 +142,7 @@ public class TestPfadPersistence {
 		Member m = new Member();
 		m.setName("Name");
 		m.setVorname("Vorname");
+		m.setEmail("test@test.at");
 		
 		Squad s = new Squad();
 		s.setType(SquadType.RARO);
@@ -215,6 +220,18 @@ public class TestPfadPersistence {
 		// will not work :-(
 		assertTrue("Payment.bookings Assoziation verloren", !px.getBookings().isEmpty());
 		assertEquals("Payment.bookings Assoziation korrupt", b, px.getBookings().iterator().next());
+		
+	}
+	
+	@Test
+	public void testMailTemplates() throws Exception {
+		
+		MailTemplate template = new MailTemplate();
+		template.setName("test");
+		template.setQuery("query");
+		template.setSubject("subjece");
+		template.setText("test");
+		template = templateRepo.saveAndFlush(template);
 		
 	}
 }
