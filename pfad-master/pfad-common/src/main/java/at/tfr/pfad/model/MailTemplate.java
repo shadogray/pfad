@@ -37,9 +37,13 @@ public class MailTemplate extends BaseEntity implements Auditable {
 	@Column(name = "version")
 	private int version;
 
+	@Column(length=64)
 	private String name;
+	@Column(length=256)
 	private String subject;
+	@Column(length=40960)
 	private String text;
+	@Column(length=4096)
 	private String query;
 	
 	protected Date changed;

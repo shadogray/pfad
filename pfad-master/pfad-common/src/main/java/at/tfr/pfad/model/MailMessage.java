@@ -32,8 +32,11 @@ public class MailMessage extends BaseEntity {
 	private MailTemplate template;
 	@ManyToOne
 	private Member member;
+	@Column(length=256)
 	private String receiver;
+	@Column(length=256)
 	private String subject;
+	@Column(length=4096)
 	private String text;
 	protected Date created;
 	protected String createdBy;

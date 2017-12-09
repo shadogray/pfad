@@ -1,6 +1,7 @@
 package at.tfr.pfad.util;
 
 import javax.enterprise.context.NonexistentConversationException;
+import javax.faces.application.FacesMessage;
 import javax.faces.application.ViewExpiredException;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -9,7 +10,6 @@ import org.apache.deltaspike.core.api.exception.control.ExceptionHandler;
 import org.apache.deltaspike.core.api.exception.control.Handles;
 import org.apache.deltaspike.core.api.exception.control.event.ExceptionEvent;
 import org.jboss.logging.Logger;
-import org.omnifaces.util.Messages;
 
 @ExceptionHandler
 public class PfadExceptionHandler
@@ -19,7 +19,8 @@ public class PfadExceptionHandler
     void printExceptions(@Handles ExceptionEvent<Throwable> evt)
     {
         log.info("Exception:" + evt.getException().getMessage(), evt.getException());
-        Messages.addError(null, "Exception: "+evt.getException().getMessage());
+        FacesContext.getCurrentInstance().addMessage(null, 
+        		new FacesMessage(FacesMessage.SEVERITY_ERROR, "Exception: "+evt.getException().getMessage(), null));
         if (evt.getException() instanceof NonexistentConversationException
         		|| evt.getException() instanceof ViewExpiredException) {
         	try {

@@ -234,6 +234,11 @@ public class MailMessageBean extends BaseBean<MailMessage> implements Serializab
 			predicatesList
 					.add(builder.like(builder.lower(root.get(MailMessage_.text)), '%' + text.toLowerCase() + '%'));
 		}
+		String createdBy = this.example.getCreatedBy();
+		if (StringUtils.isNotBlank(createdBy)) {
+			predicatesList
+					.add(builder.like(builder.lower(root.get(MailMessage_.createdBy)), '%' + createdBy.toLowerCase() + '%'));
+		}
 		if (StringUtils.isNotBlank(memberName)) {
 			Predicate name = builder.like(builder.lower(root.get(MailMessage_.member).get(Member_.name)), '%' + subject.toLowerCase() + '%');
 			Predicate vorname = builder.like(builder.lower(root.get(MailMessage_.member).get(Member_.vorname)), '%' + subject.toLowerCase() + '%');

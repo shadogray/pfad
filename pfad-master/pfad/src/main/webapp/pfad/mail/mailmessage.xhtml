@@ -11,10 +11,10 @@
 		<f:event type="preRenderView" listener='#{mailMessageBean.paginate}' />
 	</f:metadata>
 
-	<ui:param name="pageTitle" value="Search mailMessages" />
+	<ui:param name="pageTitle" value="EMails" />
 
 	<ui:define name="header">
-		Konfiguration
+		Versendete Nachrichten
 	</ui:define>
 
 	<ui:define name="subheader">
@@ -62,6 +62,14 @@
 							<h:message for="mailMessageBeanExampleSubject" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
+						<h:outputLabel for="mailMessageBeanExampleCreatedBy" value="Benutzer:" />
+						<h:panelGroup>
+							<h:inputText id="mailMessageBeanExampleCreatedBy" value="#{mailMessageBean.example.createdBy}" >
+								<f:ajax event="keyup" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+							</h:inputText>
+							<h:message for="mailMessageBeanExampleCreatedBy" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
 						<h:commandLink value="Suchen" action='#{mailMessageBean.search}' styleClass="btn btn-primary" />
@@ -106,6 +114,28 @@
 					<h:link outcome="/mailer">
 						<f:param name="id" value="#{_item.template.id}" />
 						<h:outputText id="itemSubject" value="#{fn:substring(_item.subject,0,50)}" title="#{_item.subject}"/>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Datum" />
+					</f:facet>
+					<h:link outcome="/mailer">
+						<f:param name="id" value="#{_item.template.id}" />
+						<h:outputText id="itemCreated" value="#{_item.created}">
+							<f:convertDateTime pattern="dd.MM.yyyy"/>
+						</h:outputText>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Benutzer" />
+					</f:facet>
+					<h:link outcome="/mailer">
+						<f:param name="id" value="#{_item.template.id}" />
+						<h:outputText id="itemCreatedBy" value="#{_item.createdBy}">
+							<f:convertDateTime pattern="dd.MM.yyyy"/>
+						</h:outputText>
 					</h:link>
 				</h:column>
 			</h:dataTable>

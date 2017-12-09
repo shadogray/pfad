@@ -6,7 +6,7 @@
 	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
 	template="/resources/scaffold/pageTemplate.xhtml">
 
-	<ui:param name="pageTitle" value="Mailer" />
+	<ui:param name="pageTitle" value="Mailversendung" />
 	<f:metadata>
 		<f:viewParam name="id" value="#{mailerBean.mailTemplate}" converter="#{mailerBean.converter}"/>
 	</f:metadata>
@@ -59,8 +59,8 @@
 
 				<h:outputLabel value="Aktionen: "/>			
 				<h:panelGrid columns="3" with="100%">	
+					<h:commandButton value="Template Speichern" action="#{mailerBean.saveTemplate}" disabled="#{!mailerBean.updateAllowed}"/>
 					<h:commandButton value="Vorbereiten" action="#{mailerBean.executeQuery}"/>
-					<h:commandButton value="Template Speicher" action="#{mailerBean.saveTemplate}"/>
 					<h:commandButton value="Mails Versenden!!" action="#{mailerBean.sendMessages}"/>
 				</h:panelGrid>
 			</h:panelGrid>
