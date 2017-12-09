@@ -17,42 +17,50 @@
 	<ui:define name="footer" />
 
 	<ui:define name="main">
-		<h:form id="mailer">
+		<h:form id="mailConfig">
 			
-			<p:messages autoUpdate="true"/>
 			<p:focus/>
 
-			<h:panelGrid columns="2" >
-
+			<h:panelGrid columns="6" >
 				<h:outputLabel value="Template: "/>
-				<h:panelGroup>
-					<p:autoComplete value="#{mailerBean.mailTemplate}" completeMethod="#{mailTemplates.filtered}" emptyMessage="..." 
-						var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}" converter="#{mailerBean.converter}">
-						<p:ajax process="@this" update="@form"/>
-					</p:autoComplete>
-					<h:outputLabel value="Template Name:" />
-					<h:inputText value="#{mailerBean.mailTemplate.name}" />
-				</h:panelGroup>			
+				<p:autoComplete value="#{mailerBean.mailTemplate}" completeMethod="#{mailTemplates.filtered}" emptyMessage="..." 
+					var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}" converter="#{mailerBean.converter}">
+					<p:ajax process="@this" update="@form :mailer"/>
+				</p:autoComplete>
+				<h:outputLabel value="Template Name:" />
+				<p:inputText value="#{mailerBean.mailTemplate.name}" />
+				<h:outputLabel value="MailConfig:" />
+				<p:selectOneMenu value="#{mailerBean.mailConfigKey}">
+					<f:selectItems value="#{mailerBean.mailConfigKeys}"/>
+					<p:ajax process="@this" update="@form :mailer"/>
+				</p:selectOneMenu>
+			</h:panelGrid>
 
+		</h:form>
+		<h:form id="mailer">
+
+			<p:messages autoUpdate="true"/>
+			
+			<h:panelGrid columns="2">
 				<h:outputLabel value="Mail: "/>			
 				<h:panelGrid columns="6" width="100%">
 					<h:outputLabel value="Sender:" />
-					<h:outputText value="#{mailerBean.from}"/>
+					<h:outputText value="#{mailerBean.mailConfig.from}"/>
 					<h:outputLabel value="Alias:" />
-					<h:outputText value="#{mailerBean.aliasConf.cvalue}"/>
+					<h:outputText value="#{mailerBean.mailConfig.aliasConf.cvalue}"/>
 					<h:outputLabel value="Username:" />
-					<h:outputText value="#{mailerBean.username}"/>
+					<h:outputText value="#{mailerBean.mailConfig.username}"/>
 					<h:outputLabel value="CC:" />
-					<h:outputText value="#{mailerBean.ccConf.cvalue}"/>
+					<h:outputText value="#{mailerBean.mailConfig.ccConf.cvalue}"/>
 					<h:outputLabel value="BCC:" />
-					<h:outputText value="#{mailerBean.bccConf.cvalue}"/>
+					<h:outputText value="#{mailerBean.mailConfig.bccConf.cvalue}"/>
 				</h:panelGrid>
 				
 				<h:outputLabel value="Query: "/>			
 				<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" />
 	
 				<h:outputLabel value="Subject: "/>			
-				<p:inputText value="#{mailerBean.mailTemplate.subject}" />
+				<p:inputText value="#{mailerBean.mailTemplate.subject}" size="80"/>
 				
 				<h:outputLabel value="Text: "/>			
 				<p:editor value="#{mailerBean.mailTemplate.text}"/>

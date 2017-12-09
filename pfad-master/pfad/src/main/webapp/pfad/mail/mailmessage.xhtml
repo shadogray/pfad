@@ -70,6 +70,14 @@
 							<h:message for="mailMessageBeanExampleCreatedBy" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
+						<h:outputLabel for="mailMessageBeanExampleSender" value="Sender:" />
+						<h:panelGroup>
+							<h:inputText id="mailMessageBeanExampleSender" value="#{mailMessageBean.example.sender}" >
+								<f:ajax event="keyup" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+							</h:inputText>
+							<h:message for="mailMessageBeanExampleSender" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
 						<h:commandLink value="Suchen" action='#{mailMessageBean.search}' styleClass="btn btn-primary" />
@@ -133,9 +141,16 @@
 					</f:facet>
 					<h:link outcome="/mailer">
 						<f:param name="id" value="#{_item.template.id}" />
-						<h:outputText id="itemCreatedBy" value="#{_item.createdBy}">
-							<f:convertDateTime pattern="dd.MM.yyyy"/>
-						</h:outputText>
+						<h:outputText id="itemCreatedBy" value="#{_item.createdBy}"/>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Sender" />
+					</f:facet>
+					<h:link outcome="/mailer">
+						<f:param name="id" value="#{_item.template.id}" />
+						<h:outputText id="itemSender" value="#{_item.sender}"/>
 					</h:link>
 				</h:column>
 			</h:dataTable>

@@ -33,6 +33,8 @@ public class MailMessage extends BaseEntity {
 	@ManyToOne
 	private Member member;
 	@Column(length=256)
+	private String sender;
+	@Column(length=256)
 	private String receiver;
 	@Column(length=256)
 	private String subject;
@@ -81,6 +83,14 @@ public class MailMessage extends BaseEntity {
 		this.member = member;
 	}
 
+	public String getSender() {
+		return sender;
+	}
+	
+	public void setSender(String sender) {
+		this.sender = sender;
+	}
+	
 	public String getReceiver() {
 		return receiver;
 	}

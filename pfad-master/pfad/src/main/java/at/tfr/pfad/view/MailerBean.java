@@ -2,10 +2,14 @@ package at.tfr.pfad.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
@@ -58,15 +62,13 @@ public class MailerBean extends BaseBean {
 	@Inject
 	private MailTemplateBean mailTemplateBean;
 
-	private List<Map<String, Object>> values;
-	private Configuration aliasConf;
-	private Configuration ccConf;
-	private Configuration bccConf;
-	private String from;
-	private String username;
-	private String password;
+	private Map<String, MailConfig> mailConfigs;
+	private MailConfig mailConfig;
+	private List<String> mailConfigKeys;
+	private String mailConfigKey;
+	private List<Map<String, Object>> values = Collections.emptyList();
 	private MailTemplate mailTemplate = new MailTemplate();
-	private List<MailMessage> mailMessages;
+	private List<MailMessage> mailMessages = Collections.emptyList();
 
 	public enum MailProps {
 		mail_transport_protocol, mail_smtp_starttls_enable, mail_smtp_auth, mail_smtp_host, mail_smtp_port, mail_smtps_auth, mail_smtps_host, mail_smtps_port, mail_smtp_ssl_enable, mail_smtp_socketFactory_class, mail_smtp_socketFactory_port
@@ -74,13 +76,9 @@ public class MailerBean extends BaseBean {
 
 	@PostConstruct
 	public void init() {
-		username = configRepo.getValue("mail_username", null);
-		from = configRepo.getValue("mail_from", null);
-		Configuration pwdConf = configRepo.findOptionalByCkey("mail_password");
-		password = pwdConf != null ? pwdConf.getCvalueIntern() : null;
-		aliasConf = configRepo.findOptionalByCkey("mail_alias");
-		ccConf = configRepo.findOptionalByCkey("mail_cc");
-		bccConf = configRepo.findOptionalByCkey("mail_bcc");
+		mailConfigs = MailConfig.generateConfigs(configRepo.findAll(), log.isDebugEnabled());
+		mailConfigKey = getMailConfigKeys().stream().findFirst().orElse(null);
+		setMailConfigKey(mailConfigKey);
 	}
 
 	public void executeQuery() {
@@ -118,25 +116,15 @@ public class MailerBean extends BaseBean {
 
 			mailTemplate = templateRepo.saveAndFlush(mailTemplate);
 
-			Properties props = new Properties();
-			if (log.isDebugEnabled())
-				props.put("mail.debug", "true");
-			for (MailProps mp : MailProps.values()) {
-				Configuration conf = configRepo.findOptionalByCkey(mp.name());
-				if (conf != null) {
-					props.put(mp.name().replaceAll("_", "."), conf.getCvalue());
-				}
-			}
-
-			Session session = Session.getInstance(props, new Authenticator() {
+			Session session = Session.getInstance(mailConfig.getProperties(), new Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(username, password);
+					return new PasswordAuthentication(mailConfig.getUsername(), mailConfig.getPassword());
 				}
 			});
-			InternetAddress sender = new InternetAddress(from);
-			if (aliasConf != null) {
-				sender.setPersonal(aliasConf.getCvalue());
+			InternetAddress sender = new InternetAddress(mailConfig.getFrom());
+			if (mailConfig.getAliasConf() != null) {
+				sender.setPersonal(mailConfig.getAliasConf().getCvalue());
 			}
 
 			for (MailMessage msg : mailMessages) {
@@ -152,14 +140,16 @@ public class MailerBean extends BaseBean {
 					mail.setContent(msg.getText(), "text/html; charset=utf-8");
 					RecipientType to = RecipientType.TO;
 					addAddresses(mail, msg.getReceiver(), to);
-					if (ccConf != null) {
-						addAddresses(mail, ccConf.getCvalue(), RecipientType.CC);
+					if (mailConfig.getCcConf() != null) {
+						addAddresses(mail, mailConfig.getCcConf().getCvalue(), RecipientType.CC);
 					}
-					if (bccConf != null) {
-						addAddresses(mail, bccConf.getCvalue(), RecipientType.BCC);
+					if (mailConfig.getBccConf() != null) {
+						addAddresses(mail, mailConfig.getBccConf().getCvalue(), RecipientType.BCC);
 					}
 
 					msg.setTemplate(mailTemplate);
+					msg.setSender(sender.getAddress()
+							+ (StringUtils.isNotBlank(sender.getPersonal()) ? ":" + sender.getPersonal() : ""));
 					msg.setCreatedBy(sessionBean.getUser().getName());
 					msg = messageRepo.saveAndFlush(msg);
 
@@ -219,24 +209,23 @@ public class MailerBean extends BaseBean {
 		return keys;
 	}
 
-	public String getUsername() {
-		return username + ":" + (password != null ? "*******" : "");
+	public Collection<String> getMailConfigKeys() {
+		return mailConfigs.keySet();
 	}
-
-	public String getFrom() {
-		return from;
+	
+	public String getMailConfigKey() {
+		return mailConfigKey;
 	}
-
-	public Configuration getCcConf() {
-		return ccConf;
+	
+	public void setMailConfigKey(String mailConfigKey) {
+		this.mailConfigKey = mailConfigKey;
+		if (mailConfigKey != null && mailConfigs.containsKey(mailConfigKey)) {
+			mailConfig = mailConfigs.get(mailConfigKey);
+		}
 	}
-
-	public Configuration getBccConf() {
-		return bccConf;
-	}
-
-	public Configuration getAliasConf() {
-		return aliasConf;
+	
+	public MailConfig getMailConfig() {
+		return mailConfig;
 	}
 
 	public List<MailMessage> getMailMessages() {
@@ -251,6 +240,8 @@ public class MailerBean extends BaseBean {
 		if (mailTemplate != null && mailTemplate.getId() != null
 				&& !mailTemplate.getId().equals(this.mailTemplate.getId())) {
 			this.mailTemplate = mailTemplate;
+			values.clear();
+			mailMessages.clear();
 		}
 	}
 
@@ -275,5 +266,126 @@ public class MailerBean extends BaseBean {
 				return mailTemplate;
 			}
 		};
+	}
+
+	public static class MailConfig {
+		private final String key;
+		private final String prefix;
+		private Configuration aliasConf;
+		private Configuration ccConf;
+		private Configuration bccConf;
+		private String from;
+		private String username;
+		private String password;
+		private final Properties properties;
+
+		public MailConfig(String key, Collection<Configuration> configs, boolean debug) {
+			this.key = key;
+			this.prefix = key + "_";
+			this.username = getValue(configs, "mail_username");
+			this.from = getValue(configs, "mail_from", null);
+			this.password = getValueIntern(configs, "mail_password", null);
+			this.aliasConf = getConfig(configs, "mail_alias");
+			this.ccConf = getConfig(configs, "mail_cc");
+			this.bccConf = getConfig(configs, "mail_bcc");
+
+			properties = new Properties();
+			if (debug)
+				properties.put("mail.debug", "true");
+			for (MailProps mp : MailProps.values()) {
+				Configuration conf = getConfig(configs, mp.name());
+				if (conf != null) {
+					properties.put(mp.name().replaceAll("_", "."), conf.getCvalue());
+				}
+			}
+		}
+
+		public static Map<String, MailConfig> generateConfigs(Collection<Configuration> configs, boolean debug) {
+			Map<String, MailConfig> mailConfigs = new HashMap<>();
+			String MAIL_FX = "_mail_";
+			List<String> keys = configs.stream().filter(c -> c.getCkey() != null).map(c -> c.getCkey())
+					.filter(k -> k.contains(MAIL_FX)).map(k -> k.substring(0, k.indexOf(MAIL_FX))).distinct().sorted()
+					.collect(Collectors.toList());
+			keys.forEach(k -> {
+				mailConfigs.put(k, new MailConfig(k, configs.stream().filter(c -> c.getCkey().startsWith(k + MAIL_FX))
+						.collect(Collectors.toList()), debug));
+			});
+			return mailConfigs;
+		}
+
+		private String getValue(Collection<Configuration> configs, String valueKey) {
+			return configs.stream().filter(c -> c.getCkey().startsWith(prefix + valueKey)).map(c -> c.getCvalue())
+					.findFirst().orElse(null);
+		}
+
+		private String getValue(Collection<Configuration> configs, String valueKey, String defVal) {
+			return configs.stream().filter(c -> c.getCkey().startsWith(prefix + valueKey)).map(c -> c.getCvalue())
+					.findFirst().orElse(defVal);
+		}
+
+		private String getValueIntern(Collection<Configuration> configs, String valueKey, String defVal) {
+			return configs.stream().filter(c -> c.getCkey().startsWith(prefix + valueKey)).map(c -> c.getCvalueIntern())
+					.findFirst().orElse(defVal);
+		}
+
+		private Configuration getConfig(Collection<Configuration> configs, String valueKey) {
+			return configs.stream().filter(c -> c.getCkey().startsWith(prefix + valueKey)).findFirst().orElse(null);
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public Configuration getAliasConf() {
+			return aliasConf;
+		}
+
+		public void setAliasConf(Configuration aliasConf) {
+			this.aliasConf = aliasConf;
+		}
+
+		public Configuration getCcConf() {
+			return ccConf;
+		}
+
+		public void setCcConf(Configuration ccConf) {
+			this.ccConf = ccConf;
+		}
+
+		public Configuration getBccConf() {
+			return bccConf;
+		}
+
+		public void setBccConf(Configuration bccConf) {
+			this.bccConf = bccConf;
+		}
+
+		public String getFrom() {
+			return from;
+		}
+
+		public void setFrom(String from) {
+			this.from = from;
+		}
+
+		public String getUsername() {
+			return username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
+		}
+		
+		public Properties getProperties() {
+			return properties;
+		}
 	}
 }
