@@ -211,7 +211,8 @@ public class MailMessageBean extends BaseBean<MailMessage> implements Serializab
 		CriteriaQuery<MailMessage> criteria = builder.createQuery(MailMessage.class);
 		root = criteria.from(MailMessage.class);
 		TypedQuery<MailMessage> query = this.entityManager
-				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
+				.createQuery(criteria.select(root).where(getSearchPredicates(root))
+						.orderBy(builder.desc(root.get(MailMessage_.id))));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
 	}

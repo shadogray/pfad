@@ -24,6 +24,7 @@ import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -201,7 +202,8 @@ public class MailTemplateBean extends BaseBean<MailTemplate> implements Serializ
 		CriteriaQuery<MailTemplate> criteria = builder.createQuery(MailTemplate.class);
 		root = criteria.from(MailTemplate.class);
 		TypedQuery<MailTemplate> query = this.entityManager
-				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
+				.createQuery(criteria.select(root).where(getSearchPredicates(root))
+						.orderBy(builder.asc(root.get(MailTemplate_.name))));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
 	}
