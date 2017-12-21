@@ -27,8 +27,6 @@
 					var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}" converter="#{mailerBean.converter}">
 					<p:ajax process="@this" update="@form :mailer"/>
 				</p:autoComplete>
-				<h:outputLabel value="Template Name:" />
-				<p:inputText value="#{mailerBean.mailTemplate.name}" />
 				<h:outputLabel value="MailConfig:" />
 				<p:selectOneMenu value="#{mailerBean.mailConfigKey}">
 					<f:selectItems value="#{mailerBean.mailConfigKeys}"/>
@@ -54,6 +52,8 @@
 					<h:outputText value="#{mailerBean.mailConfig.ccConf.cvalue}"/>
 					<h:outputLabel value="BCC:" />
 					<h:outputText value="#{mailerBean.mailConfig.bccConf.cvalue}"/>
+					<h:outputLabel value="Template Name:" />
+					<p:inputText value="#{mailerBean.mailTemplate.name}" />
 				</h:panelGrid>
 				
 				<h:outputLabel value="Query: "/>			

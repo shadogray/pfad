@@ -150,7 +150,7 @@ public class MailTemplate extends BaseEntity implements Auditable {
 
 	@Override
 	public String toString() {
-		return "MailTemplate [id=" + id + ", name=" + name + "\", text=\" + text + \", query=" + query + "]";
+		return "MailTemplate [id=" + id + ", name=" + name + ", text=" + text + ", query=" + query + "]";
 	}
 
 }
