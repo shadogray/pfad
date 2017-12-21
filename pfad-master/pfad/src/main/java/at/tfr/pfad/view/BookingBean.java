@@ -249,6 +249,7 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 		}
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+		final List<Squad> squads = squadRepo.findAll();
 
 		// Populate this.count
 
@@ -264,7 +265,7 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 		TypedQuery<Booking> query = this.entityManager
 				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
-		this.pageItems = query.getResultList().stream().map(b -> new BookingUI(b)).collect(Collectors.toList());
+		this.pageItems = query.getResultList().stream().map(b -> new BookingUI(b, squads)).collect(Collectors.toList());
 		dataModel = new CollectionDataModel<BookingUI>(pageItems);
 	}
 

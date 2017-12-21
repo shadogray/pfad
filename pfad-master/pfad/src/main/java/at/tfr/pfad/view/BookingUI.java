@@ -8,15 +8,16 @@
 package at.tfr.pfad.view;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
-import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
+import at.tfr.pfad.model.Squad;
 
 public class BookingUI extends Booking {
 
@@ -27,13 +28,19 @@ public class BookingUI extends Booking {
 	private Set<Payment> payments;
 	private String squadName;
 
-	public BookingUI(Booking booking) {
+	public BookingUI(Booking booking, List<Squad> squads) {
+		this(booking, 
+				squads.stream().anyMatch(s -> booking.getMember().equals(s.getLeaderFemale()) || booking.getMember().equals(s.getLeaderMale())),
+				squads.stream().anyMatch(s -> s.getAssistants().contains(booking.getMember())));
+	}
+	
+	public BookingUI(Booking booking, boolean isLeader, boolean isAssistant) {
 		this.booking = booking;
 		booking.getPayments().stream().peek(Payment::getId);
 		this.payments = booking.getPayments();
 		this.payers = booking.getPayments().stream().map(Payment::getPayer).collect(Collectors.toSet());
 		if (booking.getMember() != null) {
-			free = booking.getMember().isFree() || 
+			free = booking.getMember().isFree() || isLeader || isAssistant ||
 					booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.getFree()));
 		}
 		squadName = booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : null;

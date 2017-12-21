@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -22,18 +24,23 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.BookingStatus;
+import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
+import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
 
 @RequestScoped
 @Stateful
 public class BookingDataModel extends DataModel<Booking, BookingUI> {
 
+	@Inject
+	private SquadRepository squadRepo;
+	
 	public BookingDataModel() {
 		uiClass = BookingUI.class;
 		entityClass = Booking.class;
@@ -45,7 +52,8 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 
 	@Override
 	public List<BookingUI> convertToUiBean(List<Booking> list) {
-		return list.stream().map(b->new BookingUI(b)).collect(Collectors.toList());
+		final List<Squad> squads = squadRepo.findAll();
+		return list.stream().map(b->new BookingUI(b, squads)).collect(Collectors.toList());
 	}
 	
 	@Override
