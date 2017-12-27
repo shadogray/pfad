@@ -190,7 +190,7 @@ public class RegistrationDataGenerator {
 					ok.setCellStyle(red);
 				}
 
-				row.createCell(cCount++).setCellValue(memberBooking != null ? ""+Boolean.TRUE.equals(memberBooking.getRegistered()) : "");
+				row.createCell(cCount++).setCellValue(memberBooking != null ? ""+memberBooking.isRegistered() : "");
 				row.createCell(cCount++).setCellValue(m.getTrupp() != null ? m.getTrupp().getName() : "");
 				row.createCell(cCount++).setCellValue(m.getReligion());
 				row.createCell(cCount++).setCellValue("");

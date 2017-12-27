@@ -182,11 +182,7 @@ public class Booking extends BaseEntity implements Auditable, Presentable, Compa
 		this.comment = comment;
 	}
 	
-	public Boolean getRegistered() {
-		return registered;
-	}
-	
-	public void setRegistered(Boolean registered) {
+	public void setRegistered(boolean registered) {
 		this.registered = registered;
 	}
 	
