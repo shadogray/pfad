@@ -108,9 +108,18 @@
 				</h:column>
 				<h:column>
 					<f:facet name="header">
+						<h:outputText value="Template" />
+					</f:facet>
+					<h:link outcome="/pfad/mailer" rendered="#{_item.template != null}">
+						<f:param name="id" value="#{_item.template.id}" />
+						<h:outputText id="itemTemplate" value="#{_item.template.name}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
 						<h:outputText value="Mitglied" />
 					</f:facet>
-					<h:link outcome="/pfad/member/view">
+					<h:link outcome="/pfad/member/view" rendered="#{_item.member != null}">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText id="itemMember" value="#{_item.member}" />
 					</h:link>
@@ -119,48 +128,33 @@
 					<f:facet name="header">
 						<h:outputText value="Text" />
 					</f:facet>
-					<h:link outcome="/pfad/mailer">
-						<f:param name="id" value="#{_item.template.id}" />
-						<h:outputText id="itemText" value="#{fn:substring(_item.text,0,50)}" title="#{_item.text}" />
-					</h:link>
+					<h:outputText id="itemText" value="#{fn:substring(_item.text,0,50)}" title="#{_item.text}" />
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Subject" />
 					</f:facet>
-					<h:link outcome="/pfad/mailer">
-						<f:param name="id" value="#{_item.template.id}" />
-						<h:outputText id="itemSubject" value="#{fn:substring(_item.subject,0,50)}" title="#{_item.subject}"/>
-					</h:link>
+					<h:outputText id="itemSubject" value="#{fn:substring(_item.subject,0,50)}" title="#{_item.subject}"/>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Datum" />
 					</f:facet>
-					<h:link outcome="/pfad/mailer">
-						<f:param name="id" value="#{_item.template.id}" />
-						<h:outputText id="itemCreated" value="#{_item.created}">
-							<f:convertDateTime pattern="dd.MM.yyyy"/>
-						</h:outputText>
-					</h:link>
+					<h:outputText id="itemCreated" value="#{_item.created}">
+						<f:convertDateTime pattern="dd.MM.yyyy"/>
+					</h:outputText>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Benutzer" />
 					</f:facet>
-					<h:link outcome="/pfad/mailer">
-						<f:param name="id" value="#{_item.template.id}" />
-						<h:outputText id="itemCreatedBy" value="#{_item.createdBy}"/>
-					</h:link>
+					<h:outputText id="itemCreatedBy" value="#{_item.createdBy}"/>
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Sender" />
 					</f:facet>
-					<h:link outcome="/pfad/mailer">
-						<f:param name="id" value="#{_item.template.id}" />
-						<h:outputText id="itemSender" value="#{_item.sender}"/>
-					</h:link>
+					<h:outputText id="itemSender" value="#{_item.sender}"/>
 				</h:column>
 			</h:dataTable>
 			<ui:include src="/resources/scaffold/paginator.xhtml">
