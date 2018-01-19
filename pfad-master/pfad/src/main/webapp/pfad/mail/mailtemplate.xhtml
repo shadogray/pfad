@@ -76,7 +76,7 @@
 					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemName" value="#{_item.name}" title="#{_item}"/>
 					</h:link>
@@ -85,7 +85,7 @@
 					<f:facet name="header">
 						<h:outputText value="Text" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemText" value="#{fn:substring(_item.text,0,50)}" title="#{_item.text}" />
 					</h:link>
@@ -94,7 +94,7 @@
 					<f:facet name="header">
 						<h:outputText value="Subject" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemSubject" value="#{fn:substring(_item.subject,0,50)}" title="#{_item.subject}"/>
 					</h:link>
@@ -103,7 +103,7 @@
 					<f:facet name="header">
 						<h:outputText value="Query" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemQuery" value="#{fn:substring(_item.query,0,50)}" title="#{_item.query}" />
 					</h:link>

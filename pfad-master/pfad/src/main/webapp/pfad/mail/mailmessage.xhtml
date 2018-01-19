@@ -92,16 +92,25 @@
 					<f:facet name="header">
 						<h:outputText value="Receiver" />
 					</f:facet>
-					<h:link outcome="/mailer">
-						<f:param name="id" value="#{_item.template.id}" />
-						<h:outputText id="itemReceiver" value="#{_item.receiver}" />
-					</h:link>
+					<h:outputText id="itemReceiver" value="#{_item.receiver}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="CC" />
+					</f:facet>
+					<h:outputText id="itemCC" value="#{_item.cc}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="BCC" />
+					</f:facet>
+					<h:outputText id="itemBCC" value="#{_item.bcc}" />
 				</h:column>
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Mitglied" />
 					</f:facet>
-					<h:link outcome="/member/view">
+					<h:link outcome="/pfad/member/view">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemMember" value="#{_item.member}" />
 					</h:link>
@@ -110,7 +119,7 @@
 					<f:facet name="header">
 						<h:outputText value="Text" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.template.id}" />
 						<h:outputText id="itemText" value="#{fn:substring(_item.text,0,50)}" title="#{_item.text}" />
 					</h:link>
@@ -119,7 +128,7 @@
 					<f:facet name="header">
 						<h:outputText value="Subject" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.template.id}" />
 						<h:outputText id="itemSubject" value="#{fn:substring(_item.subject,0,50)}" title="#{_item.subject}"/>
 					</h:link>
@@ -128,7 +137,7 @@
 					<f:facet name="header">
 						<h:outputText value="Datum" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.template.id}" />
 						<h:outputText id="itemCreated" value="#{_item.created}">
 							<f:convertDateTime pattern="dd.MM.yyyy"/>
@@ -139,7 +148,7 @@
 					<f:facet name="header">
 						<h:outputText value="Benutzer" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.template.id}" />
 						<h:outputText id="itemCreatedBy" value="#{_item.createdBy}"/>
 					</h:link>
@@ -148,7 +157,7 @@
 					<f:facet name="header">
 						<h:outputText value="Sender" />
 					</f:facet>
-					<h:link outcome="/mailer">
+					<h:link outcome="/pfad/mailer">
 						<f:param name="id" value="#{_item.template.id}" />
 						<h:outputText id="itemSender" value="#{_item.sender}"/>
 					</h:link>
