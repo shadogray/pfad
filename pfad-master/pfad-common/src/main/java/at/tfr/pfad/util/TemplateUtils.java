@@ -6,13 +6,21 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StrLookup;
 import org.apache.commons.text.StrSubstitutor;
 
 public class TemplateUtils implements Serializable {
 
 	private PropertyUtilsBean pub = new PropertyUtilsBean();
-	
+
+	public String replace(String template, Map<String,Object> map, String defaultValue) {
+		String val = replace(template, map);
+		if (StringUtils.isBlank(val))
+			return defaultValue;
+		return val;
+	}
+
 	public String replace(String template, Map<String,Object> map) {
 		StrSubstitutor strSub = new StrSubstitutor(new BeansStrLookup(map));
 		return strSub.replace(template);

@@ -37,6 +37,10 @@ public class MailMessage extends BaseEntity {
 	@Column(length=256)
 	private String receiver;
 	@Column(length=256)
+	private String cc;
+	@Column(length=256)
+	private String bcc;
+	@Column(length=256)
 	private String subject;
 	@Column(length=4096)
 	private String text;
@@ -99,6 +103,22 @@ public class MailMessage extends BaseEntity {
 		this.receiver = receiver;
 	}
 
+	public String getCc() {
+		return cc;
+	}
+	
+	public void setCc(String cc) {
+		this.cc = cc;
+	}
+	
+	public String getBcc() {
+		return bcc;
+	}
+	
+	public void setBcc(String bcc) {
+		this.bcc = bcc;
+	}
+	
 	public String getText() {
 		return text;
 	}

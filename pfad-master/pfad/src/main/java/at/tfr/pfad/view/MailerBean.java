@@ -79,9 +79,16 @@ public class MailerBean extends BaseBean {
 		mailConfigs = MailConfig.generateConfigs(configRepo.findAll(), log.isDebugEnabled());
 		mailConfigKey = getMailConfigKeys().stream().findFirst().orElse(null);
 		setMailConfigKey(mailConfigKey);
+		if (mailConfigs.isEmpty()) {
+			warn("No MailConfiguration found! Cannot execute any Mails.");
+		}
 	}
 
 	public void executeQuery() {
+		if (mailConfig == null) {
+			error("Cannot execute Template for empty MailConfiguration!");
+			return;
+		}
 		mailMessages = new ArrayList<>();
 		try {
 			values = queryExec.execute(mailTemplate.getQuery(), false);
@@ -91,6 +98,8 @@ public class MailerBean extends BaseBean {
 				msg.setTemplate(mailTemplate);
 				msg.setText(templateUtils.replace(mailTemplate.getText(), value));
 				msg.setReceiver(templateUtils.replace("${to}", value));
+				msg.setCc(templateUtils.replace("${cc}", value, mailConfig.getCcConf() != null ? mailConfig.getCcConf().getCvalue() : null));
+				msg.setBcc(templateUtils.replace("${bcc}", value, mailConfig.getBccConf() != null ? mailConfig.getBccConf().getCvalue() : null));
 				msg.setSubject(templateUtils.replace(mailTemplate.getSubject(), msg.getValues()));
 				msg.setMember(value.entrySet().stream().filter(e -> e.getValue() instanceof Member)
 						.map(e -> (Member) e.getValue()).findFirst().orElse(null));
@@ -112,6 +121,12 @@ public class MailerBean extends BaseBean {
 	}
 
 	public void sendMessages() {
+		
+		if (mailConfig == null) {
+			error("Cannot execute Template for empty MailConfiguration!");
+			return;
+		}
+		
 		try {
 
 			mailTemplate = templateRepo.saveAndFlush(mailTemplate);
@@ -140,11 +155,17 @@ public class MailerBean extends BaseBean {
 					mail.setContent(msg.getText(), "text/html; charset=utf-8");
 					RecipientType to = RecipientType.TO;
 					addAddresses(mail, msg.getReceiver(), to);
-					if (mailConfig.getCcConf() != null) {
-						addAddresses(mail, mailConfig.getCcConf().getCvalue(), RecipientType.CC);
+					if (StringUtils.isNotBlank(msg.getCc())) {
+						addAddresses(mail, msg.getCc(), RecipientType.CC);
+					} else if (mailConfig.getCcConf() != null) {
+						msg.setCc(mailConfig.getCcConf().getCvalue());
+						addAddresses(mail, msg.getCc(), RecipientType.CC);
 					}
-					if (mailConfig.getBccConf() != null) {
-						addAddresses(mail, mailConfig.getBccConf().getCvalue(), RecipientType.BCC);
+					if (StringUtils.isNotBlank(msg.getBcc())) {
+						addAddresses(mail, msg.getBcc(), RecipientType.BCC);
+					} else if (mailConfig.getBccConf() != null) {
+						msg.setBcc(mailConfig.getBccConf().getCvalue());
+						addAddresses(mail, msg.getBcc(), RecipientType.BCC);
 					}
 
 					msg.setTemplate(mailTemplate);
