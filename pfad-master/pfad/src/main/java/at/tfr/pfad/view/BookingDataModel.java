@@ -16,6 +16,7 @@ import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -50,6 +51,20 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		super(uiClass, entityClass);
 	}
 
+	@Override
+	protected CriteriaQuery<Booking> createCriteria(boolean addOrder) {
+		CriteriaQuery<Booking> crit = super.createCriteria(addOrder);
+		root.join(Booking_.member);
+		return crit;
+	}
+	
+	@Override
+	protected CriteriaQuery<Long> createCountCriteriaQuery() {
+		CriteriaQuery<Long> crit = super.createCountCriteriaQuery();
+		root.join(Booking_.member);
+		return crit;
+	}
+	
 	@Override
 	public List<BookingUI> convertToUiBean(List<Booking> list) {
 		final List<Squad> squads = squadRepo.findAll();
@@ -117,6 +132,10 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		switch(propertyName) {
 		case "member":
 			return root.join(Booking_.member).get(Member_.name);
+		case "strasse":
+			return root.join(Booking_.member).get(Member_.strasse);
+		case "ort":
+			return root.join(Booking_.member).get(Member_.ort);
 		case "activity":
 			return root.join(Booking_.activity).get(Activity_.name);
 		case "squadName":

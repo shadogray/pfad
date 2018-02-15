@@ -51,7 +51,7 @@ public class BookingTableBean implements Serializable {
 	        columnHeaders.put("comment", "Bemerkung");
 
 	        sortOrders.put("id", SortOrder.unsorted);
-	        sortOrders.put("member", SortOrder.unsorted);
+	        sortOrders.put("member", SortOrder.ascending);
 	        sortOrders.put("strasse", SortOrder.unsorted);
 	        sortOrders.put("ort", SortOrder.unsorted);
 	        sortOrders.put("activity", SortOrder.unsorted);

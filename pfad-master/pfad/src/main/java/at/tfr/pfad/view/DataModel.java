@@ -307,7 +307,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
 	private List<U> getRowDataInternal(final Range range) {
 		final CriteriaQuery<T> criteria = createSelectCriteriaQuery();
-		criteria.distinct(true);
+		criteria.groupBy(root.get("id"));
 
         TypedQuery<T> query = entityManager.createQuery(criteria);
         sequenceRange = (SequenceRange) range;

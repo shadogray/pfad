@@ -39,7 +39,7 @@ public class PaymentTableBean implements Serializable {
 		sortOrders.put("id", SortOrder.unsorted);
 		sortOrders.put("payer", SortOrder.unsorted);
 		sortOrders.put("amount", SortOrder.unsorted);
-		sortOrders.put("member", SortOrder.unsorted);
+		sortOrders.put("member", SortOrder.ascending);
 		sortOrders.put("squad", SortOrder.unsorted);
 		sortOrders.put("activity", SortOrder.unsorted);
 		sortOrders.put("aconto", SortOrder.unsorted);

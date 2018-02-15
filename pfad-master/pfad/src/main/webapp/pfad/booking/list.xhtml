@@ -52,6 +52,14 @@
 					<ui:include src="../column.xhtml">
 						<ui:param name="bean" value="#{bookingTableBean}" />
 						<ui:param name="record" value="#{record}" />
+						<ui:param name="property" value="id" />
+						<ui:param name="tabIndex" value="99" />
+						<ui:param name="link" value="/pfad/booking/view" />
+						<ui:param name="width" value="3em" />
+					</ui:include>
+					<ui:include src="../column.xhtml">
+						<ui:param name="bean" value="#{bookingTableBean}" />
+						<ui:param name="record" value="#{record}" />
 						<ui:param name="property" value="member" />
 						<ui:param name="tabIndex" value="1" />
 						<ui:param name="link" value="/pfad/booking/view" />
