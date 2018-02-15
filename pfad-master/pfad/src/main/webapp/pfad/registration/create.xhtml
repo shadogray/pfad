@@ -27,24 +27,37 @@
 		<h:form id="create">
 			<h:messages globalOnly="true" styleClass="error" />
 
-			<p:focus />
+			<p:focus for="Vorname"/>
 
 			<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
 
-				<h:outputLabel for="regBeanRegAnrede" value="Anrede:" />
+				<h:outputLabel for="regBeanRegCreated" value="Erstellung:" />
 				<h:panelGroup>
-					<p:autoComplete id="regBeanRegAnrede" value="#{registrationBean.registration.anrede}"
-						completeMethod="#{memberBean.getDistinctAnredeLike}" cache="true" maxResults="20" />
-					<h:message for="regBeanRegAnrede" styleClass="error" />
+					<p:calendar id="regBeanRegCreated" value="#{registrationBean.registration.created}" pattern="dd.MM.yyyy" mask="true" navigator="true">
+						<f:convertDateTime pattern="dd.MM.yyyy"/>
+					</p:calendar>
+					<h:message for="regBeanRegCreated" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
+				<h:outputText />
+				<h:outputText />
+				<h:outputText />
+				
 				<h:outputLabel for="regBeanRegGeschlecht" value="Geschlecht:" />
 				<h:panelGroup>
 					<h:selectOneMenu id="regBeanRegGeschlecht" value="#{registrationBean.registration.geschlecht}" required="true">
 						<f:selectItems value="#{memberBean.sexes}" />
 					</h:selectOneMenu>
 					<h:message for="regBeanRegGeschlecht" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
+
+				<h:outputLabel for="regBeanRegAnrede" value="Anrede:" />
+				<h:panelGroup>
+					<p:autoComplete id="regBeanRegAnrede" value="#{registrationBean.registration.anrede}"
+						completeMethod="#{memberBean.getDistinctAnredeLike}" cache="true" maxResults="20" />
+					<h:message for="regBeanRegAnrede" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
