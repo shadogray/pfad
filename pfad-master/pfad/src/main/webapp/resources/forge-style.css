@@ -854,6 +854,9 @@ h4.page-header {
 .fullwidth, td.component2 input, td.component2 .rf-au {
 	width: 95%;
 }
+td.component2 .ui-autocomplete {
+	width: 100%;
+}
 
 .height25 {
 	height: 25px;

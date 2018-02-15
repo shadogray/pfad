@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -45,6 +46,7 @@ import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Squad;
 
@@ -79,6 +81,14 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 	private boolean allBookingVisible;
 	private boolean paymentPopupVisible;
 
+	@Override
+	@PostConstruct
+	public void init() {
+		super.init();
+		exampleMember = new Member();
+		squads = squadRepo.withAssistants();
+	}
+	
 	public boolean isSquadBookingVisible() {
 		return squadBookingVisible;
 	}
@@ -244,13 +254,11 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 
 	public void paginate() {
 
-		if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
-			return;
-		}
+//		if (FacesContext.getCurrentInstance().getPartialViewContext().isAjaxRequest()) {
+//			return;
+//		}
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
-		final List<Squad> squads = squadRepo.findAll();
-
 		// Populate this.count
 
 		CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
@@ -282,6 +290,15 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 			predicatesList.add(builder.equal(root.get(Booking_.member), exampleMember));
 		}
 
+		if (exampleMember != null && StringUtils.isNotBlank(exampleMember.getName())) {
+			for (String val : exampleMember.getName().toLowerCase().split(" ")) {
+				predicatesList.add(builder.or(
+						builder.like(builder.lower(root.get(Booking_.member).get(Member_.name)), "%"+val+"%"),
+						builder.like(builder.lower(root.get(Booking_.member).get(Member_.vorname)), "%"+val+"%")
+						));
+			}
+		}
+
 		if (getBookingExample().getSquad() != null) {
 			predicatesList.add(builder.equal(root.get(Booking_.squad), getBookingExample().getSquad()));
 		}
@@ -289,9 +306,9 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 		if (getBookingExample().getStatus() != null) {
 			predicatesList.add(builder.equal(root.get(Booking_.status), getBookingExample().getStatus()));
 		}
-		String name = this.getBookingExample().getComment();
-		if (StringUtils.isNoneBlank(name)) {
-			predicatesList.add(builder.like(builder.lower(root.get(Booking_.comment)), '%' + name.toLowerCase() + '%'));
+		String comment = this.getBookingExample().getComment();
+		if (StringUtils.isNoneBlank(comment)) {
+			predicatesList.add(builder.like(builder.lower(root.get(Booking_.comment)), '%' + comment.toLowerCase() + '%'));
 		}
 		
 		if (!showFinished && !(getBookingExample().getActivity() != null && getBookingExample().getActivity().isFinished())) {
