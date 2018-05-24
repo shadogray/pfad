@@ -9,6 +9,8 @@ package at.tfr.pfad.dao;
 
 import java.util.List;
 
+import javax.persistence.criteria.JoinType;
+
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
 import org.apache.deltaspike.data.api.Query;
@@ -30,6 +32,10 @@ public abstract class SquadRepository implements EntityRepository<Squad, Long>, 
 	public abstract List<Squad> findByLeaderMaleEqual(Member leader);
 
 	public abstract List<Squad> findByLeaderFemaleEqualOrLeaderMaleEqual(Member female, Member male);
+	
+	public List<Squad> withAssistants() {
+		return criteria().fetch(Squad_.assistants, JoinType.LEFT).getResultList();
+	}
 	
 	public List<Squad> findByLeaderFemaleEqualOrLeaderMaleEqual(Member leader) {
 		return findByLeaderFemaleEqualOrLeaderMaleEqual(leader, leader);
