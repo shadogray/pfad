@@ -81,18 +81,6 @@ public class MemberValidator {
 			results.add(new ValidationResult(false, "Inaktiv mit " + funcExp));
 		}
 		
-		// Assistenten in einer Stufe oder ‚ZBV‘, beides ist nicht sinnvoll
-		List<Squad> trupps = squadRepo.findByAssistant(member);
-		if (!trupps.isEmpty() && funcExp.stream().anyMatch(f -> "ZBV".equals(f.getKey())) ) {
-			results.add(new ValidationResult(false, "ZBV und Assistent in "+ trupps + " - Nicht sinnvoll!: " + squadRepo.findByResponsible(member)));
-		}
-
-		if (!member.isAktiv()) {
-			if (leaders.contains(member)) {
-				results.add(new ValidationResult(false, INAKTIV_ALS_LEITER + ": " + squadRepo.findByResponsible(member)));
-			}
-		}
-
 		if (member.isAktiv() && member.getVollzahler() != null && member.getVollzahler().getVollzahler() != null) {
 			results.add(new ValidationResult(false, "Vollzahler ist KEIN Vollzahler: " + member.getVollzahler()
 					+ " (dessen Vollzahler: " + member.getVollzahler().getVollzahler() + ")"));
@@ -103,12 +91,11 @@ public class MemberValidator {
 			results.add(new ValidationResult(false, "Vollzahler INAKTIV: " + member.getVollzahler()));
 		}
 
-//		if (member.isAktiv() && member.getVollzahler() != null
-//				&& member.getVollzahler().geburtstag().isAfter(member.geburtstag())) {
-//			results.add(new ValidationResult(false,
-//					"Vollzahler SOLL älter sein, als das ermäßigte Mitglied: " + member.getVollzahler()));
-//		}
-
+		if (member.getId() == null) {
+			// for NEW members, stop validating here:
+			return results;
+		}
+		
 		if (member.getTrupp() != null || isGrinsExportable(member, leaders)) {
 			if (member.getGebJahr() < 1900 || member.getGebMonat() < 1 || member.getGebTag() < 1) {
 				results.add(new ValidationResult(false, GEB_UNVOLL));
@@ -138,6 +125,22 @@ public class MemberValidator {
 			}
 		}
 
+		/************************************************
+		 * nur für bereits angelegte Mitglieder:
+		 ************************************************/
+		// Assistenten in einer Stufe oder ‚ZBV‘, beides ist nicht sinnvoll
+		List<Squad> trupps = squadRepo.findByAssistant(member);
+		if (!trupps.isEmpty() && funcExp.stream().anyMatch(f -> "ZBV".equals(f.getKey())) ) {
+			results.add(new ValidationResult(false, "ZBV und Assistent in "+ trupps + " - Nicht sinnvoll!: " + squadRepo.findByResponsible(member)));
+		}
+
+		// keine inaktiven Leiter:
+		if (!member.isAktiv()) {
+			if (leaders.contains(member)) {
+				results.add(new ValidationResult(false, INAKTIV_ALS_LEITER + ": " + squadRepo.findByResponsible(member)));
+			}
+		}
+
 		// Es kann nur eine GFW oder GFM geben! Für Kathi Fosen würde ein GFA passend sein
 		if (!member.getFunktionen().isEmpty()) {
 			
@@ -156,7 +159,13 @@ public class MemberValidator {
 				}
 			}
 		}
-		
+
+//		if (member.isAktiv() && member.getVollzahler() != null
+//				&& member.getVollzahler().geburtstag().isAfter(member.geburtstag())) {
+//			results.add(new ValidationResult(false,
+//					"Vollzahler SOLL älter sein, als das ermäßigte Mitglied: " + member.getVollzahler()));
+//		}
+
 		return results;
 	}
 	
