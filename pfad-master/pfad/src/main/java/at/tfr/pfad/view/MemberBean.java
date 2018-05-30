@@ -24,6 +24,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.event.PhaseId;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
+import org.omnifaces.util.Faces;
 import org.richfaces.component.UISelect;
 import org.richfaces.model.CollectionDataModel;
 
@@ -132,7 +134,9 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	}
 	
 	public void updateMemberOnChange() {
+		if (PhaseId.INVOKE_APPLICATION.equals(Faces.getCurrentPhaseId())) {
 			member.setAktiv(member.getTrupp() != null || member.getFunktionen().stream().anyMatch(f -> f.getExportReg()));
+		}
 	}
 
 	public String update() {
