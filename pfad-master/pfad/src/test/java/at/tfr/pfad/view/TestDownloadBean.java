@@ -70,6 +70,7 @@ public class TestDownloadBean {
 	public void testValidationDatum() throws Exception {
 		
 		Member m = new Member();
+		m.setId(1L);
 		
 		// No checks for Inaktiv
 		List<ValidationResult> vr = mv.validate(m, "", leaders);
@@ -112,6 +113,7 @@ public class TestDownloadBean {
 	public void testValidationStufe() throws Exception {
 		
 		Member m = new Member();
+		m.setId(1L);
 		
 		m.setGebJahr(1900);
 		m.setGebMonat(1);
@@ -151,6 +153,7 @@ public class TestDownloadBean {
 	public void testValidationTruppVerein() throws Exception {
 		
 		Member m = new Member();
+		m.setId(1L);
 		m.setAktiv(true);
 		
 		List<ValidationResult> vr = mv.validate(m, "", leaders);
