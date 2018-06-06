@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -163,7 +164,7 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 	 * Support searching Activity entities with pagination
 	 */
 
-	private List<Activity> pageItems;
+	private List<ActivityUI> pageItems;
 
 	private Activity example = new Activity();
 
@@ -206,7 +207,9 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 		TypedQuery<Activity> query = this.entityManager
 				.createQuery(criteria.select(root).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
-		this.pageItems = query.getResultList();
+		List<Activity> activities = query.getResultList();
+		Map<Activity,Number> group = bookingRepo.summarize(activities);
+		this.pageItems = group.entrySet().stream().map(e -> new ActivityUI(e.getKey(),e.getValue())).collect(Collectors.toList());
 	}
 
 	private Predicate[] getSearchPredicates(Root<Activity> root) {
@@ -226,7 +229,7 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
 	}
 
-	public List<Activity> getPageItems() {
+	public List<ActivityUI> getPageItems() {
 		return this.pageItems;
 	}
 

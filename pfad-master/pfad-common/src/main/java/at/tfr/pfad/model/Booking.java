@@ -39,7 +39,10 @@ import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.AuditListener;
 
 @Audited(withModifiedFlag = true)
-@NamedQueries({@NamedQuery(name = "BookingsForPayment", query = "select b from Booking b where ?1 member of b.payments order by b.id")})
+@NamedQueries({
+	@NamedQuery(name = "BookingsForPayment", query = "select b from Booking b where ?1 member of b.payments order by b.id"),
+	@NamedQuery(name = "BookingAcvitySummary", query = "select b.activity, count(b) from Booking b where b.activity in :activities group by b.activity")
+	})
 @NamedEntityGraphs({
 	@NamedEntityGraph(attributeNodes={@NamedAttributeNode("payments"),@NamedAttributeNode("member")})
 })

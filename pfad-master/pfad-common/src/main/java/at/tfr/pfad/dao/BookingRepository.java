@@ -2,10 +2,13 @@ package at.tfr.pfad.dao;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
@@ -15,6 +18,7 @@ import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 
@@ -26,6 +30,14 @@ public abstract class BookingRepository implements EntityRepository<Booking, Lon
 	
 	@Query
 	public abstract List<Booking> findByActivity(Activity activity);
+	
+	public Map<Activity,Number> summarize(Collection<Activity> activities) {
+		@SuppressWarnings("unchecked")
+		List<Object[]> list = em.createNamedQuery("BookingAcvitySummary")
+			.setParameter("activities", activities)
+			.getResultList(); 
+		return list.stream().collect(Collectors.toMap(arr -> (Activity)arr[0], arr -> (Number)arr[1]));
+	}
 	
 	@Query(named = "BookingsForPayment")
 	public abstract List<Booking> findByPayment(Payment payment);
