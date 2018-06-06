@@ -16,19 +16,23 @@ import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.SquadRepository;
+import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
+import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
@@ -41,12 +45,41 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 
 	@Inject
 	private SquadRepository squadRepo;
+	private Join<Booking,Activity> joinActivity;
+	private Join<Booking, Member> joinMember;
+	private Join<Member,Squad> joinTrupp;
+	private SetJoin<Booking,Payment> joinPayments;
 	
 	public BookingDataModel() {
 		uiClass = BookingUI.class;
 		entityClass = Booking.class;
 	}
+	
+	@Override
+	protected Root<Booking> getRoot() {
+		Root<Booking> root = super.getRoot();
+		joinActivity = root.join(Booking_.activity, JoinType.INNER);
+		joinMember = root.join(Booking_.member, JoinType.INNER);
+		joinTrupp = joinMember.join(Member_.trupp, JoinType.LEFT);
+		joinPayments = root.join(Booking_.payments, JoinType.LEFT);
+		return root;
+	}
 
+	@Override
+	protected Root<Booking> getCountRoot() {
+		Root<Booking> root = super.getCountRoot();
+		joinActivity = root.join(Booking_.activity, JoinType.INNER);
+		joinMember = root.join(Booking_.member, JoinType.INNER);
+		joinTrupp = joinMember.join(Member_.trupp, JoinType.LEFT);
+		joinPayments = root.join(Booking_.payments, JoinType.LEFT);
+		return root;
+	}
+	
+	@Override
+	protected Path<Booking>[] getGroupByRoots() {
+		return new Path[] { root, joinMember, joinActivity};
+	}
+	
 	public BookingDataModel(Class<BookingUI> uiClass, Class<Booking> entityClass) {
 		super(uiClass, entityClass);
 	}
@@ -79,16 +112,16 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		String val = filterValue.toString().toLowerCase();
 		switch(propertyName) {
 		case "member":
-			return cb.or(cb.like(cb.lower(root.join(Booking_.member).get(Member_.name)), "%"+val+"%"),
-					cb.like(cb.lower(root.join(Booking_.member).get(Member_.vorname)), "%"+val+"%"));
+			return cb.or(cb.like(cb.lower(joinMember.get(Member_.name)), "%"+val+"%"),
+					cb.like(cb.lower(joinMember.get(Member_.vorname)), "%"+val+"%"));
 		case "strasse":
-			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.strasse)), "%"+val+"%");
+			return cb.like(cb.lower(joinMember.get(Member_.strasse)), "%"+val+"%");
 		case "ort":
-			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.ort)), "%"+val+"%");
+			return cb.like(cb.lower(joinMember.get(Member_.ort)), "%"+val+"%");
 		case "activity":
-			return cb.like(cb.lower(root.join(Booking_.activity).get(Activity_.name)), "%"+val+"%");
+			return cb.like(cb.lower(joinActivity.get(Activity_.name)), "%"+val+"%");
 		case "squadName":
-			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.trupp).get(Squad_.name)), "%"+val+"%");
+			return cb.like(cb.lower(joinTrupp.get(Squad_.name)), "%"+val+"%");
 		case "status":
 			BookingStatus bookingStatus = getBookingStatus(val);
 			if (bookingStatus != null) {
@@ -98,7 +131,7 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		case "payed":
 			boolean finished = Boolean.parseBoolean((String)val);
 			if (finished) {
-				return cb.equal(root.join(Booking_.payments).get(Payment_.finished), finished);
+				return cb.equal(joinPayments.get(Payment_.finished), finished);
 			} else {
 				Subquery<Payment> sq = criteriaQuery.subquery(Payment.class);
 				Root<Payment> sr = sq.from(Payment.class);
@@ -131,17 +164,17 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 	protected Path getPathForOrder(String propertyName) {
 		switch(propertyName) {
 		case "member":
-			return root.join(Booking_.member).get(Member_.name);
+			return joinMember.get(Member_.name);
 		case "strasse":
-			return root.join(Booking_.member).get(Member_.strasse);
+			return joinMember.get(Member_.strasse);
 		case "ort":
-			return root.join(Booking_.member).get(Member_.ort);
+			return joinMember.get(Member_.ort);
 		case "activity":
 			return root.join(Booking_.activity).get(Activity_.name);
 		case "squadName":
-			return root.join(Booking_.member).get(Member_.trupp).get(Squad_.name);
+			return joinTrupp.get(Squad_.name);
 		case "payed":
-			return root.join(Booking_.payments).get(Payment_.finished);
+			return joinPayments.get(Payment_.finished);
 		}
 		return super.getPathForOrder(propertyName);
 	}

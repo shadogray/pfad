@@ -124,15 +124,23 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     protected CriteriaQuery<T> createCriteria(boolean addOrder) {
         cb = entityManager.getCriteriaBuilder();
 		query = cb.createQuery(entityClass);
-        root = query.from(entityClass);
+        root = getRoot();
         root.alias(entityClass.getSimpleName());
         return query;
     }
 
+	protected Root<T> getRoot() {
+		return query.from(entityClass);
+	}
+
+	protected Root<T> getCountRoot() {
+		return countQuery.from(entityClass);
+	}
+
     protected CriteriaQuery<Long> createCountCriteriaQuery() {
         cb = entityManager.getCriteriaBuilder();
         countQuery = cb.createQuery(Long.class);
-        root = countQuery.from(entityClass);
+        root = getCountRoot();
         root.alias(entityClass.getSimpleName());
         
         countQuery.select(cb.countDistinct(root));
@@ -307,7 +315,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
 	private List<U> getRowDataInternal(final Range range) {
 		final CriteriaQuery<T> criteria = createSelectCriteriaQuery();
-		criteria.groupBy(root.get("id"));
+		criteria.groupBy(getGroupByRoots());
 
         TypedQuery<T> query = entityManager.createQuery(criteria);
         sequenceRange = (SequenceRange) range;
@@ -320,6 +328,10 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         currentRows = data.size();
         uData = convertToUiBean(data);
         return uData;
+	}
+
+	protected Path<T>[] getGroupByRoots() {
+		return new Path[] {root};
 	}
 
     @Override
