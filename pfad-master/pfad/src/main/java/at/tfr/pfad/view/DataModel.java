@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -21,6 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -43,6 +45,8 @@ import org.richfaces.model.SortField;
 
 import com.google.common.collect.Lists;
 
+import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.PrimaryKeyHolder;
 import at.tfr.pfad.util.SessionBean;
 
@@ -135,6 +139,15 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
 	protected Root<T> getCountRoot() {
 		return countQuery.from(entityClass);
+	}
+
+	public Predicate getSplittedPredicateName(Join<?,Member> memberJoin, String val) {
+		List<Predicate> ors = Stream.of(val.split(" +")).map(v -> 
+			cb.or(cb.like(cb.lower(memberJoin.get(Member_.name)), "%"+v+"%"),
+				cb.like(cb.lower(memberJoin.get(Member_.vorname)), "%"+v+"%")))
+		.collect(Collectors.toList());
+		Predicate and = cb.and(ors.toArray(new Predicate[ors.size()]));
+		return and;
 	}
 
     protected CriteriaQuery<Long> createCountCriteriaQuery() {

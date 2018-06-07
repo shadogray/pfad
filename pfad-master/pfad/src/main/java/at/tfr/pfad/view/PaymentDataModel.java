@@ -92,12 +92,10 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 		String val = filterValue.toString().toLowerCase();
 		switch(propertyName) {
 		case "payer":
-			return cb.or(cb.like(cb.lower(joinPayer.get(Member_.name)), "%"+val+"%"),
-					cb.like(cb.lower(joinPayer.get(Member_.vorname)), "%"+val+"%"));
+			return getSplittedPredicateName(joinPayer, val);
 		
 		case "member":
-			return cb.or(cb.like(cb.lower(joinMember.get(Member_.name)), "%"+val+"%"),
-					cb.like(cb.lower(joinMember.get(Member_.vorname)), "%"+val+"%"));
+			return getSplittedPredicateName(joinMember, val);
 		
 		case "squad":
 			return cb.like(cb.lower(joinTrupp.get(Squad_.name)), "%"+val+"%");

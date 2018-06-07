@@ -10,12 +10,14 @@ package at.tfr.pfad.view;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
@@ -112,8 +114,7 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		String val = filterValue.toString().toLowerCase();
 		switch(propertyName) {
 		case "member":
-			return cb.or(cb.like(cb.lower(joinMember.get(Member_.name)), "%"+val+"%"),
-					cb.like(cb.lower(joinMember.get(Member_.vorname)), "%"+val+"%"));
+			return getSplittedPredicateName(joinMember, val);
 		case "strasse":
 			return cb.like(cb.lower(joinMember.get(Member_.strasse)), "%"+val+"%");
 		case "ort":
