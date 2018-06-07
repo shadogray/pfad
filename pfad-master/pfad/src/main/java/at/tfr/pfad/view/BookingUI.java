@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import at.tfr.pfad.ActivityType;
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
@@ -40,8 +41,10 @@ public class BookingUI extends Booking {
 		this.payments = booking.getPayments();
 		this.payers = booking.getPayments().stream().map(Payment::getPayer).collect(Collectors.toSet());
 		if (booking.getMember() != null) {
-			free = booking.getMember().isFree() || isLeader || isAssistant ||
-					booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.getFree()));
+			if (booking.getActivity() != null && ActivityType.Membership.equals(booking.getActivity().getType())) {
+				free = booking.getMember().isFree() || isLeader || isAssistant ||
+						booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.getFree()));
+			}
 		}
 		squadName = booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : null;
 		if (squadName == null) {
