@@ -143,11 +143,18 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 	}
 
 	public Predicate getSplittedPredicateName(Join<?,Member> memberJoin, String val) {
-		List<Predicate> ors = Stream.of(val.split(" +")).map(v -> 
+		List<Predicate> ors = Stream.of(val.toLowerCase().split(" +")).map(v -> 
 			cb.or(cb.like(cb.lower(memberJoin.get(Member_.name)), "%"+v+"%"),
 				cb.like(cb.lower(memberJoin.get(Member_.vorname)), "%"+v+"%")))
 		.collect(Collectors.toList());
 		Predicate and = cb.and(ors.toArray(new Predicate[ors.size()]));
+		return and;
+	}
+
+	public Predicate getSplittedPredicateName(Path<String> path, String val) {
+		List<Predicate> preds = Stream.of(val.toLowerCase().split(" +")).map(v -> cb.like(cb.lower(path), "%"+v+"%"))
+		.collect(Collectors.toList());
+		Predicate and = cb.and(preds.toArray(new Predicate[preds.size()]));
 		return and;
 	}
 

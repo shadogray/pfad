@@ -144,7 +144,7 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 		case "ort":
 			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.ort)), "%"+val+"%");
 		case "activity":
-			return cb.like(cb.lower(root.join(Booking_.activity).get(Activity_.name)), "%"+val+"%");
+			return getSplittedPredicateName(root.join(Booking_.activity).get(Activity_.name), val);
 		case "squadName":
 			return cb.like(cb.lower(root.join(Booking_.member).join(Member_.trupp).get(Squad_.name)), "%"+val+"%");
 		case "status":

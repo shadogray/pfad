@@ -76,7 +76,6 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 
 			cq.multiselect(pr, payerJoin, memberJoin);
 			
-			pr.fetch(Payment_.payer);
 			cq.where(pr.in(list));
 			cq.orderBy(createOrders(pr));
 			cq.distinct(true);
@@ -105,7 +104,7 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 			return cb.like(cb.lower(root.join(Payment_.bookings).join(Booking_.member).join(Member_.trupp).get(Squad_.name)), "%"+val+"%");
 
 		case "activity":
-			return cb.like(cb.lower(root.join(Payment_.bookings).join(Booking_.activity).get(Activity_.name)), "%"+val+"%");
+			return getSplittedPredicateName(root.join(Payment_.bookings).join(Booking_.activity).get(Activity_.name), val);
 		}
 		return super.createFilterCriteriaForField(propertyName, val, criteriaQuery);
 	}
