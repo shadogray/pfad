@@ -170,11 +170,6 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     protected CriteriaQuery<T> createSelectCriteriaQuery() {
         final CriteriaQuery<T> criteria = createCriteria(true);
 
-        final List<Order> orders = createOrders(root);
-        if (orders != null && !orders.isEmpty()) {
-            criteria.orderBy(orders);
-        }
-
         final List<Predicate> filterCriteria = createFilterCriteria(criteria);
         if (filterCriteria != null) {
             criteria.where(filterCriteria.toArray(new Predicate[]{}));

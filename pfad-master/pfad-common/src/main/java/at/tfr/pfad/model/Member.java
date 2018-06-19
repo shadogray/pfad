@@ -231,7 +231,7 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 	protected Long VollzahlerId;
 
 	@Audited
-	@ManyToMany() //fetch = FetchType.EAGER)
+	@ManyToMany
 	protected Set<Function> funktionen = new HashSet<>();
 
 	@Audited

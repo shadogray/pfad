@@ -20,12 +20,14 @@ import at.tfr.pfad.model.Payment;
 public class PaymentUI extends Payment {
 
 	private Payment payment;
+	private Member payer;
 	private Set<Booking> bookings;
 	private List<String> truppNames;
 
-	public PaymentUI(Payment payment) {
+	public PaymentUI(Payment payment, Member payer, Set<Booking> bookings) {
 		this.payment = payment;
-		this.bookings = payment.getBookings();
+		this.payer = payer;
+		this.bookings = bookings;
 		truppNames = bookings.stream().filter(b-> b.getMember() != null && b.getMember().getTrupp() != null).map(b->b.getMember().getTrupp().getName()).collect(Collectors.toList());
 	}
 
@@ -54,15 +56,15 @@ public class PaymentUI extends Payment {
 	}
 
 	public Member getPayer() {
-		return payment.getPayer();
+		return payer;
 	}
 
-	public void setPayer(Member Payer) {
-		payment.setPayer(Payer);
+	public void setPayer(Member payer) {
+		this.payer = payer;
 	}
 	
 	public String getPayerName() {
-		return payment.getPayer() != null ? payment.getPayer().getName()+","+payment.getPayer().getVorname() : ""; 
+		return payer != null ? payer.getName()+","+payer.getVorname() : ""; 
 	}
 	
 	@Override

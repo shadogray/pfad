@@ -33,6 +33,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.richfaces.component.UISelect;
 import org.richfaces.model.CollectionDataModel;
 
@@ -275,7 +276,8 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 		TypedQuery<Payment> query = this.entityManager
 				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
-		this.pageItems = query.getResultList().stream().map(p -> new PaymentUI(p)).collect(Collectors.toList());
+		query.getResultList().stream().forEach(p -> Hibernate.initialize(p.getPayer()));
+		this.pageItems = query.getResultList().stream().map(p -> new PaymentUI(p, p.getPayer(), p.getBookings())).collect(Collectors.toList());
 		dataModel = new CollectionDataModel<>(pageItems);
 	}
 

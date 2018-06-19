@@ -54,19 +54,27 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 		return new Path[] { root };
 	}
 	
+	Join<Payment,Booking> bookJoin;
+	Join<Payment,Member> payerJoin;
+	Join<Booking,Member> memberJoin;
+	Join<Member,Squad> squadJoin;
+
 	@Override
 	public List<PaymentUI> convertToUiBean(List<Payment> list) {
 		if (!list.isEmpty()) {
 			CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 			Root<Payment> pr = cq.from(Payment.class);
-			Join<Payment,Booking> bj = pr.join(Payment_.bookings, JoinType.LEFT);
-			bj.alias("bookings");
-			Join<Booking,Member> mj = bj.join(Booking_.member);
-			mj.alias("member");
-			Join<Member,Squad> sj = mj.join(Member_.trupp, JoinType.LEFT);
-			sj.alias("trupp");
+			pr.alias("payment");
+			payerJoin = pr.join(Payment_.payer, JoinType.LEFT);
+			payerJoin.alias("payer");
+			bookJoin = pr.join(Payment_.bookings, JoinType.LEFT);
+			bookJoin.alias("bookings");
+			memberJoin = bookJoin.join(Booking_.member);
+			memberJoin.alias("bookMember");
+			squadJoin = memberJoin.join(Member_.trupp, JoinType.LEFT);
+			squadJoin.alias("trupp");
 
-			cq.multiselect(pr, bj, mj);
+			cq.multiselect(pr, payerJoin, memberJoin);
 			
 			pr.fetch(Payment_.payer);
 			cq.where(pr.in(list));
@@ -75,7 +83,7 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 			
 			List<Tuple> res = entityManager.createQuery(cq).getResultList();
 			
-			return res.stream().map(t->new PaymentUI(t.get(0, Payment.class))).collect(Collectors.toList());
+			return res.stream().map(t->new PaymentUI(t.get(0, Payment.class), t.get(1, Member.class), t.get(0, Payment.class).getBookings())).collect(Collectors.toList());
 		}
 		return Collections.emptyList();
 	}
@@ -106,16 +114,16 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 	protected Path getPathForOrder(Root<Payment> path, String propertyName) {
 		switch(propertyName) {
 		case "payer":
-			return path.get(Payment_.payer).get(Member_.name);
+			return payerJoin.get(Member_.name);
 		
 		case "member":
-			return path.<Member>get("member").get(Member_.name);
+			return memberJoin.get(Member_.name);
 		
 		case "squad":
-			return path.<Squad>get("trupp").get(Squad_.name);
+			return squadJoin.get(Squad_.name);
 
 		case "activity":
-			return path.join(Payment_.bookings).join(Booking_.activity).get(Activity_.name);
+			return bookJoin.join(Booking_.activity).get(Activity_.name);
 		}
 		return super.getPathForOrder(path, propertyName);
 	}

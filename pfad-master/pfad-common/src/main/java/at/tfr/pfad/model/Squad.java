@@ -88,10 +88,10 @@ public class Squad extends BaseEntity implements Comparable<Squad>, Auditable, P
 	@Column
 	private String createdBy;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	private Member leaderMale;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	private Member leaderFemale;
 
 	@ManyToMany
