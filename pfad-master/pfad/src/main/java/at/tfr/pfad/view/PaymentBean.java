@@ -26,9 +26,11 @@ import javax.faces.convert.Converter;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.persistence.FetchType;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -40,6 +42,7 @@ import org.richfaces.model.CollectionDataModel;
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
+import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
 
@@ -273,10 +276,15 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 
 		CriteriaQuery<Payment> criteria = builder.createQuery(Payment.class);
 		root = criteria.from(Payment.class);
+		root.join(Payment_.payer, JoinType.LEFT);
+		root.join(Payment_.bookings, JoinType.LEFT).join(Booking_.member, JoinType.LEFT).join(Member_.funktionen, JoinType.LEFT);
+		
 		TypedQuery<Payment> query = this.entityManager
 				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
+		
 		query.getResultList().stream().forEach(p -> Hibernate.initialize(p.getPayer()));
+		query.getResultList().stream().flatMap(p -> p.getBookings().stream()).forEach(Hibernate::initialize);
 		this.pageItems = query.getResultList().stream().map(p -> new PaymentUI(p, p.getPayer(), p.getBookings())).collect(Collectors.toList());
 		dataModel = new CollectionDataModel<>(pageItems);
 	}
