@@ -198,7 +198,7 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 	@Column
 	protected String createdBy;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	@OrderBy("name")
 	protected Squad trupp;
 
@@ -231,7 +231,7 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 	protected Long VollzahlerId;
 
 	@Audited
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany() //fetch = FetchType.EAGER)
 	protected Set<Function> funktionen = new HashSet<>();
 
 	@Audited

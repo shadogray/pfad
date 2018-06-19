@@ -7,11 +7,14 @@
 
 package at.tfr.pfad.view;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.RequestScoped;
+import javax.persistence.FetchType;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -37,12 +40,6 @@ import at.tfr.pfad.model.Squad_;
 @Stateful
 public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 
-	private SetJoin<Payment, Booking> joinBookings;
-	private Join<Booking,Activity> joinActivity;
-	private Join<Booking, Member> joinMember;
-	private Join<Member,Squad> joinTrupp;
-	private Join<Payment, Member> joinPayer;
-	
 	public PaymentDataModel() {
 		uiClass = PaymentUI.class;
 		entityClass = Payment.class;
@@ -53,35 +50,34 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 	}
 
 	@Override
-	protected Root<Payment> getRoot() {
-		Root<Payment> root = super.getRoot();
-		joinBookings = root.join(Payment_.bookings, JoinType.INNER);
-		joinActivity = joinBookings.join(Booking_.activity, JoinType.INNER);
-		joinMember = joinBookings.join(Booking_.member, JoinType.INNER);
-		joinTrupp = joinMember.join(Member_.trupp, JoinType.LEFT);
-		joinPayer = root.join(Payment_.payer, JoinType.LEFT);
-		return root;
-	}
-
-	@Override
-	protected Root<Payment> getCountRoot() {
-		Root<Payment> root = super.getCountRoot();
-		joinBookings = root.join(Payment_.bookings, JoinType.INNER);
-		joinActivity = joinBookings.join(Booking_.activity, JoinType.INNER);
-		joinMember = joinBookings.join(Booking_.member, JoinType.INNER);
-		joinTrupp = joinMember.join(Member_.trupp, JoinType.LEFT);
-		joinPayer = root.join(Payment_.payer, JoinType.LEFT);
-		return root;
-	}
-	
-	@Override
 	protected Path[] getGroupByRoots() {
-		return new Path[] { root, joinBookings, joinMember};
+		return new Path[] { root };
 	}
 	
 	@Override
 	public List<PaymentUI> convertToUiBean(List<Payment> list) {
-		return list.stream().map(b->new PaymentUI(b)).collect(Collectors.toList());
+		if (!list.isEmpty()) {
+			CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+			Root<Payment> pr = cq.from(Payment.class);
+			Join<Payment,Booking> bj = pr.join(Payment_.bookings, JoinType.LEFT);
+			bj.alias("bookings");
+			Join<Booking,Member> mj = bj.join(Booking_.member);
+			mj.alias("member");
+			Join<Member,Squad> sj = mj.join(Member_.trupp, JoinType.LEFT);
+			sj.alias("trupp");
+
+			cq.multiselect(pr, bj, mj);
+			
+			pr.fetch(Payment_.payer);
+			cq.where(pr.in(list));
+			cq.orderBy(createOrders(pr));
+			cq.distinct(true);
+			
+			List<Tuple> res = entityManager.createQuery(cq).getResultList();
+			
+			return res.stream().map(t->new PaymentUI(t.get(0, Payment.class))).collect(Collectors.toList());
+		}
+		return Collections.emptyList();
 	}
 	
 	@Override
@@ -92,35 +88,35 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 		String val = filterValue.toString().toLowerCase();
 		switch(propertyName) {
 		case "payer":
-			return getSplittedPredicateName(joinPayer, val);
+			return getSplittedPredicateName(root.join(Payment_.payer), val);
 		
 		case "member":
-			return getSplittedPredicateName(joinMember, val);
+			return getSplittedPredicateName(root.join(Payment_.bookings).join(Booking_.member), val);
 		
 		case "squad":
-			return cb.like(cb.lower(joinTrupp.get(Squad_.name)), "%"+val+"%");
+			return cb.like(cb.lower(root.join(Payment_.bookings).join(Booking_.member).join(Member_.trupp).get(Squad_.name)), "%"+val+"%");
 
 		case "activity":
-			return cb.like(cb.lower(joinActivity.get(Activity_.name)), "%"+val+"%");
+			return cb.like(cb.lower(root.join(Payment_.bookings).join(Booking_.activity).get(Activity_.name)), "%"+val+"%");
 		}
 		return super.createFilterCriteriaForField(propertyName, val, criteriaQuery);
 	}
 
 	@Override
-	protected Path getPathForOrder(String propertyName) {
+	protected Path getPathForOrder(Root<Payment> path, String propertyName) {
 		switch(propertyName) {
 		case "payer":
-			return joinPayer.get(Member_.name);
+			return path.get(Payment_.payer).get(Member_.name);
 		
 		case "member":
-			return joinMember.get(Member_.name);
+			return path.<Member>get("member").get(Member_.name);
 		
 		case "squad":
-			return joinMember.get(Member_.trupp).get(Squad_.name);
+			return path.<Squad>get("trupp").get(Squad_.name);
 
 		case "activity":
-			return joinActivity.get(Activity_.name);
+			return path.join(Payment_.bookings).join(Booking_.activity).get(Activity_.name);
 		}
-		return super.getPathForOrder(propertyName);
+		return super.getPathForOrder(path, propertyName);
 	}
 }

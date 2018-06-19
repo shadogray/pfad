@@ -68,7 +68,7 @@ public class Booking extends BaseEntity implements Auditable, Presentable, Compa
 	@ManyToOne(optional = false)
 	private Member member;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Activity activity;
 
 	@ManyToOne(fetch = FetchType.LAZY)

@@ -129,6 +129,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         cb = entityManager.getCriteriaBuilder();
 		query = cb.createQuery(entityClass);
         root = getRoot();
+        query.select(root);
         root.alias(entityClass.getSimpleName());
         return query;
     }
@@ -169,7 +170,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     protected CriteriaQuery<T> createSelectCriteriaQuery() {
         final CriteriaQuery<T> criteria = createCriteria(true);
 
-        final List<Order> orders = createOrders();
+        final List<Order> orders = createOrders(root);
         if (orders != null && !orders.isEmpty()) {
             criteria.orderBy(orders);
         }
@@ -182,7 +183,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         return criteria;
     }
 
-    protected List<Order> createOrders() {
+    protected List<Order> createOrders(Root<T> path) {
         final List<Order> orders = Lists.newArrayList();
 
         if (null == arrangeableState) {
@@ -201,9 +202,9 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
                 Order order;
                 final SortOrder sortOrder = sortField.getSortOrder();
                 if (sortOrder == SortOrder.ascending) {
-                    order = cb.asc(getPathForOrder(propertyName));
+                    order = cb.asc(getPathForOrder(path, propertyName));
                 } else if (sortOrder == SortOrder.descending) {
-                    order = cb.desc(getPathForOrder(propertyName));
+                    order = cb.desc(getPathForOrder(path, propertyName));
                 } else {
                     throw new IllegalArgumentException(sortOrder.toString());
                 }
@@ -215,8 +216,8 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         return orders;
     }
 
-	protected Path<Object> getPathForOrder(final String propertyName) {
-		return root.get(propertyName);
+	protected Path<Object> getPathForOrder(Root<T> path, final String propertyName) {
+		return path.get(propertyName);
 	}
     
     protected String getEntitySortProperty(String sortField) {
@@ -250,19 +251,19 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
                     return cb.between(root.get(propertyName), date.toDate(), date.plusDays(1).toDate());
 
                 } else if (Integer.class.isAssignableFrom(method.getReturnType())) {
-                    return cb.equal(getPathForOrder(propertyName), Integer.parseInt(filterValue.toString()));
+                    return cb.equal(getPathForOrder(root, propertyName), Integer.parseInt(filterValue.toString()));
 
                 } else if (Long.class.isAssignableFrom(method.getReturnType())) {
-                    return cb.equal(getPathForOrder(propertyName), Long.parseLong(filterValue.toString()));
+                    return cb.equal(getPathForOrder(root, propertyName), Long.parseLong(filterValue.toString()));
 
                 } else if (Float.class.isAssignableFrom(method.getReturnType())) {
-                    return cb.equal(getPathForOrder(propertyName), Float.parseFloat(filterValue.toString()));
+                    return cb.equal(getPathForOrder(root, propertyName), Float.parseFloat(filterValue.toString()));
 
                 } else if (Double.class.isAssignableFrom(method.getReturnType())) {
-                    return cb.equal(getPathForOrder(propertyName), Double.parseDouble(filterValue.toString()));
+                    return cb.equal(getPathForOrder(root, propertyName), Double.parseDouble(filterValue.toString()));
 
                 } else if (Boolean.class.isAssignableFrom(method.getReturnType())) {
-                    return cb.equal(getPathForOrder(propertyName), Boolean.parseBoolean(filterValue.toString()));
+                    return cb.equal(getPathForOrder(root, propertyName), Boolean.parseBoolean(filterValue.toString()));
 
                 } else if (filterValue instanceof String) {
                     String stringValue = (String) filterValue;
@@ -328,7 +329,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
 	private List<U> getRowDataInternal(final Range range) {
 		final CriteriaQuery<T> criteria = createSelectCriteriaQuery();
-		criteria.groupBy(getGroupByRoots());
+		//criteria.groupBy(getGroupByRoots());
 
         TypedQuery<T> query = entityManager.createQuery(criteria);
         sequenceRange = (SequenceRange) range;

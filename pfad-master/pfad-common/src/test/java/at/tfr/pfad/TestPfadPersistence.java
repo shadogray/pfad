@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import at.tfr.pfad.dao.MailTemplateRepository;
 import at.tfr.pfad.dao.MemberRepository;
+import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.MailTemplate;
 import at.tfr.pfad.model.Member;
@@ -49,6 +50,10 @@ public class TestPfadPersistence {
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 
+		Activity a = new Activity();
+		a.setType(ActivityType.Other);
+		a.setStatus(ActivityStatus.cancelled);
+		
 		Member m = new Member();
 		m.setName("Name");
 		m.setVorname("Vorname");
@@ -78,11 +83,13 @@ public class TestPfadPersistence {
 		p.setComment("Comment");
 
 		Booking b = new Booking();
+		b.setActivity(a);
 		b.setMember(m);
 		b.setStatus(BookingStatus.created);
 		//b.getPayments().add(p);
 		p.getBookings().add(b);
 
+		em.persist(a);
 		em.persist(s);
 		em.persist(b);
 		em.persist(p);
@@ -109,12 +116,18 @@ public class TestPfadPersistence {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 
+		Activity a = new Activity();
+		a.setType(ActivityType.Other);
+		a.setStatus(ActivityStatus.cancelled);
+		
 		Member m = new Member();
 		Payment p = new Payment();
 		Booking orig = new Booking();
+		orig.setActivity(a);
 		orig.setMember(m);
 		orig.setStatus(BookingStatus.created);
 		orig.getPayments().add(p);
+		em.persist(a);
 		em.persist(m);
 		em.persist(orig);
 		em.getTransaction().commit();

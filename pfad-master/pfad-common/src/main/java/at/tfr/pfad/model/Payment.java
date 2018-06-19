@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -64,7 +65,7 @@ public class Payment extends BaseEntity implements Auditable, Presentable, Compa
 	@Enumerated(EnumType.STRING)
 	private PaymentType type;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Member payer;
 
 	@Column

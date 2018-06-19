@@ -7,6 +7,7 @@
 
 package at.tfr.pfad.view;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -26,27 +27,25 @@ public class BookingUI extends Booking {
 	private boolean isPayed;
 	private Set<Member> payers;
 	private boolean free;
-	private Set<Payment> payments;
+	private Activity activity;
+	private Member member;
+	private Squad squad;
 	private String squadName;
+	private Set<Payment> payments;
 
-	public BookingUI(Booking booking, List<Squad> squads) {
-		this(booking, 
-				squads.stream().anyMatch(s -> booking.getMember().equals(s.getLeaderFemale()) || booking.getMember().equals(s.getLeaderMale())),
-				squads.stream().anyMatch(s -> s.getAssistants().contains(booking.getMember())));
-	}
-	
-	public BookingUI(Booking booking, boolean isLeader, boolean isAssistant) {
+	public BookingUI(Booking booking, Activity activity, Member member, Squad squad, Set<Payment> payments, boolean isLeader, boolean isAssistant) {
 		this.booking = booking;
-		booking.getPayments().stream().peek(Payment::getId);
-		this.payments = booking.getPayments();
-		this.payers = booking.getPayments().stream().map(Payment::getPayer).collect(Collectors.toSet());
-		if (booking.getMember() != null) {
-			if (booking.getActivity() != null && ActivityType.Membership.equals(booking.getActivity().getType())) {
+		this.activity = activity;
+		this.member = member;
+		this.squad = squad;
+		this.payments = payments;
+		if (member != null) {
+			if (activity != null && ActivityType.Membership.equals(activity.getType())) {
 				free = booking.getMember().isFree() || isLeader || isAssistant ||
 						booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.getFree()));
 			}
 		}
-		squadName = booking.getMember() != null && booking.getMember().getTrupp() != null ? booking.getMember().getTrupp().getName() : null;
+		squadName = squad != null ? squad.getName() : null;
 		if (squadName == null) {
 			if (booking.getSquad() != null) {
 				squadName = booking.getSquad().getName();
