@@ -12,6 +12,7 @@
 			<h:panelGroup>
 				<h:panelGroup layout="block" style="white-space:nowrap;">
 					<h:commandLink value="#{bean.columnHeaders[property]}" actionListener="#{bean.toggleSort}">
+						<f:ajax render="@form" />
 						<f:setPropertyActionListener target="#{bean.sortProperty}" value="#{property}" />
 					</h:commandLink>
 					<h:graphicImage name="down.gif" rendered="#{bean.sortOrders[property]=='descending'}" alt="UP"/>
@@ -19,6 +20,7 @@
 				</h:panelGroup>
 				<h:panelGroup layout="block">
 						<h:inputText value="#{bean.filterValues[property]}" tabindex="#{tabIndex}">
+							<f:ajax render="@form" />
 						</h:inputText>
 				</h:panelGroup>
 			</h:panelGroup>
