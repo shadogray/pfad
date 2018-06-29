@@ -160,12 +160,16 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			} else {
 				Subquery<Payment> sq = criteriaQuery.subquery(Payment.class);
 				Root<Payment> sr = sq.from(Payment.class);
+				Join<Payment,Booking> jpb = sr.join(Payment_.bookings);
 				List<Predicate> paymentStatOr = new ArrayList<>();
-				paymentStatOr.add(cb.and(cb.isMember(root, sr.get(Payment_.bookings)), cb.equal(sr.get(Payment_.finished), true)));
+				paymentStatOr.add(cb.equal(sr.get(Payment_.finished), true));
 				if ("false".equalsIgnoreCase(val)) {
-					paymentStatOr.add(cb.and(cb.isMember(root, sr.get(Payment_.bookings)), cb.equal(sr.get(Payment_.aconto), true)));
+					paymentStatOr.add(cb.equal(sr.get(Payment_.aconto), true));
 				}
-				sq.select(sr).where(cb.or(paymentStatOr.toArray(new Predicate[paymentStatOr.size()])));
+				sq.select(sr).where(
+						cb.equal(jpb.get(Booking_.id), root.get(Booking_.id)), 
+						cb.or(paymentStatOr.toArray(new Predicate[paymentStatOr.size()]))
+						);
 				Predicate notFin = cb.not(cb.exists(sq));
 				if ("anz".equalsIgnoreCase(val)) {
 					notFin = cb.and(notFin, cb.equal(root.join(Booking_.payments).get(Payment_.aconto), true));
@@ -198,8 +202,8 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			return path.get(Booking_.activity).get(Activity_.name);
 		case "squadName":
 			return path.get(Booking_.member).get(Member_.trupp).get(Squad_.name);
-		case "payed":
-			return path.join(Booking_.payments).get(Payment_.finished);
+//		case "payed":
+//			return path.join(Booking_.payments).get(Payment_.finished);
 		}
 		return super.getPathForOrder(path, propertyName);
 	}
