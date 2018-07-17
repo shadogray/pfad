@@ -10,6 +10,7 @@
 		<class>at.tfr.pfad.model.Configuration</class>
 		<class>at.tfr.pfad.model.Activity</class>
 		<class>at.tfr.pfad.model.Squad</class>
+		<class>at.tfr.pfad.model.Registration</class>
 		<class>at.tfr.pfad.model.Training</class>
 		<class>at.tfr.pfad.model.Participation</class>
 		<class>at.tfr.pfad.model.MailTemplate</class>

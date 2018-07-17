@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import at.tfr.pfad.dao.MemberRepository;
+import at.tfr.pfad.dao.RegistrationRepository;
 import at.tfr.pfad.model.Member;
 
 @RunWith(CdiTestRunner.class)
@@ -20,6 +21,8 @@ public class TestPfadRepositories {
 
 	@Inject
 	private MemberRepository memberRepo;
+	@Inject
+	private RegistrationRepository regRepo;
 	@Inject
 	private EntityManager em;
 	
@@ -44,6 +47,11 @@ public class TestPfadRepositories {
 		
 		assertFalse("EntityGraph failed", saved.getSiblingIds().isEmpty());
 		
+	}
+	
+	@Test
+	public void testRegistrationRepo() throws Exception {
+		regRepo.findByNameVornameAndGeburtJahrMonatTag("name", "vorname", 2000, 1, 1);
 	}
 	
 }

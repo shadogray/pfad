@@ -46,6 +46,8 @@ import at.tfr.pfad.dao.AuditListener;
 		@NamedQuery(name = "Registration.distStrasse", query = "select distinct r.strasse from Registration r where r.strasse is not null order by r.strasse"),
 		@NamedQuery(name = "Registration.distGebJahr", query = "select distinct r.gebJahr from Registration r where r.gebJahr is not null order by r.gebJahr desc"),
 		@NamedQuery(name = "Registration.distSchoolEntry", query = "select distinct r.schoolEntry from Registration r where r.schoolEntry is not null order by r.schoolEntry"),
+		@NamedQuery(name = "Registration.duplicateCheck", query = "select r from Registration r where r.name = ?1 and r.vorname = ?2 "
+				+ " and r.gebJahr = ?3 and r.gebMonat = ?4 and r.gebTag = ?5"),
 	})
 @Audited(withModifiedFlag = true)
 @Entity

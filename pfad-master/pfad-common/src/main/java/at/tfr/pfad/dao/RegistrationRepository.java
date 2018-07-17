@@ -54,6 +54,14 @@ public abstract class RegistrationRepository implements EntityRepository<Registr
 				.maxResults(max);
 	}
 	
+	public List<Registration> getDuplicates(Registration example) {
+		return findByNameVornameAndGeburtJahrMonatTag(example.getName(), example.getVorname(), 
+				example.getGebJahr(), example.getGebMonat(), example.getGebTag());
+	}
+	
+	@Query(named = "Registration.duplicateCheck")
+	public abstract List<Registration> findByNameVornameAndGeburtJahrMonatTag(String name, String vorname, int gebJahr, int gebMonat, int gebTag);
+	
 	public List<Registration> queryBy(Registration reg) {
 		return queryBy(reg);
 	}
