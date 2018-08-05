@@ -16,13 +16,20 @@ Quill.register(SizeStyle, true);
 
 const Parchment = Quill.import('parchment')
 
-class IndentAttributor extends Parchment.Attributor.Style {
+class IndentAttributor extends Parchment.Attributor.Style { // ClassAttributor {
   add (node, value) {
     if (value === 0) {
       this.remove(node)
       return true
     } else {
       return super.add(node, `${value}em`)
+    }
+  }
+  value(node) {
+  	var v = super.value(node);
+    if (v.match('[0-9]+em$')) {
+	  var ret = v.substr(-3,1);
+	  return parseFloat(ret)
     }
   }
 }
@@ -32,6 +39,6 @@ let IndentStyle = new IndentAttributor('indent', 'text-indent', {
   whitelist: ['1em', '2em', '3em', '4em', '5em', '6em', '7em', '8em', '9em']
 })
 
-//export { IndentStyle }
+// export { IndentStyle }
 
 Quill.register(IndentStyle, true)
