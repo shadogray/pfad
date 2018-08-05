@@ -17,6 +17,7 @@
 	<ui:define name="footer" />
 
 	<ui:define name="main">
+		<h:outputScript library="pfad" name="indent.js" />
 		<h:form id="mailConfig">
 			
 			<p:focus/>
@@ -65,7 +66,7 @@
 				<p:inputText value="#{mailerBean.mailTemplate.subject}" size="80"/>
 				
 				<h:outputLabel value="Text: "/>			
-				<p:editor value="#{mailerBean.mailTemplate.text}"/>
+				<p:textEditor value="#{mailerBean.mailTemplate.text}" height="400"/>
 
 				<h:outputLabel value="Aktionen: "/>			
 				<h:panelGrid columns="3" with="100%">	
