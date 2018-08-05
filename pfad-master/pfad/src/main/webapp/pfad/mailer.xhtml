@@ -41,13 +41,15 @@
 			
 			<h:panelGrid columns="2">
 				<h:outputLabel value="Mail: "/>			
-				<h:panelGrid columns="6" width="100%">
+				<h:panelGrid columns="8" width="100%">
 					<h:outputLabel value="Sender:" />
 					<h:outputText value="#{mailerBean.mailConfig.from}"/>
 					<h:outputLabel value="Alias:" />
 					<h:outputText value="#{mailerBean.mailConfig.aliasConf.cvalue}"/>
 					<h:outputLabel value="Username:" />
 					<h:outputText value="#{mailerBean.mailConfig.username}"/>
+					<h:outputLabel value="Berechtigt:" />
+					<p:inputText value="#{mailerBean.mailTemplate.owner}" disabled="#{!mailerBean.changeOwnerAllowed}"/>
 					<h:outputLabel value="CC:" />
 					<h:outputText value="#{mailerBean.mailConfig.ccConf.cvalue}"/>
 					<h:outputLabel value="BCC:" />
@@ -68,8 +70,8 @@
 				<h:outputLabel value="Aktionen: "/>			
 				<h:panelGrid columns="3" with="100%">	
 					<h:commandButton value="Template Speichern" action="#{mailerBean.saveTemplate}" disabled="#{!mailerBean.updateAllowed}"/>
-					<h:commandButton value="Vorbereiten" action="#{mailerBean.executeQuery}"/>
-					<h:commandButton value="Mails Versenden!!" action="#{mailerBean.sendMessages}"/>
+					<h:commandButton value="Vorbereiten" action="#{mailerBean.executeQuery}" disabled="#{!mailerBean.updateAllowed}"/>
+					<h:commandButton value="Mails Versenden!!" action="#{mailerBean.sendMessages}" disabled="#{!mailerBean.updateAllowed}"/>
 				</h:panelGrid>
 			</h:panelGrid>
 

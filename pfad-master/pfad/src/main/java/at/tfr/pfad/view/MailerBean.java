@@ -213,11 +213,26 @@ public class MailerBean extends BaseBean {
 		});
 	}
 
-	@Override
-	public boolean isUpdateAllowed() {
+	public boolean isChangeOwnerAllowed() {
 		return isVorstand() || isAdmin();
 	}
 
+	@Override
+	public boolean isUpdateAllowed() {
+		return isVorstand() || isAdmin() || ownerMatches(mailTemplate.getOwner(), ""+getSessionContext().getCallerPrincipal());
+	}
+
+	boolean ownerMatches(String owner, String principal) {
+		if (owner == null || principal == null)
+			return false;
+		try {
+			return principal.matches(owner);
+		} catch (Exception e) {
+			log.info("cannot check: " + e);
+		}
+		return false;
+	}
+	
 	public List<Map<String, Object>> getValues() {
 		return values;
 	}

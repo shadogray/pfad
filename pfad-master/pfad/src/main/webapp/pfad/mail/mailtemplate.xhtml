@@ -83,6 +83,15 @@
 				</h:column>
 				<h:column>
 					<f:facet name="header">
+						<h:outputText value="Ber." />
+					</f:facet>
+					<h:link outcome="/pfad/mailer">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemOwner" value="#{_item.owner}" title="#{_item}"/>
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
 						<h:outputText value="Text" />
 					</f:facet>
 					<h:link outcome="/pfad/mailer">

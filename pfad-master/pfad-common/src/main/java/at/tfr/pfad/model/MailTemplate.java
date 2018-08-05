@@ -45,6 +45,8 @@ public class MailTemplate extends BaseEntity implements Auditable {
 	private String text;
 	@Column(length=4096)
 	private String query;
+	@Column(length=64)
+	private String owner;
 	
 	protected Date changed;
 	protected Date created;
@@ -100,6 +102,14 @@ public class MailTemplate extends BaseEntity implements Auditable {
 		this.query = query;
 	}
 
+	public String getOwner() {
+		return owner;
+	}
+	
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+	
 	public List<MailMessage> getMessages() {
 		return messages;
 	}
