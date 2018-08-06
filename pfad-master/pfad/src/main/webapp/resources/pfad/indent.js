@@ -1,4 +1,5 @@
 //import Quill from 'quill'
+Quill.debug(true)
 
 let AlignStyle = Quill.import('attributors/style/align')
 let BackgroundStyle = Quill.import('attributors/style/background')
@@ -39,6 +40,14 @@ let IndentStyle = new IndentAttributor('indent', 'text-indent', {
   whitelist: ['1em', '2em', '3em', '4em', '5em', '6em', '7em', '8em', '9em']
 })
 
-// export { IndentStyle }
+Quill.register(IndentStyle, false)
 
-Quill.register(IndentStyle, true)
+class MarginAttributor extends Parchment.Attributor.Style { }
+
+let MarginStyle = new MarginAttributor('margin', 'margin', {
+  scope: Parchment.Scope.BLOCK,
+  whitelist: ['0', '0.5', '1.0', '1.5', '2', '2.5', '3']
+})
+
+Quill.register(MarginStyle, false)
+
