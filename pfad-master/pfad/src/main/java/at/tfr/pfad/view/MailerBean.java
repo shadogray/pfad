@@ -165,7 +165,8 @@ public class MailerBean extends BaseBean {
 					mail.setContent(msg.getText(), "text/html; charset=utf-8");
 					
 					RecipientType to = RecipientType.TO;
-					addAddresses(mail, testOnly ? mailConfig.getFrom() : msg.getReceiver(), to);
+					String msgReceivers = testOnly ? mailConfig.getTestTo() : msg.getReceiver();
+					addAddresses(mail, msgReceivers, to);
 					
 					if (StringUtils.isNotBlank(msg.getCc())) {
 						addAddresses(mail, msg.getCc(), RecipientType.CC);
@@ -329,6 +330,7 @@ public class MailerBean extends BaseBean {
 		private String from;
 		private String username;
 		private String password;
+		private String testTo = "noreply@nomail.org";
 		private final Properties properties;
 
 		public MailConfig(String key, Collection<Configuration> configs, boolean debug) {
@@ -340,6 +342,7 @@ public class MailerBean extends BaseBean {
 			this.aliasConf = getConfig(configs, "mail_alias");
 			this.ccConf = getConfig(configs, "mail_cc");
 			this.bccConf = getConfig(configs, "mail_bcc");
+			this.testTo = getValue(configs, "mail_testTo", testTo);
 
 			properties = new Properties();
 			if (debug)
@@ -434,6 +437,14 @@ public class MailerBean extends BaseBean {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+		
+		public String getTestTo() {
+			return testTo;
+		}
+		
+		public void setTestTo(String testTo) {
+			this.testTo = testTo;
 		}
 		
 		public Properties getProperties() {
