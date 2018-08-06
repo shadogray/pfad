@@ -123,8 +123,15 @@ public class MailerBean extends BaseBean {
 		}
 	}
 
-	public void sendMessages() {
+	public void sendTestMessage() {
+		sendMessages(true);
+	}
+	
+	public void sendRealMessages() {
+		sendMessages(false);
+	}
 		
+	protected void sendMessages(boolean testOnly) {
 		if (mailConfig == null) {
 			error("Cannot execute Template for empty MailConfiguration!");
 			return;
@@ -156,8 +163,10 @@ public class MailerBean extends BaseBean {
 					mail.setFrom(sender);
 					mail.setSubject(msg.getSubject());
 					mail.setContent(msg.getText(), "text/html; charset=utf-8");
+					
 					RecipientType to = RecipientType.TO;
-					addAddresses(mail, msg.getReceiver(), to);
+					addAddresses(mail, testOnly ? mailConfig.getFrom() : msg.getReceiver(), to);
+					
 					if (StringUtils.isNotBlank(msg.getCc())) {
 						addAddresses(mail, msg.getCc(), RecipientType.CC);
 					} else if (mailConfig.getCcConf() != null) {
@@ -182,6 +191,10 @@ public class MailerBean extends BaseBean {
 
 						msg.setCreated(new Date());
 						messageRepo.saveAndFlush(msg);
+						
+						if (testOnly) {
+							break;
+						}
 					} catch (Exception e) {
 						try {
 							messageRepo.removeAndFlush(msg);

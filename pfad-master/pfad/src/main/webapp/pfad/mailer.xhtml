@@ -69,10 +69,11 @@
 				<p:textEditor value="#{mailerBean.mailTemplate.text}" height="400"/>
 
 				<h:outputLabel value="Aktionen: "/>			
-				<h:panelGrid columns="3" with="100%">	
+				<h:panelGrid columns="4" with="100%">	
 					<h:commandButton value="Template Speichern" action="#{mailerBean.saveTemplate}" disabled="#{!mailerBean.updateAllowed}"/>
 					<h:commandButton value="Vorbereiten" action="#{mailerBean.executeQuery}" disabled="#{!mailerBean.updateAllowed}"/>
-					<h:commandButton value="Mails Versenden!!" action="#{mailerBean.sendMessages}" disabled="#{!mailerBean.updateAllowed}"/>
+					<h:commandButton value="TestMail" action="#{mailerBean.sendTestMessage()}" disabled="#{!mailerBean.updateAllowed}"/>
+					<h:commandButton value="Echt-Mails Versenden!!" action="#{mailerBean.sendRealMessages()}" disabled="#{!mailerBean.updateAllowed}"/>
 				</h:panelGrid>
 			</h:panelGrid>
 
