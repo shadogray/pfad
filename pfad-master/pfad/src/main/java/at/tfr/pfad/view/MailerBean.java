@@ -39,6 +39,7 @@ import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.MailMessage;
 import at.tfr.pfad.model.MailTemplate;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Registration;
 import at.tfr.pfad.util.QueryExecutor;
 import at.tfr.pfad.util.TemplateUtils;
 
@@ -92,20 +93,22 @@ public class MailerBean extends BaseBean {
 		mailMessages = new ArrayList<>();
 		try {
 			values = queryExec.execute(mailTemplate.getQuery(), false);
-			for (Map<String, Object> value : values) {
+			for (Map<String, Object> valueMap : values) {
 				MailMessage msg = new MailMessage();
-				msg.setValues(value);
+				msg.setValues(valueMap);
 				msg.setTemplate(mailTemplate);
-				String text = templateUtils.replace(mailTemplate.getText(), value);
+				String text = templateUtils.replace(mailTemplate.getText(), valueMap);
 				text = text.replaceAll("<p style=\"", "<p style=\"margin:0; ");
 				text = text.replaceAll("<p>", "<p style='margin:0;'>");
 				msg.setText(text);
-				msg.setReceiver(templateUtils.replace("${to}", value));
-				msg.setCc(templateUtils.replace("${cc}", value, mailConfig.getCcConf() != null ? mailConfig.getCcConf().getCvalue() : null));
-				msg.setBcc(templateUtils.replace("${bcc}", value, mailConfig.getBccConf() != null ? mailConfig.getBccConf().getCvalue() : null));
+				msg.setReceiver(templateUtils.replace("${to}", valueMap));
+				msg.setCc(templateUtils.replace("${cc}", valueMap, mailConfig.getCcConf() != null ? mailConfig.getCcConf().getCvalue() : null));
+				msg.setBcc(templateUtils.replace("${bcc}", valueMap, mailConfig.getBccConf() != null ? mailConfig.getBccConf().getCvalue() : null));
 				msg.setSubject(templateUtils.replace(mailTemplate.getSubject(), msg.getValues()));
-				msg.setMember(value.entrySet().stream().filter(e -> e.getValue() instanceof Member)
+				msg.setMember(valueMap.entrySet().stream().filter(e -> e.getValue() instanceof Member)
 						.map(e -> (Member) e.getValue()).findFirst().orElse(null));
+				msg.setRegistration(valueMap.entrySet().stream().filter(e -> e.getValue() instanceof Registration)
+						.map(e -> (Registration) e.getValue()).findFirst().orElse(null));
 				mailMessages.add(msg);
 			}
 		} catch (Exception e) {
@@ -154,8 +157,8 @@ public class MailerBean extends BaseBean {
 
 			for (MailMessage msg : mailMessages) {
 				try {
-					if (StringUtils.isBlank(msg.getReceiver()) || StringUtils.isBlank(msg.getText())
-							|| StringUtils.isBlank(msg.getSubject())) {
+					if (StringUtils.isBlank(msg.getReceiver()) || "null".equals(msg.getReceiver()) 
+							|| StringUtils.isBlank(msg.getText()) || StringUtils.isBlank(msg.getSubject())) {
 						warn("invalid message: " + msg);
 						continue;
 					}

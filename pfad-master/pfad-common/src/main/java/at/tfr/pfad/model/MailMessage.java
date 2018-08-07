@@ -32,6 +32,8 @@ public class MailMessage extends BaseEntity {
 	private MailTemplate template;
 	@ManyToOne
 	private Member member;
+	@ManyToOne
+	private Registration registration;
 	@Column(length=256)
 	private String sender;
 	@Column(length=256)
@@ -87,6 +89,14 @@ public class MailMessage extends BaseEntity {
 		this.member = member;
 	}
 
+	public Registration getRegistration() {
+		return registration;
+	}
+	
+	public void setRegistration(Registration registration) {
+		this.registration = registration;
+	}
+	
 	public String getSender() {
 		return sender;
 	}
@@ -153,7 +163,7 @@ public class MailMessage extends BaseEntity {
 	
 	@Override
 	public String toString() {
-		return "MailMessage [id=" + id + ", tpl=" + template + ", member=" + member + ", receiver=" + receiver + ", text=" + StringUtils.abbreviate(text, 50)
+		return "MailMessage [id=" + id + ", member=" + member + ", receiver=" + receiver + ", tpl=" + template + ", text=" + StringUtils.abbreviate(text, 50)
 				+ "]";
 	}
 	

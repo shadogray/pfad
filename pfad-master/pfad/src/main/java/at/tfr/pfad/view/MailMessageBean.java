@@ -34,6 +34,7 @@ import at.tfr.pfad.dao.MailMessageRepository;
 import at.tfr.pfad.model.MailMessage;
 import at.tfr.pfad.model.MailMessage_;
 import at.tfr.pfad.model.Member_;
+import at.tfr.pfad.model.Registration_;
 
 /**
  * Backing bean for MailMessage entities.
@@ -76,6 +77,7 @@ public class MailMessageBean extends BaseBean<MailMessage> implements Serializab
 
 	private MailMessage MailMessage;
 	private String memberName;
+	private String registrationName;
 
 	public MailMessage getMailMessage() {
 		return this.MailMessage;
@@ -190,6 +192,14 @@ public class MailMessageBean extends BaseBean<MailMessage> implements Serializab
 		this.memberName = memberName;
 	}
 
+	public String getRegistrationName() {
+		return registrationName;
+	}
+	
+	public void setRegistrationName(String registrationName) {
+		this.registrationName = registrationName;
+	}
+	
 	public String search() {
 		this.page = 0;
 		return null;
@@ -246,11 +256,16 @@ public class MailMessageBean extends BaseBean<MailMessage> implements Serializab
 					.add(builder.like(builder.lower(root.get(MailMessage_.sender)), '%' + sender.toLowerCase() + '%'));
 		}
 		if (StringUtils.isNotBlank(memberName)) {
-			Predicate name = builder.like(builder.lower(root.get(MailMessage_.member).get(Member_.name)), '%' + subject.toLowerCase() + '%');
-			Predicate vorname = builder.like(builder.lower(root.get(MailMessage_.member).get(Member_.vorname)), '%' + subject.toLowerCase() + '%');
+			Predicate name = builder.like(builder.lower(root.get(MailMessage_.member).get(Member_.name)), '%' + memberName.toLowerCase() + '%');
+			Predicate vorname = builder.like(builder.lower(root.get(MailMessage_.member).get(Member_.vorname)), '%' + memberName.toLowerCase() + '%');
 			predicatesList.add(builder.or(name, vorname));
 		}
-
+		if (StringUtils.isNotBlank(registrationName)) {
+			Predicate name = builder.like(builder.lower(root.get(MailMessage_.registration).get(Registration_.name)), '%' + registrationName.toLowerCase() + '%');
+			Predicate vorname = builder.like(builder.lower(root.get(MailMessage_.registration).get(Registration_.vorname)), '%' + registrationName.toLowerCase() + '%');
+			predicatesList.add(builder.or(name, vorname));
+		}
+		
 		return predicatesList.toArray(new Predicate[predicatesList.size()]);
 	}
 

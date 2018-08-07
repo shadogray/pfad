@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -160,7 +161,7 @@ public class MailTemplate extends BaseEntity implements Auditable {
 
 	@Override
 	public String toString() {
-		return "MailTemplate [id=" + id + ", name=" + name + ", text=" + text + ", query=" + query + "]";
+		return "MailTemplate [id=" + id + ", name=" + name + ", text=" + StringUtils.abbreviate(text, 50) + ", query=" + StringUtils.abbreviate(query, 50) + "]";
 	}
 
 }

@@ -33,7 +33,7 @@
 						<h:outputLabel for="mailMessageBeanExampleReceiver" value="An:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleReceiver" value="#{mailMessageBean.example.receiver}" >
-								<f:ajax event="keyup" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleReceiver" styleClass="error" />
 						</h:panelGroup>
@@ -41,7 +41,15 @@
 						<h:outputLabel for="mailMessageBeanExampleMember" value="Mitglied:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleMember" value="#{mailMessageBean.memberName}" >
-								<f:ajax event="keyup" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+							</h:inputText>
+							<h:message for="mailMessageBeanExampleReceiver" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+						<h:outputLabel for="mailMessageBeanExampleRegistration" value="Anmeldg:" />
+						<h:panelGroup>
+							<h:inputText id="mailMessageBeanExampleRegistration" value="#{mailMessageBean.registrationName}" >
+								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleReceiver" styleClass="error" />
 						</h:panelGroup>
@@ -49,7 +57,7 @@
 						<h:outputLabel for="mailMessageBeanExampleText" value="Text:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleText" value="#{mailMessageBean.example.text}" >
-								<f:ajax event="keyup" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleText" styleClass="error" />
 						</h:panelGroup>
@@ -57,7 +65,7 @@
 						<h:outputLabel for="mailMessageBeanExampleSubject" value="Subject:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleSubject" value="#{mailMessageBean.example.subject}" >
-								<f:ajax event="keyup" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleSubject" styleClass="error" />
 						</h:panelGroup>
@@ -65,7 +73,7 @@
 						<h:outputLabel for="mailMessageBeanExampleCreatedBy" value="Benutzer:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleCreatedBy" value="#{mailMessageBean.example.createdBy}" >
-								<f:ajax event="keyup" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleCreatedBy" styleClass="error" />
 						</h:panelGroup>
@@ -73,7 +81,7 @@
 						<h:outputLabel for="mailMessageBeanExampleSender" value="Sender:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleSender" value="#{mailMessageBean.example.sender}" >
-								<f:ajax event="keyup" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleSender" styleClass="error" />
 						</h:panelGroup>
@@ -122,6 +130,15 @@
 					<h:link outcome="/pfad/member/view" rendered="#{_item.member != null}">
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText id="itemMember" value="#{_item.member}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Anmeldg" />
+					</f:facet>
+					<h:link outcome="/pfad/registration/create" rendered="#{_item.registration != null}">
+						<f:param name="id" value="#{_item.registration.id}" />
+						<h:outputText id="itemRegistration" value="#{_item.registration}" />
 					</h:link>
 				</h:column>
 				<h:column>
