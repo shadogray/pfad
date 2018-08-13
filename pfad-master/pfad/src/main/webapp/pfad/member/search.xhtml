@@ -38,7 +38,7 @@
 
 					<p:focus />
 			
-					<h:panelGrid columnClasses="label3,component3,label3,component3" columns="5">
+					<h:panelGrid columnClasses="label3,component3,label3,component3" columns="6">
 					
 						<h:outputLabel for="mbeName" value="Name:" />
 						<h:panelGroup>
@@ -54,7 +54,7 @@
 							</p:inputText>
 						</h:panelGroup>
 
-						<h:panelGrid columns="8" width="100%">
+						<h:panelGrid columns="8">
 							<h:outputLabel for="mbeTelefon" value="Tel:" styleClass="w30"/>
 							<h:panelGroup>
 								<h:inputText id="mbeTelefon" value="#{memberBean.example.telefon}" styleClass="w80">
@@ -83,6 +83,8 @@
 								</h:inputText>
 							</h:panelGroup>
 						</h:panelGrid>
+						
+						<h:outputText value="" style="width:100%"/>
 						
 						<h:outputLabel for="squadBeanExampleTrupp" value="Trupp:" />
 						<h:panelGroup>
@@ -148,6 +150,8 @@
 							</h:panelGrid>
 						</h:panelGroup>
 
+						<h:outputText value="" style="width:100%"/>
+						
 					</h:panelGrid>
 
 					<h:panelGroup styleClass="buttons">

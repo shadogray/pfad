@@ -40,53 +40,62 @@
 
 						<h:outputLabel for="bookingBeanExampleActivity" value="Aktivität:" />
 						<h:panelGroup>
-							<h:selectOneMenu id="bookingBeanExampleActivity" styleClass="fullwidth" 
+							<p:selectOneMenu id="bookingBeanExampleActivity" styleClass="fullwidth" 
 								value="#{bookingBean.example.activity}" converter="#{activityBean.converter}"
-								pt:placeholder="Aktivität.." title="Aktivität.." >
+								placeholder="Aktivität.." title="Aktivität.." >
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.all}" var="a"  itemLabel="#{a}" itemValue="#{a}" />
-								<f:ajax listener="#{bookingBean.paginate()}" render="bookingBeanPageItems"/>
-							</h:selectOneMenu>
+								<f:ajax render="bookingBeanPageItems"/>
+							</p:selectOneMenu>
 							<h:message for="bookingBeanExampleActivity" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="bookingBeanExampleMemberPanel" value="Teilnehmer:" />
 						<h:panelGroup id="bookingBeanExampleMemberPanel">
-							<h:inputText id="bookingBeanExampleMember" tabindex="0" value="#{bookingBean.exampleMember.name}">
-								<f:ajax event="keyup" listener="#{bookingBean.paginate()}" render="bookingBeanPageItems"/>
-							</h:inputText>
+							<p:inputText id="bookingBeanExampleMember" tabindex="0" value="#{bookingBean.exampleMember.name}">
+								<f:ajax event="keyup" render="bookingBeanPageItems"/>
+							</p:inputText>
 							<h:message for="bookingBeanExampleMember" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="bookingBeanExampleStatus" value="Status:" />
 						<h:panelGroup>
-							<h:selectOneMenu id="bookingBeanExampleStatus" value="#{bookingBean.example.status}">
+							<p:selectOneMenu id="bookingBeanExampleStatus" value="#{bookingBean.example.status}" styleClass="fullwidth" placeholder="Status..">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{bookingBean.stati}" />
 								<f:ajax listener="#{bookingBean.paginate()}" render="bookingBeanPageItems"/>
-							</h:selectOneMenu>
+							</p:selectOneMenu>
 							<h:message for="bookingBeanExampleStatus" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="bookingBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
-							<h:inputText id="bookingBeanExampleComment" value="#{bookingBean.example.comment}" >
+							<p:inputText id="bookingBeanExampleComment" value="#{bookingBean.example.comment}" >
 								<f:ajax event="keyup" listener="#{bookingBean.paginate()}" render="bookingBeanPageItems"/>
-							</h:inputText>
+							</p:inputText>
 							<h:message for="bookingBeanExampleComment" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel value="Abgeschl.:" />
-						<h:selectBooleanCheckbox id="bookingBeanShowFinished" value="#{bookingBean.showFinished}"/>
+						<p:selectBooleanCheckbox id="bookingBeanShowFinished" value="#{bookingBean.showFinished}">
+							<p:ajax update="bookingBeanPageItems"/>
+						</p:selectBooleanCheckbox>
 						<h:outputText />
 
 						<h:outputLabel value="Registr.:" />
-						<h:selectBooleanCheckbox id="bookingBeanShowRegistred" value="#{bookingBean.showRegistered}"/>
-						<h:selectBooleanCheckbox id="bookingBeanUnShowRegistred" value="#{bookingBean.showUnregistered}"/>
+						<h:panelGrid columns="2" width="100%">
+							<p:selectBooleanCheckbox id="bookingBeanShowRegistred" value="#{bookingBean.showRegistered}" title="Registrierte">
+								<p:ajax update="bookingBeanPageItems"/>
+							</p:selectBooleanCheckbox>
+							<p:selectBooleanCheckbox id="bookingBeanUnShowRegistred" value="#{bookingBean.showUnregistered}" title="Unregistrierte">
+								<p:ajax update="bookingBeanPageItems"/>
+							</p:selectBooleanCheckbox>
+						</h:panelGrid>
+						<h:outputText />
 
 					</h:panelGrid>
 

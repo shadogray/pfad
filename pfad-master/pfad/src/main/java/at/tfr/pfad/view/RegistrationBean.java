@@ -15,7 +15,9 @@ import javax.inject.Named;
 import javax.validation.ValidationException;
 
 import org.jboss.logging.Logger;
+import org.omnifaces.util.Messages;
 import org.primefaces.event.RowEditEvent;
+import org.richfaces.component.UIAccordion;
 
 import at.tfr.pfad.RegistrationStatus;
 import at.tfr.pfad.dao.RegistrationRepository;
@@ -47,6 +49,7 @@ public class RegistrationBean extends BaseBean {
 		distinctSchoolEntry = regRepo.findDistinctSchoolEntry();
 		filterStati = new RegistrationStatus[] 
 				{ RegistrationStatus.Erstellt, RegistrationStatus.ZusageOK, RegistrationStatus.ZusageGes, RegistrationStatus.BleibtAufListe, RegistrationStatus.AbsageGes}; 
+		paginate();
 	}
 	
 	
@@ -69,6 +72,7 @@ public class RegistrationBean extends BaseBean {
 		if (isUpdateAllowed()) {
 			registration = regRepo.saveAndFlush(registration);
 			id = registration.getId();
+			info("Anmeldung aktualisert..");
 		} else {
 			error("Keine Berechtigung zur Änderung für Benutzer: " + sessionBean.getUser() + "!");
 		}
@@ -135,10 +139,11 @@ public class RegistrationBean extends BaseBean {
 			member.setAktiv(true);
 			member.setTrail(true);
 			
+			member = memberRepo.saveAndFlush(member);
+			
 			parent.getSiblings().add(member);
 			member.addParent(parent);
 			
-			member = memberRepo.saveAndFlush(member);
 			memberRepo.flush();
 			
 			registration.setParent(parent);
@@ -146,10 +151,11 @@ public class RegistrationBean extends BaseBean {
 			registration.setAktiv(false);
 			regRepo.saveAndFlush(registration);
 			
+			info("In Mitglied umgewandelt: " + member);
+			
 		} catch (Exception e) {
 			log.info("Cannot convert: " + registration + " : " + e, e);
-			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Anmeldung NICHT geändert!!", e.getLocalizedMessage());
-			FacesContext.getCurrentInstance().addMessage(null, msg);
+			error("Anmeldung NICHT geändert!! Fehler: " + e.getLocalizedMessage());
 		}
 	}
 

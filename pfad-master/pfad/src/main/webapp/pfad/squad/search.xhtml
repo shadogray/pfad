@@ -27,7 +27,7 @@
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
 
-					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
+					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required,w100pct" columns="7">
 						<h:outputLabel for="squadBeanExampleType" value="Type:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="squadBeanExampleType" value="#{squadBean.example.type}">
@@ -43,6 +43,8 @@
 							<h:message for="squadBeanExampleName" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
+						<h:outputText />
+
 						<h:outputLabel for="squadBeanExampleLeaderFemale" value="LeaderFemale:" />
 						<h:panelGroup>
 							<h:selectOneMenu converter="#{memberBean.converter}" id="squadBeanExampleLeaderFemale"
@@ -64,6 +66,7 @@
 							</h:selectOneMenu>
 							<h:message for="squadBeanExampleLeaderMale" styleClass="error" />
 						</h:panelGroup>
+						<h:outputText />
 						<h:outputText />
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">

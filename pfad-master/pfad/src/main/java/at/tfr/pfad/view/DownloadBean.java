@@ -36,11 +36,9 @@ import javax.persistence.Query;
 import javax.persistence.Tuple;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.jboss.logging.Logger;
@@ -48,26 +46,17 @@ import org.joda.time.DateTime;
 
 import com.google.common.net.HttpHeaders;
 
-import at.tfr.pfad.ActivityType;
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.Role;
-import at.tfr.pfad.dao.ActivityRepository;
-import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.ConfigurationRepository;
-import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
-import at.tfr.pfad.model.Activity;
-import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Configuration;
-import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
-import at.tfr.pfad.processing.MemberValidator;
 import at.tfr.pfad.processing.RegistrationDataGenerator;
 import at.tfr.pfad.processing.RegistrationDataGenerator.DataStructure;
 import at.tfr.pfad.processing.RegistrationDataGenerator.RegConfig;
 import at.tfr.pfad.util.SessionBean;
-import at.tfr.pfad.util.ValidationResult;
 
 @Named
 @SessionScoped

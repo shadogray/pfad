@@ -52,7 +52,7 @@
 							<h:selectOneMenu id="paymentBeanExampleType" value="#{paymentBean.example.type}">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{paymentBean.types}" />
-								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+								<f:ajax render="paymentBeanPageItems" />
 							</h:selectOneMenu>
 							<h:message for="paymentBeanExampleType" styleClass="error" />
 						</h:panelGroup>
@@ -62,7 +62,7 @@
 						<h:panelGroup id="paymentBeanExamplePayerPanel">
 							<p:autoComplete id="paymentBeanExamplePayer" value="#{paymentBean.examplePayer}" completeMethod="#{members.filtered}" 
 								var="p" itemLabel="#{p}" itemValue="#{p.idStr}" converter="#{memberBean.converter}" >
-								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+								<f:ajax render="paymentBeanPageItems" />
 							</p:autoComplete>
 							<h:message for="paymentBeanExamplePayer" styleClass="error" />
 						</h:panelGroup>
@@ -71,27 +71,27 @@
 						<h:outputLabel for="paymentBeanAmountFrom" value="Betrag-Von:" />
 						<h:inputText id="paymentBeanAmountFrom" value="#{paymentBean.amountFrom}" style="width: 10em;">
 							<f:convertNumber maxFractionDigits="2" />
-							<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							<f:ajax render="paymentBeanPageItems" />
 						</h:inputText>
 						<h:message for="paymentBeanAmountFrom"/>
 						
 						<h:outputLabel for="paymentBeanAmountTo" value="Betrag-Bis: " />
 						<h:inputText id="paymentBeanAmountTo" value="#{paymentBean.amountTo}" style="width: 10em;">
 							<f:convertNumber maxFractionDigits="2" />
-							<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							<f:ajax render="paymentBeanPageItems" />
 						</h:inputText>
 						<h:message for="paymentBeanAmountTo"/>
 
 						<h:outputLabel for="paymentBeanPaymentPaymentDateStart" value="Datum-Von:" />
 						<p:calendar id="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}" pattern="dd.MM.yyyy" >
 							<f:convertDateTime pattern="dd.MM.yyyy"/>
-							<f:ajax event="dateSelect" listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							<f:ajax event="dateSelect" render="paymentBeanPageItems" />
 						 </p:calendar>
 						<h:outputText />
 						<h:outputLabel for="paymentBeanPaymentPaymentDateEnd" value="Datum-Bis:" />
 						<p:calendar id="paymentBeanPaymentPaymentDateEnd" value="#{paymentBean.examplePaymentDateEnd}" pattern="dd.MM.yyyy" >
 							<f:convertDateTime pattern="dd.MM.yyyy"/>
-							<f:ajax event="dateSelect" listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							<f:ajax event="dateSelect" render="paymentBeanPageItems" />
 						</p:calendar>
 						<h:outputText />
 
@@ -102,7 +102,7 @@
 								title="Aktivität..">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a.idStr}" />
-								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+								<f:ajax render="paymentBeanPageItems" />
 							</p:selectOneMenu>
 							<h:message for="paymentBeanExampleActivity" styleClass="error" />
 						</h:panelGroup>
@@ -112,7 +112,7 @@
 						<h:panelGroup id="paymentBeanExampleBookingPanel">
 							<p:autoComplete id="paymentBeanExampleBooking" value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}" 
 								completeMethod="#{bookings.filtered}">
-								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+								<f:ajax render="paymentBeanPageItems" />
 							</p:autoComplete>
 							<h:message for="paymentBeanExampleBooking" styleClass="error" />
 						</h:panelGroup>
@@ -121,7 +121,7 @@
 						<h:outputLabel for="paymentBeanExampleIBAN" value="IBAN:" />
 						<h:panelGroup>
 							<h:inputText id="paymentBeanExampleIBAN" value="#{paymentBean.example.payerIBAN}" >
-								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+								<f:ajax render="paymentBeanPageItems" />
 							</h:inputText>
 							<h:message for="paymentBeanExampleIBAN" styleClass="error" />
 						</h:panelGroup>
@@ -130,7 +130,7 @@
 						<h:outputLabel for="paymentBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
 							<h:inputText id="paymentBeanExampleComment" value="#{paymentBean.example.comment}" >
-								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+								<f:ajax render="paymentBeanPageItems" />
 							</h:inputText>
 							<h:message for="paymentBeanExampleComment" styleClass="error" />
 						</h:panelGroup>
@@ -138,22 +138,22 @@
 
 						<h:outputLabel for="paymentBeanExampleFinished" value="Erledigt:" />
 						<h:panelGroup>
-							<p:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}">
+							<p:selectOneMenu id="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}" styleClass="fullwidth" placeholder="Erledigt..">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItem itemLabel="Ja" itemValue="true" />
 								<f:selectItem itemLabel="Nein" itemValue="false" />
-								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+								<f:ajax render="paymentBeanPageItems" />
 							</p:selectOneMenu>
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleAconto" value="Akonto:" />
 						<h:panelGroup>
-							<p:selectOneMenu id="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}">
+							<p:selectOneMenu id="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}" styleClass="fullwidth" placeholder="Aconto..">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItem itemLabel="Ja" itemValue="true" />
 								<f:selectItem itemLabel="Nein" itemValue="false" />
-								<f:ajax listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+								<f:ajax render="paymentBeanPageItems" />
 							</p:selectOneMenu>
 						</h:panelGroup>
 						<h:outputText />
@@ -161,7 +161,7 @@
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
 						<h:commandLink id="search" value="Suchen" action='#{paymentBean.paginate}' styleClass="btn btn-primary" >
-							<f:ajax execute="@all" listener="#{paymentBean.paginate()}" render="paymentBeanPageItems" />
+							<f:ajax execute="@all" render="paymentBeanPageItems" />
 						</h:commandLink>
 						<h:link id="list" value="Liste" outcome="list" styleClass="btn btn-primary" />
 						<h:link id="create" value="Neu" outcome="create" styleClass="btn btn-primary" />

@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +31,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.Order;
 
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.ActivityType;
@@ -40,7 +38,6 @@ import at.tfr.pfad.Role;
 import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Activity_;
-import at.tfr.pfad.model.Function;
 
 /**
  * Backing bean for Activity entities.
