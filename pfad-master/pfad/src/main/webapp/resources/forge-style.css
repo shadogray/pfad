@@ -885,15 +885,15 @@ td.component2 .ui-autocomplete {
 }
 
 .ZusageOK {
-	background-color: #558000 !important;
+	background-color: #a5fda4 !important;
 }
 
 .ZusageGes {
-	background-color: #99e600 !important;
+	background-color: #dff7b2 !important;
 }
 
 .BleibtAufListe {
-	background-color: #33ccff !important;
+	background-color: #cbedf9 !important;
 }
 
 .Doppelt {
@@ -901,13 +901,13 @@ td.component2 .ui-autocomplete {
 }
 
 .AbsageGes {
-	background-color: #ff6666 !important;
+	background-color: #ffd6d6 !important;
 }
 
 .KeinInteresse {
-	background-color: red !important;
+	background-color: #ffb6b6 !important;
 }
 
 .Mitglied {
-	background-color: #cc6699 !important;
+	background-color: #cad0c9 !important;
 }
