@@ -23,7 +23,7 @@
 			<p:focus/>
 
 			<f:ajax immediate="true" listener="#{registrationBean.paginate()}" render="@form">
-				<h:panelGrid columns="6">
+				<h:panelGrid columnClasses="label3,component3,label3,component3,label3,component3,label3,component3" columns="10">
 				
 					<p:outputLabel value="Name:"/>
 					<p:inputText value="#{registrationBean.example.name}" style="width:10em;"/>
@@ -60,22 +60,12 @@
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems value="#{registrationBean.distinctSchoolEntry}" />
 					</p:selectOneMenu>
-	
-					<h:outputLabel value="" />
-					<h:outputLabel value="" />
-
-					<h:outputLabel value="" />
-					<h:outputLabel value="" />
-
-					<p:outputLabel value="Status:"/>
-					<p:selectCheckboxMenu value="#{registrationBean.filterStati}"  multiple="true" panelStyle="width:250px">
-						<f:selectItems value="#{registrationBean.stati}" />
-					</p:selectCheckboxMenu>
-	
+					
 				</h:panelGrid>
+				
 			</f:ajax>
 
-			<h:panelGroup styleClass="buttons" layout="block">
+			<h:panelGrid styleClass="buttons" columns="5">
 				<p:commandButton id="search" value="Suchen" action="#{registrationBean.paginate}" update="regBeanItemTable" styleClass="btn btn-primary">
 					<f:param name="all" value="false" />
 				</p:commandButton>
@@ -86,7 +76,11 @@
 					disabled="#{!registrationBean.updateAllowed}">
 					<f:param name="id" value="" />
 				</h:button>
-			</h:panelGroup>
+					<p:outputLabel value="Status:"/>
+					<p:selectCheckboxMenu value="#{registrationBean.filterStati}"  multiple="true" panelStyle="width:250px">
+						<f:selectItems value="#{registrationBean.stati}" />
+					</p:selectCheckboxMenu>
+			</h:panelGrid>
 
 			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table"
 				value="#{registrationBean.dataModel}" var="r" editable="true"
