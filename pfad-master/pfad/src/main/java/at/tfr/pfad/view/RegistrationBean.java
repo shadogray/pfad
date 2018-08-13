@@ -70,7 +70,7 @@ public class RegistrationBean extends BaseBean {
 
 	public void update() {
 		if (isUpdateAllowed()) {
-			registration = regRepo.saveAndFlush(registration);
+			registration = updateRegistration(registration);
 			id = registration.getId();
 			info("Anmeldung aktualisert..");
 		} else {
@@ -78,14 +78,38 @@ public class RegistrationBean extends BaseBean {
 		}
 	}
 
+	public Registration updateRegistration(Registration reg) {
+		return regRepo.saveAndFlush(reg);
+	}
+
 	public void onRowEdit(RowEditEvent event) {
 		if (!isUpdateAllowed() || !(event.getObject() instanceof Registration)) {
 			FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Anmeldung NICHT geändert!!", "Keine Berechtigung");
 			FacesContext.getCurrentInstance().addMessage(null, msg);
 		} else {
-			registration = (Registration) event.getObject();
-			update();
-			info("Anmeldung geändert: ", registration.toFullString());
+			Registration extReg = (Registration) event.getObject();
+			Registration reg = regRepo.findBy(extReg.getId());
+			reg.setName(extReg.getName());
+			reg.setVorname(extReg.getVorname());
+			reg.setGeschlecht(extReg.getGeschlecht());
+			reg.setGebJahr(extReg.getGebJahr());
+			reg.setGebMonat(extReg.getGebMonat());
+			reg.setGebTag(extReg.getGebTag());
+			reg.setSchoolEntry(extReg.getSchoolEntry());
+			reg.setEmail(extReg.getEmail());
+			reg.setTelefon(extReg.getTelefon());
+
+			reg.setStrasse(extReg.getStrasse());
+			reg.setOrt(extReg.getOrt());
+			reg.setPLZ(extReg.getPLZ());
+			reg.setParentName(extReg.getParentName());
+			reg.setParentVorname(extReg.getParentVorname());
+			reg.setStatus(extReg.getStatus());
+			reg.setAktiv(extReg.isAktiv());
+			reg.setStorno(extReg.isStorno());
+			
+			updateRegistration(reg);
+			info("Anmeldung geändert: ", reg.toFullString());
 		}
 	}
 

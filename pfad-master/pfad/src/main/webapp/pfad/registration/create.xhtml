@@ -25,7 +25,8 @@
 	<ui:define name="main">
 
 		<h:form id="create">
-			<p:messages globalOnly="true" styleClass="error" />
+		
+			<p:messages id="messages" globalOnly="true" styleClass="error" />
 
 			<p:focus for="Vorname"/>
 
@@ -249,15 +250,13 @@
 			</h:panelGrid>
 
 			<div class="buttons">
-				<p:commandLink id="save" value="Speichern" action='#{registrationBean.update}' styleClass="btn btn-primary"
+				<h:commandLink id="save" value="Speichern" action='#{registrationBean.update}' styleClass="btn btn-primary"
 					disabled="#{registrationBean.registration.member != null || !registrationBean.updateAllowed}" >
-					<p:ajax update="@form"/>
-				</p:commandLink>
-				<p:commandLink id="convert" value="Aufnehmen" action='#{registrationBean.convertToMember}'
+				</h:commandLink>
+				<h:commandLink id="convert" value="Aufnehmen" action='#{registrationBean.convertToMember}'
 					styleClass="btn btn-primary"
 					disabled="#{registrationBean.registration.member != null || !registrationBean.updateAllowed}" >
-					<p:ajax update="@form"/>
-				</p:commandLink>
+				</h:commandLink>
 				<h:link value="Cancel" outcome="search" styleClass="btn btn-primary" />
 			</div>
 		</h:form>

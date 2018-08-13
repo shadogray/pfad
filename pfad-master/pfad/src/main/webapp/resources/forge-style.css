@@ -913,7 +913,7 @@ td.component2 .ui-autocomplete {
 }
 
 .Doppelt {
-	background-color: #9933ff !important;
+	background-color: #d4aefa!important;
 }
 
 .AbsageGes {
@@ -926,4 +926,8 @@ td.component2 .ui-autocomplete {
 
 .Mitglied {
 	background-color: #cad0c9 !important;
+}
+
+.GuSpCaEx {
+	background-color: #cecece !important;
 }
