@@ -48,7 +48,7 @@ public class RegistrationBean extends BaseBean {
 		distinctGebJahr = regRepo.findDistinctGebJahr();
 		distinctSchoolEntry = regRepo.findDistinctSchoolEntry();
 		filterStati = new RegistrationStatus[] 
-				{ RegistrationStatus.Erstellt, RegistrationStatus.ZusageOK, RegistrationStatus.ZusageGes, RegistrationStatus.BleibtAufListe, RegistrationStatus.AbsageGes}; 
+				{ RegistrationStatus.ZusageGes, RegistrationStatus.AbsageGes}; 
 		paginate();
 	}
 	
