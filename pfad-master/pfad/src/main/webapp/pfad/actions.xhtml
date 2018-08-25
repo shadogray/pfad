@@ -3,7 +3,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
+	xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui"
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<ui:param name="pageTitle" value="Actions" />
@@ -40,34 +40,37 @@
 		</h:form>
 
 		<h:form id="query">
+			<p:hotkey id="hotKey" bind="ctrl+x" handler="alert(PF('ExecuteQuery')); PF('ExecuteQuery').click()"/>
 			<h:messages />
 			<h:panelGroup id="queryPanel">
 				<h:panelGroup layout="block" id="actionsQueries">
-					<a4j:repeat value="#{downloadBean.queries}" var="query">
+					<ui:repeat value="#{downloadBean.queries}" var="query">
 						<h:commandLink actionListener="#{downloadBean.executeQuery(query.id)}" value="#{query.ckey}"
 							styleClass="btn btn-primary" title="#{query.toTitle()}">
 							<f:ajax execute="@this" render="@form" />
 						</h:commandLink>
-					</a4j:repeat>
+					</ui:repeat>
 				</h:panelGroup>
-				<h:panelGrid width="100%" columns="3" rendered="#{downloadBean.configuration != null}">
+				<h:panelGrid columns="4" rendered="#{downloadBean.configuration != null}">
 					<h:outputLabel value="Query:" />
 					<h:outputText value="#{downloadBean.configuration.ckey}" />
 					<h:commandLink action="#{downloadBean.downloadResults()}" value="Download" styleClass="btn btn-primary"
 						title="Download von: #{downloadBean.configuration.ckey}"/>
+					<h:outputText value="" />
 				</h:panelGrid>
 
 				<f:ajax>
 					<h:panelGroup layout="block" rendered="#{memberBean.admin}">
-						<h:panelGrid width="100%" columns="3">
+						<h:panelGrid columns="4">
 							<h:outputLabel value="Query" />
 							<h:panelGroup>
 								<h:outputLabel value="NativeQuery" />
 								<h:selectBooleanCheckbox value="#{downloadBean.nativeQuery}" immediate="true" />
 							</h:panelGroup>
-							<h:commandLink actionListener="#{downloadBean.executeQuery()}" value="Query" styleClass="btn btn-primary" title="Abfrage: #{downloadBean.query}">
+							<h:commandLink id="ExecuteQuery" actionListener="#{downloadBean.executeQuery()}" value="Query" styleClass="btn btn-primary" title="Abfrage: #{downloadBean.query}">
 								<f:ajax execute="@form" render="results messages" />
 							</h:commandLink>
+							<h:outputText value="" />
 						</h:panelGrid>
 						<h:panelGroup>
 							<h:inputTextarea id="queryQuery" value="#{downloadBean.query}" style="width:80%;height:5em;" immediate="true" />

@@ -14,10 +14,10 @@
 	<ui:param name="pageTitle" value="Anmeldung bearbeiten" />
 
 	<ui:define name="header">
-		Anmeldung bearbeiten
 	</ui:define>
 
 	<ui:define name="subheader">
+		Anmeldung bearbeiten
 	</ui:define>
 
 	<ui:define name="footer" />
@@ -251,7 +251,7 @@
 
 			<div class="buttons">
 				<h:commandLink id="save" value="Speichern" action='#{registrationBean.update}' styleClass="btn btn-primary"
-					disabled="#{registrationBean.registration.member != null || !registrationBean.updateAllowed}" >
+					disabled="#{!registrationBean.updateAllowed}" >
 				</h:commandLink>
 				<h:commandLink id="convert" value="Aufnehmen" action='#{registrationBean.convertToMember}'
 					styleClass="btn btn-primary"

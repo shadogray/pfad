@@ -20,7 +20,7 @@
         <org.mapstruct.version>1.1.0.Beta2</org.mapstruct.version>
         <org.wildfly.version>10.1.0.Final</org.wildfly.version>
         <weld.version>2.3.2.Final</weld.version>
-        <org.primefaces.version>6.2</org.primefaces.version>
+        <org.primefaces.version>6.1</org.primefaces.version>
     </properties>
 
     <dependencyManagement>
