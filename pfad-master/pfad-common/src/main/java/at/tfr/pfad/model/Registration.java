@@ -338,7 +338,7 @@ public class Registration extends BaseEntity implements Comparable<Registration>
 	}
 
 	public RegistrationStatus getStatus() {
-		return member != null ? RegistrationStatus.Mitglied : status;
+		return status;
 	}
 	
 	public void setStatus(RegistrationStatus status) {
