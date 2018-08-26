@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.ValidationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.omnifaces.util.Messages;
 import org.primefaces.event.RowEditEvent;
@@ -23,6 +24,7 @@ import at.tfr.pfad.RegistrationStatus;
 import at.tfr.pfad.dao.RegistrationRepository;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Registration;
+import at.tfr.pfad.view.convert.TriStateConverter;
 
 @Named
 @ViewScoped
@@ -41,7 +43,9 @@ public class RegistrationBean extends BaseBean {
 	private List<Registration> filteredDataModel = new ArrayList<>();
 	private Long id;
 	private Registration registration;
+	private Boolean storno, aktiv;
 	private boolean all;
+	private TriStateConverter triStateConverter = new TriStateConverter();
 
 	@PostConstruct
 	public void init() {
@@ -65,7 +69,7 @@ public class RegistrationBean extends BaseBean {
 
 	public void paginate() {
 		// Belli: sollen alle sehen können
-		dataModel = regRepo.queryBy(example, filterStati, (all ? null : Boolean.TRUE), (all ? null : Boolean.FALSE));
+		dataModel = regRepo.queryBy(example, filterStati, aktiv, storno);
 	}
 
 	public void update() {
@@ -79,6 +83,46 @@ public class RegistrationBean extends BaseBean {
 	}
 
 	public Registration updateRegistration(Registration reg) {
+		Member child = reg.getMember();
+		if (child != null) {
+			if (StringUtils.isBlank(child.getName()) || !child.getName().equals(reg.getName()))
+				child.setName(reg.getName());
+			if (StringUtils.isBlank(child.getVorname()) || !child.getVorname().equals(reg.getVorname()))
+				child.setVorname(reg.getVorname());
+			if (StringUtils.isBlank(child.getStrasse()) || !child.getStrasse().equals(reg.getStrasse()))
+				child.setStrasse(reg.getStrasse());
+			if (StringUtils.isBlank(child.getOrt()) || !child.getOrt().equals(reg.getOrt()))
+				child.setOrt(reg.getOrt());
+			if (StringUtils.isBlank(child.getPLZ()) || !child.getPLZ().equals(reg.getPLZ()))
+				child.setPLZ(reg.getPLZ());
+			if (StringUtils.isBlank(child.getEmail()) || !child.getEmail().equals(reg.getEmail()))
+				child.setEmail(reg.getEmail());
+			if (StringUtils.isBlank(child.getTelefon()) || !child.getTelefon().equals(reg.getTelefon()))
+				child.setTelefon(reg.getTelefon());
+			if (child.getGebTag() == 0 || child.getGebTag() != reg.getGebTag())
+				child.setGebTag(reg.getGebTag());
+			if (child.getGebMonat() == 0 || child.getGebMonat() != reg.getGebMonat())
+				child.setGebMonat(reg.getGebMonat());
+			if (child.getGebJahr() == 0 || child.getGebJahr() != reg.getGebJahr())
+				child.setGebJahr(reg.getGebJahr());
+		}
+		Member parent = reg.getParent();
+		if (parent != null) {
+			if (StringUtils.isBlank(parent.getName()) || !parent.getName().equals(reg.getParentName()))
+				parent.setName(reg.getParentName());
+			if (StringUtils.isBlank(parent.getVorname()) || !parent.getVorname().equals(reg.getParentVorname()))
+				parent.setVorname(reg.getParentVorname());
+			if (StringUtils.isBlank(parent.getStrasse()) || !parent.getStrasse().equals(reg.getStrasse()))
+				parent.setStrasse(reg.getStrasse());
+			if (StringUtils.isBlank(parent.getOrt()) || !parent.getOrt().equals(reg.getOrt()))
+				parent.setOrt(reg.getOrt());
+			if (StringUtils.isBlank(parent.getPLZ()) || !parent.getPLZ().equals(reg.getPLZ()))
+				parent.setPLZ(reg.getPLZ());
+			if (StringUtils.isBlank(parent.getEmail()) || !parent.getEmail().equals(reg.getEmail()))
+				parent.setEmail(reg.getEmail());
+			if (StringUtils.isBlank(parent.getTelefon()) || !parent.getTelefon().equals(reg.getTelefon()))
+				parent.setTelefon(reg.getTelefon());
+		}
 		return regRepo.saveAndFlush(reg);
 	}
 
@@ -246,6 +290,32 @@ public class RegistrationBean extends BaseBean {
 
 	public void setAll(boolean all) {
 		this.all = all;
+	}
+	
+	public String getStorno() {
+		return triStateConverter.getAsString(null, null, storno);
+	}
+	
+	public void setStorno(String storno) {
+		this.storno = (Boolean)triStateConverter.getAsObject(null, null, storno);
+	}
+	
+	public void toggleStorno() {
+		storno = (storno == null ? Boolean.TRUE : Boolean.TRUE.equals(storno) ? Boolean.FALSE : null);
+		paginate();
+	}
+	
+	public String getAktiv() {
+		return triStateConverter.getAsString(null, null, aktiv);
+	}
+	
+	public void setAktiv(String aktiv) {
+		this.aktiv = (Boolean)triStateConverter.getAsObject(null, null, aktiv);
+	}
+
+	public void toggleAktiv() {
+		aktiv = (aktiv == null ? Boolean.TRUE : Boolean.TRUE.equals(aktiv) ? Boolean.FALSE : null);
+		paginate();
 	}
 	
 	public List<RegistrationStatus> getStati() {

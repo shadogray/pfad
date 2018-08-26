@@ -61,6 +61,19 @@
 						<f:selectItems value="#{registrationBean.distinctSchoolEntry}" />
 					</p:selectOneMenu>
 					
+					<p:outputLabel value="Opts:"/>
+					<h:panelGrid columns="4">
+						<p:outputLabel value="Aktiv"/>
+						<p:triStateCheckbox id="regAktivBox" value="#{registrationBean.aktiv}" label="Aktiv" converter="#{triStateConverter}" >
+							<p:ajax event="change" listener="#{registrationBean.paginate}" update=":table:regBeanItemTable"/>
+						</p:triStateCheckbox>
+						
+						<p:outputLabel value="Storno"/>
+						<p:triStateCheckbox id="regStornoBox" value="#{registrationBean.storno}" label="Storno" converter="#{triStateConverter}">
+							<p:ajax event="change" listener="#{registrationBean.paginate}" update=":table:regBeanItemTable"/>
+						</p:triStateCheckbox>
+					</h:panelGrid>
+					
 				</h:panelGrid>
 			</f:ajax>
 		</h:form>
@@ -113,38 +126,6 @@
 							<f:convertDateTime patten="dd.mm.yyyy" />
 						</h:outputText>
 					</h:link>
-				</p:column>
-				<p:column headerText="Person" rendered="#{registrationBean.all}" >
-					<h:link outcome="create">
-						<f:param name="id" value="#{r.id}" />
-						<h:outputText value="#{r.member.toShortString()}" />
-					</h:link>
-				</p:column>
-				<p:column headerText="Aktiv" sortBy="#{r.aktiv}" rendered="false">
-					<p:cellEditor>
-						<f:facet name="output">
-							<h:link outcome="create">
-								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.aktiv}" />
-							</h:link>
-						</f:facet>
-						<f:facet name="input">
-							<p:selectBooleanCheckbox value="#{r.aktiv}" />
-						</f:facet>
-					</p:cellEditor>
-				</p:column>
-				<p:column headerText="Storno" sortBy="#{r.storno}" rendered="false">
-					<p:cellEditor>
-						<f:facet name="output">
-							<h:link outcome="create">
-								<f:param name="id" value="#{r.id}" />
-								<h:outputText value="#{r.storno}" />
-							</h:link>
-						</f:facet>
-						<f:facet name="input">
-							<p:selectBooleanCheckbox value="#{r.storno}" />
-						</f:facet>
-					</p:cellEditor>
 				</p:column>
 				<p:column headerText="Stat" sortBy="#{r.status}" >
 					<p:cellEditor>
@@ -244,42 +225,6 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="Eltern" rendered="false">
-					<p:cellEditor>
-						<f:facet name="output">
-							<h:panelGroup rendered="#{r.parent != null}">
-								<h:link outcome="../member/view">
-									<f:param name="id" value="#{r.id}" />
-									<h:outputText value="#{r.parent.toShortString()}" />
-								</h:link>
-							</h:panelGroup>
-							<h:panelGroup rendered="#{r.parent == null}">
-								<h:link outcome="create">
-									<f:param name="id" value="#{r.id}" />
-									<h:outputText value="#{r.parentName} #{r.parentVorname}" />
-								</h:link>
-							</h:panelGroup>
-						</f:facet>
-						<f:facet name="input">
-							<h:panelGroup rendered="#{r.parent != null}">
-								<h:link outcome="../member/view">
-									<f:param name="id" value="#{r.id}" />
-									<h:outputText value="#{r.parent.toShortString()}" />
-								</h:link>
-							</h:panelGroup>
-							<h:panelGroup rendered="#{r.parent == null}">
-								<p:autoComplete id="parentName" value="#{r.parentName}" completeMethod="#{memberBean.getDistinctNameLike}"
-									cache="true" maxResults="20">
-									<f:validateLength minimum="2" />
-								</p:autoComplete>
-								<p:autoComplete id="parentVorname" value="#{r.parentVorname}"
-									completeMethod="#{memberBean.getDistinctVornameLike}" cache="true" maxResults="20">
-									<f:validateLength minimum="2" />
-								</p:autoComplete>
-							</h:panelGroup>
-						</f:facet>
-					</p:cellEditor>
-				</p:column>
 				<p:column headerText="Telefon" sortBy="#{r.telefon}">
 					<p:cellEditor>
 						<f:facet name="output">
@@ -331,6 +276,74 @@
 						<f:facet name="input">
 							<p:autoComplete id="ort" value="#{r.ort}" completeMethod="#{memberBean.getDistinctOrtLike}" cache="true"
 								maxResults="20" />
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+				<p:column headerText="Aktiv" sortBy="#{r.aktiv}" rendered="#{registrationBean.all}">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:link outcome="create">
+								<f:param name="id" value="#{r.id}" />
+								<h:outputText value="#{r.aktiv}" />
+							</h:link>
+						</f:facet>
+						<f:facet name="input">
+							<p:selectBooleanCheckbox value="#{r.aktiv}" />
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+				<p:column headerText="Storno" sortBy="#{r.storno}" rendered="#{registrationBean.all}">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:link outcome="create">
+								<f:param name="id" value="#{r.id}" />
+								<h:outputText value="#{r.storno}" />
+							</h:link>
+						</f:facet>
+						<f:facet name="input">
+							<p:selectBooleanCheckbox value="#{r.storno}" />
+						</f:facet>
+					</p:cellEditor>
+				</p:column>
+				<p:column headerText="Person" rendered="#{registrationBean.all}" >
+					<h:link outcome="create">
+						<f:param name="id" value="#{r.id}" />
+						<h:outputText value="#{r.member.toShortString()}" />
+					</h:link>
+				</p:column>
+				<p:column headerText="Eltern" rendered="#{registrationBean.all}">
+					<p:cellEditor>
+						<f:facet name="output">
+							<h:panelGroup rendered="#{r.parent != null}">
+								<h:link outcome="../member/view">
+									<f:param name="id" value="#{r.id}" />
+									<h:outputText value="#{r.parent.toShortString()}" />
+								</h:link>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{r.parent == null}">
+								<h:link outcome="create">
+									<f:param name="id" value="#{r.id}" />
+									<h:outputText value="#{r.parentName} #{r.parentVorname}" />
+								</h:link>
+							</h:panelGroup>
+						</f:facet>
+						<f:facet name="input">
+							<h:panelGroup rendered="#{r.parent != null}">
+								<h:link outcome="../member/view">
+									<f:param name="id" value="#{r.id}" />
+									<h:outputText value="#{r.parent.toShortString()}" />
+								</h:link>
+							</h:panelGroup>
+							<h:panelGroup rendered="#{r.parent == null}">
+								<p:autoComplete id="parentName" value="#{r.parentName}" completeMethod="#{memberBean.getDistinctNameLike}"
+									cache="true" maxResults="20">
+									<f:validateLength minimum="2" />
+								</p:autoComplete>
+								<p:autoComplete id="parentVorname" value="#{r.parentVorname}"
+									completeMethod="#{memberBean.getDistinctVornameLike}" cache="true" maxResults="20">
+									<f:validateLength minimum="2" />
+								</p:autoComplete>
+							</h:panelGroup>
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
