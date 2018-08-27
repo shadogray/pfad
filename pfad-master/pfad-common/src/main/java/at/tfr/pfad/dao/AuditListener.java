@@ -8,13 +8,18 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
 import at.tfr.pfad.model.Auditable;
+import at.tfr.pfad.model.Registration;
 
 public class AuditListener {
 
 	@PrePersist
 	private void createUserAndTimestamp(Auditable auditable) {
 		String name = getUser();
-		auditable.setCreated(new Date());
+		if (auditable instanceof Registration && auditable.getCreated() != null) {
+			// no overwrite createdate from UI
+		} else {
+			auditable.setCreated(new Date());
+		}
 		auditable.setCreatedBy(name);
 	}
 

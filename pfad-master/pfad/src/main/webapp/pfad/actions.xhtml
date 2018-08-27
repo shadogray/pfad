@@ -14,6 +14,25 @@
 	<ui:define name="footer" />
 
 	<ui:define name="main">
+
+		<p:log id="pfLog" rendered="false"/>
+		<h:outputScript target="body">
+		//<![CDATA[
+			function log(elmnt, event) {
+				PrimeFaces.info('Pfad: '+event.ctrlKey+'/'+event.code+' On: '+elmnt);
+				PrimeFaces.info('CtrlKey='+event.ctrlKey+', Enter='+(event.code=='Enter'));
+				PrimeFaces.info(event.ctrlKey && event.code=='Enter');
+				if (event.ctrlKey && event.code=='Enter') {
+					var el = $('#ExecuteQuery');
+					PrimeFaces.info('calling:  '+el);
+					//el.click();
+					//mojarra.ab(el,event,'action','@form','query:results query:messages');
+					$('#query').submit();
+				}
+			}
+		//]]>
+		</h:outputScript>
+
 		<h:form id="download">
 			<h:messages />
 			<h:panelGrid styleClass="buttons" columns="8">
@@ -40,8 +59,8 @@
 		</h:form>
 
 		<h:form id="query">
-			<p:hotkey id="hotKey" bind="ctrl+x" handler="alert(PF('ExecuteQuery')); PF('ExecuteQuery').click()"/>
-			<h:messages />
+			<p:hotkey id="hotKey" bind="ctrl+x" handler="alert($('#ExecuteQuery')); $('#ExecuteQuery').click()"/>
+			<p:messages />
 			<h:panelGroup id="queryPanel">
 				<h:panelGroup layout="block" id="actionsQueries">
 					<ui:repeat value="#{downloadBean.queries}" var="query">
@@ -73,7 +92,7 @@
 							<h:outputText value="" />
 						</h:panelGrid>
 						<h:panelGroup>
-							<h:inputTextarea id="queryQuery" value="#{downloadBean.query}" style="width:80%;height:5em;" immediate="true" />
+							<h:inputTextarea id="queryQuery" value="#{downloadBean.query}" style="width:80%;height:5em;" immediate="true" onkeyup="log(this, event)"/>
 							<h:message for="queryQuery" />
 							<h:outputText value="" />
 						</h:panelGroup>

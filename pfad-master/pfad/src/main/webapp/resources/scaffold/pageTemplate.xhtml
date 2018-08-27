@@ -13,13 +13,12 @@
 	<link rel="icon" href='#{resource["favicon.ico"]}' />
 	<h:outputStylesheet name="bootstrap.css" />
 	<h:outputStylesheet name="forge-style.css" />
-	<h:outputScript name="scripts.js" />
+	<h:outputScript name="scripts.js" target="body"/>
 </h:head>
 
 <h:body>
-
+	<ui:debug hotkey="f"/>
 	<ds:windowId />
-	<ui:debug />
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
