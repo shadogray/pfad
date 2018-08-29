@@ -9,4 +9,5 @@ and m.id = r.member_id;
 --    select r.id from Registration r inner join Member m on r.name = m.name and r.vorname = m.vorname
 --    where r.status = 'Erstellt'  and m.id = r.member_id
 --);
+--update registration set status = 'Mitglied' where id in (187,222);
 
