@@ -217,6 +217,7 @@ public class RegistrationBean extends BaseBean {
 			registration.setParent(parent);
 			registration.setMember(member);
 			registration.setAktiv(false);
+			registration.setStatus(RegistrationStatus.Mitglied);
 			regRepo.saveAndFlush(registration);
 			
 			info("In Mitglied umgewandelt: " + member);
