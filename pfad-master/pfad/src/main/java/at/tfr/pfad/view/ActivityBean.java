@@ -206,6 +206,7 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		List<Activity> activities = query.getResultList();
 		Map<Activity,Number> group = bookingRepo.summarize(activities);
+		activities.forEach(a -> { if (!group.containsKey(a)) group.put(a, new Integer(0)); });
 		this.pageItems = group.entrySet().stream().map(e -> new ActivityUI(e.getKey(),e.getValue())).collect(Collectors.toList());
 	}
 

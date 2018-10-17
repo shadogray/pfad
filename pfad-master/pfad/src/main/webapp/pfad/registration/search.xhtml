@@ -8,6 +8,15 @@
 		<f:viewParam name="all" value="#{registrationBean.all}" />
 		<f:viewParam name="registrationBeanExampleName" value="#{registrationBean.example.name}" />
 		<f:viewParam name="registrationBeanExampleVorname" value="#{registrationBean.example.vorname}" />
+		<f:viewParam name="registrationBeanExampleTelefon" value="#{registrationBean.example.telefon}" />
+		<f:viewParam name="registrationBeanExampleEmail" value="#{registrationBean.example.email}" />
+		<f:viewParam name="registrationBeanExampleStrasse" value="#{registrationBean.example.strasse}" />
+		<f:viewParam name="registrationBeanExamplePLZ" value="#{registrationBean.example.PLZ}" />
+		<f:viewParam name="registrationBeanExampleGeschlecht" value="#{registrationBean.example.geschlecht}" />
+		<f:viewParam name="registrationBeanExampleGebJahr" value="#{registrationBean.example.gebJahr}" />
+		<f:viewParam name="registrationBeanExampleSchoolEntry" value="#{registrationBean.example.schoolEntry}" />
+		<f:viewParam name="regStornoBox" value="#{registrationBean.storno}" converter="#{triStateConverter}" />
+		<f:viewParam name="regAktivBox" value="#{registrationBean.aktiv}" converter="#{triStateConverter}" />
 	</f:metadata>
 
 	<ui:define name="header">
@@ -26,37 +35,37 @@
 				<h:panelGrid columnClasses="label3,component3,label3,component3,label3,component3,label3,component3" columns="10">
 				
 					<p:outputLabel value="Name:"/>
-					<p:inputText value="#{registrationBean.example.name}" style="width:10em;" />
+					<p:inputText id="registrationBeanExampleName" value="#{registrationBean.example.name}" style="width:10em;" />
 	
 					<p:outputLabel value="Vorname:"/>
-					<p:inputText value="#{registrationBean.example.vorname}" style="width:10em;"/>
+					<p:inputText id="registrationBeanExampleVorname" value="#{registrationBean.example.vorname}" style="width:10em;"/>
 	
 					<p:outputLabel value="Telefon:"/>
-					<p:inputText value="#{registrationBean.example.telefon}" style="width:10em;"/>
+					<p:inputText id="registrationBeanExampleTelefon" value="#{registrationBean.example.telefon}" style="width:10em;"/>
 	
 					<p:outputLabel value="Email:"/>
-					<p:inputText value="#{registrationBean.example.email}" style="width:10em;"/>
+					<p:inputText id="registrationBeanExampleEmail" value="#{registrationBean.example.email}" style="width:10em;"/>
 	
 					<p:outputLabel value="Strasse:"/>
-					<p:inputText value="#{registrationBean.example.strasse}" style="width:10em;"/>
+					<p:inputText id="registrationBeanExampleStrasse" value="#{registrationBean.example.strasse}" style="width:10em;"/>
 	
 					<p:outputLabel value="PLZ:"/>
-					<p:inputText value="#{registrationBean.example.PLZ}" style="width:10em;"/>
+					<p:inputText id="registrationBeanExamplePLZ" value="#{registrationBean.example.PLZ}" style="width:10em;"/>
 	
 					<p:outputLabel value="Geschlecht:"/>
-					<p:selectOneMenu value="#{registrationBean.example.geschlecht}">
+					<p:selectOneMenu id="registrationBeanExampleGeschlecht" value="#{registrationBean.example.geschlecht}">
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems value="#{memberBean.sexes}" />
 					</p:selectOneMenu>
 	
 					<p:outputLabel value="Bis GebJahr:"/>
-					<p:selectOneMenu value="#{registrationBean.example.gebJahr}">
+					<p:selectOneMenu id="registrationBeanExampleGebJahr" value="#{registrationBean.example.gebJahr}">
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems value="#{registrationBean.distinctGebJahr}" />
 					</p:selectOneMenu>
 	
 					<p:outputLabel value="Bis SchulEintritt:"/>
-					<p:selectOneMenu value="#{registrationBean.example.schoolEntry}">
+					<p:selectOneMenu id="registrationBeanExampleSchoolEntry" value="#{registrationBean.example.schoolEntry}">
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems value="#{registrationBean.distinctSchoolEntry}" />
 					</p:selectOneMenu>
@@ -112,12 +121,11 @@
 					<p:rowEditor />
 				</p:column>
 				<p:column headerText="RegDatum" sortBy="#{r.created}">
-					<h:link outcome="create">
-						<f:param name="id" value="#{r.id}" />
+					<p:commandLink action="#{registrationBean.show(r.id)}" ajax="false">
 						<h:outputText value="#{r.created}">
 							<f:convertDateTime patten="dd.mm.yyyy" />
 						</h:outputText>
-					</h:link>
+					</p:commandLink>
 				</p:column>
 				<p:column headerText="Änderung" sortBy="#{r.changed}" rendered="false">
 					<h:link outcome="create">

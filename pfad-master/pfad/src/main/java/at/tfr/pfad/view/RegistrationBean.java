@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -56,6 +57,10 @@ public class RegistrationBean extends BaseBean {
 		paginate();
 	}
 	
+	@PreDestroy
+	private void destroy() {
+		log.debug("destroyed: id="+id+", filter="+Arrays.toString(filterStati));
+	}
 	
 	public void retrieve() {
 		if ((sessionBean.isAdmin() || sessionBean.isRegistrierung() || sessionBean.isAnmeldung()) && id == null) {
@@ -65,6 +70,10 @@ public class RegistrationBean extends BaseBean {
 		} else {
 			registration = regRepo.findBy(id);
 		}
+	}
+	
+	public String show(Long id) {
+		return "create?faces-redirect=true&id="+id;
 	}
 
 	public void paginate() {

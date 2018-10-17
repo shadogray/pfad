@@ -19,15 +19,17 @@
 		<h:outputScript target="body">
 		//<![CDATA[
 			function log(elmnt, event) {
-				PrimeFaces.info('Pfad: '+event.ctrlKey+'/'+event.code+' On: '+elmnt);
-				PrimeFaces.info('CtrlKey='+event.ctrlKey+', Enter='+(event.code=='Enter'));
-				PrimeFaces.info(event.ctrlKey && event.code=='Enter');
+				//console.log('Pfad: '+event.ctrlKey+'/'+event.code+' On: '+elmnt);
 				if (event.ctrlKey && event.code=='Enter') {
-					var el = $('#ExecuteQuery');
-					PrimeFaces.info('calling:  '+el);
-					//el.click();
-					//mojarra.ab(el,event,'action','@form','query:results query:messages');
-					$('#query').submit();
+					var el = $('#query\\:#ExecuteQuery');
+					el = document.getElementById('query:ExecuteQuery');
+					console.log('calling:  '+el);
+					try {
+						el.click();
+						console.log("clicked: "+el);
+					} catch(err) {
+						console.log("fail: "+err);
+					}
 				}
 			}
 		//]]>
