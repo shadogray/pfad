@@ -91,7 +91,7 @@ public class DownloadBean implements Serializable {
 	public String downloadVorRegistrierung() throws Exception {
 		Collection<Member> leaders = squadRepo.findLeaders();
 		Predicate<Member> filter = 
-				m -> (leaders.contains(m) || m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg())));
+				m -> (leaders.contains(m) || m.getFunktionen().stream().anyMatch(f -> f.isExportReg()));
 		return downloadData(new RegConfig().asVorRegistrierung(), filter);
 	}
 

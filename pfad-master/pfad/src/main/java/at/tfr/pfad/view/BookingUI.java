@@ -40,7 +40,7 @@ public class BookingUI extends Booking {
 		if (member != null) {
 			if (activity != null && ActivityType.Membership.equals(activity.getType())) {
 				free = booking.getMember().isFree() || isLeader || isAssistant ||
-						booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.getFree()));
+						booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.isFree()));
 			}
 		}
 		squadName = squad != null ? squad.getName() : null;

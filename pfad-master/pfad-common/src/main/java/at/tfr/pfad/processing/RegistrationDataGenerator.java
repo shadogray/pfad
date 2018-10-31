@@ -359,7 +359,7 @@ public class RegistrationDataGenerator {
 		if (!funktionen.isEmpty()) {
 			functions.addAll(funktionen.stream()
 					.filter(f -> !Function.PTA.equals(f.getKey()))
-					.filter(f -> Boolean.FALSE.equals(f.getNoFunction()))
+					.filter(f -> !f.isNoFunction())
 					.map(f -> f.getKey()).collect(Collectors.toList()));
 		}
 
@@ -369,7 +369,7 @@ public class RegistrationDataGenerator {
 					.filter(f -> !f.getKey().equals(Function.ZBV)).collect(Collectors.toList());
 		}
 		
-		if (!funktionen.stream().anyMatch(f -> Boolean.TRUE.equals(f.getLeader()))) {
+		if (!funktionen.stream().anyMatch(f -> f.isLeader())) {
 			if (!functions.stream().anyMatch(f->(f.startsWith("SF") || f.startsWith("GF")))) {
 				functions.addAll(toLead);
 				functions.addAll(toAss);
