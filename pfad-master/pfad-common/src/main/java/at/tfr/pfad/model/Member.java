@@ -586,7 +586,7 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 
 	public void setFunktionen(final Set<Function> Funktionen) {
 		this.funktionen = Funktionen;
-		if (this.funktionen != null && this.funktionen.stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg()))) {
+		if (this.funktionen != null && this.funktionen.stream().anyMatch(f -> Boolean.TRUE.equals(f.isExportReg()))) {
 			aktiv = true;
 		}
 	}
@@ -832,7 +832,7 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 	}
 
 	public boolean isAnyFree() {
-		return free || (funktionen != null && funktionen.stream().anyMatch(f->Boolean.TRUE.equals(f.getFree())));
+		return free || (funktionen != null && funktionen.stream().anyMatch(f->Boolean.TRUE.equals(f.isFree())));
 	}
 	
 	@Pfad

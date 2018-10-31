@@ -40,6 +40,9 @@
 			<h:outputLabel value="Nicht in Spalte Funktion exportieren:" />
 			<h:outputText styleClass="#{functionBean.function.noFunction ? 'boolean-true' : 'boolean-false'}" value="" />
 			<h:outputText />
+			<h:outputLabel for="functionBeanFunctionSex" value="Sex:" />
+			<h:outputText id="functionBeanFunctionSex" value="#{functionBean.function.sex}" />
+			<h:outputText />
 		</h:panelGrid>
 
 		<div class="buttons">

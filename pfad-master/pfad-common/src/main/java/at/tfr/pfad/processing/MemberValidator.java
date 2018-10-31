@@ -38,6 +38,7 @@ public class MemberValidator {
 	public static String KEIN_TRUPP_FUNKTION = "Weder Trupp noch Funktion";
 	public static String INAKTIV_ALS_LEITER = "Inaktiv als Leiter/Assistent";
 	public static String INAKTIV_ALS_FUNKTION = "Inaktiv als Funktion";
+	public static String GESCHLECHT_FUNKTION_PASST_NICHT = "Funktion für Geschlecht nicht passend";
 
 	@Inject
 	private MemberRepository memberRepo;
@@ -48,7 +49,7 @@ public class MemberValidator {
 
 	public boolean isGrinsExportable(Member m, Collection<Member> leaders) {
 		return m.isAktiv() || leaders.contains(m)
-				|| m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.getExportReg()));
+				|| m.getFunktionen().stream().anyMatch(f -> Boolean.TRUE.equals(f.isExportReg()));
 	}
 
 	public List<ValidationResult> validate(Member member, final Collection<Member> leaders) {
@@ -144,6 +145,7 @@ public class MemberValidator {
 		// Es kann nur eine GFW oder GFM geben! Für Kathi Fosen würde ein GFA passend sein
 		if (!member.getFunktionen().isEmpty()) {
 			
+			// prüfe GFW/GFM
 			Predicate<Function> gfmOrGfw = f -> "GFW".equals(f.getKey()) || "GFM".equals(f.getKey());
 			
 			if (member.getFunktionen().stream().anyMatch(gfmOrGfw)) {
@@ -157,6 +159,15 @@ public class MemberValidator {
 						}
 					}
 				}
+			}
+			
+			// Prüfe Geschlecht Member <-> Funktion
+			List<Function> badSex = member.getFunktionen().stream()
+					.filter(f -> f.getSex() != null && member.getGeschlecht() != f.getSex())
+					.collect(Collectors.toList());
+			if (!badSex.isEmpty()) {
+				results.add(new ValidationResult(false, GESCHLECHT_FUNKTION_PASST_NICHT+": "+
+						badSex.stream().map(f -> f.getKey()).collect(Collectors.joining())));
 			}
 		}
 

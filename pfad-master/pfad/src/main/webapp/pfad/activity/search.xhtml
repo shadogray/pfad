@@ -61,7 +61,7 @@
 					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemActivityName" value="#{_item.name}" />
 					</h:link>
@@ -70,7 +70,7 @@
 					<f:facet name="header">
 						<h:outputText value="Status" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemActivityStatus" value="#{_item.status}" />
 					</h:link>
@@ -79,7 +79,7 @@
 					<f:facet name="header">
 						<h:outputText value="Start" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemActivityStart" value="#{_item.start}">
 							<f:convertDateTime pattern="dd.MM.yyyy" />
@@ -90,7 +90,7 @@
 					<f:facet name="header">
 						<h:outputText value="End" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemActivityEnd" value="#{_item.end}">
 							<f:convertDateTime pattern="dd.MM.yyyy" />
@@ -101,7 +101,7 @@
 					<f:facet name="header">
 						<h:outputText value="Gebucht" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemActivityBookings" value="#{_item.bookings}">
 							<f:convertNumber maxFractionDigits="2" />
@@ -112,7 +112,7 @@
 					<f:facet name="header">
 						<h:outputText value="Betrag" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemActivityAmount" value="#{_item.amount}">
 							<f:convertNumber maxFractionDigits="2" />
@@ -123,7 +123,7 @@
 					<f:facet name="header">
 						<h:outputText value="Anzahlung" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemActivityAconto" value="#{_item.aconto}">
 							<f:convertNumber maxFractionDigits="2" />
@@ -134,7 +134,7 @@
 					<f:facet name="header">
 						<h:outputText value="Bemerkung" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemActivityComment" value="#{fn:substring(_item.comment,0,20)}" />
 					</h:link>

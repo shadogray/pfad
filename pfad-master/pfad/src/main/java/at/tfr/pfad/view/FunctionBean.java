@@ -235,9 +235,11 @@ public class FunctionBean extends BaseBean<Function> implements Serializable {
 	 */
 
 	public List<Function> getAll() {
-
-		CriteriaQuery<Function> criteria = this.entityManager.getCriteriaBuilder().createQuery(Function.class);
-		return this.entityManager.createQuery(criteria.select(criteria.from(Function.class))).getResultList();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Function> criteria = cb.createQuery(Function.class);
+		Root<Function> root = criteria.from(Function.class);
+		return entityManager.createQuery(criteria.select(root).orderBy(cb.asc(root.get(Function_.function))))
+				.getResultList();
 	}
 
 	public Converter getConverter() {

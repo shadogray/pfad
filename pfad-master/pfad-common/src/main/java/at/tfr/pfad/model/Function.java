@@ -11,6 +11,8 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import at.tfr.pfad.Sex;
 
 @Audited(withModifiedFlag = true)
 @Entity
@@ -62,6 +66,9 @@ public class Function extends BaseEntity implements Presentable, Comparable<Func
 	@Column(columnDefinition = "boolean default 'false' not null")
 	private boolean noFunction;
 
+	@Enumerated(EnumType.STRING)
+	protected Sex sex;
+	
 	@XmlID
 	public Long getId() {
 		return this.id;
@@ -99,28 +106,20 @@ public class Function extends BaseEntity implements Presentable, Comparable<Func
 		this.key = key;
 	}
 
-	public Boolean getExportReg() {
-		return exportReg;
-	}
-	
 	public boolean isExportReg() {
 		return Boolean.TRUE.equals(exportReg);
 	}
 
-	public void setExportReg(Boolean exportReg) {
+	public void setExportReg(boolean exportReg) {
 		this.exportReg = Boolean.TRUE.equals(exportReg);
-	}
-
-	public Boolean getFree() {
-		return free;
 	}
 
 	public boolean isFree() {
 		return Boolean.TRUE.equals(free);
 	}
 
-	public void setFree(Boolean free) {
-		this.free = Boolean.TRUE.equals(free);
+	public void setFree(boolean free) {
+		this.free = free;
 	}
 
 	@Override
@@ -128,22 +127,30 @@ public class Function extends BaseEntity implements Presentable, Comparable<Func
 		return function;
 	}
 
-	public Boolean getLeader() {
-		return leader;
+	public boolean isLeader() {
+		return Boolean.TRUE.equals(leader);
 	}
 
-	public void setLeader(Boolean leader) {
-		this.leader = Boolean.TRUE.equals(leader);
+	public void setLeader(boolean leader) {
+		this.leader = leader;
 	}
 
-	public Boolean getNoFunction() {
-		return noFunction;
+	public boolean isNoFunction() {
+		return Boolean.TRUE.equals(noFunction);
 	}
 
-	public void setNoFunction(Boolean noFunction) {
-		this.noFunction = Boolean.TRUE.equals(noFunction);
+	public void setNoFunction(boolean noFunction) {
+		this.noFunction = noFunction;
 	}
 
+	public Sex getSex() {
+		return sex;
+	}
+	
+	public void setSex(Sex sex) {
+		this.sex = sex;
+	}
+	
 	@Override
 	public String getShortString() {
 		String result = "" + function;

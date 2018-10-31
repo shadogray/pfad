@@ -69,6 +69,15 @@
 					<h:message for="functionBeanFunctionNoFunction" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
+				<h:outputLabel for="functionBeanFunctionSex" value="Sex:" />
+				<h:panelGroup>
+					<h:selectOneMenu id="functionBeanFunctionSex" title="Geschlecht" value="#{functionBean.function.sex}" >
+						<f:selectItem noSelectionOption="true"/>
+						<f:selectItems value="#{memberBean.sexes}"/>
+					</h:selectOneMenu>
+					<h:message for="functionBeanFunctionSex" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
 			</h:panelGrid>
 
 			<div class="buttons">

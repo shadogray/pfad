@@ -6,6 +6,18 @@
 
 	<f:metadata>
 		<o:viewParam name="id" value='#{activityBean.id}' />
+		<f:viewParam name="all" value="#{registrationBean.all}" />
+		<f:viewParam name="registrationBeanExampleName" value="#{registrationBean.example.name}" />
+		<f:viewParam name="registrationBeanExampleVorname" value="#{registrationBean.example.vorname}" />
+		<f:viewParam name="registrationBeanExampleTelefon" value="#{registrationBean.example.telefon}" />
+		<f:viewParam name="registrationBeanExampleEmail" value="#{registrationBean.example.email}" />
+		<f:viewParam name="registrationBeanExampleStrasse" value="#{registrationBean.example.strasse}" />
+		<f:viewParam name="registrationBeanExamplePLZ" value="#{registrationBean.example.PLZ}" />
+		<f:viewParam name="registrationBeanExampleGeschlecht" value="#{registrationBean.example.geschlecht}" />
+		<f:viewParam name="registrationBeanExampleGebJahr" value="#{registrationBean.example.gebJahr}" />
+		<f:viewParam name="registrationBeanExampleSchoolEntry" value="#{registrationBean.example.schoolEntry}" />
+		<f:viewParam name="regStornoBox" value="#{registrationBean.storno}" converter="#{triStateConverter}" />
+		<f:viewParam name="regAktivBox" value="#{registrationBean.aktiv}" converter="#{triStateConverter}" />
 		<f:event type="preRenderView" listener='#{activityBean.retrieve}' />
 	</f:metadata>
 

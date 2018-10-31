@@ -135,7 +135,10 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	
 	public void updateMemberOnChange() {
 		if (PhaseId.INVOKE_APPLICATION.equals(Faces.getCurrentPhaseId())) {
-			member.setAktiv(member.getTrupp() != null || member.getFunktionen().stream().anyMatch(f -> f.getExportReg()));
+			member.setAktiv(
+					member.getTrupp() != null 
+					|| member.getFunktionen().stream().anyMatch(f -> f.isExportReg())
+					|| !squadRepo.findByResponsible(member).isEmpty());
 		}
 	}
 
