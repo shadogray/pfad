@@ -76,6 +76,15 @@
 				</h:column>
 				<h:column>
 					<f:facet name="header">
+						<h:outputText value="Geschlecht" />
+					</f:facet>
+					<h:link outcome="view">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemSex" value="#{_item.sex}" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
 						<h:outputText value="Frei" />
 					</f:facet>
 					<h:link outcome="view">
