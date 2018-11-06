@@ -214,7 +214,6 @@ public class RegistrationBean extends BaseBean {
 			member.setTelefon(registration.getTelefon());
 			
 			member.setAktiv(true);
-			member.setTrail(true);
 			
 			member = memberRepo.saveAndFlush(member);
 			
