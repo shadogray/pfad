@@ -111,11 +111,8 @@
 				</h:column>
 			</h:dataTable>
 
-			<h:outputText />
-			<h:outputText />
-
-			<h:outputLabel for="memberBeanMemberSquads" value="Führung:" />
-			<h:dataTable id="memberBeanMemberSquads" styleClass="data-table" value="#{memberBean.squads}" var="_item">
+			<h:outputLabel for="memberBeanMemberAssistantOf" value="Assistenz:" rendered="#{not empty memberBean.assistantOf}"/>
+			<h:dataTable id="memberBeanMemberAssistantOf" styleClass="data-table" value="#{memberBean.assistantOf}" var="_item" rendered="#{not empty memberBean.assistantOf}">
 				<h:column>
 					<f:facet name="header">
 						<h:outputText value="Name" />
@@ -129,6 +126,26 @@
 					<h:outputText value="#{_item.type}" />
 				</h:column>
 			</h:dataTable>
+			<h:outputText rendered="#{empty memberBean.assistantOf}"/>
+			<h:outputText rendered="#{empty memberBean.assistantOf}"/>
+
+			<h:outputLabel for="memberBeanMemberLeaderOf" value="Führung:" rendered="#{not empty memberBean.leaderOf}"/>
+			<h:dataTable id="memberBeanMemberLeaderOf" styleClass="data-table" value="#{memberBean.leaderOf}" var="_item" rendered="#{not empty memberBean.leaderOf}">
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Name" />
+					</f:facet>
+					<h:outputText value="#{_item.name}" />
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Typ" />
+					</f:facet>
+					<h:outputText value="#{_item.type}" />
+				</h:column>
+			</h:dataTable>
+			<h:outputText rendered="#{empty memberBean.leaderOf}"/>
+			<h:outputText rendered="#{empty memberBean.leaderOf}"/>
 
 			<h:outputLabel for="memberBeanMemberVollzahler" value="Vollzahler:" />
 			<h:link id="memberBeanMemberVollzahler" outcome="view" rendered="#{!empty memberBean.member.vollzahler}"

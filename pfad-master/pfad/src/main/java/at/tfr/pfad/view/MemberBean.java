@@ -78,20 +78,21 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	private Boolean exampleInfoMail;
 	private List<Function> exampleFunctions;
 	private List<Squad> exampleTrupps;
+	private List<Squad> leaderOf;
+	private List<Squad> assistantOf;
 	private Collection<ValidationResult> validationResults = new ArrayList<>();
 
 	/*
 	 * support creating and retrieving Member entities
 	 */
 
-	public List<Squad> getSquads() {
-		if (member != null && member.getGeschlecht() != null) {
-			return member.getGeschlecht() == Sex.W ? squadRepo.findByLeaderFemaleEqual(member)
-					: squadRepo.findByLeaderMaleEqual(member);
-		}
-		return new ArrayList<Squad>();
+	public List<Squad> getLeaderOf() {
+		return leaderOf;
 	}
-
+	public List<Squad> getAssistantOf() {
+		return assistantOf;
+	}
+	
 	public String create() {
 		return "create?faces-redirect=true";
 	}
@@ -112,6 +113,8 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 					filteredMembers.add(member.getVollzahler());
 				}
 			}
+			this.leaderOf = squadRepo.findByLeaderFemaleEqualOrLeaderMaleEqual(member);
+			this.assistantOf = squadRepo.findByAssistant(member);
 			this.validationResults = validateMember(member, false);
 		}
 	}
