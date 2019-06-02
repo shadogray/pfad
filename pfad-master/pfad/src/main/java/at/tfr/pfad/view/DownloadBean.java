@@ -29,7 +29,6 @@ import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,12 +36,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.Tuple;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
 
@@ -151,7 +150,7 @@ public class DownloadBean implements Serializable {
 
 			ExternalContext ectx = setHeaders("Export");
 			try (OutputStream os = ectx.getResponseOutputStream()) {
-				HSSFWorkbook wb = regDataGenerator.generateData(config, filter, squads);
+				XSSFWorkbook wb = regDataGenerator.generateData(config, filter, squads);
 				wb.write(os);
 			}
 			FacesContext.getCurrentInstance().responseComplete();
@@ -167,7 +166,7 @@ public class DownloadBean implements Serializable {
 
 
 	public static ExternalContext setHeaders(String prefix) {
-		DataStructure dataStructure = DataStructure.XLS;
+		DataStructure dataStructure = DataStructure.XLSX;
 		String encoding = "UTF8";
 		return setHeaders(prefix, dataStructure, encoding);
 	}
@@ -398,18 +397,18 @@ public class DownloadBean implements Serializable {
 		return null;
 	}
 	
-	private HSSFWorkbook generateResultsWorkbook(Configuration config, List<List<?>> results) {
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet(config.getCkey()+"_"+new DateTime().toString(SafeDatePattern));
+	private XSSFWorkbook generateResultsWorkbook(Configuration config, List<List<?>> results) {
+		XSSFWorkbook wb = new XSSFWorkbook();
+		XSSFSheet sheet = wb.createSheet(config.getCkey()+"_"+new DateTime().toString(SafeDatePattern));
 		CellStyle red = wb.createCellStyle();
 		
 		if (results != null && results.size() > 0) {
 			int rCount = 0;
-			HSSFRow row = sheet.createRow(rCount++);
+			XSSFRow row = sheet.createRow(rCount++);
 			
 			String[] headers = config.toHeaders(results.get(0).size());
 			for (int i = 0; i < headers.length; i++) {
-				HSSFCell c = row.createCell(i);
+				XSSFCell c = row.createCell(i);
 				c.setCellValue(headers[i]);
 			}
 

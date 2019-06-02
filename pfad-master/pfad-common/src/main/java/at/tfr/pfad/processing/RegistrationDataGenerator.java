@@ -12,13 +12,13 @@ import java.util.stream.Stream;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
 
@@ -72,9 +72,9 @@ public class RegistrationDataGenerator {
 	@Inject
 	private MemberValidator memberValidator;
 
-	public HSSFWorkbook generateData(RegConfig config, Predicate<Member> filter, Squad... squads) {
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = wb.createSheet("Personen");
+	public XSSFWorkbook generateData(RegConfig config, Predicate<Member> filter, Squad... squads) {
+		XSSFWorkbook wb = new XSSFWorkbook();
+		XSSFSheet sheet = wb.createSheet("Personen");
 		CellStyle red = wb.createCellStyle();
 		red.setFillForegroundColor(HSSFColor.RED.index);
 		red.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
@@ -86,7 +86,7 @@ public class RegistrationDataGenerator {
 		}
 		
 		int rCount = 0;
-		HSSFRow row = sheet.createRow(rCount++);
+		XSSFRow row = sheet.createRow(rCount++);
 		
 		List<Activity> activities = activityRepo.findAll().stream().filter(a->!a.isFinished())
 				.sorted((a,b) -> a.getName().compareTo(b.getName())).collect(Collectors.toList());
@@ -104,7 +104,7 @@ public class RegistrationDataGenerator {
 
 		for (int i = 0; i < headers.size(); i++) {
 			String h = transformHeaders(headers, i);
-			HSSFCell c = row.createCell(i);
+			XSSFCell c = row.createCell(i);
 			c.setCellValue(h);
 		}
 
@@ -184,7 +184,7 @@ public class RegistrationDataGenerator {
 			// and Local Data
 			if (config.withLocal) { // Religion, FunktionenBaden, Trail, Gilde, AltER
 
-				HSSFCell ok = row.createCell(cCount++);
+				XSSFCell ok = row.createCell(cCount++);
 				if (!vr.isEmpty()) {
 					ok.setCellValue(vr.stream().map(v -> v.getMessage()).collect(Collectors.joining(",")));
 					ok.setCellStyle(red);
@@ -229,7 +229,7 @@ public class RegistrationDataGenerator {
 		return wb;
 	}
 
-	private HSSFSheet formatGruppeSheet(HSSFSheet sheet, RegConfig config) {
+	private XSSFSheet formatGruppeSheet(XSSFSheet sheet, RegConfig config) {
 		// Key Name Heim1 Straße1 Plz1 Ort1 Heim2 Straße2 Plz2 Ort2 BIC IBAN
 		// Bezirk Web Mail
 		// Gründungsjahr Verein Letzte Wahl GFm Letzte Wahl GFw Letzte Wahl ER
@@ -238,7 +238,7 @@ public class RegistrationDataGenerator {
 		// vorstand@ontrail.at
 		// 22.06.14 22.06.14 2015-11-18 0 0
 		List<String> headers = transformGruppeHeaders();
-		HSSFRow row = sheet.createRow(0);
+		XSSFRow row = sheet.createRow(0);
 		for (int i = 0; i < headers.size(); i++) {
 			row.createCell(i).setCellValue(headers.get(i));
 		}
@@ -270,11 +270,11 @@ public class RegistrationDataGenerator {
 		return sheet;
 	}
 
-	private HSSFSheet formatStatusSheet(HSSFSheet sheet, RegConfig config) {
+	private XSSFSheet formatStatusSheet(XSSFSheet sheet, RegConfig config) {
 		int rCount = 0;
 		// "Export_" + DateTime.now().toString("yyyy.mm.dd"));
 		// Die Auswertung wurde mit folgenden Optionen erstellt:
-		HSSFRow row = sheet.createRow(rCount++);
+		XSSFRow row = sheet.createRow(rCount++);
 		row.createCell(0).setCellValue("Die Auswertung wurde mit folgenden Optionen erstellt:");
 		// Gruppenkürzel BAD
 		row = sheet.createRow(rCount++);
