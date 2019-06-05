@@ -8,6 +8,7 @@
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="page" value='#{activityBean.page}' />
 		<f:event type="preRenderView" listener='#{activityBean.paginate}' />
 	</f:metadata>

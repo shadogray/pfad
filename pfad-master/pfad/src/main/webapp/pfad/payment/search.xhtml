@@ -7,6 +7,7 @@
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="page" value='#{paymentBean.page}' />
 		<f:viewParam name="paymentBeanExampleType" value="#{paymentBean.example.type}"/>
 		<f:viewParam name="paymentBeanExamplePayer" value="#{paymentBean.examplePayer}" converter="#{memberBean.converter}"/>
@@ -182,7 +183,7 @@
 					<f:facet name="header">
 						<h:outputText value="Typ" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentType" value="#{_item.type}" />
 					</h:link>
@@ -191,7 +192,7 @@
 					<f:facet name="header">
 						<h:outputText value="Zahler" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPayer" value="#{_item.payer != null ? _item.payerName : 'kein Zahler..'}" />
 					</h:link>
@@ -200,7 +201,7 @@
 					<f:facet name="header">
 						<h:outputText value="Aktivität" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentActivities" value="#{_item.activitiesLines}" escape="false"/>
 					</h:link>
@@ -209,7 +210,7 @@
 					<f:facet name="header">
 						<h:outputText value="Betrag" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPaymentAmount" value="#{_item.amount}">
 							<f:convertNumber maxFractionDigits="2" />
@@ -220,7 +221,7 @@
 					<f:facet name="header">
 						<h:outputText value="Akonto" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentAconto" value="#{_item.aconto ? 'JA' : 'NEIN'}" />
 					</h:link>
@@ -229,7 +230,7 @@
 					<f:facet name="header">
 						<h:outputText value="Bezahlt" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentFinished" value="#{_item.finished ? 'JA' : 'NEIN'}" />
 					</h:link>
@@ -238,7 +239,7 @@
 					<f:facet name="header">
 						<h:outputText value="Datum" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPaymentDate" value="#{_item.paymentDate}" converter="javax.faces.DateTime" />
 					</h:link>
@@ -248,7 +249,7 @@
 						<h:outputText value="IBAN" />
 					</f:facet>
 					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
+						<f:param name="id" value="#{_item.id}" includeViewParams="true" />
 						<h:outputText id="itemPaymentIBAN" value="#{_item.payerIBAN}" />
 					</h:link>
 				</h:column>
@@ -257,7 +258,7 @@
 						<h:outputText value="Comment" />
 					</f:facet>
 					<h:link outcome="view">
-						<f:param name="id" value="#{_item.id}" />
+						<f:param name="id" value="#{_item.id}" includeViewParams="true" />
 						<h:outputText id="itemPaymentComment" value="#{_item.comment}" />
 					</h:link>
 				</h:column>

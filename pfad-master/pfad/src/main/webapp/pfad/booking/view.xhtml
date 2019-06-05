@@ -6,6 +6,7 @@
 
 	<f:metadata>
 		<o:viewParam name="id" value='#{bookingBean.id}' />
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:event type="preRenderView" listener='#{bookingBean.retrieve}' />
 	</f:metadata>
 

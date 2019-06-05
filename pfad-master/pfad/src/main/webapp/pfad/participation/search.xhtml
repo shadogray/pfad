@@ -5,6 +5,7 @@
 	xmlns:p="http://primefaces.org/ui" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="page" value='#{participationBean.page}' />
 		<f:event type="preRenderView" listener='#{participationBean.paginate}' />
 	</f:metadata>
@@ -90,7 +91,7 @@
 					<f:facet name="header">
 						<h:outputText value="Training" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemTraining" value="#{_item.training}" />
 					</h:link>
@@ -99,7 +100,7 @@
 					<f:facet name="header">
 						<h:outputText value="Mitglied" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemMember" value="#{_item.member}" />
 					</h:link>
@@ -108,7 +109,7 @@
 					<f:facet name="header">
 						<h:outputText value="ZahlungsArt" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemCostType" value="#{_item.costType}" />
 					</h:link>
@@ -117,7 +118,7 @@
 					<f:facet name="header">
 						<h:outputText value="Status" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemStatus" value="#{_item.status}" />
 					</h:link>
@@ -126,7 +127,7 @@
 					<f:facet name="header">
 						<h:outputText value="Start" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemStart" value="#{_item.start}" >
 							<f:convertDateTime pattern="dd.MM.yyyy"/>
@@ -137,7 +138,7 @@
 					<f:facet name="header">
 						<h:outputText value="Ende" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemEnd" value="#{_item.end}" >
 							<f:convertDateTime pattern="dd.MM.yyyy"/>

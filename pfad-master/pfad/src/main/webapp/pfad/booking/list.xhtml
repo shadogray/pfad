@@ -6,6 +6,10 @@
 	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
 	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
+	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
+	</f:metadata>
+
 	<ui:param name="pageTitle" value="Buchungen" />
 
 	<ui:define name="header">
@@ -302,7 +306,7 @@
 							<f:facet name="header">
 								<h:outputText value="Aktivität" />
 							</f:facet>
-							<h:link outcome="view">
+							<h:link outcome="view" includeViewParams="true">
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemActivity" value="#{_item.activity}" style="white-space: nowrap;" />
 							</h:link>
@@ -311,7 +315,7 @@
 							<f:facet name="header">
 								<h:outputText value="Name" />
 							</f:facet>
-							<h:link outcome="view">
+							<h:link outcome="view" includeViewParams="true">
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemName" value="#{_item.member.name}" style="white-space: nowrap;" />
 							</h:link>
@@ -320,7 +324,7 @@
 							<f:facet name="header">
 								<h:outputText value="Vorname" />
 							</f:facet>
-							<h:link outcome="view">
+							<h:link outcome="view" includeViewParams="true">
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemVorname" value="#{_item.member.vorname}" style="white-space: nowrap;" />
 							</h:link>
@@ -329,7 +333,7 @@
 							<f:facet name="header">
 								<h:outputText value="Frei" />
 							</f:facet>
-							<h:link outcome="view">
+							<h:link outcome="view" includeViewParams="true">
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemFree" value="#{_item.member.anyFree ? 'FREI' : ''}" style="white-space: nowrap;" />
 							</h:link>
@@ -338,7 +342,7 @@
 							<f:facet name="header">
 								<h:outputText value="Geb.Jahr" />
 							</f:facet>
-							<h:link outcome="view">
+							<h:link outcome="view" includeViewParams="true">
 								<f:param name="id" value="#{_item.id}" />
 								<h:outputText id="itemGebJahr" value="#{_item.member.gebJahr}" style="white-space: nowrap;" />
 							</h:link>

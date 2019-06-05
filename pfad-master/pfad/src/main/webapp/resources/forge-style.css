@@ -498,6 +498,10 @@ select.manual {
 	background-color: #979026;
 }
 
+.menu-select {
+	background-color: #bfba64;
+}
+
 .content .button:hover, .content .buttons a:hover {
 	background-color: #979026;
 }

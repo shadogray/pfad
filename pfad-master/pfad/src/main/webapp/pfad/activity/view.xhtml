@@ -5,7 +5,8 @@
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
-		<o:viewParam name="id" value='#{activityBean.id}' />
+		<o:viewParam name="id" value="#{activityBean.id}" />
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="all" value="#{registrationBean.all}" />
 		<f:viewParam name="registrationBeanExampleName" value="#{registrationBean.example.name}" />
 		<f:viewParam name="registrationBeanExampleVorname" value="#{registrationBean.example.vorname}" />
@@ -22,7 +23,7 @@
 	</f:metadata>
 
 	<ui:define name="header">
-		Aktivität
+		Aktivität : #{param['menu']}
 	</ui:define>
 
 	<ui:define name="subheader">

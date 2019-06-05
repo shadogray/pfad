@@ -9,6 +9,7 @@
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="page" value='#{bookingBean.page}' />
 		<f:viewParam name="bookingBeanExampleActivity" value="#{bookingBean.example.activity}" converter="#{activityBean.converter}" />
 		<f:viewParam name="bookingBeanExampleStatus" value="#{bookingBean.example.status}"/>
@@ -121,7 +122,7 @@
 					<f:facet name="header">
 						<h:outputText value="Aktivität" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingActivity" value="#{_item.activity.name}" />
 					</h:link>
@@ -131,7 +132,7 @@
 					<f:facet name="header">
 						<h:outputText value="Start" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingActivityStart" value="#{_item.activity.start}" />
 					</h:link>
@@ -141,7 +142,7 @@
 					<f:facet name="header">
 						<h:outputText value="Teilnehmer" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingMember" value="#{_item.member}" />
 					</h:link>
@@ -151,7 +152,7 @@
 					<f:facet name="header">
 						<h:outputText value="Status" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingStatus" value="#{_item.status}" />
 					</h:link>
@@ -161,7 +162,7 @@
 					<f:facet name="header">
 						<h:outputText value="Comment" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemBookingComment" value="#{_item.comment}" />
 					</h:link>

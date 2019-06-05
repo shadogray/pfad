@@ -44,13 +44,13 @@
 			</rich:tooltip>
 			<c:choose>
 				<c:when test="#{not empty cc.attrs.link}">
-					<h:link outcome="#{cc.attrs.link}">
+					<h:link outcome="#{cc.attrs.link}" includeViewParams="true">
 						<f:param name="id" value="#{cc.attrs.record.id}" />
 						<h:outputText value="#{cc.attrs.record[cc.attrs.property]}" converter="#{cc.attrs.columnConverterBean}" />
 					</h:link>
 				</c:when>
 				<c:when test="#{not empty cc.attrs.extLink and not empty cc.attrs.record[cc.attrs.property]}">
-					<h:link outcome="#{cc.attrs.extLink}">
+					<h:link outcome="#{cc.attrs.extLink}" includeViewParams="true">
 						<f:param name="id" value="#{cc.attrs.record[cc.attrs.property]}" />
 						<h:outputText value="#{cc.attrs.record[cc.attrs.property]}" converter="#{cc.attrs.columnConverterBean}" />
 					</h:link>

@@ -5,6 +5,7 @@
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="page" value='#{trainingBean.page}' />
 		<f:event type="preRenderView" listener='#{trainingBean.paginate}' />
 	</f:metadata>
@@ -63,7 +64,7 @@
 					<f:facet name="header">
 						<h:outputText value="Name" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemtraining" value="#{_item.name}" />
 					</h:link>
@@ -72,7 +73,7 @@
 					<f:facet name="header">
 						<h:outputText value="Form" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemForm" value="#{_item.form}" />
 					</h:link>
@@ -81,7 +82,7 @@
 					<f:facet name="header">
 						<h:outputText value="Phase" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPhase" value="#{_item.phase}" />
 					</h:link>
@@ -90,7 +91,7 @@
 					<f:facet name="header">
 						<h:outputText value="Beschreibung" />
 					</f:facet>
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemFree" value="#{_item.description}" />
 					</h:link>

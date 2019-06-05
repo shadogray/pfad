@@ -6,6 +6,10 @@
 	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
 	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
+	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
+	</f:metadata>
+	
 	<ui:param name="pageTitle" value="Zahlungen" />
 
 	<ui:define name="header">

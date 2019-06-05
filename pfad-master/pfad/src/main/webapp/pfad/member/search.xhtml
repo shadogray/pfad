@@ -6,6 +6,7 @@
 	xmlns:o="http://omnifaces.org/ui" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="page" value='#{memberBean.page}' />
 		<f:viewParam name="mbeName" value="#{memberBean.example.name}"/>
 		<f:viewParam name="mbeVorname" value="#{memberBean.example.vorname}"/>
@@ -176,7 +177,7 @@
 						<f:facet name="header">
 							<h:outputText value="BV Key" />
 						</f:facet>
-						<h:link outcome="view" >
+						<h:link outcome="view" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemBVKey" value="#{_item.BVKey}" />
 						</h:link>
@@ -185,7 +186,7 @@
 						<f:facet name="header">
 							<h:outputText value="Name" />
 						</f:facet>
-						<h:link outcome="view" title="#{_item.toUiString()}">
+						<h:link outcome="view" title="#{_item.toUiString()}" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemName" value="#{_item.name}" />
 						</h:link>
@@ -194,7 +195,7 @@
 						<f:facet name="header">
 							<h:outputText value="Vorname" />
 						</f:facet>
-						<h:link outcome="view" title="#{_item.toUiString()}">
+						<h:link outcome="view" title="#{_item.toUiString()}" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemVorname" value="#{_item.vorname}" />
 						</h:link>
@@ -203,7 +204,7 @@
 						<f:facet name="header">
 							<h:outputText value="Aktiv" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
 						</h:link>
@@ -212,7 +213,7 @@
 						<f:facet name="header">
 							<h:outputText value="Trupp" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemTrupp" value="#{_item.trupp.name}" />
 						</h:link>
@@ -221,7 +222,7 @@
 						<f:facet name="header">
 							<h:outputText value="GebJahr" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemJahr" value="#{_item.gebJahr}" />
 						</h:link>
@@ -230,7 +231,7 @@
 						<f:facet name="header">
 							<h:outputText value="Strasse" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemStrasse" value="#{_item.strasse}" />
 						</h:link>
@@ -239,7 +240,7 @@
 						<f:facet name="header">
 							<h:outputText value="Tel" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemTelefon" value="#{_item.telefon}" />
 						</h:link>
@@ -248,7 +249,7 @@
 						<f:facet name="header">
 							<h:outputText value="Email" />
 						</f:facet>
-						<h:link outcome="view">
+						<h:link outcome="view" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemEmail" value="#{_item.email}" />
 						</h:link>

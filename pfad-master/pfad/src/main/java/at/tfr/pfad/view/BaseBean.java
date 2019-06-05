@@ -54,6 +54,7 @@ import at.tfr.pfad.util.SessionBean;
 public abstract class BaseBean<T> implements Serializable {
 
 	protected Logger log = Logger.getLogger(getClass());
+	protected String menuItem = "base";
 	
 	@Inject
 	protected transient EntityManager entityManager;
@@ -83,6 +84,8 @@ public abstract class BaseBean<T> implements Serializable {
 	protected transient TrainingRepository trainingRepo;
 	@Inject
 	protected transient ParticipationRepository participationRepo;
+	@Inject
+	protected PfadUI pfadUI;
 	
 	protected int page;
 	protected long count;
@@ -95,7 +98,7 @@ public abstract class BaseBean<T> implements Serializable {
 	public void init() {
 		log.debug("creating: "+sessionContext+" : "+Thread.currentThread()+" : "+this);
 	}
-
+	
 	public boolean isAdmin() {
 		return sessionBean.isAdmin();
 	}
@@ -181,6 +184,8 @@ public abstract class BaseBean<T> implements Serializable {
 //		bookingExample.setMember(new Member());
 //		paymentExample.setPayer(new Member());
 	}
+	
+	
 	public Long getId() {
 		return this.id;
 	}

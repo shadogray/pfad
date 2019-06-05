@@ -6,6 +6,7 @@
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="page" value='#{configurationBean.page}' />
 		<f:event type="preRenderView" listener='#{configurationBean.paginate}' />
 	</f:metadata>
@@ -59,7 +60,7 @@
 					<f:facet name="header">
 						<h:outputText value="Ckey" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemCkey" value="#{_item.ckey}" />
 					</h:link>
@@ -68,7 +69,7 @@
 					<f:facet name="header">
 						<h:outputText value="Cvalue" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemCvalue" value="#{_item.cvalue}" />
 					</h:link>

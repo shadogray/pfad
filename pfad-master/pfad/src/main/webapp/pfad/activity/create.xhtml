@@ -8,6 +8,7 @@
 
 	<f:metadata>
 		<o:viewParam name="id" value='#{activityBean.id}' />
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:event type="preRenderView" listener='#{activityBean.retrieve}' />
 	</f:metadata>
 

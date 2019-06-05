@@ -6,6 +6,10 @@
 	xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui"
 	template="/resources/scaffold/pageTemplate.xhtml">
 
+	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
+	</f:metadata>
+	
 	<ui:param name="pageTitle" value="Actions" />
 
 	<ui:define name="header">

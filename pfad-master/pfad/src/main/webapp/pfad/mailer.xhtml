@@ -6,10 +6,12 @@
 	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
 	template="/resources/scaffold/pageTemplate.xhtml">
 
-	<ui:param name="pageTitle" value="Mailversendung" />
 	<f:metadata>
 		<f:viewParam name="id" value="#{mailerBean.mailTemplate}" converter="#{mailerBean.converter}"/>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 	</f:metadata>
+	
+	<ui:param name="pageTitle" value="Mailversendung" />
 
 	<ui:define name="header">
 	</ui:define>

@@ -2,9 +2,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui"
-	xmlns:pass="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplateClean.xhtml">
+	xmlns:pass="http://xmlns.jcp.org/jsf/passthrough" xmlns:o="http://omnifaces.org/ui"
+	template="/resources/scaffold/pageTemplateClean.xhtml">
 
 	<f:metadata>
+		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
 		<f:viewParam name="all" value="#{registrationBean.all}" />
 		<f:viewParam name="registrationBeanExampleName" value="#{registrationBean.example.name}" />
 		<f:viewParam name="registrationBeanExampleVorname" value="#{registrationBean.example.vorname}" />
@@ -128,7 +130,7 @@
 					</p:commandLink>
 				</p:column>
 				<p:column headerText="Änderung" sortBy="#{r.changed}" rendered="false">
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{r.id}" />
 						<h:outputText value="#{r.changed}">
 							<f:convertDateTime patten="dd.mm.yyyy" />
@@ -139,7 +141,7 @@
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:panelGroup styleClass="#{r.status}">
-								<h:link outcome="create">
+								<h:link outcome="create" includeViewParams="true">
 									<f:param name="id" value="#{r.id}" />
 									<h:outputText value="#{r.status}" />
 								</h:link>
@@ -157,7 +159,7 @@
 				<p:column headerText="M/W" sortBy="#{r.geschlecht}" rendered="false">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.geschlecht}" />
 							</h:link>
@@ -172,7 +174,7 @@
 				<p:column headerText="Name" sortBy="#{r.name}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.name}" title="#{r.toPrettyLines()}" />
 							</h:link>
@@ -188,7 +190,7 @@
 				<p:column headerText="Vorname" sortBy="#{r.vorname}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.vorname}" title="#{r.toPrettyLines()}" />
 							</h:link>
@@ -204,7 +206,7 @@
 				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.gebJahr}" title="#{r.toPrettyLines()}" />
 							</h:link>
@@ -220,7 +222,7 @@
 				<p:column headerText="Schuleintr." sortBy="#{r.schoolEntry}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.schoolEntry}" title="#{r.toPrettyLines()}" />
 							</h:link>
@@ -236,7 +238,7 @@
 				<p:column headerText="Telefon" sortBy="#{r.telefon}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.telefon}" />
 							</h:link>
@@ -249,7 +251,7 @@
 				<p:column headerText="Email" sortBy="#{r.email}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.email}" />
 							</h:link>
@@ -262,7 +264,7 @@
 				<p:column headerText="PLZ" sortBy="#{r.PLZ}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.PLZ}" />
 							</h:link>
@@ -276,7 +278,7 @@
 				<p:column headerText="Ort" sortBy="#{r.ort}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.ort}" />
 							</h:link>
@@ -290,7 +292,7 @@
 				<p:column headerText="Aktiv" sortBy="#{r.aktiv}" rendered="#{registrationBean.all}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.aktiv}" />
 							</h:link>
@@ -303,7 +305,7 @@
 				<p:column headerText="Storno" sortBy="#{r.storno}" rendered="#{registrationBean.all}">
 					<p:cellEditor>
 						<f:facet name="output">
-							<h:link outcome="create">
+							<h:link outcome="create" includeViewParams="true">
 								<f:param name="id" value="#{r.id}" />
 								<h:outputText value="#{r.storno}" />
 							</h:link>
@@ -314,7 +316,7 @@
 					</p:cellEditor>
 				</p:column>
 				<p:column headerText="Person" rendered="#{registrationBean.all}" >
-					<h:link outcome="create">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{r.id}" />
 						<h:outputText value="#{r.member.toShortString()}" />
 					</h:link>
@@ -323,13 +325,13 @@
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:panelGroup rendered="#{r.parent != null}">
-								<h:link outcome="../member/view">
+								<h:link outcome="../member/view" includeViewParams="true">
 									<f:param name="id" value="#{r.id}" />
 									<h:outputText value="#{r.parent.toShortString()}" />
 								</h:link>
 							</h:panelGroup>
 							<h:panelGroup rendered="#{r.parent == null}">
-								<h:link outcome="create">
+								<h:link outcome="create" includeViewParams="true">
 									<f:param name="id" value="#{r.id}" />
 									<h:outputText value="#{r.parentName} #{r.parentVorname}" />
 								</h:link>
@@ -337,7 +339,7 @@
 						</f:facet>
 						<f:facet name="input">
 							<h:panelGroup rendered="#{r.parent != null}">
-								<h:link outcome="../member/view">
+								<h:link outcome="../member/view" includeViewParams="true">
 									<f:param name="id" value="#{r.id}" />
 									<h:outputText value="#{r.parent.toShortString()}" />
 								</h:link>
