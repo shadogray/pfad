@@ -46,6 +46,8 @@ public class MailMessage extends BaseEntity {
 	private String subject;
 	@Column(length=4096)
 	private String text;
+	@Column
+	private Boolean test;
 	protected Date created;
 	protected String createdBy;
 
@@ -135,6 +137,14 @@ public class MailMessage extends BaseEntity {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+	
+	public Boolean getTest() {
+		return test;
+	}
+	
+	public void setTest(Boolean test) {
+		this.test = test;
 	}
 
 	public Map<String, Object> getValues() {

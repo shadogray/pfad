@@ -63,6 +63,12 @@
 					<h:message for="configurationBeanConfigurationRole" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
+				<h:outputLabel for="configurationBeanConfigurationOwners" value="Owners:" />
+				<h:panelGroup>
+					<h:inputText id="configurationBeanConfigurationOwners" value="#{configurationBean.configuration.owners}" />
+					<h:message for="configurationBeanConfigurationOwners" styleClass="error" />
+				</h:panelGroup>
+				<h:outputText />
 				<h:outputLabel for="configurationBeanConfigurationDescription" value="Description:" />
 				<h:panelGroup>
 					<h:inputTextarea id="configurationBeanConfigurationDescription" value="#{configurationBean.configuration.description}"

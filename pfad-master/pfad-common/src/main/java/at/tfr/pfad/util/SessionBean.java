@@ -5,6 +5,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -42,6 +43,13 @@ public class SessionBean implements Serializable {
 	@PostConstruct
 	public void init() {
 		config = configRepo.findAll();
+		if (!(isAdmin() || isGruppe())) {
+			config = config.stream()
+				.filter(c -> c.getRole() == null || Role.none.equals(c.getRole()) || userSession.isCallerInRole(c.getRole().name()))
+				.filter(c -> StringUtils.isEmpty(c.getOwners()) || 
+						c.getOwners().toLowerCase().contains(userSession.getCallerPrincipal().getName()))
+				.collect(Collectors.toList());
+		}		
 		registrationEndDate = getRegistrationEndDate();
 	}
 

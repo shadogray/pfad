@@ -59,6 +59,9 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 	@Column
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	
+	@Column
+	private String owners;
 
 	@Column(nullable = false, columnDefinition = "varchar2(16) default 'simple'")
 	@Enumerated(EnumType.STRING)
@@ -99,6 +102,14 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 		this.role = role;
 	}
 
+	public String getOwners() {
+		return owners;
+	}
+	
+	public void setOwners(String owners) {
+		this.owners = owners;
+	}
+	
 	public ConfigurationType getType() {
 		return type != null ? type : ConfigurationType.simple;
 	}

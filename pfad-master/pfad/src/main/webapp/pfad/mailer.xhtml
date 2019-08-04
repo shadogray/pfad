@@ -22,18 +22,18 @@
 		<h:outputScript library="pfad" name="indent.js" />
 		<h:form id="mailConfig">
 			
-			<p:focus/>
+			<p:focus />
 
 			<h:panelGrid columns="6" >
 				<h:outputLabel value="Template: "/>
 				<p:autoComplete value="#{mailerBean.mailTemplate}" completeMethod="#{mailTemplates.filtered}" emptyMessage="..." 
-					var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}" converter="#{mailerBean.converter}">
-					<p:ajax process="@this" update="@form :mailer"/>
+					var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}" converter="#{mailerBean.converter}" forceSelection="true">
+					<p:ajax event="itemSelect" process="@this" update="@form :mailer"/>
 				</p:autoComplete>
 				<h:outputLabel value="MailConfig:" />
 				<p:selectOneMenu value="#{mailerBean.mailConfigKey}">
 					<f:selectItems value="#{mailerBean.mailConfigKeys}"/>
-					<p:ajax process="@this" update="@form :mailer"/>
+					<p:ajax event="itemSelect" process="@this" update="@form :mailer"/>
 				</p:selectOneMenu>
 			</h:panelGrid>
 

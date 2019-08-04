@@ -62,6 +62,8 @@ public class MailerBean extends BaseBean {
 	private MailMessageRepository messageRepo;
 	@Inject
 	private MailTemplateBean mailTemplateBean;
+	@Inject
+	private MailSender mailSender;
 
 	private Map<String, MailConfig> mailConfigs;
 	private MailConfig mailConfig;
@@ -77,7 +79,7 @@ public class MailerBean extends BaseBean {
 
 	@PostConstruct
 	public void init() {
-		mailConfigs = MailConfig.generateConfigs(configRepo.findAll(), log.isDebugEnabled());
+		mailConfigs = MailConfig.generateConfigs(sessionBean.getConfig(), log.isDebugEnabled());
 		mailConfigKey = getMailConfigKeys().stream().findFirst().orElse(null);
 		setMailConfigKey(mailConfigKey);
 		if (mailConfigs.isEmpty()) {
@@ -187,26 +189,23 @@ public class MailerBean extends BaseBean {
 					msg.setTemplate(mailTemplate);
 					msg.setSender(sender.getAddress()
 							+ (StringUtils.isNotBlank(sender.getPersonal()) ? ":" + sender.getPersonal() : ""));
+					if (testOnly) msg.setTest(testOnly);
+					
 					msg.setCreatedBy(sessionBean.getUser().getName());
 					msg = messageRepo.saveAndFlush(msg);
 
-					try {
-						Transport.send(mail);
-
+					final boolean sent = mailSender.sendMail(mail, msg);
+					if (!sent) {
+						messageRepo.removeAndFlush(msg);
+					} else {
 						msg.setCreated(new Date());
 						messageRepo.saveAndFlush(msg);
-						
-						if (testOnly) {
-							break;
-						}
-					} catch (Exception e) {
-						try {
-							messageRepo.removeAndFlush(msg);
-						} catch (Exception er) {
-							log.warn("cannot remove unsent: " + msg + " : " + er);
-						}
-						throw e; // dont forget to rethrow!!
 					}
+					
+					if (testOnly) {
+						break;
+					}
+					
 				} catch (MessagingException me) {
 					log.info("send failed: " + me + " msg: " + msg, me);
 					warn("send failed: " + me + " msg: " + msg);
