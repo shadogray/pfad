@@ -82,14 +82,23 @@
 			</h:panelGrid>
 
 
-			<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v" >
+			<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v">
+				<p:column width="12">
+					<f:facet name="header">ID</f:facet>
+					<h:outputText value="#{mailerBean.values.rowIndex+1}" />
+				</p:column>
 				<p:columns value="#{mailerBean.valueKeys}" var="e">
 					<h:outputText value="#{v[e]}" />
 				</p:columns>
 			</p:dataTable>
 			
 			
-			<p:dataTable id="mailMessages" rendered="#{mailerBean.mailMessages != null}"  value="#{mailerBean.mailMessages}" var="m">
+			<p:dataTable id="mailMessages" rendered="#{mailerBean.mailMessages != null}"  value="#{mailerBean.mailMessages}" 
+				var="m" rowIndexVar="idx">
+				<p:column width="12">
+					<f:facet name="header">ID</f:facet>
+					<h:outputText value="#{mailerBean.mailMessages.rowIndex+1}" />
+				</p:column>
 				<p:column>
 					<f:facet name="header">An</f:facet>
 					<h:outputText value="#{m.receiver}" />

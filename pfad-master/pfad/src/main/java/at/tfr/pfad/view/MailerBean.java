@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import javax.ejb.Stateful;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.model.ListDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,7 +24,6 @@ import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -72,6 +71,8 @@ public class MailerBean extends BaseBean {
 	private List<Map<String, Object>> values = Collections.emptyList();
 	private MailTemplate mailTemplate = new MailTemplate();
 	private List<MailMessage> mailMessages = Collections.emptyList();
+	private ListDataModel<Map<String, Object>> valuesModel = new ListDataModel<>();
+	private ListDataModel<MailMessage> mailMessagesModel = new ListDataModel<>();
 
 	public enum MailProps {
 		mail_transport_protocol, mail_smtp_starttls_enable, mail_smtp_auth, mail_smtp_host, mail_smtp_port, mail_smtps_auth, mail_smtps_host, mail_smtps_port, mail_smtp_ssl_enable, mail_smtp_socketFactory_class, mail_smtp_socketFactory_port
@@ -94,7 +95,13 @@ public class MailerBean extends BaseBean {
 		}
 		mailMessages = new ArrayList<>();
 		try {
-			values = queryExec.execute(mailTemplate.getQuery(), false);
+			values = queryExec.execute(mailTemplate.getQuery()
+					.replaceAll("\\$\\{templateId\\}", ""+mailTemplate.getId())
+					.replaceAll("\\$\\{templateName\\}", mailTemplate.getName())
+					.replaceAll("\\$\\{templateOwner\\}", mailTemplate.getOwner()), 
+					false);
+			valuesModel = new ListDataModel<>(values);
+			
 			for (Map<String, Object> valueMap : values) {
 				MailMessage msg = new MailMessage();
 				msg.setValues(valueMap);
@@ -113,10 +120,13 @@ public class MailerBean extends BaseBean {
 						.map(e -> (Registration) e.getValue()).findFirst().orElse(null));
 				mailMessages.add(msg);
 			}
+			mailMessagesModel = new ListDataModel<>(mailMessages);
+			
 		} catch (Exception e) {
 			log.warn("Cannot execute: " + mailTemplate + e, e);
 			error("Cannot execute: " + mailTemplate + e);
 		}
+		
 	}
 
 	public void saveTemplate() {
@@ -159,9 +169,22 @@ public class MailerBean extends BaseBean {
 
 			for (MailMessage msg : mailMessages) {
 				try {
-					if (StringUtils.isBlank(msg.getReceiver()) || "null".equals(msg.getReceiver()) 
-							|| StringUtils.isBlank(msg.getText()) || StringUtils.isBlank(msg.getSubject())) {
-						warn("invalid message: " + msg);
+					if (StringUtils.isBlank(msg.getReceiver()) || "null".equals(msg.getReceiver())) {
+						warn("invalid Receiver: " + msg);
+						continue;
+					}
+					try {
+						InternetAddress ia = new InternetAddress(msg.getReceiver());
+					} catch (Exception e) {
+						warn("invalid Receiver: "+e.getMessage()+ " : " + msg);
+						continue;
+					}
+					if (StringUtils.isBlank(msg.getText())) {
+						warn("empty MessageText: " + msg);
+						continue;
+					}
+					if (StringUtils.isBlank(msg.getSubject())) {
+						warn("empty Subject: " + msg);
 						continue;
 					}
 					MimeMessage mail = new MimeMessage(session);
@@ -192,15 +215,8 @@ public class MailerBean extends BaseBean {
 					if (testOnly) msg.setTest(testOnly);
 					
 					msg.setCreatedBy(sessionBean.getUser().getName());
-					msg = messageRepo.saveAndFlush(msg);
-
-					final boolean sent = mailSender.sendMail(mail, msg);
-					if (!sent) {
-						messageRepo.removeAndFlush(msg);
-					} else {
-						msg.setCreated(new Date());
-						messageRepo.saveAndFlush(msg);
-					}
+					
+					mailSender.sendMail(mail, msg);
 					
 					if (testOnly) {
 						break;
@@ -252,8 +268,8 @@ public class MailerBean extends BaseBean {
 		return false;
 	}
 	
-	public List<Map<String, Object>> getValues() {
-		return values;
+	public ListDataModel<Map<String, Object>> getValues() {
+		return valuesModel;
 	}
 
 	public List<String> getValueKeys() {
@@ -283,8 +299,8 @@ public class MailerBean extends BaseBean {
 		return mailConfig;
 	}
 
-	public List<MailMessage> getMailMessages() {
-		return mailMessages;
+	public ListDataModel<MailMessage> getMailMessages() {
+		return mailMessagesModel;
 	}
 
 	public MailTemplate getMailTemplate() {
@@ -297,6 +313,8 @@ public class MailerBean extends BaseBean {
 			this.mailTemplate = mailTemplate;
 			values.clear();
 			mailMessages.clear();
+			valuesModel = new ListDataModel<>(values);
+			mailMessagesModel = new ListDataModel<>(mailMessages);
 		}
 	}
 
