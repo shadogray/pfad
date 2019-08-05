@@ -212,7 +212,7 @@ public class MailerBean extends BaseBean {
 					msg.setTemplate(mailTemplate);
 					msg.setSender(sender.getAddress()
 							+ (StringUtils.isNotBlank(sender.getPersonal()) ? ":" + sender.getPersonal() : ""));
-					if (testOnly) msg.setTest(testOnly);
+					msg.setTest(testOnly);
 					
 					msg.setCreatedBy(sessionBean.getUser().getName());
 					
