@@ -3,13 +3,13 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j" xmlns:o="http://omnifaces.org/ui"
-	xmlns:p="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<o:viewParam name="id" value='#{activityBean.id}' />
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:event type="preRenderView" listener='#{activityBean.retrieve}' />
+		<f:viewAction action="#{activityBean.retrieve}"/>
 	</f:metadata>
 
 	<ui:define name="header">
@@ -31,7 +31,7 @@
 	<ui:define name="main">
 		<h:form id="create">
 			<h:messages globalOnly="true" styleClass="error" />
-			<rich:focus />
+			<p:focus />
 
 			<h:panelGrid columnClasses="label,component,required" columns="3">
 
@@ -63,14 +63,14 @@
 
 				<h:outputLabel for="activityBeanActivityStart" value="Start:" />
 				<h:panelGroup>
-					<rich:calendar id="activityBeanActivityStart" value="#{activityBean.activity.start}" datePattern="dd.MM.yyyy" />
+					<p:calendar id="activityBeanActivityStart" value="#{activityBean.activity.start}" datePattern="dd.MM.yyyy" />
 					<h:message for="activityBeanActivityStart" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />
 
 				<h:outputLabel for="activityBeanActivityEnd" value="Ende:" />
 				<h:panelGroup>
-					<rich:calendar id="activityBeanActivityEnd" value="#{activityBean.activity.end}" datePattern="dd.MM.yyyy" />
+					<p:calendar id="activityBeanActivityEnd" value="#{activityBean.activity.end}" datePattern="dd.MM.yyyy" />
 					<h:message for="activityBeanActivityEnd" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />

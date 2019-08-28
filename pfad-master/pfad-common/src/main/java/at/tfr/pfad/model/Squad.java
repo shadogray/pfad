@@ -7,7 +7,6 @@
 
 package at.tfr.pfad.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -46,9 +44,10 @@ import at.tfr.pfad.SquadType;
 import at.tfr.pfad.dao.AuditListener;
 
 @NamedQueries({
-		@NamedQuery(name = "Squad.leadersFemale", query = "select s.leaderFemale from Squad s"),
-		@NamedQuery(name = "Squad.leadersMale", query = "select s.leaderMale from Squad s"),
-		@NamedQuery(name = "Squad.assistants", query = "select a from Squad s inner join s.assistants a"),})
+	@NamedQuery(name = "Squad.distName", query = "select s.name from Squad s"),
+	@NamedQuery(name = "Squad.leadersFemale", query = "select s.leaderFemale from Squad s"),
+	@NamedQuery(name = "Squad.leadersMale", query = "select s.leaderMale from Squad s"),
+	@NamedQuery(name = "Squad.assistants", query = "select a from Squad s inner join s.assistants a"),})
 @Audited(withModifiedFlag = true)
 @Entity
 @EntityListeners({AuditListener.class})

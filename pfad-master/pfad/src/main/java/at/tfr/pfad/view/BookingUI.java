@@ -178,4 +178,8 @@ public class BookingUI extends Booking {
 	public void setFree(boolean free) {
 		this.free = free;
 	}
+	
+	public boolean isActivityFinished() {
+		return activity.isFinished();
+	}
 }

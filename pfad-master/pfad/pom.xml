@@ -68,11 +68,13 @@
 			<artifactId>jboss-logging</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
+<!--
+ 		<dependency>
 			<groupId>org.richfaces</groupId>
 			<artifactId>richfaces</artifactId>
 		</dependency>
-		<dependency>
+ -->
+ 		<dependency>
 			<groupId>org.omnifaces</groupId>
 			<artifactId>omnifaces</artifactId>
 		</dependency>

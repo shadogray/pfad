@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -47,6 +49,7 @@ import at.tfr.pfad.model.Configuration_;
 @Named
 @Stateful
 @ViewScoped
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class ConfigurationBean extends BaseBean<Configuration> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -296,8 +299,12 @@ public class ConfigurationBean extends BaseBean<Configuration> implements Serial
 	}
 	
 	public String getValue(String key) {
+		return getValue(key, "");
+	}
+	
+	public String getValue(String key, String defVal) {
 		return allConfigs.stream().filter(c -> ConfigurationType.simple.equals(c.getType()) && c.getCkey().equalsIgnoreCase(key))
-				.map(Configuration::getCvalue).findAny().orElse("");
+				.map(Configuration::getCvalue).findAny().orElse(defVal);
 	}
 
 	public String getDescription(String key) {

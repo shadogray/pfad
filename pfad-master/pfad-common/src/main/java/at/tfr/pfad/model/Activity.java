@@ -1,6 +1,5 @@
 package at.tfr.pfad.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +12,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
@@ -44,6 +45,10 @@ import at.tfr.pfad.dao.AuditListener;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
+@NamedQueries({
+	@NamedQuery(name = "Activity.distName", query = "select a.name from Activity a"),
+	@NamedQuery(name = "Activity.distNameActive", query = "select a.name from Activity a where a.end > CURRENT_DATE")
+})
 public class Activity extends BaseEntity implements Auditable, Presentable {
 
 	private static DateTimeFormatter format = DateTimeFormat

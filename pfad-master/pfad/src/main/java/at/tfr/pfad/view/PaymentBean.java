@@ -17,12 +17,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.ListDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
@@ -34,8 +37,6 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
-import org.richfaces.component.UISelect;
-import org.richfaces.model.CollectionDataModel;
 
 import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.model.Booking;
@@ -55,6 +56,7 @@ import at.tfr.pfad.model.Payment_;
 @Named
 @Stateful
 @ViewScoped
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class PaymentBean extends BaseBean<Payment> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -71,8 +73,12 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 	}
 
 	public void retrieve() {
-
 		try {
+			
+			FacesContext ctx = FacesContext.getCurrentInstance();
+			if (ctx.isPostback() && !ctx.getPartialViewContext().isAjaxRequest()) {
+				return;
+			}
 			
 			if (!isViewAllowed()) {
 				throw new SecurityException("View prohibit for: "+sessionBean.getUser());
@@ -83,9 +89,8 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 			} else {
 				payment = findById(getId());
 				payment.getBookings().stream().findFirst().ifPresent(b -> payment.updateType(b));
-				paymentPayer = payment.getPayer();
 				if (payment.getPayer() != null) {
-					filteredPayers.add(payment.getPayer());
+					filteredMembers.add(payment.getPayer());
 				}
 			}
 		} catch (Exception e) {
@@ -131,8 +136,6 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 		
 		if (!isUpdateAllowed())
 			throw new SecurityException("Update disallowed for: "+sessionBean.getUser());
-		
-		payment.setPayer(paymentPayer);
 		
 		try {
 			if (payment.getId() == null) {
@@ -284,7 +287,7 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 		query.getResultList().stream().forEach(p -> Hibernate.initialize(p.getPayer()));
 		query.getResultList().stream().flatMap(p -> p.getBookings().stream()).forEach(Hibernate::initialize);
 		this.pageItems = query.getResultList().stream().map(p -> new PaymentUI(p, p.getPayer(), p.getBookings())).collect(Collectors.toList());
-		dataModel = new CollectionDataModel<>(pageItems);
+		dataModel = new ListDataModel<>(pageItems);
 	}
 
 	private Predicate[] getSearchPredicates(Root<Payment> root) {
@@ -292,8 +295,8 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
-		if (examplePayer != null && examplePayer.getId() != null) {
-			predicatesList.add(builder.equal(root.get(Payment_.payer), examplePayer));
+		if (memberSearch != null && memberSearch.getId() != null) {
+			predicatesList.add(builder.equal(root.get(Payment_.payer), memberSearch));
 		}
 
 		if (amountFrom != null) {
@@ -319,12 +322,12 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 			predicatesList.add(builder.equal(root.get(Payment_.type), type));
 		}
 
-		if (exampleBooking != null && exampleBooking.getId() != null) {
-			predicatesList.add(builder.isMember(exampleBooking, root.get(Payment_.bookings)));
+		if (bookingSearch != null && bookingSearch.getId() != null) {
+			predicatesList.add(builder.isMember(bookingSearch, root.get(Payment_.bookings)));
 		}
 
-		if (exampleActivity != null && exampleActivity.getId() != null) {
-			predicatesList.add(builder.equal(root.join(Payment_.bookings).get(Booking_.activity), exampleActivity));
+		if (activitySearch != null && activitySearch.getId() != null) {
+			predicatesList.add(builder.equal(root.join(Payment_.bookings).get(Booking_.activity), activitySearch));
 		}
 
 		if (examplePaymentDateStart != null) {
@@ -456,31 +459,12 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 
 	public void handle(AjaxBehaviorEvent event) {
 		log.debug("handle: " + event);
-		if (event != null && event.getSource() instanceof UISelect) {
-			String val = (String)((UISelect) event.getSource()).getSubmittedValue();
+		if (event != null && event.getSource() != null) {
+			String val = ""+event.getSource();//.getSubmittedValue();
 			if (StringUtils.isNotBlank(val)) {
 				setId(Long.valueOf(val));
 				retrieve();
 			}
 		}
 	}
-	
-	@Override
-	public List<Booking> filterBookings(FacesContext facesContext, UIComponent component, final String filter) {
-		return filterBookings(filter);
-	}
-
-	public List<Booking> filterBookings(final String filter) {
-		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
-			if (payment != null && payment.getBookings().size() > 0) {
-				Booking b = payment.getBookings().iterator().next();
-				filteredBookings = bookings.filtered(filter, b.getActivity(), b.getMember().getStrasse());
-				filteredBookings.removeAll(payment.getBookings());
-			} else {
-				filteredBookings = bookings.filtered(filter);
-			}
-		}
-		return filteredBookings;
-	}
-	
 }

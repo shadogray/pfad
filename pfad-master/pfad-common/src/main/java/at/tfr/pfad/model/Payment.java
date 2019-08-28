@@ -65,7 +65,7 @@ public class Payment extends BaseEntity implements Auditable, Presentable, Compa
 	@Enumerated(EnumType.STRING)
 	private PaymentType type;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	private Member payer;
 
 	@Column

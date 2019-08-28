@@ -9,11 +9,11 @@ package at.tfr.pfad.view;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
@@ -26,6 +26,7 @@ import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 
+import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity;
@@ -39,9 +40,8 @@ import at.tfr.pfad.model.Payment_;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
 
-@RequestScoped
 @Stateful
-public class BookingDataModel extends DataModel<Booking, BookingUI> {
+public class BookingDataModel extends BaseDataModel<Booking, BookingUI> {
 
 	@Inject
 	private SquadRepository squadRepo;
@@ -73,8 +73,8 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 	}
 
 	@Override
-	protected CriteriaQuery<Booking> createCriteria(boolean addOrder) {
-		CriteriaQuery<Booking> crit = super.createCriteria(addOrder);
+	protected CriteriaQuery<Long> createCriteria(boolean addOrder) {
+		CriteriaQuery<Long> crit = super.createCriteria(addOrder);
 		//root.fetch(Booking_.member); //.fetch(Member_.funktionen, JoinType.LEFT);
 		//root.fetch(Booking_.activity);
 		//root.fetch(Booking_.payments, JoinType.LEFT);
@@ -82,18 +82,10 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 	}
 	
 	@Override
-	protected CriteriaQuery<Long> createCountCriteriaQuery() {
-		CriteriaQuery<Long> crit = super.createCountCriteriaQuery();
-		//root.join(Booking_.member);
-		return crit;
-	}
-	
-	@Override
-	public List<BookingUI> convertToUiBean(List<Booking> list) {
+	public List<BookingUI> convertToUiBean(List<Long> list) {
 		if (!list.isEmpty()) {
 			CriteriaQuery<Tuple> tcq = cb.createTupleQuery();
 			Root<Booking> tr = tcq.from(Booking.class);
-			tr.fetch(Booking_.payments, JoinType.LEFT);
 			Subquery<Squad> squadSubLead = tcq.subquery(Squad.class);
 			Subquery<Squad> squadSubAss = tcq.subquery(Squad.class);
 			Root<Squad> squadLead = squadSubLead.from(Squad.class);
@@ -107,16 +99,17 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 					trupp, 
 					cb.exists(squadSubLead.select(squadLead).where(cb.or(cb.equal(memb, squadLead.get(Squad_.leaderFemale)), cb.equal(memb,  squadLead.get(Squad_.leaderMale))))), 
 					cb.exists(squadSubAss.select(squadAss).where(cb.isMember(memb, squadAss.get(Squad_.assistants)))))
-			.where(tr.in(list))
+			.where(tr.get(Booking_.id).in(list))
 			.orderBy(createOrders(tr))
 			.distinct(true);
 			
 			List<Tuple> res = entityManager.createQuery(tcq).getResultList();
+			res.forEach(t -> t.get(0, Booking.class).getPayments().size());
 			return res.stream().map(t -> new BookingUI(
 					t.get(0, Booking.class), 
 					t.get(1, Activity.class), 
 					t.get(2, Member.class), 
-					t.get(3,Squad.class), 
+					t.get(3, Squad.class), 
 					t.get(0, Booking.class).getPayments(), 
 					t.get(4, Boolean.class), 
 					t.get(5, Boolean.class)))
@@ -140,6 +133,17 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.ort)), "%"+val+"%");
 		case "activity":
 			return getSplittedPredicateName(root.join(Booking_.activity).get(Activity_.name), val);
+		case "activityFinished":
+			Predicate actFin = cb.or(cb.lessThan(root.join(Booking_.activity).get(Activity_.end), new Date()),
+					root.join(Booking_.activity).get(Activity_.status).in(ActivityStatus.cancelled, ActivityStatus.finished));
+			switch(val) {
+			case "false": 
+				return cb.not(actFin);
+			case "true":
+				return actFin;
+			default:
+				return null;
+			}
 		case "squadName":
 			return cb.like(cb.lower(root.join(Booking_.member).join(Member_.trupp).get(Squad_.name)), "%"+val+"%");
 		case "status":
@@ -149,29 +153,28 @@ public class BookingDataModel extends DataModel<Booking, BookingUI> {
 			}
 			return null;
 		case "payed":
-			boolean finished = Boolean.parseBoolean((String)val);
-			if (finished) {
-				return cb.equal(root.join(Booking_.payments).get(Payment_.finished), finished);
-			} else {
-				Subquery<Payment> sq = criteriaQuery.subquery(Payment.class);
-				Root<Payment> sr = sq.from(Payment.class);
-				Join<Payment,Booking> jpb = sr.join(Payment_.bookings);
-				List<Predicate> paymentStatOr = new ArrayList<>();
-				paymentStatOr.add(cb.equal(sr.get(Payment_.finished), true));
-				if ("false".equalsIgnoreCase(val)) {
-					paymentStatOr.add(cb.equal(sr.get(Payment_.aconto), true));
-				}
-				sq.select(sr).where(
-						cb.equal(jpb.get(Booking_.id), root.get(Booking_.id)), 
-						cb.or(paymentStatOr.toArray(new Predicate[paymentStatOr.size()]))
-						);
-				Predicate notFin = cb.not(cb.exists(sq));
-				if ("anz".equalsIgnoreCase(val)) {
-					notFin = cb.and(notFin, cb.equal(root.join(Booking_.payments).get(Payment_.aconto), true));
-				}
-				return notFin;
+			Subquery<Booking> sq = criteriaQuery.subquery(entityClass);
+			Root<Booking> corr = sq.correlate(root);
+			Join<Booking,Payment> jpb = corr.join(Booking_.payments);
+			
+			
+			if ("true".equalsIgnoreCase(val)) {
+				sq.where(cb.equal(jpb.get(Payment_.finished), true)); 
+				return cb.exists(sq);
+			} else if ("false".equalsIgnoreCase(val)) {
+				sq.where(cb.equal(jpb.get(Payment_.finished), true)); 
+				return cb.not(cb.exists(sq));
+			} else if ("none".equalsIgnoreCase(val)) {
+				return cb.not(cb.exists(sq));
 			}
+			
+			// "anz"
+			sq.where(cb.equal(jpb.get(Payment_.finished), true)); 
+			Subquery<Booking> sqAnz = criteriaQuery.subquery(entityClass);
+			sqAnz.where(cb.equal(sqAnz.correlate(root).join(Booking_.payments).get(Payment_.aconto), true));
+			return cb.and(cb.not(cb.exists(sq)), cb.exists(sqAnz));
 		}
+		
 		return super.createFilterCriteriaForField(propertyName, filterValue, criteriaQuery);
 	}
 

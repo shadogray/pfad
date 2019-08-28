@@ -7,118 +7,92 @@
 
 package at.tfr.pfad.view;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.richfaces.component.SortOrder;
+import at.tfr.pfad.BookingStatus;
+import at.tfr.pfad.util.ColumnModel;
 
 @Named
 @ViewScoped
 @Stateful
-public class BookingTableBean implements Serializable {
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+public class BookingTableBean extends BaseBean {
 
-	    private static int cnt = 0;
-	    private String selectionMode = "multiple";
-	    private Map<String, SortOrder> sortOrders = new HashMap<String, SortOrder>();
-	    private Map<String, String> columnHeaders = new HashMap<String, String>();
-	    private Map<String, String> filterValues = new HashMap<String, String>();
-	    private String sortProperty;
+	private static int cnt = 0;
+	private String selectionMode = "multiple";
+	private List<ColumnModel> columns = new ArrayList<>();
+	protected final Map<String,String> jaNeinAnz = new HashMap<>();
 
-	    @Inject
-	    private transient BookingDataModel bookingDataModel;
+	@Inject
+	private transient BookingDataModel bookingDataModel;
 
-	    public BookingTableBean() {
-	    }
-
-	    @PostConstruct
-	    public void postConstruct() {
-	        columnHeaders.put("id", "ID");
-	        columnHeaders.put("member", "Mitglied");
-	        columnHeaders.put("strasse", "Strasse");
-	        columnHeaders.put("ort", "Ort");
-	        columnHeaders.put("activity", "Aktivität");
-	        columnHeaders.put("squadName", "Trupp");
-	        columnHeaders.put("status", "Status");
-	        columnHeaders.put("payed", "Bezahlt");
-	        columnHeaders.put("comment", "Bemerkung");
-
-	        sortOrders.put("id", SortOrder.unsorted);
-	        sortOrders.put("member", SortOrder.ascending);
-	        sortOrders.put("strasse", SortOrder.unsorted);
-	        sortOrders.put("ort", SortOrder.unsorted);
-	        sortOrders.put("activity", SortOrder.unsorted);
-	        sortOrders.put("squadName", SortOrder.unsorted);
-	        sortOrders.put("status", SortOrder.unsorted);
-	        sortOrders.put("comment", SortOrder.unsorted);
-	        sortOrders.put("payed", SortOrder.unsorted);
-	    }
-
-	    public Map<String, String> getColumnHeaders() {
-	        return columnHeaders;
-	    }
-
-	    public Map<String, SortOrder> getSortOrders() {
-	        return sortOrders;
-	    }
-
-	    public Map<String, String> getFilterValues() {
-	        return filterValues;
-	    }
-
-	    public String getSortProperty() {
-	        return sortProperty;
-	    }
-
-	    public void setSortProperty(final String sortPropety) {
-	        sortProperty = sortPropety;
-	    }
-
-	    public void toggleSort() {
-	        for (final Entry<String, SortOrder> entry : sortOrders.entrySet()) {
-	            SortOrder newOrder;
-
-	            if (entry.getKey().equals(sortProperty)) {
-	                if (entry.getValue() == SortOrder.ascending) {
-	                    newOrder = SortOrder.descending;
-	                } else {
-	                    newOrder = SortOrder.ascending;
-	                }
-	            } else {
-	                newOrder = SortOrder.unsorted;
-	            }
-
-	            entry.setValue(newOrder);
-	        }
-	    }
-
-	    public BookingDataModel getDataModel() {
-	        return bookingDataModel;
-	    }
-
-	    /**
-	     * @return the selectionMode
-	     */
-	    public String getSelectionMode() {
-	        return selectionMode;
-	    }
-
-	    /**
-	     * @param selectionMode
-	     *            the selectionMode to set
-	     */
-	    public void setSelectionMode(final String selectionMode) {
-	        this.selectionMode = selectionMode;
-	    }
-
-	    public int getCnt() {
-	        return ++cnt;
-	    }
+	public BookingTableBean() {
+		jaNeinAnz.put("Ja", "true");
+		jaNeinAnz.put("Nein", "false");
+		jaNeinAnz.put("Anz", "anz");
+		jaNeinAnz.put("keine", "none");
 	}
+
+	@PostConstruct
+	public void postConstruct() {
+		columns.add(new ColumnModel("id", "ID", 0).search(false));
+		columns.add(new ColumnModel("member", "Mitglied", 1, true).minLength(2));
+		columns.add(new ColumnModel("strasse", "Strasse", 2).minLength(2)); //.items(memberRepo.findDistinctStrasse()));
+		columns.add(new ColumnModel("ort", "Ort", 3).items(memberRepo.findDistinctOrt()));
+		columns.add(new ColumnModel("activity", "Aktivität", 4)); //.items(activityRepo.findDistinctName()));
+		columns.add(new ColumnModel("activityFinished", "Beendet", 4).items(trueFalse).filter("false")
+				.headerStyle("border: solid 3px red;").headerStyleValue("false")); //.items(activityRepo.findDistinctName()));
+		columns.add(new ColumnModel("squadName", "Trupp", 5).items(squadRepo.findDistinctName()));
+		columns.add(new ColumnModel("status", "Status", 6).items(BookingStatus.values()));
+		columns.add(new ColumnModel("payed", "Bezahlt", 7).items(jaNeinAnz));
+		columns.add(new ColumnModel("comment", "Bemerkung", 8));
+		bookingDataModel.setColumns(columns);
+	}
+
+	public List<ColumnModel> getColumns() {
+		return columns;
+	}
+
+	public BookingDataModel getDataModel() {
+		return bookingDataModel;
+	}
+
+	/**
+	 * @return the selectionMode
+	 */
+	public String getSelectionMode() {
+		return selectionMode;
+	}
+
+	/**
+	 * @param selectionMode the selectionMode to set
+	 */
+	public void setSelectionMode(final String selectionMode) {
+		this.selectionMode = selectionMode;
+	}
+
+	public int getCnt() {
+		return ++cnt;
+	}
+	
+	@Override
+	public boolean isUpdateAllowed() {
+		return sessionBean.isTruppsAllowed();
+	}
+	
+	@Override
+	public void retrieve() {
+	}
+}

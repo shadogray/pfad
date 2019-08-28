@@ -5,9 +5,9 @@
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
-		<o:viewParam name="id" value='#{functionBean.id}' />
+		<o:viewParam name="id" value="#{functionBean.id}" />
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:event type="preRenderView" listener='#{functionBean.retrieve}' />
+		<f:viewAction action="#{functionBean.retrieve}" />
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="Funktion" />

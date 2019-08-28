@@ -8,8 +8,8 @@
 
 	<f:metadata>
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:viewParam name="page" value='#{mailTemplateBean.page}' />
-		<f:event type="preRenderView" listener='#{mailTemplateBean.paginate}' />
+		<f:viewParam name="page" value="#{mailTemplateBean.page}" />
+		<f:viewAction action="#{mailTemplateBean.paginate}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="EMail Vorlagen" />
@@ -34,7 +34,7 @@
 						<h:outputLabel for="mailTemplateBeanExampleName" value="Name:" />
 						<h:panelGroup>
 							<h:inputText id="mailTemplateBeanExampleName" value="#{mailTemplateBean.example.name}" >
-								<f:ajax event="keyup" listener="#{mailTemplateBean.paginate()}" render="mailTemplateBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{mailTemplateBean.paginate()}" render="mailTemplateBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailTemplateBeanExampleName" styleClass="error" />
 						</h:panelGroup>
@@ -42,7 +42,7 @@
 						<h:outputLabel for="mailTemplateBeanExampleText" value="Text:" />
 						<h:panelGroup>
 							<h:inputText id="mailTemplateBeanExampleText" value="#{mailTemplateBean.example.text}" >
-								<f:ajax event="keyup" listener="#{mailTemplateBean.paginate()}" render="mailTemplateBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{mailTemplateBean.paginate()}" render="mailTemplateBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailTemplateBeanExampleText" styleClass="error" />
 						</h:panelGroup>
@@ -50,7 +50,7 @@
 						<h:outputLabel for="mailTemplateBeanExampleSubject" value="Subject:" />
 						<h:panelGroup>
 							<h:inputText id="mailTemplateBeanExampleSubject" value="#{mailTemplateBean.example.subject}" >
-								<f:ajax event="keyup" listener="#{mailTemplateBean.paginate()}" render="mailTemplateBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{mailTemplateBean.paginate()}" render="mailTemplateBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailTemplateBeanExampleSubject" styleClass="error" />
 						</h:panelGroup>
@@ -58,7 +58,7 @@
 						<h:outputLabel for="mailTemplateBeanExampleQuery" value="Query:" />
 						<h:panelGroup>
 							<h:inputText id="mailTemplateBeanExampleQuery" value="#{mailTemplateBean.example.query}" >
-								<f:ajax event="keyup" listener="#{mailTemplateBean.paginate()}" render="mailTemplateBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{mailTemplateBean.paginate()}" render="mailTemplateBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailTemplateBeanExampleQuery" styleClass="error" />
 						</h:panelGroup>

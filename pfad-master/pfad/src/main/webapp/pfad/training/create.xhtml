@@ -8,7 +8,7 @@
 	<f:metadata>
 		<o:viewParam name="id" value='#{trainingBean.id}' />
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:event type="preRenderView" listener='#{trainingBean.retrieve}' />
+		<f:viewAction action="#{trainingBean.retrieve}" />
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="Training" />

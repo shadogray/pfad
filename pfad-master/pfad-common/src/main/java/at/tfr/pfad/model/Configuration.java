@@ -8,6 +8,7 @@
 package at.tfr.pfad.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -134,11 +135,14 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 		this.headers = headers;
 	}
 	
-	public String[] toHeaders(final int count) {
-		String[] result = new String[count];
+	public String[] toHeaders(List<String> alias) {
+		String[] result = new String[alias.size()];
 		String[] vals = (""+headers).split(";");
-		for (int i=0; i<count; i++) {
-			result[i] = ((StringUtils.isNotBlank(headers) && vals.length > i) ? vals[i] : ""+i).trim();
+		for (int i=0; i < alias.size(); i++) {
+			if (vals.length > i && StringUtils.isNotBlank(vals[i]) && alias.get(i).matches("\\d+"))
+				result[i] = vals[i].trim();
+			else
+				result[i] = alias.get(i);
 		}
 		return result;
 	}

@@ -6,8 +6,8 @@
 
 	<f:metadata>
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:viewParam name="page" value='#{participationBean.page}' />
-		<f:event type="preRenderView" listener='#{participationBean.paginate}' />
+		<f:viewParam name="page" value="#{participationBean.page}" />
+		<f:viewAction action="#{participationBean.paginate}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="Traning" />
@@ -22,6 +22,9 @@
 	<ui:define name="footer" />
 
 	<ui:define name="main">
+		
+		<p:focus />
+	
 		<h:form id="search">
 			<f:validateBean disabled="true">
 				<h:panelGroup styleClass="search">
@@ -29,26 +32,28 @@
 					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required" columns="6">
 						<h:outputLabel for="participationBeanExampleTraining" value="Training:" />
 						<h:panelGroup>
-							<h:selectOneMenu id="participationBeanExampleTraining" value="#{participationBean.exampleTraining}" converter="#{trainingBean.converter}">
-								<f:selectItem />
+							<h:selectOneMenu id="participationBeanExampleTraining" value="#{participationBean.trainingSearch}" converter="#{trainingBean.converter}">
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{trainingBean.allTrainings}" var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}"/>
+								<f:ajax render="participationBeanPageItems" />
 							</h:selectOneMenu>
 							<h:message for="participationBeanExampleTraining" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 						<h:outputLabel for="participationBeanExampleMember" value="Teilnehmer:" />
 						<h:panelGroup>
-							<p:autoComplete id="participationBeanExampleMember" value="#{participationBean.exampleMember}" dropdown="true" required="false"
-								completeMethod="#{members.filtered}" converter="#{memberBean.converter}" var="m" itemLabel="#{m}" itemValue="#{m.id}">
-							</p:autoComplete>
+							<p:inputText id="participationBeanExampleMember" value="#{participationBean.memberExample.name}" >
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" render="participationBeanPageItems" />
+							</p:inputText>
 							<h:message for="participationBeanExampleMember" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 						<h:outputLabel for="participationBeanExamplePhase" value="Phase:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="participationBeanExamplePhase" value="#{participationBean.trainingPhase}" >
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{trainingBean.phases}"/>
+								<f:ajax render="participationBeanPageItems" />
 							</h:selectOneMenu>
 							<h:message for="participationBeanExamplePhase" styleClass="error" />
 						</h:panelGroup>
@@ -56,8 +61,9 @@
 						<h:outputLabel for="participationBeanExampleForm" value="Form:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="participationBeanExampleForm" value="#{participationBean.trainingForm}" >
-								<f:selectItem />
+								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{trainingBean.forms}"/>
+								<f:ajax render="participationBeanPageItems" />
 							</h:selectOneMenu>
 							<h:message for="participationBeanExampleForm" styleClass="error" />
 						</h:panelGroup>
@@ -66,6 +72,7 @@
 						<h:panelGroup>
 							<p:calendar id="participationBeanExampleStart" value="#{participationBean.example.start}" pattern="dd.MM.yyyy">
 								<f:convertDateTime pattern="dd.MM.yyyy"/>
+								<f:ajax render="participationBeanPageItems" />
 							</p:calendar>
 							<h:message for="participationBeanExampleStart" styleClass="error" />
 						</h:panelGroup>
@@ -74,6 +81,7 @@
 						<h:panelGroup>
 							<p:calendar id="participationBeanExampleEnd" value="#{participationBean.example.end}" pattern="dd.MM.yyyy">
 								<f:convertDateTime pattern="dd.MM.yyyy"/>
+								<f:ajax render="participationBeanPageItems" />
 							</p:calendar>
 							<h:message for="participationBeanExampleEnd" styleClass="error" />
 						</h:panelGroup>

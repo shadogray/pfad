@@ -2,6 +2,7 @@ package at.tfr.pfad;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
@@ -28,7 +29,13 @@ public class TestMailTools {
 	
 	@Test
 	public void testExecutor() throws Exception {
-		List<Map<String, Object>> list = qe.execute("select m.name as Name, m.vorname as Vorname, m.email as Email from Member m", false);
+		List<List<Entry<String, Object>>> list = qe.execute("select m.name as Name, m.vorname as Vorname, m.email as Email from Member m", false);
+		Assert.assertFalse(list.isEmpty());
+	}
+	
+	@Test
+	public void testExecutorNoNames() throws Exception {
+		List<List<Entry<String, Object>>> list = qe.execute("select m.name, m.vorname, m.email from Member m", false);
 		Assert.assertFalse(list.isEmpty());
 	}
 	
@@ -37,10 +44,10 @@ public class TestMailTools {
 		
 		String template = "Das ist eine Nachricht an ${Email}.";
 		
-		List<Map<String, Object>> list = qe.execute("select m.name as Name, m.vorname as Vorname, m.email as Email "
+		List<List<Entry<String, Object>>> list = qe.execute("select m.name as Name, m.vorname as Vorname, m.email as Email "
 				+ " from Member m where m.id = 1", false);
 
-		Map<String,Object> map = list.get(0);
+		List<Entry<String,Object>> map = list.get(0);
 		String res = tu.replace(template, map);
 		Assert.assertEquals("Replacement failed.", "Das ist eine Nachricht an email.", res);
 	}
@@ -50,10 +57,10 @@ public class TestMailTools {
 		
 		String template = "Das ist eine Nachricht an ${Member.email}.";
 		
-		List<Map<String, Object>> list = qe.execute("select m as Member, m.name as Name, m.vorname as Vorname, m.email as Email "
+		List<List<Entry<String, Object>>> list = qe.execute("select m as Member, m.name as Name, m.vorname as Vorname, m.email as Email "
 				+ " from Member m where m.id = 1", false);
 
-		Map<String,Object> map = list.get(0);
+		List<Entry<String,Object>> map = list.get(0);
 		String res = tu.replace(template, map);
 		Assert.assertEquals("Replacement failed.", "Das ist eine Nachricht an email.", res);
 	}

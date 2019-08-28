@@ -19,6 +19,7 @@
 		<f:viewParam name="registrationBeanExampleSchoolEntry" value="#{registrationBean.example.schoolEntry}" />
 		<f:viewParam name="regStornoBox" value="#{registrationBean.storno}" converter="#{triStateConverter}" />
 		<f:viewParam name="regAktivBox" value="#{registrationBean.aktiv}" converter="#{triStateConverter}" />
+		<f:viewAction action="#{registrationBean.paginate()}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:define name="header">
@@ -33,7 +34,7 @@
 			<p:growl id="messages" showDetail="true" />
 			<p:focus />
 
-			<f:ajax listener="#{registrationBean.paginate}" execute="@form" render=":table:regBeanItemTable">
+			<f:ajax execute="@form" render=":table:regBeanItemTable">
 				<h:panelGrid columnClasses="label3,component3,label3,component3,label3,component3,label3,component3" columns="10">
 				
 					<p:outputLabel value="Name:"/>
@@ -90,7 +91,7 @@
 		</h:form>
 		
 		<h:form id="table">
-			<h:panelGrid styleClass="buttons" columns="5">
+			<h:panelGrid styleClass="buttons" columns="8">
 				<p:commandButton id="search" value="Suchen" action="#{registrationBean.paginate}" update="regBeanItemTable" styleClass="btn btn-primary">
 					<f:param name="all" value="false" />
 				</p:commandButton>
@@ -104,14 +105,20 @@
 				<p:outputLabel value="Status:"/>
 				<p:selectCheckboxMenu value="#{registrationBean.filterStati}"  multiple="true" panelStyle="width:250px">
 					<f:selectItems value="#{registrationBean.stati}" />
-					<p:ajax listener="#{registrationBean.paginate}" process="@this" update=":table:regBeanItemTable"/>
+					<f:ajax listener="#{registrationBean.paginate}" render="regBeanItemTable"/>
+					<f:ajax event="toggleSelect" listener="#{registrationBean.paginate}" render="regBeanItemTable"/>
 				</p:selectCheckboxMenu>
+				<p:outputLabel value="Aanzahl:"/>
+				<h:selectOneMenu value="#{registrationBean.rows}">
+					<f:selectItems value="#{registrationBean.rowVals}" var="v" itemLabel="#{v.key}" itemValue="#{v.value}"/>
+					<f:ajax render="regBeanItemTable" />
+				</h:selectOneMenu>
 			</h:panelGrid>
 
 
-			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table"
-				value="#{registrationBean.dataModel}" var="r" editable="true"
-				sortMode="multiple" rowStyleClass="#{r.status}">
+			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table" paginatorAlwaysVisible="true"
+				value="#{registrationBean.dataModel}" var="r" editable="true" rows="#{registrationBean.rows}"
+				sortMode="multiple" rowStyleClass="#{r.status}" paginator="true">
 
 				<p:ajax event="rowEdit" listener="#{registrationBean.onRowEdit}" update=":search:messages" />
 				<p:ajax event="rowEditCancel" listener="#{registrationBean.onRowCancel}" update=":search:messages" />

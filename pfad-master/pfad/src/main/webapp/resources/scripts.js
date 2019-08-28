@@ -1,3 +1,7 @@
+function filterKey(event) {
+	return [8,9,13,46].includes(event.which) || /[a-z0-9 ]{2,}/i.test(event.target.value);	
+}
+
 function autoFilter(subString, value) {
 	if (subString.length >= 1) {
 		var split = subString.split(" ");

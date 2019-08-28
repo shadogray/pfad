@@ -10,7 +10,9 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -28,8 +30,8 @@ import javax.validation.Validator;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.primefaces.event.SelectEvent;
-import org.richfaces.component.UISelect;
 
+import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.Members;
@@ -85,13 +87,21 @@ public abstract class BaseBean<T> implements Serializable {
 	@Inject
 	protected transient ParticipationRepository participationRepo;
 	@Inject
+	protected transient ActivityRepository activityRepo;
+	@Inject
 	protected PfadUI pfadUI;
 	
 	protected int page;
 	protected long count;
+	protected final Map<String,String> trueOnly = new HashMap<>();
+	protected final Map<String,String> falseOnly = new HashMap<>();
+	protected final Map<String,String> trueFalse = new HashMap<>();
 
 	public BaseBean() {
-		super();
+		trueFalse.put("Ja", Boolean.TRUE.toString());
+		trueFalse.put("Nein", Boolean.FALSE.toString());
+		trueOnly.put("Ja", Boolean.TRUE.toString());
+		falseOnly.put("Nein", Boolean.FALSE.toString());
 	}
 	
 	@PostConstruct
@@ -153,28 +163,31 @@ public abstract class BaseBean<T> implements Serializable {
 	
 	
 	protected Long id;
+	protected String focusId;
 
 	protected Payment payment;
 	protected Booking booking;
 	protected Member member;
 
-	private Payment paymentExample = new Payment();
-	private Booking bookingExample = new Booking(null);
-	private Member memberExample = new Member();
+	protected Member memberExample = new Member();
+	protected Booking bookingExample = new Booking(null);
+	protected Payment paymentExample = new Payment();
+	protected Activity activityExample = new Activity();
+	protected Training trainingExample = new Training();
+
+	protected Member memberSearch;
+	protected Booking bookingSearch;
+	protected Payment paymentSearch;
+	protected Activity activitySearch;
+	protected Training trainingSearch;
 	
-	protected Booking bookingToAdd;
 	protected Member memberToAdd;
+	protected Booking bookingToAdd;
 	protected Payment paymentToAdd;
-	protected Activity exampleActivity = null;
-	protected Booking exampleBooking = null;
-	protected Member exampleMember = null;
-	protected Payment examplePayment = null;
-	protected Member examplePayer = null;
-	protected Member paymentPayer = null;
-	protected Training exampleTraining = null;
+	protected Activity activityToAdd;
+	protected Training trainingToAdd;
 	protected Participation exampleParticipation = null;
 	protected List<Member> filteredMembers = new ArrayList<>();
-	protected List<Member> filteredPayers = new ArrayList<>();
 	protected List<Booking> filteredBookings = new ArrayList<>();
 	protected List<Payment> filteredPayments = new ArrayList<>();
 	protected T alwaysNull;
@@ -189,10 +202,23 @@ public abstract class BaseBean<T> implements Serializable {
 	public Long getId() {
 		return this.id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public String getFocusId() {
+		return focusId;
+	}
+	public void setFocusId(String focusId) {
+		this.focusId = focusId;
+	}
+	
+	public void retrieve(Long id) {
+		this.id = id;
+		retrieve();
+	}
+	
+	public abstract void retrieve();
 	
 	public Member getMemberExample() {
 		return memberExample;
@@ -211,6 +237,18 @@ public abstract class BaseBean<T> implements Serializable {
 	}
 	public void setPaymentExample(Payment paymentExample) {
 		this.paymentExample = paymentExample;
+	}
+	public Activity getActivityExample() {
+		return activityExample;
+	}
+	public void setActivityExample(Activity activityExample) {
+		this.activityExample = activityExample;
+	}
+	public Training getTrainingExample() {
+		return trainingExample;
+	}
+	public void setTrainingExample(Training trainingExample) {
+		this.trainingExample = trainingExample;
 	}
 	public Payment getPayment() {
 		return payment;
@@ -258,62 +296,6 @@ public abstract class BaseBean<T> implements Serializable {
 		return bookingRepo.findByPayment(p);
 	}
 	
-	public Booking getExampleBooking() {
-		return exampleBooking;
-	}
-
-	public void setExampleBooking(Booking exampleBooking) {
-		this.exampleBooking = exampleBooking;
-	}
-
-	public Activity getExampleActivity() {
-		return exampleActivity;
-	}
-
-	public void setExampleActivity(Activity exampleActivity) {
-		this.exampleActivity = exampleActivity;
-	}
-
-	public Member getExampleMember() {
-		return exampleMember;
-	}
-
-	public void setExampleMember(Member exampleMember) {
-		this.exampleMember = exampleMember;
-	}
-
-	public Payment getExamplePayment() {
-		return examplePayment;
-	}
-
-	public void setExamplePayment(Payment examplePayment) {
-		this.examplePayment = examplePayment;
-	}
-	
-	public Member getExamplePayer() {
-		return examplePayer;
-	}
-	
-	public void setExamplePayer(Member examplePayer) {
-		this.examplePayer = examplePayer;
-	}
-	
-	public Member getPaymentPayer() {
-		return paymentPayer;
-	}
-	
-	public void setPaymentPayer(Member paymentPayer) {
-		this.paymentPayer = paymentPayer;
-	}
-	
-	public Training getExampleTraining() {
-		return exampleTraining;
-	}
-
-	public void setExampleTraining(Training exampleTraining) {
-		this.exampleTraining = exampleTraining;
-	}
-
 	public Participation getExampleParticipation() {
 		return exampleParticipation;
 	}
@@ -322,9 +304,16 @@ public abstract class BaseBean<T> implements Serializable {
 		this.exampleParticipation = exampleParticipation;
 	}
 
+	public List<Booking> filterBookings(String filter) {
+		return filterBookings(null, null, filter);
+	}
+	
 	public List<Booking> filterBookings(FacesContext facesContext, UIComponent component, final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
-			filteredBookings = bookings.filtered(facesContext, component, filter);
+			if (component == null) 
+				filteredBookings = bookings.filtered(filter);
+			else 
+				filteredBookings = bookings.filtered(facesContext, component, filter);
 		}
 		return filteredBookings;
 	}
@@ -333,20 +322,16 @@ public abstract class BaseBean<T> implements Serializable {
 		return filteredBookings;
 	}
 
-	public List<Member> filterPayers(FacesContext facesContext, UIComponent component, final String filter) {
-		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
-			filteredPayers = members.filtered(facesContext, component, filter);
-		}
-		return filteredPayers;
+	public List<Member> filterMembers(String filter) {
+		return filterMembers(null, null, filter);
 	}
 	
-	public List<Member> getFilteredPayers() {
-		return filteredPayers;
-	}
-
 	public List<Member> filterMembers(FacesContext facesContext, UIComponent component, final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
-			filteredMembers = members.filtered(facesContext, component, filter);
+			if (component == null) 
+				filteredMembers = members.filtered(filter);
+			else 
+				filteredMembers = members.filtered(facesContext, component, filter);
 		}
 		return filteredMembers;
 	}
@@ -355,8 +340,14 @@ public abstract class BaseBean<T> implements Serializable {
 		return filteredMembers;
 	}
 	
+	public List<Payment> filterPayments(String filter) {
+		return filterPayments(null, null, filter);
+	}
+	
 	public List<Payment> filterPayments(FacesContext facesContext, UIComponent component, final String filter) {
 		if (StringUtils.isNotBlank(filter) && filter.length() < 16) {
+			if (component == null) 
+				filteredPayments = payments.filtered(filter);
 			filteredPayments = payments.filtered(facesContext, component, filter);
 		}
 		return filteredPayments;
@@ -366,100 +357,104 @@ public abstract class BaseBean<T> implements Serializable {
 		return filteredPayments;
 	}
 
-	public void addPaymentBooking(AjaxBehaviorEvent event) {
-		log.debug("addPaymentBooking: " + event);
-		UISelect uiSelect = (UISelect) event.getSource();
-		String val = (String)uiSelect.getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			bookingToAdd = null;
-		} else {
-			bookingToAdd = findBookingById(Long.valueOf(val));
-			payment.getBookings().add(bookingToAdd);
-			bookingToAdd.getPayments().add(payment);
-			payment.updateType(bookingToAdd.getActivity());
-			uiSelect.setSubmittedValue("");
-			uiSelect.setValue(null);
-			uiSelect.setLocalValueSet(false);
+	protected Member attachMemberToAdd() {
+		Member m = memberToAdd;
+		try {
+			if (memberToAdd != null) {
+				m = findMemberById(memberToAdd.getId());
+			}
+		} finally {
+			memberToAdd = null;
 		}
+		return m;
 	}
 
-	public void selectExampleBooking(AjaxBehaviorEvent event) {
-		log.debug("selectExampleBooking: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			exampleBooking = null;
-		} else {
-			exampleBooking = findBookingById(Long.valueOf(val));
-			filteredBookings.add(exampleBooking);
+	protected Booking attachBookingToAdd() {
+		Booking b = bookingToAdd;
+		try {
+			if (bookingToAdd != null) {
+				b = findBookingById(bookingToAdd.getId());
+			}
+		} finally {
+			bookingToAdd = null;
+		}
+		return b;
+	}
+
+	protected Payment attachPaymentToAdd() {
+		Payment p = paymentToAdd;
+		try {
+			if (paymentToAdd != null) {
+				p = findPaymentById(paymentToAdd.getId());
+			}
+		} finally {
+			paymentToAdd = null;
+		}
+		return p;
+	}
+
+	protected Activity attachActivityToAdd() {
+		Activity a = activityToAdd;
+		try {
+			if (activityToAdd != null) {
+				a = findActivityById(activityToAdd.getId());
+			}
+		} finally {
+			activityToAdd = null;
+		}
+		return a;
+	}
+
+	protected Training attachTrainingToAdd() {
+		Training t = trainingToAdd;
+		try {
+			if (trainingToAdd != null) {
+				t = findTrainingById(trainingToAdd.getId());
+			}
+		} finally {
+			trainingToAdd = null;
+		}
+		return t;
+	}
+
+	public void addPaymentBooking(AjaxBehaviorEvent event) {
+		log.debug("addPaymentBooking: " + event);
+		focusId = event.getComponent().getClientId();
+		Booking b2a = attachBookingToAdd();
+		if (b2a != null) {
+			payment.getBookings().add(b2a);
+			b2a.getPayments().add(payment);
+			payment.updateType(b2a.getActivity());
 		}
 	}
 
 	public void selectPaymentPayer(AjaxBehaviorEvent event) {
 		log.debug("selectPaymentPayer: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			paymentPayer = null;
-		} else {
-			paymentPayer = findMemberById(Long.valueOf(val));
-			payment.setPayer(paymentPayer);
-		}
-	}
-
-	public void selectExamplePayer(AjaxBehaviorEvent event) {
-		log.debug("selectExamplePayer: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			examplePayer = null;
-		} else {
-			examplePayer = findMemberById(Long.valueOf(val));
-			filteredPayers.add(examplePayer);
-		}
-	}
-
-	public void selectExampleMember(AjaxBehaviorEvent event) {
-		log.debug("selectExampleMember: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			exampleMember = null;
-		} else {
-			exampleMember = findMemberById(Long.valueOf(val));
-			filteredMembers.add(exampleMember);
-		}
+		focusId = event.getComponent().getClientId();
+		payment.setPayer(attachMemberToAdd());
 	}
 
 	public void selectBookingMember(AjaxBehaviorEvent event) {
 		log.debug("selectBookingMember: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			booking.setMember(null);
-		} else {
-			booking.setMember(findMemberById(Long.valueOf(val)));
-		}
+		focusId = event.getComponent().getClientId();
+		booking.setMember(attachMemberToAdd());
 	}
 
 	public void selectMemberVollzahler(AjaxBehaviorEvent event) {
 		log.debug("selectMemberVollzahler: " + event);
-		String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-		if (StringUtils.isBlank(val)) {
-			member.setVollzahler(null);
-		} else {
-			member.setVollzahler(findMemberById(Long.valueOf(val)));
-		}
+		focusId = event.getComponent().getClientId();
+		member.setVollzahler(attachMemberToAdd());
 	}
 
 	public void addMemberSibling(SelectEvent event) {
-		try {
-			log.debug("selectMemberSibling: " + event);
-			if (event.getObject() instanceof Member) {
-				memberToAdd = findMemberById(((Member)event.getObject()).getId());
-				if (memberToAdd.equals(member) || memberToAdd.getSiblings().contains(member)) {
-					throw new IllegalArgumentException("Cannot add Parent as Child: parent="+member+", childToAdd: "+memberToAdd);
-				}
-				member.getSiblings().add(memberToAdd);
+		log.debug("selectMemberSibling: " + event);
+		focusId = event.getComponent().getClientId();
+		Member m2a = attachMemberToAdd();
+		if (m2a != null) {
+			if (m2a.equals(member) || m2a.getSiblings().contains(member)) {
+				throw new IllegalArgumentException("Cannot add Parent as Child: parent="+member+", childToAdd: "+m2a);
 			}
-		} catch (Exception e) {
-			log.info(e.getMessage(), e);
-			warn(e.getMessage());
+			member.getSiblings().add(m2a);
 		}
 	}
 
@@ -471,6 +466,23 @@ public abstract class BaseBean<T> implements Serializable {
 		return this.entityManager.find(Member.class, id);
 	}
 	
+	public Payment findPaymentById(Long id) {
+		return this.entityManager.find(Payment.class, id);
+	}
+	
+	public Activity findActivityById(Long id) {
+		return this.entityManager.find(Activity.class, id);
+	}
+	
+	public Training findTrainingById(Long id) {
+		return this.entityManager.find(Training.class, id);
+	}
+
+	public Participation findParticipationById(Long id) {
+		return this.entityManager.find(Participation.class, id);
+	}
+
+	
 	public Booking getBookingToAdd() {
 		return bookingToAdd;
 	}
@@ -478,10 +490,47 @@ public abstract class BaseBean<T> implements Serializable {
 		this.bookingToAdd = bookingToAdd;
 	}
 
+	public Member getMemberSearch() {
+		return memberSearch;
+	}
+
+	public void setMemberSearch(Member memberSearch) {
+		this.memberSearch = memberSearch;
+	}
+
+	public Booking getBookingSearch() {
+		return bookingSearch;
+	}
+
+	public void setBookingSearch(Booking bookingSearch) {
+		this.bookingSearch = bookingSearch;
+	}
+
+	public Payment getPaymentSearch() {
+		return paymentSearch;
+	}
+
+	public void setPaymentSearch(Payment paymentSearch) {
+		this.paymentSearch = paymentSearch;
+	}
+
+	public Activity getActivitySearch() {
+		return activitySearch;
+	}
+
+	public void setActivitySearch(Activity activitySearch) {
+		this.activitySearch = activitySearch;
+	}
+
+	public Training getTrainingSearch() {
+		return trainingSearch;
+	}
+
+	public void setTrainingSearch(Training trainingSearch) {
+		this.trainingSearch = trainingSearch;
+	}
+
 	public Member getMemberToAdd() {
-		if (memberToAdd == null) {
-			memberToAdd = new Member();
-		}
 		return memberToAdd;
 	}
 	public void setMemberToAdd(Member memberToAdd) {
@@ -489,13 +538,26 @@ public abstract class BaseBean<T> implements Serializable {
 	}
 
 	public Payment getPaymentToAdd() {
-		if (paymentToAdd == null) {
-			paymentToAdd = new Payment();
-		}
 		return paymentToAdd;
 	}
 	public void setPaymentToAdd(Payment paymentToAdd) {
 		this.paymentToAdd = paymentToAdd;
+	}
+	
+	public Activity getActivityToAdd() {
+		return activityToAdd;
+	}
+	
+	public void setActivityToAdd(Activity activityToAdd) {
+		this.activityToAdd = activityToAdd;
+	}
+	
+	public Training getTrainingToAdd() {
+		return trainingToAdd;
+	}
+	
+	public void setTrainingToAdd(Training trainingToAdd) {
+		this.trainingToAdd = trainingToAdd;
 	}
 	
 	public String getNullString() {

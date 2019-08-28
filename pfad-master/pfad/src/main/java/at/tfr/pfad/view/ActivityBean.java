@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -51,6 +53,7 @@ import at.tfr.pfad.model.Activity_;
 @Named
 @Stateful
 @ViewScoped
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class ActivityBean extends BaseBean<Activity> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -101,11 +104,11 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 		if (this.id == null) {
 			this.activity = this.example;
 		} else {
-			this.activity = findById(getId());
+			this.activity = findActivityById(getId());
 		}
 	}
 
-	public Activity findById(Long id) {
+	public Activity findActivityById(Long id) {
 
 		return activityRepo.findBy(id);
 	}
@@ -145,7 +148,7 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 			throw new SecurityException("only admins may delete entry");
 
 		try {
-			Activity deletableEntity = findById(getId());
+			Activity deletableEntity = findActivityById(getId());
 
 			this.entityManager.remove(deletableEntity);
 			this.entityManager.flush();
@@ -262,7 +265,7 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 				if (StringUtils.isBlank(value))
 					return null;
-				return ejbProxy.findById(Long.valueOf(value));
+				return ejbProxy.findActivityById(Long.valueOf(value));
 			}
 
 			@Override
@@ -292,7 +295,7 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 				if (StringUtils.isNotBlank(value)) {
 					return Stream.of(value.split(","))
-							.map(id->ejbProxy.findById(Long.valueOf(id)))
+							.map(id->ejbProxy.findActivityById(Long.valueOf(id)))
 							.filter(o->o != null).collect(Collectors.toList());
 				}
 				return new ArrayList<>();

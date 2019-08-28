@@ -7,97 +7,55 @@
 
 package at.tfr.pfad.view;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.richfaces.component.SortOrder;
+import at.tfr.pfad.util.ColumnModel;
 
 @Named
 @ViewScoped
 @Stateful
-public class PaymentTableBean implements Serializable {
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+public class PaymentTableBean extends BaseBean {
 
 	private static int cnt = 0;
 	private String selectionMode = "multiple";
-	private Map<String, SortOrder> sortOrders = new HashMap<String, SortOrder>();
-	private Map<String, String> columnHeaders = new HashMap<String, String>();
-	private Map<String, String> filterValues = new HashMap<String, String>();
-	private String sortProperty;
+	private List<ColumnModel> columns = new ArrayList<>();
 
 	@Inject
 	private transient PaymentDataModel paymentDataModel;
 
 	public PaymentTableBean() {
-		sortOrders.put("id", SortOrder.unsorted);
-		sortOrders.put("payer", SortOrder.unsorted);
-		sortOrders.put("amount", SortOrder.unsorted);
-		sortOrders.put("member", SortOrder.ascending);
-		sortOrders.put("squad", SortOrder.unsorted);
-		sortOrders.put("activity", SortOrder.unsorted);
-		sortOrders.put("aconto", SortOrder.unsorted);
-		sortOrders.put("finished", SortOrder.unsorted);
-		sortOrders.put("comment", SortOrder.unsorted);
 	}
 
 	@PostConstruct
 	public void postConstruct() {
-		columnHeaders.put("id", "ID");
-		columnHeaders.put("payer", "Zahler");
-		columnHeaders.put("amount", "Betrag");
-		columnHeaders.put("member", "Mitglied");
-		columnHeaders.put("squad", "Trupp");
-		columnHeaders.put("activity", "Aktivität");
-		columnHeaders.put("aconto", "Akto");
-		columnHeaders.put("finished", "Erledigt");
-		columnHeaders.put("comment", "Bemerkung");
+		columns.add(new ColumnModel("id", "ID", 0).search(false));
+		columns.add(new ColumnModel("payer", "Zahler", 1).minLength(2));
+		columns.add(new ColumnModel("amount", "Betrag", 2));
+		columns.add(new ColumnModel("member", "Mitglied", 3).minLength(2));
+		columns.add(new ColumnModel("squad", "Trupp", 4).items(squadRepo.findDistinctName()));
+		columns.add(new ColumnModel("activity", "Aktivität", 5).minLength(2));
+		columns.add(new ColumnModel("aconto", "Akto", 6).items(trueFalse));
+		columns.add(new ColumnModel("finished", "Erledigt", 7).items(trueFalse));
+		columns.add(new ColumnModel("comment", "Bemerkung", 8));
+		paymentDataModel.setColumns(columns);
 	}
 
-	public Map<String, String> getColumnHeaders() {
-		return columnHeaders;
+	public List<ColumnModel> getColumns() {
+		return columns;
 	}
-
-	public Map<String, SortOrder> getSortOrders() {
-		return sortOrders;
-	}
-
-	public Map<String, String> getFilterValues() {
-		return filterValues;
-	}
-
-	public String getSortProperty() {
-		return sortProperty;
-	}
-
-	public void setSortProperty(final String sortPropety) {
-		sortProperty = sortPropety;
-	}
-
-	public void toggleSort() {
-		for (final Entry<String, SortOrder> entry : sortOrders.entrySet()) {
-			SortOrder newOrder;
-
-			if (entry.getKey().equals(sortProperty)) {
-				if (entry.getValue() == SortOrder.ascending) {
-					newOrder = SortOrder.descending;
-				} else {
-					newOrder = SortOrder.ascending;
-				}
-			} else {
-				newOrder = SortOrder.unsorted;
-			}
-
-			entry.setValue(newOrder);
-		}
-	}
-
+	
 	public PaymentDataModel getDataModel() {
 		return paymentDataModel;
 	}
@@ -119,5 +77,14 @@ public class PaymentTableBean implements Serializable {
 
 	public int getCnt() {
 		return ++cnt;
+	}
+
+	@Override
+	public boolean isUpdateAllowed() {
+		return isAdmin() || isGruppe() || isKassier();
+	}
+	
+	@Override
+	public void retrieve() {
 	}
 }

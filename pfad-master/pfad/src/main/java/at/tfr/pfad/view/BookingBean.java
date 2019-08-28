@@ -17,12 +17,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.CollectionDataModel;
 import javax.faces.model.DataModel;
 import javax.faces.view.ViewScoped;
@@ -36,7 +37,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.richfaces.component.UISelect;
 
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.BookingStatus;
@@ -61,6 +61,7 @@ import at.tfr.pfad.model.Squad;
 @Named
 @Stateful
 @ViewScoped
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class BookingBean extends BaseBean<Booking> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -85,7 +86,6 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 	@PostConstruct
 	public void init() {
 		super.init();
-		exampleMember = new Member();
 		squads = squadRepo.withAssistants();
 	}
 	
@@ -145,6 +145,11 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 		return "create?faces-redirect=true";
 	}
 
+	public void retrieve(Long id) {
+		this.id = id;
+		retrieve();
+	}
+	
 	public void retrieve() {
 
 		FacesContext ctx = FacesContext.getCurrentInstance();
@@ -290,12 +295,12 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 			predicatesList.add(builder.equal(root.get(Booking_.activity), getBookingExample().getActivity()));
 		}
 
-		if (exampleMember != null && exampleMember.getId() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.member), exampleMember));
+		if (memberSearch != null && memberSearch.getId() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.member), memberSearch));
 		}
 
-		if (exampleMember != null && StringUtils.isNotBlank(exampleMember.getName())) {
-			for (String val : exampleMember.getName().toLowerCase().split(" ")) {
+		if (memberSearch != null && StringUtils.isNotBlank(memberSearch.getName())) {
+			for (String val : memberSearch.getName().toLowerCase().split(" ")) {
 				predicatesList.add(builder.or(
 						builder.like(builder.lower(root.get(Booking_.member).get(Member_.name)), "%"+val+"%"),
 						builder.like(builder.lower(root.get(Booking_.member).get(Member_.vorname)), "%"+val+"%")
@@ -461,10 +466,10 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 		this.paymentPopupVisible = paymentPopupVisible;
 	}
 	
-	public void retrieveAndGetPayment() {
+	public void retrieveAndGetPayment(Long id) {
 		booking = null; // so much caching around :-/
-		retrieve();
-		paymentBean.setPaymentPayer(null);
+		retrieve(id);
+		paymentBean.setMemberToAdd(null);
 		if (!booking.getPayments().isEmpty()) {
 			paymentBean.setId(booking.getPayments().iterator().next().getId());
 		} else {
@@ -481,7 +486,7 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 	}
 
 	public void initNewPayment() {
-		paymentBean.setPaymentPayer(null);
+		paymentBean.setMemberToAdd(null);
 		paymentBean.setExample(new Payment());
 		paymentBean.setId(paymentBean.getPayment() != null ? paymentBean.getPayment().getId() : null);
 		paymentBean.retrieve();
@@ -489,16 +494,5 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 		pay.getBookings().add(booking);
 		booking.getPayments().add(pay);
 		pay.updateType(booking);
-	}
-
-	public void handle(AjaxBehaviorEvent event) {
-		log.debug("handle: " + event);
-		if (event != null && event.getSource() instanceof UISelect) {
-			String val = (String) ((UISelect) event.getSource()).getSubmittedValue();
-			if (StringUtils.isNotBlank(val)) {
-				setId(Long.valueOf(val));
-				retrieve();
-			}
-		}
 	}
 }

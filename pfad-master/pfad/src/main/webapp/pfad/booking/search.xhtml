@@ -3,19 +3,19 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
-	xmlns:rich="http://richfaces.org/rich" xmlns:a4j="http://richfaces.org/a4j"  xmlns:o="http://omnifaces.org/ui"
-	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:pfad="http://xmlns.jcp.org/jsf/composite/scaffold" 
-	xmlns:p="http://primefaces.org/ui"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui" 
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" xmlns:pfad="http://xmlns.jcp.org/jsf/composite/scaffold"
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:viewParam name="page" value='#{bookingBean.page}' />
-		<f:viewParam name="bookingBeanExampleActivity" value="#{bookingBean.example.activity}" converter="#{activityBean.converter}" />
-		<f:viewParam name="bookingBeanExampleStatus" value="#{bookingBean.example.status}"/>
-		<f:viewParam name="bookingBeanExampleComment" value="#{bookingBean.example.comment}"/>
-		<f:viewParam name="bookingBeanShowFinished" value="#{bookingBean.showFinished}"/>
-		<f:event type="preRenderView" listener='#{bookingBean.paginate}' />
+		<f:viewParam name="page" value="#{bookingBean.page}" />
+		<f:viewParam name="bookingBeanExampleActivity" value="#{bookingBean.example.activity}"
+			converter="#{activityBean.converter}" />
+		<f:viewParam name="bookingBeanExampleStatus" value="#{bookingBean.example.status}" />
+		<f:viewParam name="bookingBeanExampleComment" value="#{bookingBean.example.comment}" />
+		<f:viewParam name="bookingBeanShowFinished" value="#{bookingBean.showFinished}" />
+		<f:viewAction action="#{bookingBean.paginate}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="Suche Buchungen" />
@@ -31,7 +31,7 @@
 
 	<ui:define name="main">
 		<h:form id="search">
-		
+
 			<p:focus for="bookingBeanExampleMember" />
 
 			<f:validateBean disabled="true">
@@ -41,12 +41,11 @@
 
 						<h:outputLabel for="bookingBeanExampleActivity" value="Aktivität:" />
 						<h:panelGroup>
-							<p:selectOneMenu id="bookingBeanExampleActivity" styleClass="fullwidth" 
-								value="#{bookingBean.example.activity}" converter="#{activityBean.converter}"
-								placeholder="Aktivität.." title="Aktivität.." >
-								<f:selectItem noSelectionOption="true"/>
-								<f:selectItems value="#{activityBean.all}" var="a"  itemLabel="#{a}" itemValue="#{a}" />
-								<f:ajax render="bookingBeanPageItems"/>
+							<p:selectOneMenu id="bookingBeanExampleActivity" styleClass="fullwidth" value="#{bookingBean.example.activity}"
+								converter="#{activityBean.converter}" placeholder="Aktivität.." title="Aktivität..">
+								<f:selectItem noSelectionOption="true" />
+								<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a}" />
+								<f:ajax render="bookingBeanPageItems" />
 							</p:selectOneMenu>
 							<h:message for="bookingBeanExampleActivity" styleClass="error" />
 						</h:panelGroup>
@@ -54,8 +53,8 @@
 
 						<h:outputLabel for="bookingBeanExampleMemberPanel" value="Teilnehmer:" />
 						<h:panelGroup id="bookingBeanExampleMemberPanel">
-							<p:inputText id="bookingBeanExampleMember" tabindex="0" value="#{bookingBean.exampleMember.name}">
-								<f:ajax event="keyup" render="bookingBeanPageItems"/>
+							<p:inputText id="bookingBeanExampleMember" tabindex="0" value="#{bookingBean.memberSearch.name}">
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" render="bookingBeanPageItems" />
 							</p:inputText>
 							<h:message for="bookingBeanExampleMember" styleClass="error" />
 						</h:panelGroup>
@@ -63,10 +62,11 @@
 
 						<h:outputLabel for="bookingBeanExampleStatus" value="Status:" />
 						<h:panelGroup>
-							<p:selectOneMenu id="bookingBeanExampleStatus" value="#{bookingBean.example.status}" styleClass="fullwidth" placeholder="Status..">
-								<f:selectItem noSelectionOption="true"/>
+							<p:selectOneMenu id="bookingBeanExampleStatus" value="#{bookingBean.example.status}" styleClass="fullwidth"
+								placeholder="Status..">
+								<f:selectItem noSelectionOption="true" />
 								<f:selectItems value="#{bookingBean.stati}" />
-								<f:ajax listener="#{bookingBean.paginate()}" render="bookingBeanPageItems"/>
+								<f:ajax render="bookingBeanPageItems" />
 							</p:selectOneMenu>
 							<h:message for="bookingBeanExampleStatus" styleClass="error" />
 						</h:panelGroup>
@@ -74,8 +74,8 @@
 
 						<h:outputLabel for="bookingBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
-							<p:inputText id="bookingBeanExampleComment" value="#{bookingBean.example.comment}" >
-								<f:ajax event="keyup" listener="#{bookingBean.paginate()}" render="bookingBeanPageItems"/>
+							<p:inputText id="bookingBeanExampleComment" value="#{bookingBean.example.comment}">
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" render="bookingBeanPageItems" />
 							</p:inputText>
 							<h:message for="bookingBeanExampleComment" styleClass="error" />
 						</h:panelGroup>
@@ -83,17 +83,18 @@
 
 						<h:outputLabel value="Abgeschl.:" />
 						<p:selectBooleanCheckbox id="bookingBeanShowFinished" value="#{bookingBean.showFinished}">
-							<p:ajax update="bookingBeanPageItems"/>
+							<f:ajax render="bookingBeanPageItems" />
 						</p:selectBooleanCheckbox>
 						<h:outputText />
 
 						<h:outputLabel value="Registr.:" />
 						<h:panelGrid columns="2" width="100%">
 							<p:selectBooleanCheckbox id="bookingBeanShowRegistred" value="#{bookingBean.showRegistered}" title="Registrierte">
-								<p:ajax update="bookingBeanPageItems"/>
+								<f:ajax render="bookingBeanPageItems" />
 							</p:selectBooleanCheckbox>
-							<p:selectBooleanCheckbox id="bookingBeanUnShowRegistred" value="#{bookingBean.showUnregistered}" title="Unregistrierte">
-								<p:ajax update="bookingBeanPageItems"/>
+							<p:selectBooleanCheckbox id="bookingBeanUnShowRegistred" value="#{bookingBean.showUnregistered}"
+								title="Unregistrierte">
+								<f:ajax render="bookingBeanPageItems" />
 							</p:selectBooleanCheckbox>
 						</h:panelGrid>
 						<h:outputText />
@@ -124,7 +125,7 @@
 					</f:facet>
 					<h:link outcome="view" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemBookingActivity" value="#{_item.activity.name}" />
+						<h:outputText id="itemBookingActivity" value="#{_item.activity}" />
 					</h:link>
 				</h:column>
 
@@ -169,7 +170,7 @@
 				</h:column>
 
 			</h:dataTable>
-			
+
 			<ui:include src="/resources/scaffold/paginator.xhtml">
 				<ui:param name="paginatorBean" value='#{bookingBean}' />
 			</ui:include>

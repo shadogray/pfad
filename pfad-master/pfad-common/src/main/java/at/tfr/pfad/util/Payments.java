@@ -35,6 +35,10 @@ public class Payments {
 	
 	public List<Payment> filtered(FacesContext facesContext, UIComponent component, final String filter) {
 		log.debug("filter: " + filter + " for: " + component.getId());
+		return filtered(filter);
+	}
+
+	public List<Payment> filtered(final String filter) {
 		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Payment> cq = cb.createQuery(Payment.class);
 		Root<Payment> root = cq.from(Payment.class);
