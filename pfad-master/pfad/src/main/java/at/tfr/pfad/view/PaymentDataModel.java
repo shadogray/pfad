@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateful;
-import javax.enterprise.context.RequestScoped;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -30,12 +29,10 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Payment_;
-import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
 
-@RequestScoped
 @Stateful
-public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
+public class PaymentDataModel extends BaseDataModel<Payment, PaymentUI> {
 
 	public PaymentDataModel() {
 		uiClass = PaymentUI.class;
@@ -51,35 +48,41 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 		return new Path[] { root };
 	}
 	
-	Join<Payment,Booking> bookJoin;
+//	Fetch<Payment,Booking> bookJoin;
 	Join<Payment,Member> payerJoin;
-	Join<Booking,Member> memberJoin;
-	Join<Member,Squad> squadJoin;
 
 	@Override
-	public List<PaymentUI> convertToUiBean(List<Payment> list) {
-		if (!list.isEmpty()) {
-			CriteriaQuery<Tuple> cq = cb.createTupleQuery();
+	public List<PaymentUI> convertToUiBean(List<Long> ids) {
+		if (!ids.isEmpty()) {
+			CriteriaQuery<Payment> cq = cb.createQuery(Payment.class);
 			Root<Payment> pr = cq.from(Payment.class);
 			pr.alias("payment");
 			payerJoin = pr.join(Payment_.payer, JoinType.LEFT);
 			payerJoin.alias("payer");
-			bookJoin = pr.join(Payment_.bookings, JoinType.LEFT);
-			bookJoin.alias("bookings");
-			memberJoin = bookJoin.join(Booking_.member);
-			memberJoin.alias("bookMember");
-			squadJoin = memberJoin.join(Member_.trupp, JoinType.LEFT);
-			squadJoin.alias("trupp");
+			payerJoin.join(Member_.funktionen, JoinType.LEFT);
+//			bookJoin = pr.fetch(Payment_.bookings, JoinType.LEFT);
+//			pr.fetch(Payment_.bookings, JoinType.LEFT);
 
-			cq.multiselect(pr, payerJoin, memberJoin);
+			//cq.multiselect(pr, payerJoin);
 			
-			cq.where(pr.in(list));
+			cq.where(pr.in(ids));
 			cq.orderBy(createOrders(pr));
 			cq.distinct(true);
 			
-			List<Tuple> res = entityManager.createQuery(cq).getResultList();
+			List<Payment> res = entityManager.createQuery(cq).getResultList();
 			
-			return res.stream().map(t->new PaymentUI(t.get(0, Payment.class), t.get(1, Member.class), t.get(0, Payment.class).getBookings())).collect(Collectors.toList());
+			CriteriaQuery<Tuple> bc = cb.createTupleQuery();
+			Root<Booking> bRoot = bc.from(Booking.class);
+			Join<Booking, Member> mj = bRoot.join(Booking_.member);
+			mj.fetch(Member_.funktionen, JoinType.LEFT);
+			mj.fetch(Member_.trupp, JoinType.LEFT);
+			entityManager.createQuery(
+					bc.where(bRoot.join(Booking_.payments).get(Payment_.id).in(ids))
+					.multiselect(bRoot, mj)
+					).getResultList();
+			
+			return res.stream().map(p->new PaymentUI(p, p.getPayer(), p.getBookings())).collect(Collectors.toList());
+			//return res.stream().map(t->new PaymentUI(t.get(0, Payment.class), t.get(1,Member.class), t.get(0, Payment.class).getBookings())).collect(Collectors.toList());
 		}
 		return Collections.emptyList();
 	}
@@ -112,14 +115,14 @@ public class PaymentDataModel extends DataModel<Payment, PaymentUI> {
 		case "payer":
 			return payerJoin.get(Member_.name);
 		
-		case "member":
-			return memberJoin.get(Member_.name);
-		
-		case "squad":
-			return squadJoin.get(Squad_.name);
-
-		case "activity":
-			return bookJoin.join(Booking_.activity).get(Activity_.name);
+//		case "member":
+//			return memberJoin.get(Member_.name);
+//		
+//		case "squad":
+//			return squadJoin.get(Squad_.name);
+//
+//		case "activity":
+//			return bookJoin.join(Booking_.activity).get(Activity_.name);
 		}
 		return super.getPathForOrder(path, propertyName);
 	}

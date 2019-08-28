@@ -106,7 +106,16 @@
 					<h:messages id="messages" />
 
 					<h:panelGroup id="results" layout="block" rendered="#{not empty downloadBean.results}">
-						<h:panelGroup id="queryResults" layout="block" binding="#{downloadBean.dataTableGroup}" />
+						<p:dataTable value="#{downloadBean.results}" var="row" >
+							<p:column width="15">
+								<f:facet name="header">Nr</f:facet>
+								<h:outputText value="#{downloadBean.results.rowIndex}" />
+							</p:column>
+							<p:columns var="c" value="#{downloadBean.columns}">
+								<f:facet name="header">#{c.value}</f:facet>
+								<h:outputText value="#{row[c.index].value}" />
+							</p:columns>
+						</p:dataTable>
 					</h:panelGroup>
 				</f:ajax>
 			</h:panelGroup>

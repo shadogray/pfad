@@ -7,10 +7,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -39,12 +42,14 @@ import at.tfr.pfad.model.MailMessage;
 import at.tfr.pfad.model.MailTemplate;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Registration;
+import at.tfr.pfad.util.ColumnModel;
 import at.tfr.pfad.util.QueryExecutor;
 import at.tfr.pfad.util.TemplateUtils;
 
 @Named
 @ViewScoped
 @Stateful
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class MailerBean extends BaseBean {
 
 	private Logger log = Logger.getLogger(getClass());
@@ -68,10 +73,12 @@ public class MailerBean extends BaseBean {
 	private MailConfig mailConfig;
 	private List<String> mailConfigKeys;
 	private String mailConfigKey;
-	private List<Map<String, Object>> values = Collections.emptyList();
+	private List<List<Entry<String, Object>>> values = Collections.emptyList();
 	private MailTemplate mailTemplate = new MailTemplate();
 	private List<MailMessage> mailMessages = Collections.emptyList();
-	private ListDataModel<Map<String, Object>> valuesModel = new ListDataModel<>();
+	private ListDataModel<List<Entry<String, Object>>> valuesModel = new ListDataModel<>();
+	private final List<ColumnModel> columns = new ArrayList<>();
+	private final List<String> columnHeaders = new ArrayList<>();
 	private ListDataModel<MailMessage> mailMessagesModel = new ListDataModel<>();
 
 	public enum MailProps {
@@ -93,6 +100,8 @@ public class MailerBean extends BaseBean {
 			error("Cannot execute Template for empty MailConfiguration!");
 			return;
 		}
+		columnHeaders.clear();
+		columns.clear();
 		mailMessages = new ArrayList<>();
 		try {
 			values = queryExec.execute(mailTemplate.getQuery()
@@ -100,23 +109,28 @@ public class MailerBean extends BaseBean {
 					.replaceAll("\\$\\{templateName\\}", mailTemplate.getName())
 					.replaceAll("\\$\\{templateOwner\\}", mailTemplate.getOwner()), 
 					false);
+			if (values.size() > 0) {
+				columnHeaders.addAll(values.get(0).stream().map(Entry::getKey).collect(Collectors.toList()));
+				for (int i=0; i<columnHeaders.size(); i++)
+					columns.add(new ColumnModel(columnHeaders.get(i), columnHeaders.get(i), i));
+			}
 			valuesModel = new ListDataModel<>(values);
 			
-			for (Map<String, Object> valueMap : values) {
+			for (List<Entry<String, Object>> vals : values) {
 				MailMessage msg = new MailMessage();
-				msg.setValues(valueMap);
+				msg.setValues(vals);
 				msg.setTemplate(mailTemplate);
-				String text = templateUtils.replace(mailTemplate.getText(), valueMap);
+				String text = templateUtils.replace(mailTemplate.getText(), vals);
 				text = text.replaceAll("<p style=\"", "<p style=\"margin:0; ");
 				text = text.replaceAll("<p>", "<p style='margin:0;'>");
 				msg.setText(text);
-				msg.setReceiver(templateUtils.replace("${to}", valueMap));
-				msg.setCc(templateUtils.replace("${cc}", valueMap, mailConfig.getCcConf() != null ? mailConfig.getCcConf().getCvalue() : null));
-				msg.setBcc(templateUtils.replace("${bcc}", valueMap, mailConfig.getBccConf() != null ? mailConfig.getBccConf().getCvalue() : null));
+				msg.setReceiver(templateUtils.replace("${to}", vals));
+				msg.setCc(templateUtils.replace("${cc}", vals, mailConfig.getCcConf() != null ? mailConfig.getCcConf().getCvalue() : null));
+				msg.setBcc(templateUtils.replace("${bcc}", vals, mailConfig.getBccConf() != null ? mailConfig.getBccConf().getCvalue() : null));
 				msg.setSubject(templateUtils.replace(mailTemplate.getSubject(), msg.getValues()));
-				msg.setMember(valueMap.entrySet().stream().filter(e -> e.getValue() instanceof Member)
+				msg.setMember(vals.stream().filter(e -> e.getValue() instanceof Member)
 						.map(e -> (Member) e.getValue()).findFirst().orElse(null));
-				msg.setRegistration(valueMap.entrySet().stream().filter(e -> e.getValue() instanceof Registration)
+				msg.setRegistration(vals.stream().filter(e -> e.getValue() instanceof Registration)
 						.map(e -> (Registration) e.getValue()).findFirst().orElse(null));
 				mailMessages.add(msg);
 			}
@@ -213,6 +227,9 @@ public class MailerBean extends BaseBean {
 					msg.setSender(sender.getAddress()
 							+ (StringUtils.isNotBlank(sender.getPersonal()) ? ":" + sender.getPersonal() : ""));
 					msg.setTest(testOnly);
+					if (Boolean.FALSE.equals(mailTemplate.getSaveText())) {
+						msg.setText(null);
+					}
 					
 					msg.setCreatedBy(sessionBean.getUser().getName());
 					
@@ -268,14 +285,22 @@ public class MailerBean extends BaseBean {
 		return false;
 	}
 	
-	public ListDataModel<Map<String, Object>> getValues() {
+	public ListDataModel<List<Entry<String, Object>>> getValues() {
 		return valuesModel;
 	}
 
+	public List<String> getColumnHeaders() {
+		return columnHeaders;
+	}
+	
+	public List<ColumnModel> getColumns() {
+		return columns;
+	}
+	
 	public List<String> getValueKeys() {
 		List<String> keys = new ArrayList<>();
 		if (values != null && !values.isEmpty()) {
-			keys.addAll(values.get(0).keySet());
+			keys.addAll(values.get(0).stream().map(Entry::getKey).collect(Collectors.toList()));
 		}
 		return keys;
 	}
@@ -339,6 +364,10 @@ public class MailerBean extends BaseBean {
 				return mailTemplate;
 			}
 		};
+	}
+	
+	@Override
+	public void retrieve() {
 	}
 
 	public static class MailConfig {

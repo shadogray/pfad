@@ -6,9 +6,9 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
 	<f:metadata>
-		<o:viewParam name="id" value='#{memberBean.id}' />
+		<o:viewParam name="id" value="#{memberBean.id}" />
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:event type="preRenderView" listener='#{memberBean.retrieve}' />
+		<f:viewAction action="#{memberBean.retrieve}" />
 	</f:metadata>
 
 	<ui:define name="header">

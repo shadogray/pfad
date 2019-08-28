@@ -12,29 +12,24 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import javax.ejb.Stateful;
-import javax.el.ValueExpression;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.component.html.HtmlColumn;
-import javax.faces.component.html.HtmlDataTable;
-import javax.faces.component.html.HtmlOutputText;
-import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.Tuple;
+import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -44,8 +39,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
-
-import com.google.common.net.HttpHeaders;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.Role;
@@ -57,6 +50,8 @@ import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.processing.RegistrationDataGenerator;
 import at.tfr.pfad.processing.RegistrationDataGenerator.DataStructure;
 import at.tfr.pfad.processing.RegistrationDataGenerator.RegConfig;
+import at.tfr.pfad.util.ColumnModel;
+import at.tfr.pfad.util.QueryExecutor;
 import at.tfr.pfad.util.SessionBean;
 
 @Named
@@ -75,7 +70,7 @@ public class DownloadBean implements Serializable {
 	@Inject
 	private ConfigurationRepository configRepo;
 	@Inject
-	private EntityManager em;
+	private QueryExecutor qExec;
 	@Inject
 	private RegistrationDataGenerator regDataGenerator;
 	private Configuration configuration;
@@ -83,8 +78,10 @@ public class DownloadBean implements Serializable {
 	private boolean notRegisteredOnly;
 	private String query;
 	private boolean nativeQuery;
-	private ListDataModel<List<?>> results = new ListDataModel<>(new ArrayList<>());
-	private HtmlPanelGroup dataTableGroup;
+	private List<List<Entry<String,Object>>> results = Collections.emptyList();
+	private ListDataModel<List<Entry<String,Object>>> resultModel = new ListDataModel<>(new ArrayList<>());
+	private final List<ColumnModel> columns = new ArrayList<>();
+	private final List<String> columnHeaders = new ArrayList<>();
 	public static final String SafeDatePattern = "yyyy.MM.dd_HHmm";
 
 	public String downloadVorRegistrierung() throws Exception {
@@ -216,16 +213,21 @@ public class DownloadBean implements Serializable {
 		this.nativeQuery = nativeQuery;
 	}
 
-	public ListDataModel<List<?>> getResults() {
+	public ListDataModel<List<Entry<String,Object>>> getResults() {
+		return resultModel;
+	}
+	
+	public List<String> getColumnHeaders() {
+		return columnHeaders;
+	}
+	
+	public List<ColumnModel> getColumns() {
+		return columns;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<List<Entry<String,Object>>> getResultList() {
 		return results;
-	}
-
-	public List<List<?>> getResultList() {
-		return results != null ? (List<List<?>>)results.getWrappedData() : null;
-	}
-
-	public List<Integer> getResultIndexes() {
-		return IntStream.range(0, results.getRowCount()).boxed().collect(Collectors.toList());
 	}
 
 	public List<Configuration> getQueries() {
@@ -254,36 +256,23 @@ public class DownloadBean implements Serializable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public String executeQuery() {
 		Query q = null;
-		if (dataTableGroup != null) {
-			dataTableGroup.getChildren().clear();
-		}
 		if (configuration != null) {
 			nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
 		}
 		try {
-			results = new ListDataModel<>(new ArrayList<>());
-			List<?> res;
-			if (nativeQuery) {
-				res = em.createNativeQuery(query).getResultList();
-			} else {
-				q = em.createQuery(query);
-				res = q.getResultList();
-			}
-			if (res.size() > 0) {
-				if (res.get(0) instanceof Tuple) {
-					results.setWrappedData(((List<Tuple>) res).stream().map(r -> r.getElements()).collect(Collectors.toList()));
-				} else if (res.get(0) instanceof Object[]) {
-					results.setWrappedData(res.stream().map(r -> Arrays.asList((Object[]) r)).collect(Collectors.toList()));
-				} else {
-					results.setWrappedData(res.stream().map(r -> Arrays.asList(new Object[] { r })).collect(Collectors.toList()));
-				}
-			}
-			if (dataTableGroup != null && results != null && results.getRowCount() > 0) {
-				dataTableGroup.getChildren().add(populateDataTable(results));
-				dataTableGroup = null;
+			columnHeaders.clear();
+			columns.clear();
+			resultModel = new ListDataModel<List<Entry<String,Object>>>(new ArrayList<List<Entry<String,Object>>>());
+			results = qExec.execute(query, nativeQuery);
+			if (results.size() > 0) {
+				resultModel.setWrappedData(results);
+				List<String> columnNames = results.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
+
+				columnHeaders.addAll(Arrays.asList(configuration.toHeaders(columnNames)));
+				for (int i=0; i<columnNames.size(); i++) 
+					columns.add(new ColumnModel(columnNames.get(i), columnHeaders.get(i), i));
 			}
 		} catch (Exception e) {
 			log.info("cannot execute: " + q + " : " + e, e);
@@ -301,75 +290,7 @@ public class DownloadBean implements Serializable {
 		return m + e.getMessage();
 	}
 
-	public HtmlPanelGroup getDataTableGroup() {
-		if (dataTableGroup != null)
-			dataTableGroup.getChildren().clear();
-		return dataTableGroup;
-	}
-
-	public void setDataTableGroup(HtmlPanelGroup panel) {
-		this.dataTableGroup = panel;
-	}
-
-	private HtmlDataTable populateDataTable(ListDataModel<List<?>> dataModel) {
-		HtmlDataTable dynamicDataTable = new HtmlDataTable();
-		dynamicDataTable.setId("dynamicDataTable_" + System.currentTimeMillis());
-		dynamicDataTable.setValueExpression("value", createValueExpression("#{downloadBean.results}", dataModel.getClass()));
-		dynamicDataTable.setVar("line");
-		dynamicDataTable.setStyleClass("table table-striped table-bordered table-hover");
-		
-		List<?> firstRow = ((List<List<?>>)dataModel.getWrappedData()).get(0);
-
-		String[] headers = configuration != null ? configuration.toHeaders(firstRow.size()) : null;
-		
-		if (dataModel.getRowCount() > 0) {
-			// Create <h:column>.
-			HtmlColumn column = new HtmlColumn();
-			dynamicDataTable.getChildren().add(column);
-
-			// name="header"> of column.
-			HtmlOutputText header = new HtmlOutputText();
-			header.setValue("Nr");
-			column.setHeader(header);
-
-			// body of column.
-			HtmlOutputText output = new HtmlOutputText();
-			output.setValueExpression("value", createValueExpression("#{downloadBean.results.rowIndex+1}", Integer.class));
-			column.getChildren().add(output);
-		}
-		
-		// Iterate over columns.
-		for (int idx = 0; idx < firstRow.size(); idx++) {
-
-			// Create <h:column>.
-			HtmlColumn column = new HtmlColumn();
-			dynamicDataTable.getChildren().add(column);
-
-			// Create <h:outputText value="dynamicHeaders[i]"> for <f:facet
-			// name="header"> of column.
-			HtmlOutputText header = new HtmlOutputText();
-			header.setValue("" + (headers != null ? headers[idx] : idx));
-			column.setHeader(header);
-
-			// Create <h:outputText value="#{dynamicItem[" + i + "]}"> for the
-			// body of column.
-			HtmlOutputText output = new HtmlOutputText();
-			output.setValueExpression("value", createValueExpression("#{line[" + idx + "]}", String.class));
-			column.getChildren().add(output);
-		}
-		return dynamicDataTable;
-	}
-	// Helpers
-	// -----------------------------------------------------------------------------------
-
-	private ValueExpression createValueExpression(String valueExpression, Class<?> valueType) {
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		return facesContext.getApplication().getExpressionFactory().createValueExpression(facesContext.getELContext(),
-				valueExpression, valueType);
-	}
-	
 	// Download Results 
-
 	public Configuration getConfiguration() {
 		return configuration;
 	}
@@ -384,7 +305,7 @@ public class DownloadBean implements Serializable {
 			}
 			ExternalContext ectx = setHeaders(config.getCkey());
 			try (OutputStream os = ectx.getResponseOutputStream()) {
-				Workbook wb = generateResultsWorkbook(config, getResultList());
+				Workbook wb = generateResultsWorkbook(config, results);
 				wb.write(os);
 			}
 			FacesContext.getCurrentInstance().responseComplete();
@@ -397,7 +318,7 @@ public class DownloadBean implements Serializable {
 		return null;
 	}
 	
-	private XSSFWorkbook generateResultsWorkbook(Configuration config, List<List<?>> results) {
+	private XSSFWorkbook generateResultsWorkbook(Configuration config, List<List<Entry<String,Object>>> results) {
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFSheet sheet = wb.createSheet(config.getCkey()+"_"+new DateTime().toString(SafeDatePattern));
 		CellStyle red = wb.createCellStyle();
@@ -406,18 +327,18 @@ public class DownloadBean implements Serializable {
 			int rCount = 0;
 			XSSFRow row = sheet.createRow(rCount++);
 			
-			String[] headers = config.toHeaders(results.get(0).size());
+			String[] headers = config.toHeaders(results.get(0).stream().map(Entry::getKey).collect(Collectors.toList()));
 			for (int i = 0; i < headers.length; i++) {
 				XSSFCell c = row.createCell(i);
 				c.setCellValue(headers[i]);
 			}
 
-			for (List<?> resultRow : results) {
+			for (List<Entry<String,Object>> resultRow : results) {
 				row = sheet.createRow(rCount++);
 	
 				int cCount = 0;
-				for (Object o : resultRow) {
-					row.createCell(cCount++).setCellValue(o!=null ? ""+o : "");
+				for (Entry<String,Object> e : resultRow) {
+					row.createCell(cCount++).setCellValue(e.getValue()!=null ? ""+e.getValue() : "");
 				}
 			}
 		}

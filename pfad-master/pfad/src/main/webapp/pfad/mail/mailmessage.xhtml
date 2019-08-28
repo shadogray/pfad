@@ -8,8 +8,8 @@
 
 	<f:metadata>
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:viewParam name="page" value='#{mailMessageBean.page}' />
-		<f:event type="preRenderView" listener='#{mailMessageBean.paginate}' />
+		<f:viewParam name="page" value="#{mailMessageBean.page}" />
+		<f:viewAction action="#{mailMessageBean.paginate}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="EMails" />
@@ -34,7 +34,7 @@
 						<h:outputLabel for="mailMessageBeanExampleReceiver" value="An:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleReceiver" value="#{mailMessageBean.example.receiver}" >
-								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleReceiver" styleClass="error" />
 						</h:panelGroup>
@@ -42,7 +42,7 @@
 						<h:outputLabel for="mailMessageBeanExampleMember" value="Mitglied:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleMember" value="#{mailMessageBean.memberName}" >
-								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleReceiver" styleClass="error" />
 						</h:panelGroup>
@@ -50,7 +50,7 @@
 						<h:outputLabel for="mailMessageBeanExampleRegistration" value="Anmeldg:" />
 						<h:panelGroup>
 							<h:inputText id="mailMessageBeanExampleRegistration" value="#{mailMessageBean.registrationName}" >
-								<f:ajax listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{mailMessageBean.paginate()}" render="mailMessageBeanPageItems"/>
 							</h:inputText>
 							<h:message for="mailMessageBeanExampleReceiver" styleClass="error" />
 						</h:panelGroup>
@@ -95,27 +95,27 @@
 				</h:panelGroup>
 			</f:validateBean>
 
-			<h:dataTable id="mailMessageBeanPageItems" styleClass="data-table" value="#{mailMessageBean.pageItems}"
+			<p:dataTable id="mailMessageBeanPageItems" styleClass="data-table" value="#{mailMessageBean.pageItems}"
 				var="_item">
-				<h:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Receiver" />
 					</f:facet>
 					<h:outputText id="itemReceiver" value="#{_item.receiver}" />
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="CC" />
 					</f:facet>
 					<h:outputText id="itemCC" value="#{_item.cc}" />
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="BCC" />
 					</f:facet>
 					<h:outputText id="itemBCC" value="#{_item.bcc}" />
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Template" />
 					</f:facet>
@@ -123,8 +123,8 @@
 						<f:param name="id" value="#{_item.template.id}" />
 						<h:outputText id="itemTemplate" value="#{_item.template.name}" />
 					</h:link>
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Mitglied" />
 					</f:facet>
@@ -132,8 +132,8 @@
 						<f:param name="id" value="#{_item.member.id}" />
 						<h:outputText id="itemMember" value="#{_item.member}" />
 					</h:link>
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Anmeldg" />
 					</f:facet>
@@ -141,46 +141,46 @@
 						<f:param name="id" value="#{_item.registration.id}" />
 						<h:outputText id="itemRegistration" value="#{_item.registration}" />
 					</h:link>
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Text" />
 					</f:facet>
 					<h:outputText id="itemText" value="#{fn:substring(_item.text,0,50)}" title="#{_item.text}" />
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Subject" />
 					</f:facet>
 					<h:outputText id="itemSubject" value="#{fn:substring(_item.subject,0,50)}" title="#{_item.subject}"/>
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Datum" />
 					</f:facet>
 					<h:outputText id="itemCreated" value="#{_item.created}">
 						<f:convertDateTime pattern="dd.MM.yyyy"/>
 					</h:outputText>
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Benutzer" />
 					</f:facet>
 					<h:outputText id="itemCreatedBy" value="#{_item.createdBy}"/>
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Sender" />
 					</f:facet>
 					<h:outputText id="itemSender" value="#{_item.sender}"/>
-				</h:column>
-				<h:column>
+				</p:column>
+				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Test" />
 					</f:facet>
 					<h:outputText id="itemTest" value="#{_item.test}"/>
-				</h:column>
-			</h:dataTable>
+				</p:column>
+			</p:dataTable>
 			<ui:include src="/resources/scaffold/paginator.xhtml">
 				<ui:param name="paginatorBean" value='#{mailMessageBean}' />
 			</ui:include>

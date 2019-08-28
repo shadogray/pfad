@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.deltaspike.data.api.EntityRepository;
+import org.apache.deltaspike.data.api.Query;
 import org.apache.deltaspike.data.api.Repository;
 import org.apache.deltaspike.data.api.criteria.Criteria;
 import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
@@ -40,4 +41,11 @@ public abstract class ActivityRepository implements EntityRepository<Activity, L
 				.orderAsc(Activity_.name)
 				.getResultList();
 	}
+	
+	@Query(named="Activity.distName")
+	public abstract List<String> findDistinctName();
+
+	@Query(named="Activity.distNameActive")
+	public abstract List<String> findDistinctNameActive();
+
 }

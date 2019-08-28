@@ -7,8 +7,8 @@
 
 	<f:metadata>
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:viewParam name="page" value='#{configurationBean.page}' />
-		<f:event type="preRenderView" listener='#{configurationBean.paginate}' />
+		<f:viewParam name="page" value="#{configurationBean.page}" />
+		<f:viewAction action="#{configurationBean.paginate}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="Search Configuration entities" />
@@ -33,7 +33,7 @@
 						<h:outputLabel for="configurationBeanExampleCkey" value="Ckey:" />
 						<h:panelGroup>
 							<h:inputText id="configurationBeanExampleCkey" value="#{configurationBean.example.ckey}" >
-								<f:ajax event="keyup" listener="#{configurationBean.paginate()}" render="configurationBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{configurationBean.paginate()}" render="configurationBeanPageItems"/>
 							</h:inputText>
 							<h:message for="configurationBeanExampleCkey" styleClass="error" />
 						</h:panelGroup>
@@ -41,7 +41,7 @@
 						<h:outputLabel for="configurationBeanExampleCvalue" value="Cvalue:" />
 						<h:panelGroup>
 							<h:inputText id="configurationBeanExampleCvalue" value="#{configurationBean.example.cvalue}" >
-								<f:ajax event="keyup" listener="#{configurationBean.paginate()}" render="configurationBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{configurationBean.paginate()}" render="configurationBeanPageItems"/>
 							</h:inputText>
 							<h:message for="configurationBeanExampleCvalue" styleClass="error" />
 						</h:panelGroup>

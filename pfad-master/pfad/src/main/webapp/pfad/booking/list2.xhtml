@@ -29,7 +29,7 @@
 				<h:messages styleClass="error" />
 
 				<p:focus />
-				<p:dataTable id="bookings" widgetVar="bookings" var="record" value="#{bookingTableBean.dataModel}" paginator="true"
+				<p:dataTable id="bookings" widgetVar="bookings" var="b" value="#{bookingTableBean.dataModel}" paginator="true"
 					rows="#{bookingTableBean.dataModel.rows}" tableStyle="width:auto;">
 
 					<p:column width="2em">
@@ -43,12 +43,12 @@
 						<f:facet name="header">Edit</f:facet>
 						<p:commandLink oncomplete="PF('popupPanelEditBooking').show()">
 							<h:graphicImage name="edit.jpeg" alt="Edit" style="width: 1.5em; height:1.5em;" />
-							<p:ajax listener="#{bookingBean.retrieve(record.id)}" update=":editBooking:popupPanelEditBooking" />
+							<p:ajax listener="#{bookingBean.retrieve(b.id)}" update=":editBooking:popupPanelEditBooking" />
 						</p:commandLink>
 						<p:commandLink value="EUR" oncomplete="PF('popupPanelEditPayment').show()" rendered="#{paymentBean.viewAllowed}">
-							<f:ajax listener="#{bookingBean.retrieveAndGetPayment(record.id)}" />
+							<f:ajax listener="#{bookingBean.retrieveAndGetPayment(b.id)}" />
 							<f:setPropertyActionListener target="#{bookingBean.paymentPopupVisible}" value="true" />
-							<p:ajax listener="#{bookingBean.retrieveAndGetPayment(record.id)}" update=":editPayment:popupPanelEditPayment" />
+							<p:ajax listener="#{bookingBean.retrieveAndGetPayment(b.id)}" update=":editPayment:popupPanelEditPayment" />
 						</p:commandLink>
 					</p:column>
 
@@ -57,22 +57,20 @@
 							<p:outputLabel value="#{col.value}">
 								<f:attribute name="column" value="#{col}" />
 							</p:outputLabel>
-							<p:inputText value="#{col.filter}" placeholder="suche.." 
-								style="min-width:3em; max-width:8em;#{col.evalHeaderStyle(col.filter)}"
+							<p:inputText value="#{col.filter}" placeholder="suche.." style="min-width:4em;"
 								rendered="#{col.search and empty col.items}">
 								<f:attribute name="column" value="#{col}" />
-								<p:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{bookingTableBean.dataModel.reload}" 
-									update="@this" onsuccess="PF('bookings').filter()" />
+								<p:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{bookingTableBean.dataModel.filter}" oncomplete="PF('bookings').filter()" />
 							</p:inputText>
-							<p:selectOneMenu value="#{col.filter}" 
-								style="min-width:4em;#{col.evalHeaderStyle(col.filter)}" rendered="#{col.search and ! empty col.items}">
+							<p:selectOneMenu value="#{col.filter}" valueChangeListener="#{bookingTableBean.dataModel.reload}"
+								style="min-width:4em;" rendered="#{col.search and ! empty col.items}">
 								<f:attribute name="column" value="#{col}" />
 								<f:selectItem noSelectionOption="true" />
-								<f:selectItems value="#{col.itemEntries}" var="e" itemValue="#{e.value}" itemLabel="#{e.key}" />
-								<p:ajax listener="#{bookingTableBean.dataModel.reload}" update="@this" onsuccess="PF('bookings').filter()" />
+								<f:selectItems value="#{col.itemEntries}" var="e" itemValue="#{e.key}" itemLabel="#{e.value}" />
+								<p:ajax listener="#{bookingTableBean.dataModel.filter}" oncomplete="PF('bookings').filter()" />
 							</p:selectOneMenu>
 						</f:facet>
-						<h:outputText value="#{record[col.key]}"  style="#{col.evalFieldStyle(col.filter)}"/>
+						<h:outputText value="#{b[col.key]}" />
 					</p:columns>
 
 				</p:dataTable>
@@ -87,8 +85,8 @@
 			</h:form>
 
 			<h:form id="editBooking">
-				<p:dialog id="popupPanelEditBooking" widgetVar="popupPanelEditBooking" modal="true" closeOnEscape="true"
-					onHide="PF('bookings').filter();" >
+				<p:dialog id="popupPanelEditBooking" widgetVar="popupPanelEditBooking" modal="true"
+					onHide="PF('bookings').filter();">
 					<h:panelGroup rendered="#{bookingBean.booking != null}">
 						<h:panelGrid columns="3">
 							<h:outputLabel value="Aktivität:" />
@@ -136,8 +134,8 @@
 			</h:form>
 
 			<h:form id="editPayment">
-				<p:dialog id="popupPanelEditPayment" widgetVar="popupPanelEditPayment" modal="true" closeOnEscape="true"
-					onHide="PF('bookings').filter();" width="650" >
+				<p:dialog id="popupPanelEditPayment" widgetVar="popupPanelEditPayment" modal="true"
+					onHide="PF('bookings').filter();">
 					<h:panelGroup id="panelGroupEditPayment" rendered="#{bookingBean.booking != null}">
 						<h:panelGrid columns="2" style="width:100%;">
 							<h:panelGroup>
@@ -175,8 +173,8 @@
 										</h:selectOneMenu>
 										<p:autoComplete id="paymentBeanPaymentPayerSelect" rendered="#{paymentBean.payment.payer == null}"
 											value="#{paymentBean.memberToAdd}" var="p" itemValue="#{p.id}" itemLabel="#{p}"
-											converter="#{memberBean.converter}" completeMethod="#{paymentBean.filterMembers}" minQueryLength="3"
-											tabindex="1" styleClass="fullwidth manual" placeholder="Der Zahler oder das Mitglied.." dropdown="true">
+											converter="#{memberBean.converter}" completeMethod="#{paymentBean.filterPayers}" minQueryLength="3"
+											tabindex="1" styleClass="fullwidth manual" placeholder="Der Zahler oder das Mitglied..">
 											<p:ajax event="itemSelect" process="@this" listener="#{paymentBean.selectPaymentPayer}"
 												update="panelGroupEditPayment" />
 										</p:autoComplete>
@@ -264,7 +262,7 @@
 												styleClass="fullwidth manual" converter="#{bookingBean.converter}" minQueryLength="1" forceSelection="true"
 												dropdown="true" completeMethod="#{paymentBean.filterBookings}" var="b" itemLabel="#{b}" itemValue="#{b.id}"
 												placeholder="Buchung hinzufügen.." maxListHeight="100" listWidth="35em" showButton="false">
-												<f:ajax event="itemSelect" process="@none" listener="#{paymentBean.addPaymentBooking}"
+												<p:ajax event="itemSelect" process="@none" listener="#{paymentBean.addPaymentBooking}"
 													update="paymentBeanPaymentBookingsPanel" />
 											</p:autoComplete>
 											<h:message for="paymentBeanBookingSelect" styleClass="error" />

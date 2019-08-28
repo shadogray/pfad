@@ -48,6 +48,8 @@ public class MailTemplate extends BaseEntity implements Auditable {
 	private String query;
 	@Column(length=64)
 	private String owner;
+	@Column
+	private Boolean saveText;
 	
 	protected Date changed;
 	protected Date created;
@@ -117,6 +119,14 @@ public class MailTemplate extends BaseEntity implements Auditable {
 
 	public void setMessages(List<MailMessage> messages) {
 		this.messages = messages;
+	}
+	
+	public Boolean getSaveText() {
+		return saveText;
+	}
+	
+	public void setSaveText(Boolean saveText) {
+		this.saveText = saveText;
 	}
 
 	@Override

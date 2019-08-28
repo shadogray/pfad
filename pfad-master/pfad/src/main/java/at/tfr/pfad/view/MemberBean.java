@@ -17,14 +17,16 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.PhaseId;
+import javax.faces.model.ListDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,8 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.omnifaces.util.Faces;
-import org.richfaces.component.UISelect;
-import org.richfaces.model.CollectionDataModel;
 
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
@@ -66,6 +66,7 @@ import at.tfr.pfad.view.ViewUtils.Month;
 @Named
 @Stateful
 @ViewScoped
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class MemberBean extends BaseBean<Member> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -283,7 +284,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 						builder.asc(root.get(Member_.vorname)), builder.asc(root.get(Member_.id))));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
-		dataModel = new CollectionDataModel<>(pageItems);
+		dataModel = new ListDataModel<>(pageItems);
 	}
 
 	private Predicate[] getSearchPredicates(Root<Member> root) {
@@ -617,16 +618,5 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 
 	public List<Month> getMonths() {
 		return Arrays.asList(Month.values());
-	}
-	
-	public void handle(AjaxBehaviorEvent event) {
-		log.debug("handle: " + event);
-		if (event != null && event.getSource() instanceof UISelect) {
-			String val = (String)((UISelect) event.getSource()).getSubmittedValue();
-			if (StringUtils.isNotBlank(val)) {
-				setId(Long.valueOf(val));
-				retrieve();
-			}
-		}
 	}
 }

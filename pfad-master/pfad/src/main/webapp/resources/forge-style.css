@@ -325,8 +325,24 @@ footer p {
 	max-width: 800px;
 }
 
-.width70 {
-	width: 70em;
+.width20 {
+	width: 20em;
+}
+
+.width30 {
+	width: 30em;
+}
+
+.width40 {
+	width: 40em;
+}
+
+.width50 {
+	width: 50em;
+}
+
+.width60 {
+	width: 60em;
 }
 
 .width80 {
@@ -454,6 +470,10 @@ select.manual {
 	background-image: url(#{request.contextPath}/resources/remove.png);
 	background-size: 15px 15px;
 	background-repeat: no-repeat;
+}
+
+.content .data-table a:focus {
+	border: 2px solid yellowgreen;
 }
 
 .content .data-table-footer {

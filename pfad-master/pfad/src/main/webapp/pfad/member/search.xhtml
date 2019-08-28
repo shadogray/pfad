@@ -7,7 +7,7 @@
 
 	<f:metadata>
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:viewParam name="page" value='#{memberBean.page}' />
+		<f:viewParam name="page" value="#{memberBean.page}" />
 		<f:viewParam name="mbeName" value="#{memberBean.example.name}"/>
 		<f:viewParam name="mbeVorname" value="#{memberBean.example.vorname}"/>
 		<f:viewParam name="mbeTelefon" value="#{memberBean.example.telefon}"/>
@@ -17,7 +17,7 @@
 		<f:viewParam name="mbeFunktionen" value="#{memberBean.exampleFunctions}" converter="#{functionBean.listConverter}"/>
 		<f:viewParam name="mbeAktiv" value="#{memberBean.exampleActive}"/>
 		<f:viewParam name="mbeFree" value="#{memberBean.exampleFree}"/>
-		<f:event type="preRenderView" listener='#{memberBean.paginate}' />
+		<f:viewAction action="#{memberBean.paginate}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:define name="header">
@@ -44,14 +44,14 @@
 						<h:outputLabel for="mbeName" value="Name:" />
 						<h:panelGroup>
 							<p:inputText id="mbeName" value="#{memberBean.example.name}">
-								<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 							</p:inputText>
 						</h:panelGroup>
 
 						<h:outputLabel for="mbeVorname" value="Vorname:" />
 						<h:panelGroup>
 							<p:inputText id="mbeVorname" value="#{memberBean.example.vorname}">
-								<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+								<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 							</p:inputText>
 						</h:panelGroup>
 
@@ -59,28 +59,28 @@
 							<h:outputLabel for="mbeTelefon" value="Tel:" styleClass="w30"/>
 							<h:panelGroup>
 								<h:inputText id="mbeTelefon" value="#{memberBean.example.telefon}" styleClass="w80">
-									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+									<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 								</h:inputText>
 							</h:panelGroup>
 
 							<h:outputLabel for="mbeEmail" value="Email:" styleClass="w40"/>
 							<h:panelGroup>
 								<h:inputText id="mbeEmail" value="#{memberBean.example.email}" styleClass="w80">
-									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+									<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 								</h:inputText>
 							</h:panelGroup>
 
 							<h:outputLabel for="mbeStrasse" value="Strasse:" styleClass="w50"/>
 							<h:panelGroup>
 								<h:inputText id="mbeStrasse" value="#{memberBean.example.strasse}" styleClass="w100">
-									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+									<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 								</h:inputText>
 							</h:panelGroup>
 							
 							<h:outputLabel for="mbeBVKey" value="BVKey:" styleClass="w40"/>
 							<h:panelGroup>
 								<h:inputText id="mbeBVKey" value="#{memberBean.example.BVKey}" styleClass="w50">
-									<f:ajax event="keyup" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+									<f:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 								</h:inputText>
 							</h:panelGroup>
 						</h:panelGrid>

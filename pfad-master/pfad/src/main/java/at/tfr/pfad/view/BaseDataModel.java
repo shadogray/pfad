@@ -9,14 +9,17 @@ package at.tfr.pfad.view;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.el.ELContext;
+import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.event.PhaseId;
+import javax.faces.event.FacesEvent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -28,34 +31,21 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.ajax4jsf.model.DataVisitor;
-import org.ajax4jsf.model.ExtendedDataModel;
-import org.ajax4jsf.model.Range;
-import org.ajax4jsf.model.SequenceRange;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
-import org.richfaces.component.SortOrder;
-import org.richfaces.component.util.Strings;
-import org.richfaces.model.Arrangeable;
-import org.richfaces.model.ArrangeableState;
-import org.richfaces.model.FilterField;
-import org.richfaces.model.SortField;
-
-import com.google.common.collect.Lists;
 
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.PrimaryKeyHolder;
+import at.tfr.pfad.util.ColumnModel;
 import at.tfr.pfad.util.SessionBean;
 
-public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends ExtendedDataModel<U> implements Arrangeable {
+public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> extends javax.faces.model.DataModel<U> {
 
     private static final int ABSOLUTE_MAX_ROWS = 200;
 	private Logger log = Logger.getLogger(getClass());
-    private Long rowKey;
-    private ArrangeableState arrangeableState;
     private boolean isRenderResponse;
     protected Class<T> entityClass;
     protected Class<U> uiClass;
@@ -65,55 +55,53 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     @Inject
     protected EntityManager entityManager;
     
+    protected int rowIndex;
     protected int rows = 20;
     protected int currentRows;
+    protected int rowStart = 0;
     protected Integer rowCount;
     protected List<U> uData;
     protected List<Long> keys;
     protected boolean useUniquResultTransformer = false;
-    protected SequenceRange sequenceRange;
     protected String entityIdProperty = "id";
     private boolean rowsSetToUnlimited;
     protected CriteriaBuilder cb;
     protected Root<T> root;
-    private CriteriaQuery<T> query;
+    private CriteriaQuery<Long> query;
     private CriteriaQuery<Long> countQuery;
+    private List<ColumnModel> columns = Collections.emptyList();
 
-    public DataModel() {
+    public BaseDataModel() {
     }
 
-    public DataModel(final Class<T> entityClass) {
+    public BaseDataModel(final Class<T> entityClass) {
         this.entityClass = entityClass;
         this.uiClass = (Class<U>) entityClass;
     }
 
-    public DataModel(final Class<U> uiClass, final Class<T> entityClass) {
+    public BaseDataModel(final Class<U> uiClass, final Class<T> entityClass) {
         this.entityClass = entityClass;
         this.uiClass = uiClass;
     }
 
-    public List<U> convertToUiBean(final List<T> list) {
-        return (List<U>) list;
+    public List<U> convertToUiBean(final List<Long> ids) {
+		CriteriaQuery<T> critEntity = cb.createQuery(entityClass).where(root.<Long>get("id").in(ids));
+
+        TypedQuery<T> query = entityManager.createQuery(critEntity);
+        query.setFirstResult(rowStart);
+        query.setMaxResults(getRows() > 0 ? getRows() : ABSOLUTE_MAX_ROWS);
+
+        return (List<U>) query.getResultList();
     }
 
-    @Override
-    public void arrange(final FacesContext context, final ArrangeableState state) {
-		if (!isRenderResponse && FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-			isRenderResponse = true;
-			uData = null;
-		}
-        arrangeableState = state;
-    }
-
-    @Override
-    public void setRowKey(final Object key) {
-        rowKey = (Long) key;
-    }
-
-    @Override
-    public Long getRowKey() {
-        return rowKey;
-    }
+//    @Override
+//    public void arrange(final FacesContext context, final ArrangeableState state) {
+//		if (!isRenderResponse && FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
+//			isRenderResponse = true;
+//			uData = null;
+//		}
+//        arrangeableState = state;
+//    }
 
     public int getRows() {
         return rows;
@@ -125,11 +113,11 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         this.rows = rows;
     }
 
-    protected CriteriaQuery<T> createCriteria(boolean addOrder) {
+    protected CriteriaQuery<Long> createCriteria(boolean addOrder) {
         cb = entityManager.getCriteriaBuilder();
-		query = cb.createQuery(entityClass);
+		query = cb.createQuery(Long.class);
         root = getRoot();
-        query.select(root);
+        query.select(root.<Long>get("id"));
         root.alias(entityClass.getSimpleName());
         return query;
     }
@@ -158,24 +146,8 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 		return and;
 	}
 
-    protected CriteriaQuery<Long> createCountCriteriaQuery() {
-        cb = entityManager.getCriteriaBuilder();
-        countQuery = cb.createQuery(Long.class);
-        root = getCountRoot();
-        root.alias(entityClass.getSimpleName());
-        
-        countQuery.select(cb.countDistinct(root));
-        
-        final List<Predicate> filterCriteria = createFilterCriteria(countQuery);
-        if (filterCriteria != null) {
-            countQuery.where(filterCriteria.toArray(new Predicate[]{}));
-        }
-
-        return countQuery;
-    }
-
-    protected CriteriaQuery<T> createSelectCriteriaQuery() {
-        final CriteriaQuery<T> criteria = createCriteria(true);
+    protected CriteriaQuery<Long> createSelectCriteriaQuery() {
+        final CriteriaQuery<Long> criteria = createCriteria(true);
 
         final List<Predicate> filterCriteria = createFilterCriteria(criteria);
         if (filterCriteria != null) {
@@ -186,29 +158,21 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     }
 
     protected List<Order> createOrders(Root<T> path) {
-        final List<Order> orders = Lists.newArrayList();
+        final List<Order> orders = new ArrayList<>();
 
-        if (null == arrangeableState) {
-            return orders;
-        }
-
-        final List<SortField> sortFields = arrangeableState.getSortFields();
+        final List<ColumnModel> sortFields = columns.stream().filter(c->c.getAscending()!=null).collect(Collectors.toList());
         if (sortFields != null && !sortFields.isEmpty()) {
 
-            final FacesContext facesContext = FacesContext.getCurrentInstance();
-
-            for (final SortField sortField : sortFields) {
+            for (final ColumnModel sortField : sortFields) {
                 final String propertyName = 
-                		getEntitySortProperty((String) sortField.getSortBy().getValue(facesContext.getELContext()));
+                		getEntitySortProperty((String) sortField.getKey());
 
                 Order order;
-                final SortOrder sortOrder = sortField.getSortOrder();
-                if (sortOrder == SortOrder.ascending) {
+                final Boolean sortOrder = sortField.getAscending();
+                if (sortOrder) {
                     order = cb.asc(getPathForOrder(path, propertyName));
-                } else if (sortOrder == SortOrder.descending) {
-                    order = cb.desc(getPathForOrder(path, propertyName));
                 } else {
-                    throw new IllegalArgumentException(sortOrder.toString());
+                    order = cb.desc(getPathForOrder(path, propertyName));
                 }
 
                 orders.add(order);
@@ -226,16 +190,13 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     	return sortField;
     }
 
-    protected ArrangeableState getArrangeableState() {
-        return arrangeableState;
-    }
-
     protected Class<U> getEntityClass() {
         return uiClass;
     }
 
     protected Predicate createFilterCriteriaForField(final String propertyName, final Object filterValue, CriteriaQuery<?> q) {
-        if (filterValue == null || (filterValue instanceof String && Strings.isEmpty((String) filterValue))) {
+        
+    	if (filterValue == null || (filterValue instanceof String && StringUtils.isEmpty((String) filterValue))) {
             return null;
         }
 
@@ -269,7 +230,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 
                 } else if (filterValue instanceof String) {
                     String stringValue = (String) filterValue;
-                    stringValue = stringValue.toLowerCase(arrangeableState.getLocale());
+                    stringValue = stringValue.toLowerCase();
                     return cb.like(cb.lower(root.get(propertyName)), "%"+stringValue+"%");
                 }
             }
@@ -288,17 +249,18 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
 //            filterCriteria.add(Restrictions.eq(getAccountProperty(), getAccountValue(smsUsers)));
         }
 
-        if (null == arrangeableState) {
+        if (null == columns || columns.size() == 0) {
             return filterCriteria;
         }
 
-        final List<FilterField> filterFields = arrangeableState.getFilterFields();
+        final List<ColumnModel> filterFields = columns.stream().
+        		filter(c->StringUtils.isNotBlank(c.getFilter())).collect(Collectors.toList());
         if (filterFields != null && !filterFields.isEmpty()) {
             final FacesContext facesContext = FacesContext.getCurrentInstance();
 
-            for (final FilterField filterField : filterFields) {
-                final String propertyName = (String) filterField.getFilterExpression().getValue(facesContext.getELContext());
-                final Object filterValue = filterField.getFilterValue();
+            for (final ColumnModel filterField : filterFields) {
+                final String propertyName = (String) filterField.getKey();
+                final Object filterValue = filterField.getFilter();
 
                 final Predicate crit = createFilterCriteriaForField(propertyName, filterValue, criteriaQuery);
 
@@ -312,97 +274,111 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
         return filterCriteria;
     }
 
-    @Override
-    public void walk(final FacesContext context, final DataVisitor visitor, final Range range, final Object argument) {
-        final List<U> uData = getRowData(range);
-
-        for (final U t : uData) {
-            visitor.process(context, t.getId(), argument);
-        }
+	public void filter(FacesEvent event) {
+		boolean reload = false;
+		String value = null;
+		ELContext el = FacesContext.getCurrentInstance().getELContext();
+		ValueExpression ve = event.getComponent().getValueExpression("column");
+		if (ve != null) {
+			Object compValue = ve.getValue(el);
+			if (compValue instanceof ColumnModel) {
+				ColumnModel column = (ColumnModel)compValue;
+				value = column.getFilter();
+				reload = value == null || value.length() >= column.getMinLength();
+			}
+		} else {
+			reload = true;
+		}
+		if (reload) reloadRowData();
+	}
+	
+	public void reload(FacesEvent event) {
+		reloadRowData();
+	}
+	
+    public List<U> reloadRowData() {
+    	uData = null;
+    	return loadRowData();
     }
-
-    protected List<U> getRowData(final Range range) {
+    
+    protected List<U> loadRowData() {
     	if (uData == null) {
-    		uData = getRowDataInternal(range);
+    		uData = loadRowDataInternal();
     		keys = uData.stream().map(d -> d.getId()).collect(Collectors.toList());
     	}
     	return uData;
     }
 
-	private List<U> getRowDataInternal(final Range range) {
-		final CriteriaQuery<T> criteria = createSelectCriteriaQuery();
+	private List<U> loadRowDataInternal() {
+		final CriteriaQuery<Long> criteria = createSelectCriteriaQuery();
 		//criteria.groupBy(getGroupByRoots());
-
-        TypedQuery<T> query = entityManager.createQuery(criteria);
-        sequenceRange = (SequenceRange) range;
-        if (sequenceRange.getFirstRow() >= 0) {
-            query.setFirstResult(sequenceRange.getFirstRow());
-        }
-        query.setMaxResults(sequenceRange.getRows() > 0 ? sequenceRange.getRows() : ABSOLUTE_MAX_ROWS);
-
-        final List<T> data = query.getResultList();
-        currentRows = data.size();
-        uData = convertToUiBean(data);
+		List<Long> ids = entityManager.createQuery(criteria.distinct(true))
+				.setFirstResult(rowStart)
+				.setMaxResults(rows)
+				.getResultList();
+        uData = convertToUiBean(ids);
+        currentRows = uData.size();
         return uData;
 	}
 
 	protected Path<T>[] getGroupByRoots() {
-		return new Path[] {root};
+		return new Path[] { root };
 	}
 
     @Override
     public boolean isRowAvailable() {
-        return rowKey != null;
+        return rowIndex >=0 && rowIndex < uData.size();
     }
 
     @Override
     public int getRowCount() {
-    	if (rowCount == null) {	
-    		rowCount = getRowCountInternal();
-    	}
-    	return rowCount;
+    	return loadRowData().size();
     }
-
-	private int getRowCountInternal() {
-		final CriteriaQuery<Long> criteria = createCountCriteriaQuery();
-        final Long count = entityManager.createQuery(criteria).getSingleResult();
-        return count.intValue();
-	}
 
     @Override
     public U getRowData() {
         try {
-            U ud = (U)uData.stream().filter(u->u.getId().equals(rowKey)).findAny().orElse(null);
+            U ud = (U)uData.get(rowIndex);
 			return ud;
         } catch (Exception e) {
-            log.info("error loading key: " + rowKey, e);
+            log.info("error loading key: " + rowIndex, e);
             throw e;
         }
     }
 
     @Override
     public int getRowIndex() {
-    	if (rowKey != null) {
-    		return keys.indexOf(rowKey)+1;
-    	}
-        return -1;
+        return rowIndex;
     }
 
     @Override
     public void setRowIndex(final int rowIndex) {
-        throw new UnsupportedOperationException();
+        this.rowIndex = rowIndex;
     }
 
     @Override
     public Object getWrappedData() {
-        throw new UnsupportedOperationException();
+        return uData;
     }
 
-    @Override
+    public List<U> getData() {
+		return uData;
+	}
+    
+    @SuppressWarnings("unchecked")
+	@Override
     public void setWrappedData(final Object data) {
-        throw new UnsupportedOperationException();
+        this.uData = (List<U>)data;
     }
 
+    public int getRowStart() {
+		return rowStart;
+	}
+    
+    public void setRowStart(int rowStart) {
+		this.rowStart = rowStart;
+	}
+    
     public int getCurrentRows() {
         return currentRows;
     }
@@ -412,7 +388,7 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     }
 
     public boolean isRenderScroller() {
-        return currentRows == rows || sequenceRange == null || sequenceRange.getFirstRow() > 0;
+        return currentRows == rows || rowStart > 0;
     }
 
     public void setRowsUnlimited() {
@@ -430,6 +406,14 @@ public abstract class DataModel<T extends PrimaryKeyHolder, U extends T> extends
     public void setUseUniquResultTransformer(final boolean useUniquResultTransformer) {
         this.useUniquResultTransformer = useUniquResultTransformer;
     }
+    
+    public List<ColumnModel> getColumns() {
+		return columns;
+	}
+    
+    public void setColumns(List<ColumnModel> columns) {
+		this.columns = columns;
+	}
 
     public Class<U> getUiClass() {
         return uiClass;

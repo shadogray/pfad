@@ -2,13 +2,20 @@ package at.tfr.pfad.view;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -17,9 +24,7 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
-import org.omnifaces.util.Messages;
 import org.primefaces.event.RowEditEvent;
-import org.richfaces.component.UIAccordion;
 
 import at.tfr.pfad.RegistrationStatus;
 import at.tfr.pfad.dao.RegistrationRepository;
@@ -30,6 +35,7 @@ import at.tfr.pfad.view.convert.TriStateConverter;
 @Named
 @ViewScoped
 @Stateful
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class RegistrationBean extends BaseBean {
 
 	private Logger log = Logger.getLogger(getClass());
@@ -45,8 +51,11 @@ public class RegistrationBean extends BaseBean {
 	private Long id;
 	private Registration registration;
 	private Boolean storno, aktiv;
+	private int rows = 20;
 	private boolean all;
 	private TriStateConverter triStateConverter = new TriStateConverter();
+	private Map<String,Integer> rowVals = new LinkedHashMap<>();
+	private DataModel<Entry<String,Integer>> rowDm;
 
 	@PostConstruct
 	public void init() {
@@ -54,6 +63,11 @@ public class RegistrationBean extends BaseBean {
 		distinctSchoolEntry = regRepo.findDistinctSchoolEntry();
 		filterStati = new RegistrationStatus[] 
 				{ RegistrationStatus.ZusageGes, RegistrationStatus.AbsageGes}; 
+		rowVals.put("20", new Integer(20));
+		rowVals.put("50", new Integer(50));
+		rowVals.put("Alle", new Integer(10000));
+		rows = rowVals.get("20");
+		rowDm = new ListDataModel<>(new ArrayList<>(rowVals.entrySet()));
 		paginate();
 	}
 	
@@ -325,6 +339,18 @@ public class RegistrationBean extends BaseBean {
 	public void toggleAktiv() {
 		aktiv = (aktiv == null ? Boolean.TRUE : Boolean.TRUE.equals(aktiv) ? Boolean.FALSE : null);
 		paginate();
+	}
+	
+	public int getRows() {
+		return rows;
+	}
+	
+	public void setRows(int rows) {
+		this.rows = rows;
+	}
+	
+	public DataModel<Entry<String,Integer>> getRowVals() {
+		return rowDm;
 	}
 	
 	public List<RegistrationStatus> getStati() {

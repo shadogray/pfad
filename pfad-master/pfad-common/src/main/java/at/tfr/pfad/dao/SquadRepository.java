@@ -60,6 +60,9 @@ public abstract class SquadRepository implements EntityRepository<Squad, Long>, 
 		return leaders;
 	}
 
+	@Query(named="Squad.distName")
+	public abstract List<String> findDistinctName();
+
 	@Query(named="Squad.leadersFemale")
 	public abstract List<Member> findLeadersFemale();
 

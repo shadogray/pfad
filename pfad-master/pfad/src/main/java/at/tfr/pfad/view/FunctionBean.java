@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -45,6 +47,7 @@ import at.tfr.pfad.model.Function_;
 @Named
 @Stateful
 @ViewScoped
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class FunctionBean extends BaseBean<Function> implements Serializable {
 
 	private static final long serialVersionUID = 1L;

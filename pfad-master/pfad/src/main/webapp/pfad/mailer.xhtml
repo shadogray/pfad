@@ -64,7 +64,14 @@
 				</h:panelGrid>
 				
 				<h:outputLabel value="Query: "/>			
-				<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" />
+				<h:panelGrid columns="2" style="width:100%">
+					<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" autoResize="false"
+						style="height:5em;overflow-y:scroll;resize:both;font-size:smaller;"/>
+					<p:fieldset title="#{configurationBean.getValue('mailer.saveText','Text abspeichern')}" >
+						<h:outputLabel value="Text:"/>
+						<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.saveText}" />
+					</p:fieldset>
+				</h:panelGrid>
 	
 				<h:outputLabel value="Subject: "/>			
 				<p:inputText value="#{mailerBean.mailTemplate.subject}" size="80"/>
@@ -87,8 +94,9 @@
 					<f:facet name="header">ID</f:facet>
 					<h:outputText value="#{mailerBean.values.rowIndex+1}" />
 				</p:column>
-				<p:columns value="#{mailerBean.valueKeys}" var="e">
-					<h:outputText value="#{v[e]}" />
+				<p:columns value="#{mailerBean.columns}" var="c">
+					<f:facet name="header">#{c.value}</f:facet>
+					<h:outputText value="#{v[c.index].value}" />
 				</p:columns>
 			</p:dataTable>
 			

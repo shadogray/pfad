@@ -104,6 +104,10 @@ public class SessionBean implements Serializable {
 		return null;
 	}
 	
+	public boolean isTruppsAllowed() {
+		return isAdmin() || isGruppe() || isLeiter();
+	}
+	
 	public boolean isRegistrierungAllowed() {
 		return isAdmin() || isGruppe() || isRegistrierung() || isAnmeldung();
 	}

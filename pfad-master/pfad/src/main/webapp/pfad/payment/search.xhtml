@@ -8,9 +8,9 @@
 
 	<f:metadata>
 		<o:viewParam name="menu" value="#{pfadUI.menuSelect}" />
-		<f:viewParam name="page" value='#{paymentBean.page}' />
+		<f:viewParam name="page" value="#{paymentBean.page}" />
 		<f:viewParam name="paymentBeanExampleType" value="#{paymentBean.example.type}"/>
-		<f:viewParam name="paymentBeanExamplePayer" value="#{paymentBean.examplePayer}" converter="#{memberBean.converter}"/>
+		<f:viewParam name="paymentBeanExamplePayer" value="#{paymentBean.memberExample}" converter="#{memberBean.converter}"/>
 		<f:viewParam name="paymentBeanAmountFrom" value="#{paymentBean.amountFrom}"/>
 		<f:viewParam name="paymentBeanAmountTo" value="#{paymentBean.amountTo}"/>
 		<f:viewParam name="paymentBeanPaymentPaymentDateStart" value="#{paymentBean.examplePaymentDateStart}" >
@@ -19,14 +19,14 @@
 		<f:viewParam name="paymentBeanPaymentPaymentDateEnd" value="#{paymentBean.examplePaymentDateEnd}" >
 			<f:convertDateTime pattern="dd.MM.yyyy"/>
 		</f:viewParam>
-		<f:viewParam name="paymentBeanExampleActivity" value="#{paymentBean.exampleActivity}" converter="#{activityBean.converter}"/>
-		<f:viewParam name="paymentBeanExampleBooking" value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}"/>
+		<f:viewParam name="paymentBeanActivity" value="#{paymentBean.activityExample}" converter="#{activityBean.converter}"/>
+		<f:viewParam name="paymentBeanBooking" value="#{paymentBean.bookingExample}" converter="#{bookingBean.converter}"/>
 		<f:viewParam name="paymentBeanExampleComment" value="#{paymentBean.example.comment}"/>
 		<f:viewParam name="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}"/>
 		<f:viewParam name="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}"/>
 		<f:viewParam name="paymentBeanExampleIBAN" value="#{paymentBean.example.payerIBAN}"/>
 		
-		<f:event type="preRenderView" listener='#{paymentBean.paginate}' />
+		<f:viewAction action="#{paymentBean.paginate}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:define name="header">
@@ -61,7 +61,7 @@
 
 						<h:outputLabel for="paymentBeanExamplePayer" value="Zahler:" />
 						<h:panelGroup id="paymentBeanExamplePayerPanel">
-							<p:autoComplete id="paymentBeanExamplePayer" value="#{paymentBean.examplePayer}" completeMethod="#{members.filtered}" 
+							<p:autoComplete id="paymentBeanExamplePayer" value="#{paymentBean.memberExample}" completeMethod="#{members.filtered}" 
 								var="p" itemLabel="#{p}" itemValue="#{p.idStr}" converter="#{memberBean.converter}" >
 								<f:ajax render="paymentBeanPageItems" />
 							</p:autoComplete>
@@ -96,26 +96,26 @@
 						</p:calendar>
 						<h:outputText />
 
-						<h:outputLabel for="paymentBeanExampleActivity" value="Aktivität:" />
+						<h:outputLabel for="paymentBeanActivity" value="Aktivität:" />
 						<h:panelGroup>
-							<p:selectOneMenu id="paymentBeanExampleActivity" styleClass="fullwidth" p:placeholder="Aktivität.." 
-								value="#{paymentBean.exampleActivity}" converter="#{activityBean.converter}" 
+							<p:selectOneMenu id="paymentBeanActivity" styleClass="fullwidth" p:placeholder="Aktivität.." 
+								value="#{paymentBean.activityExample}" converter="#{activityBean.converter}" 
 								title="Aktivität..">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a.idStr}" />
 								<f:ajax render="paymentBeanPageItems" />
 							</p:selectOneMenu>
-							<h:message for="paymentBeanExampleActivity" styleClass="error" />
+							<h:message for="paymentBeanActivity" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel value="Buchung:" />
-						<h:panelGroup id="paymentBeanExampleBookingPanel">
-							<p:autoComplete id="paymentBeanExampleBooking" value="#{paymentBean.exampleBooking}" converter="#{bookingBean.converter}" 
+						<h:panelGroup id="paymentBeanBookingPanel">
+							<p:autoComplete id="paymentBeanBooking" value="#{paymentBean.bookingExample}" converter="#{bookingBean.converter}" 
 								completeMethod="#{bookings.filtered}">
 								<f:ajax render="paymentBeanPageItems" />
 							</p:autoComplete>
-							<h:message for="paymentBeanExampleBooking" styleClass="error" />
+							<h:message for="paymentBeanBooking" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
@@ -161,7 +161,7 @@
 
 					</h:panelGrid>
 					<h:panelGroup styleClass="buttons">
-						<h:commandLink id="search" value="Suchen" action='#{paymentBean.paginate}' styleClass="btn btn-primary" >
+						<h:commandLink id="search" value="Suchen" action="#{paymentBean.paginate}" styleClass="btn btn-primary" >
 							<f:ajax execute="@all" render="paymentBeanPageItems" />
 						</h:commandLink>
 						<h:link id="list" value="Liste" outcome="list" styleClass="btn btn-primary" />
@@ -183,7 +183,7 @@
 					<f:facet name="header">
 						<h:outputText value="Typ" />
 					</f:facet>
-					<h:link outcome="view" includeViewParams="true">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentType" value="#{_item.type}" />
 					</h:link>
@@ -192,7 +192,7 @@
 					<f:facet name="header">
 						<h:outputText value="Zahler" />
 					</f:facet>
-					<h:link outcome="view" includeViewParams="true">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPayer" value="#{_item.payer != null ? _item.payerName : 'kein Zahler..'}" />
 					</h:link>
@@ -201,7 +201,7 @@
 					<f:facet name="header">
 						<h:outputText value="Aktivität" />
 					</f:facet>
-					<h:link outcome="view" includeViewParams="true">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentActivities" value="#{_item.activitiesLines}" escape="false"/>
 					</h:link>
@@ -210,7 +210,7 @@
 					<f:facet name="header">
 						<h:outputText value="Betrag" />
 					</f:facet>
-					<h:link outcome="view" includeViewParams="true">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPaymentAmount" value="#{_item.amount}">
 							<f:convertNumber maxFractionDigits="2" />
@@ -221,7 +221,7 @@
 					<f:facet name="header">
 						<h:outputText value="Akonto" />
 					</f:facet>
-					<h:link outcome="view" includeViewParams="true">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentAconto" value="#{_item.aconto ? 'JA' : 'NEIN'}" />
 					</h:link>
@@ -230,7 +230,7 @@
 					<f:facet name="header">
 						<h:outputText value="Bezahlt" />
 					</f:facet>
-					<h:link outcome="view" includeViewParams="true">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentFinished" value="#{_item.finished ? 'JA' : 'NEIN'}" />
 					</h:link>
@@ -239,7 +239,7 @@
 					<f:facet name="header">
 						<h:outputText value="Datum" />
 					</f:facet>
-					<h:link outcome="view" includeViewParams="true">
+					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPaymentDate" value="#{_item.paymentDate}" converter="javax.faces.DateTime" />
 					</h:link>
@@ -248,7 +248,7 @@
 					<f:facet name="header">
 						<h:outputText value="IBAN" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="create">
 						<f:param name="id" value="#{_item.id}" includeViewParams="true" />
 						<h:outputText id="itemPaymentIBAN" value="#{_item.payerIBAN}" />
 					</h:link>
@@ -257,7 +257,7 @@
 					<f:facet name="header">
 						<h:outputText value="Comment" />
 					</f:facet>
-					<h:link outcome="view">
+					<h:link outcome="create">
 						<f:param name="id" value="#{_item.id}" includeViewParams="true" />
 						<h:outputText id="itemPaymentComment" value="#{_item.comment}" />
 					</h:link>

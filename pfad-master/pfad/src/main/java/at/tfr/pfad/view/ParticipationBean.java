@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -37,6 +39,7 @@ import at.tfr.pfad.ParticipationStatus;
 import at.tfr.pfad.TrainingForm;
 import at.tfr.pfad.TrainingPhase;
 import at.tfr.pfad.dao.ParticipationRepository;
+import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Participation;
 import at.tfr.pfad.model.Participation_;
 import at.tfr.pfad.model.Training_;
@@ -53,6 +56,7 @@ import at.tfr.pfad.model.Training_;
 @Named
 @Stateful
 @ViewScoped
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class ParticipationBean extends BaseBean<Participation> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -118,13 +122,8 @@ public class ParticipationBean extends BaseBean<Participation> implements Serial
 		if (this.id == null) {
 			this.participation = this.example;
 		} else {
-			this.participation = findById(getId());
+			this.participation = findParticipationById(getId());
 		}
-	}
-
-	public Participation findById(Long id) {
-
-		return participationRepo.findBy(id);
 	}
 
 	/*
@@ -162,7 +161,7 @@ public class ParticipationBean extends BaseBean<Participation> implements Serial
 			throw new SecurityException("only admins may delete entry");
 
 		try {
-			Participation deletableEntity = findById(getId());
+			Participation deletableEntity = findParticipationById(getId());
 
 			this.entityManager.remove(deletableEntity);
 			this.entityManager.flush();
@@ -243,12 +242,21 @@ public class ParticipationBean extends BaseBean<Participation> implements Serial
 			predicatesList.add(builder.equal(root.get(Participation_.status), example.getStatus()));
 		}
 		
-		if (exampleTraining != null) {
-			predicatesList.add(builder.equal(root.get(Participation_.training), exampleTraining));
+		if (trainingSearch != null && trainingSearch.getId() != null) {
+			predicatesList.add(builder.equal(root.get(Participation_.training), trainingSearch));
 		}
 	
-		if (exampleMember != null) {
-			predicatesList.add(builder.equal(root.get(Participation_.member), exampleMember));
+		if (StringUtils.isNotBlank(memberExample.getName())) {
+			predicatesList.add(builder.or(
+					builder.like(builder.lower(root.get(Participation_.member).get(Member_.name)), 
+							"%"+memberExample.getName().toLowerCase()+"%"),
+					builder.like(builder.lower(root.get(Participation_.member).get(Member_.vorname)), 
+							"%"+memberExample.getName().toLowerCase()+"%")
+					));
+		}
+		
+		if (memberSearch != null && memberSearch.getId() != null) {
+			predicatesList.add(builder.equal(root.get(Participation_.member), memberSearch));
 		}
 		
 		if (trainingForm != null) {
@@ -289,7 +297,7 @@ public class ParticipationBean extends BaseBean<Participation> implements Serial
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 				if (StringUtils.isBlank(value))
 					return null;
-				return ejbProxy.findById(Long.valueOf(value));
+				return ejbProxy.findParticipationById(Long.valueOf(value));
 			}
 
 			@Override
@@ -319,7 +327,7 @@ public class ParticipationBean extends BaseBean<Participation> implements Serial
 			public Object getAsObject(FacesContext context, UIComponent component, String value) {
 				if (StringUtils.isNotBlank(value)) {
 					return Stream.of(value.split(","))
-							.map(id->ejbProxy.findById(Long.valueOf(id)))
+							.map(id->ejbProxy.findParticipationById(Long.valueOf(id)))
 							.filter(o->o != null).collect(Collectors.toList());
 				}
 				return new ArrayList<>();
