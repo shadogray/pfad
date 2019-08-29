@@ -55,7 +55,7 @@ public class RegistrationBean extends BaseBean {
 	private boolean all;
 	private TriStateConverter triStateConverter = new TriStateConverter();
 	private Map<String,Integer> rowVals = new LinkedHashMap<>();
-	private DataModel<Entry<String,Integer>> rowDm;
+	private List<Entry<String,Integer>> rowDm;
 
 	@PostConstruct
 	public void init() {
@@ -67,7 +67,7 @@ public class RegistrationBean extends BaseBean {
 		rowVals.put("50", new Integer(50));
 		rowVals.put("Alle", new Integer(10000));
 		rows = rowVals.get("20");
-		rowDm = new ListDataModel<>(new ArrayList<>(rowVals.entrySet()));
+		rowDm = new ArrayList<>(rowVals.entrySet());
 		paginate();
 	}
 	
@@ -349,7 +349,7 @@ public class RegistrationBean extends BaseBean {
 		this.rows = rows;
 	}
 	
-	public DataModel<Entry<String,Integer>> getRowVals() {
+	public List<Entry<String,Integer>> getRowVals() {
 		return rowDm;
 	}
 	

@@ -1,5 +1,11 @@
 function filterKey(event) {
-	return [8,9,13,46].includes(event.which) || /[a-z0-9 ]{2,}/i.test(event.target.value);	
+	//alert('key='.concat(event.key,' code=',event.which));
+	cc = event.which;
+	return [8,9,13,45,46].includes(cc) // BKSP,TAB,ENTER,INS,DEL
+		|| (cc >= 48 && cc <= 90) // a-z 
+		|| cc >= 186 // semicolon
+		|| event.key.length == 1
+		|| /[a-z0-9öäü^°"§$%&\/()=?{}\[\]\\ ,.;:-_/<>|]{2,}/i.test(event.target.value);
 }
 
 function autoFilter(subString, value) {
@@ -41,6 +47,7 @@ function submitSearch(event) {
 	}
 }
 
+/* not sooo good??!!
 $(document).ready(function() {
 	$('form#search').on('keypress', function(event) {
 		submitSearch(event);
@@ -49,3 +56,4 @@ $(document).ready(function() {
 		event.stopPropagation();
 	});
 });
+*/

@@ -24,7 +24,7 @@
 	<ui:define name="main">
 		
 		<p:log rendered="false"/>
-		<p:focus rendered="false"/>
+		<p:focus/>
 		
 		<h:form id="list" rendered="#{paymentBean.viewAllowed}">
 			<h:messages globalOnly="true" styleClass="error" />
@@ -50,20 +50,21 @@
 
 				<p:columns value="#{paymentTableBean.columns}" var="col">
 					<f:facet name="header">
-						<p:outputLabel value="#{col.value}" style="#{col.headerStyle}">
+						<p:outputLabel value="#{col.value}">
 							<f:attribute name="column" value="#{col}" />
 						</p:outputLabel>
-						<p:inputText value="#{col.filter}" placeholder="suche.." style="min-width:4em;#{col.headerStyle}"
+						<p:inputText value="#{col.filter}" placeholder="suche.." style="min-width:4em;#{col.evalHeaderStyle(col.filter)}"
 							rendered="#{col.search and empty col.items}">
 							<f:attribute name="column" value="#{col}" />
-							<p:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{paymentTableBean.dataModel.filter}" oncomplete="PF('payments').filter()" />
+							<p:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{paymentTableBean.dataModel.filter}" 
+								update="@this" oncomplete="PF('payments').filter()"/>
 						</p:inputText>
 						<p:selectOneMenu value="#{col.filter}" valueChangeListener="#{paymentTableBean.dataModel.reload}"
-							style="min-width:4em;#{col.headerStyle}" rendered="#{col.search and ! empty col.items}">
+							style="min-width:4em;#{col.evalHeaderStyle(col.filter)}" rendered="#{col.search and ! empty col.items}">
 							<f:attribute name="column" value="#{col}" />
 							<f:selectItem noSelectionOption="true" />
 							<f:selectItems value="#{col.itemEntries}" var="e" itemValue="#{e.value}" itemLabel="#{e.key}" />
-							<p:ajax listener="#{paymentTableBean.dataModel.filter}" oncomplete="PF('payments').filter()" />
+							<p:ajax listener="#{paymentTableBean.dataModel.filter}" update="@this" oncomplete="PF('payments').filter()"/>
 						</p:selectOneMenu>
 					</f:facet>
 					<h:outputText value="#{record[col.key]}"  style="#{col.fieldStyle}"/>

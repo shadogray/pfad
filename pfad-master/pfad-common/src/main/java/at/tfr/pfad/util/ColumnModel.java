@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ColumnModel {
 
 	protected String key; 
@@ -24,6 +26,8 @@ public class ColumnModel {
 	protected String fieldStyle;
 	protected String headerStyleValue;
 	protected String fieldStyleValue;
+	protected boolean headerStyleNotEmpty;
+	protected boolean fieldStyleNotEmpty;
 	
 	public ColumnModel(String key, String value, int index) {
 		this(key, value, index, null, null, null);
@@ -149,9 +153,11 @@ public class ColumnModel {
 	}
 
 	public String evalHeaderStyle(String value) {
+		if (headerStyleNotEmpty) {
+			return StringUtils.isNotEmpty(value) ? headerStyle : ""; 
+		}
 		if (headerStyleValue != null) {
-			if (headerStyleValue.equals(value)) return headerStyle;
-			else return "";
+			return headerStyleValue.equals(value) ? headerStyle : "";
 		}
 		return headerStyle;
 	}
@@ -169,9 +175,11 @@ public class ColumnModel {
 	}
 
 	public String evalFieldStyle(String value) {
+		if (fieldStyleNotEmpty) {
+			return StringUtils.isNotEmpty(value) ? fieldStyle : "";
+		}
 		if (fieldStyleValue != null) {
-			if (fieldStyleValue.equals(value)) return fieldStyle;
-			else return "";
+			return fieldStyleValue.equals(value) ? fieldStyle : "";
 		}
 		return fieldStyle;
 	}
@@ -196,6 +204,22 @@ public class ColumnModel {
 		this.fieldStyleValue = fieldStyleValue;
 	}
 	
+	public boolean isHeaderStyleNotEmpty() {
+		return headerStyleNotEmpty;
+	}
+
+	public void setHeaderStyleNotEmpty(boolean headerStyleNotEmpty) {
+		this.headerStyleNotEmpty = headerStyleNotEmpty;
+	}
+
+	public boolean isFieldStyleNotEmpty() {
+		return fieldStyleNotEmpty;
+	}
+
+	public void setFieldStyleNotEmpty(boolean fieldStyleNotEmpty) {
+		this.fieldStyleNotEmpty = fieldStyleNotEmpty;
+	}
+
 	public ColumnModel filter(String filter) {
 		setFilter(filter);
 		return this;
@@ -258,6 +282,16 @@ public class ColumnModel {
 
 	public ColumnModel fieldStyleValue(String fieldStyleValue) {
 		this.fieldStyleValue = fieldStyleValue;
+		return this;
+	}
+
+	public ColumnModel headerStyleNotEmpty(boolean headerStyleNotEmpty) {
+		this.headerStyleNotEmpty = headerStyleNotEmpty;
+		return this;
+	}
+
+	public ColumnModel fieldStyleNotEmpty(boolean fieldStyleNotEmpty) {
+		this.fieldStyleNotEmpty = fieldStyleNotEmpty;
 		return this;
 	}
 }

@@ -48,16 +48,24 @@ public class BookingTableBean extends BaseBean {
 	@PostConstruct
 	public void postConstruct() {
 		columns.add(new ColumnModel("id", "ID", 0).search(false));
-		columns.add(new ColumnModel("member", "Mitglied", 1, true).minLength(2));
-		columns.add(new ColumnModel("strasse", "Strasse", 2).minLength(2)); //.items(memberRepo.findDistinctStrasse()));
-		columns.add(new ColumnModel("ort", "Ort", 3).items(memberRepo.findDistinctOrt()));
-		columns.add(new ColumnModel("activity", "Aktivität", 4)); //.items(activityRepo.findDistinctName()));
+		columns.add(new ColumnModel("member", "Mitglied", 1, true).minLength(2)
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
+		columns.add(new ColumnModel("strasse", "Strasse", 2).minLength(2)
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true)); //.items(memberRepo.findDistinctStrasse()));
+		columns.add(new ColumnModel("ort", "Ort", 3).items(memberRepo.findDistinctOrt())
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
+		columns.add(new ColumnModel("activity", "Aktivität", 4)
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true)); //.items(activityRepo.findDistinctName()));
 		columns.add(new ColumnModel("activityFinished", "Beendet", 4).items(trueFalse).filter("false")
-				.headerStyle("border: solid 3px red;").headerStyleValue("false")); //.items(activityRepo.findDistinctName()));
-		columns.add(new ColumnModel("squadName", "Trupp", 5).items(squadRepo.findDistinctName()));
-		columns.add(new ColumnModel("status", "Status", 6).items(BookingStatus.values()));
-		columns.add(new ColumnModel("payed", "Bezahlt", 7).items(jaNeinAnz));
-		columns.add(new ColumnModel("comment", "Bemerkung", 8));
+				.headerStyle("border: solid 3px red;").headerStyleValue("false").headerStyleNotEmpty(true)); //.items(activityRepo.findDistinctName()));
+		columns.add(new ColumnModel("squadName", "Trupp", 5).items(squadRepo.findDistinctName())
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
+		columns.add(new ColumnModel("status", "Status", 6).items(BookingStatus.values())
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
+		columns.add(new ColumnModel("payed", "Bezahlt", 7).items(jaNeinAnz)
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
+		columns.add(new ColumnModel("comment", "Bemerkung", 8)
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
 		bookingDataModel.setColumns(columns);
 	}
 
