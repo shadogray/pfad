@@ -67,8 +67,9 @@
 				<h:panelGrid columns="2" style="width:100%">
 					<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" autoResize="false"
 						style="height:5em;overflow-y:scroll;resize:both;font-size:smaller;">
-						<p:ajax event="keypress" onstart="return ctrlEnter(event)" process="@this" listener="#{mailerBean.executeQuery}" update="mailMessages messages"/>
-						<f:ajax listener="#{mailerBean.executeQuery}" render="mailMessages messages"/>
+						<p:ajax event="keypress" onstart="return ctrlEnter(event)" process="@this" listener="#{mailerBean.executeQuery}" 
+							update="values mailMessages messages"/>
+						<f:ajax listener="#{mailerBean.executeQuery}" render="values mailMessages messages"/>
 					</p:inputTextarea>
 					<p:fieldset legend="#{configurationBean.getValue('mailer.props','Mail Einstellungen')}" title="#{configurationBean.getValue('mailer.props','Mail Einstellungen')}" >
 						<h:panelGrid columns="6">
