@@ -1,4 +1,13 @@
 @charset "UTF-8";
+/* Bootstrap overrides: */
+fieldset {}
+legend {
+	width: auto;
+	font-size: .8em;
+	line-height: 1em;
+	padding: 0 .5em;
+	margin: 0;
+}
 
 /* Primefaces overrides: */
 .ui-widget {

@@ -67,9 +67,15 @@
 				<h:panelGrid columns="2" style="width:100%">
 					<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" autoResize="false"
 						style="height:5em;overflow-y:scroll;resize:both;font-size:smaller;"/>
-					<p:fieldset title="#{configurationBean.getValue('mailer.saveText','Text abspeichern')}" >
-						<h:outputLabel value="Text:"/>
-						<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.saveText}" />
+					<p:fieldset legend="#{configurationBean.getValue('mailer.props','Mail Einstellungen')}" title="#{configurationBean.getValue('mailer.props','Mail Einstellungen')}" >
+						<h:panelGrid columns="4">
+							<h:outputLabel value="CC:" title="#{configurationBean.getValue('mailer.cc','Nachricht an CC')}"/>
+							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.cc}" title="#{configurationBean.getValue('mailer.cc','Nachricht an CC')}"/>
+							<h:outputLabel value="BCC:" title="#{configurationBean.getValue('mailer.bcc','Nachricht an BCC')}"/>
+							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.bcc}" title="#{configurationBean.getValue('mailer.bcc','Nachricht an BCC')}"/>
+							<h:outputLabel value="Text:" title="#{configurationBean.getValue('mailer.saveText','Text abspeichern')}"/>
+							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.saveText}" title="#{configurationBean.getValue('mailer.saveText','Text abspeichern')}"/>
+						</h:panelGrid>
 					</p:fieldset>
 				</h:panelGrid>
 	

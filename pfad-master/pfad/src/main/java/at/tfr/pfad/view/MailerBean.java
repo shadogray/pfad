@@ -87,8 +87,16 @@ public class MailerBean extends BaseBean {
 
 	@PostConstruct
 	public void init() {
-		mailConfigs = MailConfig.generateConfigs(sessionBean.getConfig(), log.isDebugEnabled());
-		mailConfigKey = getMailConfigKeys().stream().findFirst().orElse(null);
+		mailConfigs = MailConfig.generateConfigs(sessionBean.getConfig(), log.isDebugEnabled()).entrySet().stream()
+				.filter(mc -> StringUtils.isNotBlank(mc.getValue().getPassword()))
+				.collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+		Entry<String,MailConfig> myMc = mailConfigs.entrySet().stream()
+				.filter(mc -> mc.getKey().toLowerCase().startsWith(sessionBean.getUser().getName())).findFirst().orElse(null);
+		if (myMc == null) {
+			myMc = mailConfigs.entrySet().stream().findFirst().orElse(null);
+		}
+		if (myMc != null)
+			mailConfigKey = myMc.getKey();
 		setMailConfigKey(mailConfigKey);
 		if (mailConfigs.isEmpty()) {
 			warn("No MailConfiguration found! Cannot execute any Mails.");
@@ -207,27 +215,37 @@ public class MailerBean extends BaseBean {
 					mail.setContent(msg.getText(), "text/html; charset=utf-8");
 					
 					RecipientType to = RecipientType.TO;
-					String msgReceivers = testOnly ? mailConfig.getTestTo() : msg.getReceiver();
+					String msgReceivers;
+					if (testOnly) {
+						msgReceivers = mailConfig.getTestTo();
+						msg.setReceiver(mailConfig.getTestTo());
+					} else {
+						msgReceivers =  msg.getReceiver();
+					}
 					addAddresses(mail, msgReceivers, to);
 					
-					if (StringUtils.isNotBlank(msg.getCc())) {
-						addAddresses(mail, msg.getCc(), RecipientType.CC);
-					} else if (mailConfig.getCcConf() != null) {
-						msg.setCc(mailConfig.getCcConf().getCvalue());
-						addAddresses(mail, msg.getCc(), RecipientType.CC);
+					if (mailTemplate.isCc()) {
+						if (StringUtils.isNotBlank(msg.getCc())) {
+							addAddresses(mail, msg.getCc(), RecipientType.CC);
+						} else if (mailConfig.getCcConf() != null) {
+							msg.setCc(mailConfig.getCcConf().getCvalue());
+							addAddresses(mail, msg.getCc(), RecipientType.CC);
+						}
 					}
-					if (StringUtils.isNotBlank(msg.getBcc())) {
-						addAddresses(mail, msg.getBcc(), RecipientType.BCC);
-					} else if (mailConfig.getBccConf() != null) {
-						msg.setBcc(mailConfig.getBccConf().getCvalue());
-						addAddresses(mail, msg.getBcc(), RecipientType.BCC);
+					if (mailTemplate.isBcc()) {
+						if (StringUtils.isNotBlank(msg.getBcc())) {
+							addAddresses(mail, msg.getBcc(), RecipientType.BCC);
+						} else if (mailConfig.getBccConf() != null) {
+							msg.setBcc(mailConfig.getBccConf().getCvalue());
+							addAddresses(mail, msg.getBcc(), RecipientType.BCC);
+						}
 					}
 
 					msg.setTemplate(mailTemplate);
 					msg.setSender(sender.getAddress()
 							+ (StringUtils.isNotBlank(sender.getPersonal()) ? ":" + sender.getPersonal() : ""));
 					msg.setTest(testOnly);
-					if (Boolean.FALSE.equals(mailTemplate.getSaveText())) {
+					if (Boolean.FALSE.equals(mailTemplate.isSaveText())) {
 						msg.setText(null);
 					}
 					

@@ -50,6 +50,10 @@ public class MailTemplate extends BaseEntity implements Auditable {
 	private String owner;
 	@Column
 	private Boolean saveText;
+	@Column
+	private Boolean cc;
+	@Column
+	private Boolean bcc;
 	
 	protected Date changed;
 	protected Date created;
@@ -121,12 +125,28 @@ public class MailTemplate extends BaseEntity implements Auditable {
 		this.messages = messages;
 	}
 	
-	public Boolean getSaveText() {
-		return saveText;
+	public boolean isSaveText() {
+		return Boolean.TRUE.equals(saveText);
 	}
 	
-	public void setSaveText(Boolean saveText) {
+	public void setSaveText(boolean saveText) {
 		this.saveText = saveText;
+	}
+
+	public boolean isCc() {
+		return Boolean.TRUE.equals(cc);
+	}
+
+	public void setCc(boolean cc) {
+		this.cc = cc;
+	}
+
+	public boolean isBcc() {
+		return Boolean.TRUE.equals(bcc);
+	}
+
+	public void setBcc(boolean bcc) {
+		this.bcc = bcc;
 	}
 
 	@Override

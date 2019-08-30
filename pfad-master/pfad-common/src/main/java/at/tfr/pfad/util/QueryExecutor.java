@@ -40,7 +40,7 @@ public class QueryExecutor implements Serializable {
 	@SuppressWarnings("unchecked")
 	public List<List<Entry<String, Object>>> execute(String query, boolean nativeQuery) {
 		
-		if (query != null && query.matches("(?)password")) {
+		if (query != null && query.matches("(?).*password.*")) {
 			throw new SecurityException("security check failed");
 		}
 		Query q;
