@@ -8,6 +8,10 @@ function filterKey(event) {
 		|| /[a-z0-9öäü^°"§$%&\/()=?{}\[\]\\ ,.;:-_/<>|]{2,}/i.test(event.target.value);
 }
 
+function ctrlEnter(event) {
+	return event.ctrlKey && event.keyCode === 13;
+}
+
 function autoFilter(subString, value) {
 	if (subString.length >= 1) {
 		var split = subString.split(" ");

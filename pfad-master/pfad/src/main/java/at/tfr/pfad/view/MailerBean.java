@@ -128,9 +128,12 @@ public class MailerBean extends BaseBean {
 				MailMessage msg = new MailMessage();
 				msg.setValues(vals);
 				msg.setTemplate(mailTemplate);
-				String text = templateUtils.replace(mailTemplate.getText(), vals);
-				text = text.replaceAll("<p style=\"", "<p style=\"margin:0; ");
-				text = text.replaceAll("<p>", "<p style='margin:0;'>");
+				String text = mailTemplate.getText();
+				if (text != null) {
+					text = templateUtils.replace(mailTemplate.getText(), vals);
+					text = text.replaceAll("<p style=\"", "<p style=\"margin:0; ");
+					text = text.replaceAll("<p>", "<p style='margin:0;'>");
+				}
 				msg.setText(text);
 				msg.setReceiver(templateUtils.replace("${to}", vals));
 				msg.setCc(templateUtils.replace("${cc}", vals, mailConfig.getCcConf() != null ? mailConfig.getCcConf().getCvalue() : null));
