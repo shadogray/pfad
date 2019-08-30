@@ -9,7 +9,7 @@ function filterKey(event) {
 }
 
 function ctrlEnter(event) {
-	return event.ctrlKey && event.keyCode === 13;
+	return event.ctrlKey && event.code === 'Enter';
 }
 
 function autoFilter(subString, value) {
