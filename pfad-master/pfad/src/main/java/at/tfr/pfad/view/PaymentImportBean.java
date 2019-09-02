@@ -33,12 +33,12 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.logging.Logger;
 
-import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.processing.ProcessData;
 import at.tfr.pfad.processing.ProcessExcelPayments;
 import at.tfr.pfad.processing.RegistrationDataGenerator;
+import at.tfr.pfad.util.SessionBean;
 
 @Named
 @ViewScoped
@@ -48,9 +48,9 @@ public class PaymentImportBean implements Serializable {
 	private Logger log = Logger.getLogger(getClass());
 	
 	@Inject
-	private ProcessExcelPayments processor;
+	private SessionBean sessionBean;
 	@Inject
-	private ConfigurationRepository configRepo;
+	private ProcessExcelPayments processor;
 	@Resource
 	private SessionContext ctx;
 
@@ -92,7 +92,7 @@ public class PaymentImportBean implements Serializable {
 		try {
 		
 			ProcessData data = new ProcessData(activity);
-			data.setBadenIBANs(Pattern.compile(configRepo.getValue(Configuration.BADEN_IBANS, "AT112020500000007450")));
+			data.setBadenIBANs(Pattern.compile(sessionBean.getValue(Configuration.BADEN_IBANS, "AT112020500000007450")));
 			data.setCreatePayment(execute);
 			if (StringUtils.isNoneBlank(amountGrades)) {
 				data.setAmountGrades(parse(amountGrades));

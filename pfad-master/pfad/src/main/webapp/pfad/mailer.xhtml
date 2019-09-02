@@ -14,6 +14,15 @@
 	<ui:param name="pageTitle" value="Mailversendung" />
 
 	<ui:define name="header">
+		<h:outputStylesheet>
+			.ui-chips-container {
+				width: auto;
+				overflow: auto;	
+			}
+			.ui-fieldset, .ui-fieldset .ui-fieldset-legend {
+				padding: .3em 1em;
+			}
+		</h:outputStylesheet>
 	</ui:define>
 	<ui:define name="subheader">Mailer</ui:define>
 	<ui:define name="footer" />
@@ -64,9 +73,9 @@
 				</h:panelGrid>
 				
 				<h:outputLabel value="Query: "/>			
-				<h:panelGrid columns="2" style="width:100%">
+				<h:panelGrid columns="2" style="width:100%" columnClasses="width40,width30">
 					<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" autoResize="false"
-						style="height:5em;overflow-y:scroll;resize:both;font-size:smaller;">
+						style="width:95%;height:5em;overflow-y:scroll;resize:both;font-size:smaller;">
 						<p:ajax event="keypress" onstart="return ctrlEnter(event)" process="@this" listener="#{mailerBean.executeQuery}" 
 							update="values mailMessages messages"/>
 						<f:ajax listener="#{mailerBean.executeQuery}" render="values mailMessages messages"/>
@@ -83,8 +92,20 @@
 					</p:fieldset>
 				</h:panelGrid>
 	
-				<h:outputLabel value="Subject: "/>			
-				<p:inputText value="#{mailerBean.mailTemplate.subject}" size="80"/>
+				<h:outputLabel value="Betreff: "/>
+				<h:panelGrid columns="2" width="100%" columnClasses="width40,width30">
+					<p:inputText value="#{mailerBean.mailTemplate.subject}" size="80"/>
+	
+					<p:fieldset legend="Anhänge">
+						<h:panelGrid id="filePanel" columns="2" columnClasses="width30,width10">
+							<p:chips value="#{mailerBean.fileNames}" style="width:95%">
+								<f:ajax event="itemUnselect" render="filePanel"/>
+							</p:chips>
+							<p:fileUpload fileUploadListener="#{mailerBean.handleFileUpload}" auto="true" update="filePanel"
+								sizeLimit="10000000" invalidSizeMessage="Datei zu groß!" skinSimple="true"/>
+						</h:panelGrid>
+					</p:fieldset>
+				</h:panelGrid>			
 				
 				<h:outputLabel value="Text: "/>			
 				<p:textEditor value="#{mailerBean.mailTemplate.text}" height="400"/>

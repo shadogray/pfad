@@ -68,8 +68,6 @@ public class DownloadBean implements Serializable {
 	@Inject
 	private SquadRepository squadRepo;
 	@Inject
-	private ConfigurationRepository configRepo;
-	@Inject
 	private QueryExecutor qExec;
 	@Inject
 	private RegistrationDataGenerator regDataGenerator;
@@ -231,10 +229,8 @@ public class DownloadBean implements Serializable {
 	}
 
 	public List<Configuration> getQueries() {
-		return configRepo.findAll().stream()
+		return sessionBean.getConfig().stream()
 				.filter(c -> c.getCkey() != null && (c.getType() == ConfigurationType.query || c.getType() == ConfigurationType.nativeQuery))
-				.filter(q -> sessionBean.isAdmin() || Role.none.equals(q.getRole())
-						|| sessionBean.getUserSession().isCallerInRole(q.getRole().name()))
 				.sorted((x,y) -> x.getCkey().compareTo(y.getCkey()))
 				.collect(Collectors.toList());
 	}

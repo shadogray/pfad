@@ -33,9 +33,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.Role;
-import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Configuration_;
+import at.tfr.pfad.util.SessionBean;
 
 /**
  * Backing bean for Configuration entities.
@@ -55,7 +55,7 @@ public class ConfigurationBean extends BaseBean<Configuration> implements Serial
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	private ConfigurationRepository configRepo;
+	private SessionBean sessionBean;
 
 	/*
 	 * Support creating and retrieving Configuration entities
@@ -66,7 +66,7 @@ public class ConfigurationBean extends BaseBean<Configuration> implements Serial
 
 	@PostConstruct
 	public void init() {
-		allConfigs = configRepo.findAll();
+		allConfigs = sessionBean.getConfig();
 	}
 	
 	public Long getId() {
@@ -215,6 +215,13 @@ public class ConfigurationBean extends BaseBean<Configuration> implements Serial
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
+		if (!(sessionBean.isAdmin() || sessionBean.isGruppe())) {
+			predicatesList.add(builder.or(
+					root.get(Configuration_.role).in(sessionBean.getRoles()),
+					builder.isNull(root.get(Configuration_.owners)),
+					builder.like(builder.lower(root.get(Configuration_.owners)), '%'+sessionBean.getUser().getName().toLowerCase()+"%")));
+		}
+		
 		String ckey = this.example.getCkey();
 		if (ckey != null && !"".equals(ckey)) {
 			predicatesList.add(builder.like(builder.lower(root.get(Configuration_.ckey)), '%' + ckey.toLowerCase() + '%'));
@@ -242,10 +249,7 @@ public class ConfigurationBean extends BaseBean<Configuration> implements Serial
 	 */
 
 	public List<Configuration> getAll() {
-
-		CriteriaQuery<Configuration> criteria = this.entityManager.getCriteriaBuilder()
-				.createQuery(Configuration.class);
-		return this.entityManager.createQuery(criteria.select(criteria.from(Configuration.class))).getResultList();
+		return allConfigs;
 	}
 
 	public Converter getConverter() {
@@ -310,6 +314,7 @@ public class ConfigurationBean extends BaseBean<Configuration> implements Serial
 	public String getDescription(String key) {
 		return allConfigs.stream().filter(c -> ConfigurationType.simple.equals(c.getType()) && c.getCkey().equalsIgnoreCase(key))
 				.filter(c -> c.getDescription() != null)
+				
 				.map(Configuration::getDescription).findAny().orElse("");
 	}
 }

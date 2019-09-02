@@ -334,24 +334,52 @@ footer p {
 	max-width: 800px;
 }
 
+.width10 {
+	width: 10em;
+}
+
+.width15 {
+	width: 15em;
+}
+
 .width20 {
 	width: 20em;
+}
+
+.width25 {
+	width: 25em;
 }
 
 .width30 {
 	width: 30em;
 }
 
+.width35 {
+	width: 35em;
+}
+
 .width40 {
 	width: 40em;
+}
+
+.width45 {
+	width: 45em;
 }
 
 .width50 {
 	width: 50em;
 }
 
+.width55 {
+	width: 55em;
+}
+
 .width60 {
 	width: 60em;
+}
+
+.width70 {
+	width: 70em;
 }
 
 .width80 {

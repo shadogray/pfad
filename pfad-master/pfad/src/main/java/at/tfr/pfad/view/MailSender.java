@@ -1,6 +1,7 @@
 package at.tfr.pfad.view;
 
 import java.util.Date;
+import java.util.Map;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -11,6 +12,7 @@ import javax.mail.MessagingException;
 import javax.mail.Transport;
 
 import org.jboss.logging.Logger;
+import org.primefaces.model.UploadedFile;
 
 import at.tfr.pfad.dao.MailMessageRepository;
 import at.tfr.pfad.model.MailMessage;

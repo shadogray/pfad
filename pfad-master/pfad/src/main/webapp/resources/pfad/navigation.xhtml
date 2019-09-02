@@ -58,10 +58,10 @@
 					<h:link outcome="/pfad/mailer?menu=mailer" value="Mails" />
 				</li>
 				<li class="#{pfadUI.isMenuSelected('mail.template')}">
-					<h:link outcome="/pfad/mail/mailtemplate?menu=mail.template" value="Templates" />
+					<h:link outcome="/pfad/mail/mailtemplate?menu=mail.template" value="Vorlagen" />
 				</li>
 				<li class="#{pfadUI.isMenuSelected('mail.message')}">
-					<h:link outcome="/pfad/mail/mailmessage?menu=mail.message" value="Messages" />
+					<h:link outcome="/pfad/mail/mailmessage?menu=mail.message" value="Gesendet" />
 				</li>
 				<li ><a href="#{configurationBean.getValue('handbuchUrl')}">Handbuch</a></li>
 				<li ><h:commandLink action="#{loginBean.logout()}" value="Beenden"/></li>

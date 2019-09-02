@@ -1,16 +1,26 @@
 package at.tfr.pfad.view;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.activation.MimeType;
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
@@ -25,14 +35,19 @@ import javax.inject.Named;
 import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
+import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MailMessageRepository;
@@ -54,8 +69,6 @@ public class MailerBean extends BaseBean {
 
 	private Logger log = Logger.getLogger(getClass());
 
-	@Inject
-	private ConfigurationRepository configRepo;
 	@Inject
 	private TemplateUtils templateUtils;
 	@Inject
@@ -80,6 +93,7 @@ public class MailerBean extends BaseBean {
 	private final List<ColumnModel> columns = new ArrayList<>();
 	private final List<String> columnHeaders = new ArrayList<>();
 	private ListDataModel<MailMessage> mailMessagesModel = new ListDataModel<>();
+	private final Map<String,UpFile> files = new LinkedHashMap<>();
 
 	public enum MailProps {
 		mail_transport_protocol, mail_smtp_starttls_enable, mail_smtp_auth, mail_smtp_host, mail_smtp_port, mail_smtps_auth, mail_smtps_host, mail_smtps_port, mail_smtp_ssl_enable, mail_smtp_socketFactory_class, mail_smtp_socketFactory_port
@@ -199,7 +213,7 @@ public class MailerBean extends BaseBean {
 						continue;
 					}
 					try {
-						InternetAddress ia = new InternetAddress(msg.getReceiver());
+						InternetAddress[] ia = InternetAddress.parse(msg.getReceiver());
 					} catch (Exception e) {
 						warn("invalid Receiver: "+e.getMessage()+ " : " + msg);
 						continue;
@@ -215,34 +229,46 @@ public class MailerBean extends BaseBean {
 					MimeMessage mail = new MimeMessage(session);
 					mail.setFrom(sender);
 					mail.setSubject(msg.getSubject());
-					mail.setContent(msg.getText(), "text/html; charset=utf-8");
+
+					MimeMultipart multipart = new MimeMultipart();
+					MimeBodyPart body = new MimeBodyPart();
+					body.setContent(msg.getText(), "text/html");
+					multipart.addBodyPart(body);
+					for (Entry<String, UpFile> fup : files.entrySet()) {
+						MimeBodyPart filePart = new MimeBodyPart();
+						filePart.setDisposition(Part.ATTACHMENT);
+						filePart.setFileName(fup.getKey());
+						filePart.setDataHandler(new DataHandler(new FileDataSource(fup.getValue().content.toFile())));
+						multipart.addBodyPart(filePart);
+					}
+					mail.setContent(multipart);
 					
 					RecipientType to = RecipientType.TO;
-					String msgReceivers;
 					if (testOnly) {
-						msgReceivers = mailConfig.getTestTo();
+						addAddresses(mail, mailConfig.getTestTo(), to);
 						msg.setReceiver(mailConfig.getTestTo());
+						if (mailTemplate.isCc()) 
+							msg.setCc(mailConfig.getTestTo());
 					} else {
-						msgReceivers =  msg.getReceiver();
+						addAddresses(mail, msg.getReceiver(), to);
+						if (mailTemplate.isCc()) {
+							if (StringUtils.isNotBlank(msg.getCc())) {
+								addAddresses(mail, msg.getCc(), RecipientType.CC);
+							} else if (mailConfig.getCcConf() != null) {
+								msg.setCc(mailConfig.getCcConf().getCvalue());
+								addAddresses(mail, msg.getCc(), RecipientType.CC);
+							}
+						}
+						if (mailTemplate.isBcc()) {
+							if (StringUtils.isNotBlank(msg.getBcc())) {
+								addAddresses(mail, msg.getBcc(), RecipientType.BCC);
+							} else if (mailConfig.getBccConf() != null) {
+								msg.setBcc(mailConfig.getBccConf().getCvalue());
+								addAddresses(mail, msg.getBcc(), RecipientType.BCC);
+							}
+						}
 					}
-					addAddresses(mail, msgReceivers, to);
 					
-					if (mailTemplate.isCc()) {
-						if (StringUtils.isNotBlank(msg.getCc())) {
-							addAddresses(mail, msg.getCc(), RecipientType.CC);
-						} else if (mailConfig.getCcConf() != null) {
-							msg.setCc(mailConfig.getCcConf().getCvalue());
-							addAddresses(mail, msg.getCc(), RecipientType.CC);
-						}
-					}
-					if (mailTemplate.isBcc()) {
-						if (StringUtils.isNotBlank(msg.getBcc())) {
-							addAddresses(mail, msg.getBcc(), RecipientType.BCC);
-						} else if (mailConfig.getBccConf() != null) {
-							msg.setBcc(mailConfig.getBccConf().getCvalue());
-							addAddresses(mail, msg.getBcc(), RecipientType.BCC);
-						}
-					}
 
 					msg.setTemplate(mailTemplate);
 					msg.setSender(sender.getAddress()
@@ -278,7 +304,7 @@ public class MailerBean extends BaseBean {
 		Arrays.stream(receivers.split("[,;]")).forEach(r -> {
 			try {
 				if (StringUtils.isNotBlank(r)) {
-					mail.addRecipient(type, new InternetAddress(r));
+					mail.addRecipients(type, InternetAddress.parse(r));
 				}
 			} catch (Exception e) {
 				log.info("cannot convert to Address: " + r + " : " + e);
@@ -386,11 +412,51 @@ public class MailerBean extends BaseBean {
 			}
 		};
 	}
+
+	public void handleFileUpload(FileUploadEvent event) {
+		try {
+			UploadedFile file = event.getFile();
+			Path tmp = Files.createTempFile(Paths.get(System.getProperty("jboss.server.temp.dir")), file.getFileName(), ".upload");
+			Files.copy(file.getInputstream(), tmp, StandardCopyOption.REPLACE_EXISTING);
+			files.put(file.getFileName(), new UpFile(file,tmp));
+		} catch (Exception e) {
+			error("Datei konnte nicht geladen werden: "+e.getLocalizedMessage());
+		}
+	}
+	
+	public Map<String,UpFile> getFiles() {
+		return files;
+	}
+	
+	public List<String> getFileNames() {
+		return new ArrayList<String>(files.keySet());
+	}
+	
+	public void setFileNames(List<String> fileNames) {
+		if (fileNames == null || fileNames.isEmpty()) {
+			files.clear();
+		} else {
+			files.entrySet().removeIf(e -> !fileNames.contains(e.getValue().uploadedFile.getFileName()));
+		}
+	}
 	
 	@Override
 	public void retrieve() {
 	}
-
+	
+	public static class UpFile {
+		final UploadedFile uploadedFile;
+		final Path content;
+		public UpFile(UploadedFile uploaded, Path content) {
+			this.uploadedFile = uploaded;
+			this.content = content;
+		}
+		@Override
+		protected void finalize() throws Throwable {
+			try { Files.delete(content); } catch (Exception e) {}
+			super.finalize();
+		}
+	}
 	public static class MailConfig {
 		private final String key;
 		private final String prefix;

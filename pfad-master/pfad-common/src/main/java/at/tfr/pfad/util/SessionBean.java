@@ -2,6 +2,7 @@ package at.tfr.pfad.util;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,7 @@ public class SessionBean implements Serializable {
 	private boolean logActive;
 	@Inject
 	protected UserSession userSession;
+	private final List<Role> roles = new ArrayList<>();
 	@Inject
 	private ConfigurationRepository configRepo;
 	@Inject
@@ -47,9 +49,13 @@ public class SessionBean implements Serializable {
 			config = config.stream()
 				.filter(c -> c.getRole() == null || Role.none.equals(c.getRole()) || userSession.isCallerInRole(c.getRole().name()))
 				.filter(c -> StringUtils.isEmpty(c.getOwners()) || 
-						c.getOwners().toLowerCase().contains(userSession.getCallerPrincipal().getName()))
+						c.getOwners().toLowerCase().contains(userSession.getCallerPrincipal().getName().toLowerCase()))
 				.collect(Collectors.toList());
-		}		
+		}
+		
+		for (Role role : Role.values()) {
+			if (userSession.isCallerInRole(role.name())) roles.add(role);
+		}
 		registrationEndDate = getRegistrationEndDate();
 	}
 
@@ -61,8 +67,20 @@ public class SessionBean implements Serializable {
 		this.config = config;
 	}
 
+	public String getValue(String key, String defaultValue) {
+		Optional<Configuration> cfg = config.stream().filter(c -> c.getCkey().equals(key)).findFirst();
+		if (cfg.isPresent()) {
+			return cfg.get().getCvalue();
+		}
+		return defaultValue;
+	}
+	
 	public Principal getUser() {
 		return userSession.getCallerPrincipal();
+	}
+	
+	public List<Role> getRoles() {
+		return roles;
 	}
 	
 	public boolean isAnonymous() {
