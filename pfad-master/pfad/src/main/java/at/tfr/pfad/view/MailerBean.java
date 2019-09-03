@@ -184,8 +184,12 @@ public class MailerBean extends BaseBean {
 				}
 				msg.setText(text);
 				msg.setReceiver(templateUtils.replace("${to}", vals));
-				msg.setCc(templateUtils.replace("${cc}", vals, mailConfig.getCcConf() != null ? mailConfig.getCcConf().getCvalue() : null));
-				msg.setBcc(templateUtils.replace("${bcc}", vals, mailConfig.getBccConf() != null ? mailConfig.getBccConf().getCvalue() : null));
+				if (mailTemplate.isCc()) {
+					msg.setCc(templateUtils.replace("${cc}", vals, mailConfig.getCc() != null ? mailConfig.getCc() : null));
+				}
+				if (mailTemplate.isBcc()) {
+					msg.setBcc(templateUtils.replace("${bcc}", vals, mailConfig.getBcc() != null ? mailConfig.getBcc() : null));
+				}
 				msg.setSubject(templateUtils.replace(mailTemplate.getSubject(), msg.getValues()));
 				msg.setMember(vals.stream().filter(e -> e.getValue() instanceof Member)
 						.map(e -> (Member) e.getValue()).findFirst().orElse(null));
@@ -285,21 +289,11 @@ public class MailerBean extends BaseBean {
 							msg.setCc(mailConfig.getTestTo());
 					} else {
 						addAddresses(mail, msg.getReceiver(), to);
-						if (mailTemplate.isCc()) {
-							if (StringUtils.isNotBlank(msg.getCc())) {
-								addAddresses(mail, msg.getCc(), RecipientType.CC);
-							} else if (mailConfig.getCcConf() != null) {
-								msg.setCc(mailConfig.getCcConf().getCvalue());
-								addAddresses(mail, msg.getCc(), RecipientType.CC);
-							}
+						if (mailTemplate.isCc() && StringUtils.isNotBlank(msg.getCc())) {
+							addAddresses(mail, msg.getCc(), RecipientType.CC);
 						}
-						if (mailTemplate.isBcc()) {
-							if (StringUtils.isNotBlank(msg.getBcc())) {
-								addAddresses(mail, msg.getBcc(), RecipientType.BCC);
-							} else if (mailConfig.getBccConf() != null) {
-								msg.setBcc(mailConfig.getBccConf().getCvalue());
-								addAddresses(mail, msg.getBcc(), RecipientType.BCC);
-							}
+						if (mailTemplate.isBcc() && StringUtils.isNotBlank(msg.getBcc())) {
+							addAddresses(mail, msg.getBcc(), RecipientType.BCC);
 						}
 					}
 					
@@ -495,8 +489,8 @@ public class MailerBean extends BaseBean {
 		private final String key;
 		private final String prefix;
 		private Configuration aliasConf;
-		private Configuration ccConf;
-		private Configuration bccConf;
+		private String cc;
+		private String bcc;
 		private String from;
 		private String username;
 		private String password;
@@ -505,14 +499,15 @@ public class MailerBean extends BaseBean {
 
 		public MailConfig(String key, Collection<Configuration> configs, boolean debug) {
 			this.key = key;
-			this.prefix = key + "_";
-			this.username = getValue(configs, "mail_username");
-			this.from = getValue(configs, "mail_from", null);
-			this.password = getValueIntern(configs, "mail_password", null);
-			this.aliasConf = getConfig(configs, "mail_alias");
-			this.ccConf = getConfig(configs, "mail_cc");
-			this.bccConf = getConfig(configs, "mail_bcc");
-			this.testTo = getValue(configs, "mail_testTo", testTo);
+			prefix = key + "_";
+			username = getValue(configs, "mail_username");
+			from = getValue(configs, "mail_from", null);
+			password = getValueIntern(configs, "mail_password", null);
+			aliasConf = getConfig(configs, "mail_alias");
+			cc = getValue(configs, "mail_cc");
+			bcc = getValue(configs, "mail_bcc", from);
+			testTo = getValue(configs, "mail_testTo", from != null ? from : testTo);
+
 
 			properties = new Properties();
 			if (debug)
@@ -569,20 +564,20 @@ public class MailerBean extends BaseBean {
 			this.aliasConf = aliasConf;
 		}
 
-		public Configuration getCcConf() {
-			return ccConf;
+		public String getCc() {
+			return cc;
 		}
 
-		public void setCcConf(Configuration ccConf) {
-			this.ccConf = ccConf;
+		public void setCc(String cc) {
+			this.cc = cc;
 		}
 
-		public Configuration getBccConf() {
-			return bccConf;
+		public String getBcc() {
+			return bcc;
 		}
 
-		public void setBccConf(Configuration bccConf) {
-			this.bccConf = bccConf;
+		public void setBcc(String bcc) {
+			this.bcc = bcc;
 		}
 
 		public String getFrom() {
