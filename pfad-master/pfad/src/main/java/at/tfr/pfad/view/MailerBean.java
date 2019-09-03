@@ -131,7 +131,9 @@ public class MailerBean extends BaseBean {
 			values = queryExec.execute(mailTemplate.getQuery()
 					.replaceAll("\\$\\{templateId\\}", ""+mailTemplate.getId())
 					.replaceAll("\\$\\{templateName\\}", mailTemplate.getName())
-					.replaceAll("\\$\\{templateOwner\\}", mailTemplate.getOwner()), 
+					.replaceAll("\\$\\{templateOwner\\}", mailTemplate.getOwner())
+					.replaceAll("\\$\\{user\\}", sessionBean.getUser().getName())
+					.replaceAll("\\$\\{role\\}", sessionBean.getRole().name()), 
 					false);
 			if (values.size() > 0) {
 				realColHeaders = values.get(0).stream().map(Entry::getKey).collect(Collectors.toList());

@@ -83,6 +83,10 @@ public class SessionBean implements Serializable {
 		return roles;
 	}
 	
+	public Role getRole() {
+		return roles.size() > 0 ? roles.get(0) : Role.none;
+	}
+	
 	public boolean isAnonymous() {
 		return "anonymous".equals(userSession.getCallerPrincipal());
 	}
