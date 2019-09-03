@@ -53,6 +53,8 @@ public class MailMessage extends BaseEntity {
 
 	@Transient
 	private List<Entry<String, Object>> values;
+	@Transient
+	private boolean send = true;
 
 	@Override
 	public Long getId() {
@@ -171,6 +173,14 @@ public class MailMessage extends BaseEntity {
 		this.createdBy = createdBy;
 	}
 
+	public boolean isSend() {
+		return send;
+	}
+	
+	public void setSend(boolean send) {
+		this.send = send;
+	}
+	
 	@Override
 	public String toString() {
 		return "MailMessage [id=" + id + ", member=" + member + ", receiver=" + receiver + ", tpl=" + template

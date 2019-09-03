@@ -233,7 +233,9 @@ public class MailerBean extends BaseBean {
 		
 		try {
 
-			mailTemplate = templateRepo.saveAndFlush(mailTemplate);
+			if (mailTemplate.getId() != null) {
+				mailTemplate = templateRepo.saveAndFlush(mailTemplate);
+			}
 
 			Session session = Session.getInstance(mailConfig.getProperties(), new Authenticator() {
 				@Override
@@ -247,6 +249,11 @@ public class MailerBean extends BaseBean {
 			}
 
 			for (MailMessage msg : mailMessages) {
+				if (!msg.isSend()) {
+					log.info("not sending: " + msg);
+					continue;
+				}
+				
 				try {
 					if (StringUtils.isBlank(msg.getReceiver()) || "null".equals(msg.getReceiver())) {
 						warn("invalid Receiver: " + msg);

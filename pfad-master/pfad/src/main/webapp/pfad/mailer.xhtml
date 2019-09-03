@@ -138,6 +138,12 @@
 					<f:facet name="header">ID</f:facet>
 					<h:outputText value="#{mailerBean.mailMessages.rowIndex+1}" />
 				</p:column>
+				<p:column width="15">
+					<f:facet name="header">OK</f:facet>
+					<p:selectBooleanCheckbox value="#{m.send}" >
+						<f:ajax execute="@this" render="mailMessages" />
+					</p:selectBooleanCheckbox>
+				</p:column>
 				<p:column>
 					<f:facet name="header">An</f:facet>
 					<h:outputText value="#{m.receiver}" />
