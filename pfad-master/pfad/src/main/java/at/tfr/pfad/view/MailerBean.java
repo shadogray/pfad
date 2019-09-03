@@ -149,7 +149,8 @@ public class MailerBean extends BaseBean {
 				if  (toIdx >= 0 && ccIdx >= 0) {
 					Map<String, List<List<Entry<String, Object>>>> groups = values.stream()
 							.filter(v -> StringUtils.isNotBlank((String)v.get(toIdx).getValue()))
-							.collect(Collectors.groupingBy(v -> (String)v.get(toIdx).getValue()));
+							.collect(Collectors.groupingBy(v -> (String)v.get(toIdx).getValue(), 
+									LinkedHashMap::new, Collectors.toList()));
 					groups.entrySet().forEach(e -> {
 						String join = e.getValue().stream()
 								.map(line -> (String)line.get(ccIdx).getValue())
