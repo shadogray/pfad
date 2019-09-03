@@ -168,7 +168,6 @@ public class MailerBean extends BaseBean {
 			
 			Map<String,Object> beans = new HashMap<>();
 			beans.put("sb", sessionBean);
-			beans.put("mb", this);
 			beans.put("mt", mailTemplate);
 			
 			for (List<Entry<String, Object>> vals : values) {

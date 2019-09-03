@@ -77,8 +77,8 @@
 					<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" autoResize="false"
 						style="width:95%;height:5em;overflow-y:scroll;resize:both;font-size:smaller;">
 						<p:ajax event="keypress" onstart="return ctrlEnter(event)" process="@this" listener="#{mailerBean.executeQuery}" 
-							update="values mailMessages messages"/>
-						<f:ajax listener="#{mailerBean.executeQuery}" render="values mailMessages messages"/>
+							update="acc:values acc:mailMessages messages"/>
+						<f:ajax listener="#{mailerBean.executeQuery}" render="acc:values acc:mailMessages messages"/>
 					</p:inputTextarea>
 					<p:fieldset legend="#{configurationBean.getValue('mailer.props','Mail Einstellungen')}" title="#{configurationBean.getValue('mailer.props','Mail Einstellungen')}" >
 						<h:panelGrid columns="6">
@@ -120,55 +120,60 @@
 			</h:panelGrid>
 
 
-			<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v">
-				<p:column width="12">
-					<f:facet name="header">ID</f:facet>
-					<h:outputText value="#{mailerBean.values.rowIndex+1}" />
-				</p:column>
-				<p:columns value="#{mailerBean.columns}" var="c">
-					<f:facet name="header">#{c.value}</f:facet>
-					<h:outputText value="#{v[c.index].value}" />
-				</p:columns>
-			</p:dataTable>
-			
-			
-			<p:dataTable id="mailMessages" rendered="#{mailerBean.mailMessages != null}"  value="#{mailerBean.mailMessages}" 
-				var="m" rowIndexVar="idx">
-				<p:column width="12">
-					<f:facet name="header">ID</f:facet>
-					<h:outputText value="#{mailerBean.mailMessages.rowIndex+1}" />
-				</p:column>
-				<p:column width="15">
-					<f:facet name="header">OK</f:facet>
-					<p:selectBooleanCheckbox value="#{m.send}" >
-						<f:ajax execute="@this" render="mailMessages" />
-					</p:selectBooleanCheckbox>
-				</p:column>
-				<p:column>
-					<f:facet name="header">An</f:facet>
-					<h:outputText value="#{m.receiver}" />
-				</p:column>
-				<p:column>
-					<f:facet name="header">CC</f:facet>
-					<h:outputText value="#{m.cc}" />
-				</p:column>
-				<p:column>
-					<f:facet name="header">BCC</f:facet>
-					<h:outputText value="#{m.bcc}" />
-				</p:column>
-				<p:column>
-					<f:facet name="header">Subject</f:facet>
-					<h:outputText value="#{m.subject}" />
-				</p:column>
-				<p:column>
-					<f:facet name="header">Mitglied</f:facet>
-					<h:outputText value="#{m.member}" />
-				</p:column>
-				<p:column>
-					<f:facet name="header">Nachricht</f:facet>
-					<h:outputText value="#{fn:substring(m.text,0,20)}" title="#{m.text}"/>
-				</p:column>
-			</p:dataTable>
+			<p:accordionPanel id="acc" activeIndex="1" >
+				<p:tab title="Nachriten-Datem" closable="true" >
+					<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v">
+						<p:column width="12">
+							<f:facet name="header">ID</f:facet>
+							<h:outputText value="#{mailerBean.values.rowIndex+1}" />
+						</p:column>
+						<p:columns value="#{mailerBean.columns}" var="c">
+							<f:facet name="header">#{c.value}</f:facet>
+							<h:outputText value="#{v[c.index].value}" />
+						</p:columns>
+					</p:dataTable>
+				</p:tab>
+
+				<p:tab title="Emails zur Versendung" closable="true">
+					<p:dataTable id="mailMessages" rendered="#{mailerBean.mailMessages != null}"  value="#{mailerBean.mailMessages}" 
+						var="m" rowIndexVar="idx">
+						<p:column width="12">
+							<f:facet name="header">ID</f:facet>
+							<h:outputText value="#{mailerBean.mailMessages.rowIndex+1}" />
+						</p:column>
+						<p:column width="15">
+							<f:facet name="header">OK</f:facet>
+							<p:selectBooleanCheckbox value="#{m.send}" >
+								<f:ajax execute="@this" render="mailMessages" />
+							</p:selectBooleanCheckbox>
+						</p:column>
+						<p:column>
+							<f:facet name="header">An</f:facet>
+							<h:outputText value="#{m.receiver}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">CC</f:facet>
+							<h:outputText value="#{m.cc}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">BCC</f:facet>
+							<h:outputText value="#{m.bcc}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">Subject</f:facet>
+							<h:outputText value="#{m.subject}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">Mitglied</f:facet>
+							<h:outputText value="#{m.member}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">Nachricht</f:facet>
+							<h:outputText value="#{fn:substring(m.text,0,20)}" title="#{m.text}"/>
+						</p:column>
+					</p:dataTable>
+				</p:tab>
+			</p:accordionPanel>
 		
 		</h:form>
 
