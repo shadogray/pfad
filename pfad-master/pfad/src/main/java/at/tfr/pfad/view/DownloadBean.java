@@ -266,9 +266,11 @@ public class DownloadBean implements Serializable {
 				resultModel.setWrappedData(results);
 				List<String> columnNames = results.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
 
-				columnHeaders.addAll(Arrays.asList(configuration.toHeaders(columnNames)));
+				if (configuration != null) 
+					columnHeaders.addAll(Arrays.asList(configuration.toHeaders(columnNames)));
 				for (int i=0; i<columnNames.size(); i++) 
-					columns.add(new ColumnModel(columnNames.get(i), columnHeaders.get(i), i));
+					columns.add(new ColumnModel(columnNames.get(i), 
+							columnHeaders.size()>i ? columnHeaders.get(i) : columnNames.get(i), i));
 			}
 		} catch (Exception e) {
 			log.info("cannot execute: " + q + " : " + e, e);

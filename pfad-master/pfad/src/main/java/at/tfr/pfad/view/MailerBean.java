@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.activation.DataHandler;
@@ -122,6 +123,7 @@ public class MailerBean extends BaseBean {
 			error("Cannot execute Template for empty MailConfiguration!");
 			return;
 		}
+		List<String> realColHeaders = Collections.emptyList();
 		columnHeaders.clear();
 		columns.clear();
 		mailMessages = new ArrayList<>();
@@ -132,13 +134,43 @@ public class MailerBean extends BaseBean {
 					.replaceAll("\\$\\{templateOwner\\}", mailTemplate.getOwner()), 
 					false);
 			if (values.size() > 0) {
-				columnHeaders.addAll(values.get(0).stream().map(Entry::getKey).collect(Collectors.toList()));
+				realColHeaders = values.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
+				columnHeaders.addAll(realColHeaders);
 				for (int i=0; i<columnHeaders.size(); i++)
 					columns.add(new ColumnModel(columnHeaders.get(i), columnHeaders.get(i), i));
 			}
+			
+			if (values.size() > 0) {
+				List<String> lcHeadrs = realColHeaders.stream().map(String::toLowerCase).collect(Collectors.toList());
+				final int toIdx = lcHeadrs.indexOf("to");
+				final int ccIdx = lcHeadrs.indexOf("cc");
+				if  (toIdx >= 0 && ccIdx >= 0) {
+					Map<String, List<List<Entry<String, Object>>>> groups = values.stream()
+							.filter(v -> StringUtils.isNotBlank((String)v.get(toIdx).getValue()))
+							.collect(Collectors.groupingBy(v -> (String)v.get(toIdx).getValue()));
+					groups.entrySet().forEach(e -> {
+						String join = e.getValue().stream()
+								.map(line -> (String)line.get(ccIdx).getValue())
+								.filter(StringUtils::isNotBlank)
+								.distinct()
+								.collect(Collectors.joining(","));
+						e.getValue().get(0).get(ccIdx).setValue(join);
+					});
+					values = groups.entrySet().stream().map(e -> e.getValue().get(0)).collect(Collectors.toList());
+				}
+			}
+			
 			valuesModel = new ListDataModel<>(values);
 			
+			Map<String,Object> beans = new HashMap<>();
+			beans.put("sb", sessionBean);
+			beans.put("mb", this);
+			beans.put("mt", mailTemplate);
+			
 			for (List<Entry<String, Object>> vals : values) {
+				
+				vals.addAll(beans.entrySet());
+				
 				MailMessage msg = new MailMessage();
 				msg.setValues(vals);
 				msg.setTemplate(mailTemplate);
