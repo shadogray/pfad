@@ -233,9 +233,6 @@ public class MailerBean extends BaseBean {
 		try {
 
 			final boolean saveTemplate = mailTemplate.getId() != null;
-			if (saveTemplate) {
-				mailTemplate = templateRepo.saveAndFlush(mailTemplate);
-			}
 
 			Session session = Session.getInstance(mailConfig.getProperties(), new Authenticator() {
 				@Override
