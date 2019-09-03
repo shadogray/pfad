@@ -57,15 +57,15 @@
 					<h:outputLabel value="Sender:" />
 					<h:outputText value="#{mailerBean.mailConfig.from}"/>
 					<h:outputLabel value="Alias:" />
-					<h:outputText value="#{mailerBean.mailConfig.aliasConf.cvalue}"/>
+					<h:outputText value="#{mailerBean.mailConfig.alias}"/>
 					<h:outputLabel value="Username:" />
 					<h:outputText value="#{mailerBean.mailConfig.username}"/>
 					<h:outputLabel value="Berechtigt:" />
 					<p:inputText value="#{mailerBean.mailTemplate.owner}" disabled="#{!mailerBean.changeOwnerAllowed}"/>
 					<h:outputLabel value="CC:" />
-					<h:outputText value="#{mailerBean.mailConfig.ccConf.cvalue}"/>
+					<h:outputText value="#{mailerBean.mailConfig.cc}"/>
 					<h:outputLabel value="BCC:" />
-					<h:outputText value="#{mailerBean.mailConfig.bccConf.cvalue}"/>
+					<h:outputText value="#{mailerBean.mailConfig.bcc}"/>
 					<h:outputLabel value="Test-TO:" />
 					<h:outputText value="#{mailerBean.mailConfig.testTo}"/>
 					<h:outputLabel value="Template Name:" />

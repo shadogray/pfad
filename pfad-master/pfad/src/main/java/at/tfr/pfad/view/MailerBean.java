@@ -240,8 +240,8 @@ public class MailerBean extends BaseBean {
 				}
 			});
 			InternetAddress sender = new InternetAddress(mailConfig.getFrom());
-			if (mailConfig.getAliasConf() != null) {
-				sender.setPersonal(mailConfig.getAliasConf().getCvalue());
+			if (mailConfig.getAlias() != null) {
+				sender.setPersonal(mailConfig.getAlias());
 			}
 
 			for (MailMessage msg : mailMessages) {
@@ -488,7 +488,7 @@ public class MailerBean extends BaseBean {
 	public static class MailConfig {
 		private final String key;
 		private final String prefix;
-		private Configuration aliasConf;
+		private String alias;
 		private String cc;
 		private String bcc;
 		private String from;
@@ -503,7 +503,7 @@ public class MailerBean extends BaseBean {
 			username = getValue(configs, "mail_username");
 			from = getValue(configs, "mail_from", null);
 			password = getValueIntern(configs, "mail_password", null);
-			aliasConf = getConfig(configs, "mail_alias");
+			alias = getValue(configs, "mail_alias");
 			cc = getValue(configs, "mail_cc");
 			bcc = getValue(configs, "mail_bcc", from);
 			testTo = getValue(configs, "mail_testTo", from != null ? from : testTo);
@@ -556,12 +556,12 @@ public class MailerBean extends BaseBean {
 			return key;
 		}
 
-		public Configuration getAliasConf() {
-			return aliasConf;
+		public String getAlias() {
+			return alias;
 		}
 
-		public void setAliasConf(Configuration aliasConf) {
-			this.aliasConf = aliasConf;
+		public void setAlias(String alias) {
+			this.alias = alias;
 		}
 
 		public String getCc() {
