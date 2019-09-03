@@ -232,7 +232,8 @@ public class MailerBean extends BaseBean {
 		
 		try {
 
-			if (mailTemplate.getId() != null) {
+			final boolean saveTemplate = mailTemplate.getId() != null;
+			if (saveTemplate) {
 				mailTemplate = templateRepo.saveAndFlush(mailTemplate);
 			}
 
@@ -306,7 +307,11 @@ public class MailerBean extends BaseBean {
 					}
 					
 
-					msg.setTemplate(mailTemplate);
+					if (saveTemplate) {
+						msg.setTemplate(mailTemplate);
+					} else {
+						msg.setTemplate(null);
+					}
 					msg.setSender(sender.getAddress()
 							+ (StringUtils.isNotBlank(sender.getPersonal()) ? ":" + sender.getPersonal() : ""));
 					msg.setTest(testOnly);
