@@ -38,10 +38,12 @@ import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.HeaderTokenizer;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
@@ -279,7 +281,7 @@ public class MailerBean extends BaseBean {
 
 					MimeMultipart multipart = new MimeMultipart();
 					MimeBodyPart body = new MimeBodyPart();
-					body.setContent(msg.getText(), "text/html");
+					body.setContent(msg.getText(), "text/html; charset=UTF-8");
 					multipart.addBodyPart(body);
 					for (Entry<String, UpFile> fup : files.entrySet()) {
 						MimeBodyPart filePart = new MimeBodyPart();

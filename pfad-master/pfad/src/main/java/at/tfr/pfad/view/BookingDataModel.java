@@ -25,6 +25,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.BookingStatus;
@@ -134,7 +135,7 @@ public class BookingDataModel extends BaseDataModel<Booking, BookingUI> {
 		case "activity":
 			return getSplittedPredicateName(root.join(Booking_.activity).get(Activity_.name), val);
 		case "activityFinished":
-			Predicate actFin = cb.or(cb.lessThan(root.join(Booking_.activity).get(Activity_.end), new Date()),
+			Predicate actFin = cb.or(cb.lessThan(root.join(Booking_.activity).get(Activity_.end), DateTime.now().minusMonths(3).toDate()),
 					root.join(Booking_.activity).get(Activity_.status).in(ActivityStatus.cancelled, ActivityStatus.finished));
 			switch(val) {
 			case "false": 
