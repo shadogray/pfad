@@ -4,8 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,12 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
-import javax.activation.MimeType;
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
@@ -50,9 +46,9 @@ import org.jboss.logging.Logger;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
-import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MailMessageRepository;
 import at.tfr.pfad.dao.MailTemplateRepository;
+import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.MailMessage;
 import at.tfr.pfad.model.MailTemplate;
@@ -95,6 +91,7 @@ public class MailerBean extends BaseBean {
 	private final List<String> columnHeaders = new ArrayList<>();
 	private ListDataModel<MailMessage> mailMessagesModel = new ListDataModel<>();
 	private final Map<String,UpFile> files = new LinkedHashMap<>();
+	private Activity activity;
 
 	public enum MailProps {
 		mail_transport_protocol, mail_smtp_starttls_enable, mail_smtp_auth, mail_smtp_host, mail_smtp_port, mail_smtps_auth, mail_smtps_host, mail_smtps_port, mail_smtp_ssl_enable, mail_smtp_socketFactory_class, mail_smtp_socketFactory_port
@@ -133,7 +130,8 @@ public class MailerBean extends BaseBean {
 					.replaceAll("\\$\\{templateName\\}", mailTemplate.getName())
 					.replaceAll("\\$\\{templateOwner\\}", mailTemplate.getOwner())
 					.replaceAll("\\$\\{user\\}", sessionBean.getUser().getName())
-					.replaceAll("\\$\\{role\\}", sessionBean.getRole().name()), 
+					.replaceAll("\\$\\{role\\}", sessionBean.getRole().name())
+					.replaceAll("\\$\\{activityId\\}", activity != null ? activity.getIdStr() : "null"), 
 					false);
 			if (values.size() > 0) {
 				realColHeaders = values.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
@@ -169,6 +167,7 @@ public class MailerBean extends BaseBean {
 			Map<String,Object> beans = new HashMap<>();
 			beans.put("sb", sessionBean);
 			beans.put("mt", mailTemplate);
+			beans.put("activity", activity);
 			
 			for (List<Entry<String, Object>> vals : values) {
 				
@@ -476,6 +475,14 @@ public class MailerBean extends BaseBean {
 		} else {
 			files.entrySet().removeIf(e -> !fileNames.contains(e.getValue().uploadedFile.getFileName()));
 		}
+	}
+
+	public Activity getActivity() {
+		return activity;
+	}
+	
+	public void setActivity(Activity activity) {
+		this.activity = activity;
 	}
 	
 	@Override

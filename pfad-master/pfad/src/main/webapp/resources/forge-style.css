@@ -334,8 +334,32 @@ footer p {
 	max-width: 800px;
 }
 
+.width5 {
+	width: 5em;
+}
+
+.width6 {
+	width: 6em;
+}
+
+.width7 {
+	width: 7em;
+}
+
+.width8 {
+	width: 8em;
+}
+
+.width9 {
+	width: 9em;
+}
+
 .width10 {
 	width: 10em;
+}
+
+.width12 {
+	width: 12em;
 }
 
 .width15 {

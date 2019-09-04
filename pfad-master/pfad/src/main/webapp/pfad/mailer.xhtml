@@ -33,17 +33,27 @@
 			
 			<p:focus />
 
-			<h:panelGrid columns="6" >
-				<h:outputLabel value="Template: "/>
-				<p:autoComplete value="#{mailerBean.mailTemplate}" completeMethod="#{mailTemplates.filtered}" emptyMessage="..." 
-					var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}" converter="#{mailerBean.converter}" forceSelection="true">
-					<p:ajax event="itemSelect" process="@this" update="@form :mailer"/>
-				</p:autoComplete>
-				<h:outputLabel value="MailConfig:" />
-				<p:selectOneMenu value="#{mailerBean.mailConfigKey}">
-					<f:selectItems value="#{mailerBean.mailConfigKeys}"/>
-					<p:ajax event="itemSelect" process="@this" update="@form :mailer"/>
-				</p:selectOneMenu>
+			<h:panelGrid columns="2" columnClasses="width6">
+				<h:outputLabel value="Vorlage: " />
+				<h:panelGrid columns="8">
+					<p:autoComplete value="#{mailerBean.mailTemplate}" completeMethod="#{mailTemplates.filtered}" emptyMessage="..." 
+						var="t" itemLabel="#{t.name}" itemValue="#{t.idStr}" converter="#{mailerBean.converter}" forceSelection="true"
+						styleClass="width10">
+						<p:ajax event="itemSelect" process="@this" update="@form :mailer"/>
+					</p:autoComplete>
+					<h:outputLabel value="MailConfig:" />
+					<p:selectOneMenu value="#{mailerBean.mailConfigKey}" styleClass="width10">
+						<f:selectItems value="#{mailerBean.mailConfigKeys}"/>
+						<p:ajax event="itemSelect" process="@this" update="@form :mailer"/>
+					</p:selectOneMenu>
+					<h:outputLabel value="Aktivität: "/>
+					<p:selectOneMenu value="#{mailerBean.activity}" converter="#{activityBean.converter}" styleClass="width10"
+						filter="true" filterMatchMode="contains">
+						<f:selectItem noSelectionOption="true"/>
+						<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a}"/>
+						<p:ajax process="@this" update="@this"/>
+					</p:selectOneMenu>
+				</h:panelGrid>
 			</h:panelGrid>
 
 		</h:form>
@@ -68,14 +78,14 @@
 					<h:outputText value="#{mailerBean.mailConfig.bcc}"/>
 					<h:outputLabel value="Test-TO:" />
 					<h:outputText value="#{mailerBean.mailConfig.testTo}"/>
-					<h:outputLabel value="Template Name:" />
+					<h:outputLabel value="Vorlagenname:" />
 					<p:inputText value="#{mailerBean.mailTemplate.name}" />
 				</h:panelGrid>
 				
 				<h:outputLabel value="Query: "/>			
 				<h:panelGrid columns="2" style="width:100%" columnClasses="width40,width30">
 					<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" autoResize="false"
-						style="width:95%;height:5em;overflow-y:scroll;resize:both;font-size:smaller;">
+						style="width:95%;height:5em;overflow:scroll;resize:both;font-size:smaller;overflow:hidden;">
 						<p:ajax event="keypress" onstart="return ctrlEnter(event)" process="@this" listener="#{mailerBean.executeQuery}" 
 							update="acc:values acc:mailMessages messages"/>
 						<f:ajax listener="#{mailerBean.executeQuery}" render="acc:values acc:mailMessages messages"/>
@@ -112,7 +122,7 @@
 
 				<h:outputLabel value="Aktionen: "/>			
 				<h:panelGrid columns="4" with="100%">	
-					<h:commandButton value="Template Speichern" action="#{mailerBean.saveTemplate}" disabled="#{!mailerBean.updateAllowed}"/>
+					<h:commandButton value="Vorlage Speichern" action="#{mailerBean.saveTemplate}" disabled="#{!mailerBean.updateAllowed}"/>
 					<h:commandButton value="Vorbereiten" action="#{mailerBean.executeQuery}" disabled="#{!mailerBean.updateAllowed}"/>
 					<h:commandButton value="TestMail" action="#{mailerBean.sendTestMessage()}" disabled="#{!mailerBean.updateAllowed}"/>
 					<h:commandButton value="Echt-Mails Versenden!!" action="#{mailerBean.sendRealMessages()}" disabled="#{!mailerBean.updateAllowed}"/>
