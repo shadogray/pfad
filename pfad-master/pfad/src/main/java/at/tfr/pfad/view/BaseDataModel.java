@@ -20,6 +20,7 @@ import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.event.FacesEvent;
+import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -42,11 +43,10 @@ import at.tfr.pfad.model.PrimaryKeyHolder;
 import at.tfr.pfad.util.ColumnModel;
 import at.tfr.pfad.util.SessionBean;
 
-public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> extends javax.faces.model.DataModel<U> {
+public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> extends ListDataModel<U> {
 
     private static final int ABSOLUTE_MAX_ROWS = 200;
 	private Logger log = Logger.getLogger(getClass());
-    private boolean isRenderResponse;
     protected Class<T> entityClass;
     protected Class<U> uiClass;
 
@@ -55,12 +55,8 @@ public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> ext
     @Inject
     protected EntityManager entityManager;
     
-    protected int rowIndex;
     protected int rows = 20;
-    protected int currentRows;
     protected int rowStart = 0;
-    protected Integer rowCount;
-    protected List<U> uData;
     protected List<Long> keys;
     protected boolean useUniquResultTransformer = false;
     protected String entityIdProperty = "id";
@@ -94,22 +90,17 @@ public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> ext
         return (List<U>) query.getResultList();
     }
 
-//    @Override
-//    public void arrange(final FacesContext context, final ArrangeableState state) {
-//		if (!isRenderResponse && FacesContext.getCurrentInstance().getCurrentPhaseId() == PhaseId.RENDER_RESPONSE) {
-//			isRenderResponse = true;
-//			uData = null;
-//		}
-//        arrangeableState = state;
-//    }
-
+    @Override
+    public int getRowIndex() {
+    	return super.getRowIndex();
+    }
+    
     public int getRows() {
         return rows;
     }
 
     public void setRows(final int rows) {
         rowsSetToUnlimited = (rows == Integer.MAX_VALUE ? true : false);
-
         this.rows = rows;
     }
 
@@ -297,16 +288,18 @@ public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> ext
 	}
 	
     public List<U> reloadRowData() {
-    	uData = null;
+    	setWrappedData(null);
     	return loadRowData();
     }
     
-    protected List<U> loadRowData() {
-    	if (uData == null) {
-    		uData = loadRowDataInternal();
+    @SuppressWarnings("unchecked")
+	protected List<U> loadRowData() {
+    	if (getWrappedData() == null) {
+    		List<U> uData = loadRowDataInternal();
     		keys = uData.stream().map(d -> d.getId()).collect(Collectors.toList());
+    		setWrappedData(uData);
     	}
-    	return uData;
+    	return (List<U>)getWrappedData();
     }
 
 	private List<U> loadRowDataInternal() {
@@ -316,8 +309,7 @@ public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> ext
 				.setFirstResult(rowStart)
 				.setMaxResults(rows)
 				.getResultList();
-        uData = convertToUiBean(ids);
-        currentRows = uData.size();
+        List<U> uData = convertToUiBean(ids);
         return uData;
 	}
 
@@ -325,52 +317,11 @@ public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> ext
 		return new Path[] { root };
 	}
 
-    @Override
-    public boolean isRowAvailable() {
-        return rowIndex >=0 && rowIndex < uData.size();
-    }
-
-    @Override
-    public int getRowCount() {
-    	return loadRowData().size();
-    }
-
-    @Override
-    public U getRowData() {
-        try {
-            U ud = (U)uData.get(rowIndex);
-			return ud;
-        } catch (Exception e) {
-            log.info("error loading key: " + rowIndex, e);
-            throw e;
-        }
-    }
-
-    @Override
-    public int getRowIndex() {
-        return rowIndex;
-    }
-
-    @Override
-    public void setRowIndex(final int rowIndex) {
-        this.rowIndex = rowIndex;
-    }
-
-    @Override
-    public Object getWrappedData() {
-        return uData;
-    }
-
-    public List<U> getData() {
-		return uData;
+    @SuppressWarnings("unchecked")
+	public List<U> getData() {
+		return (List<U>)getWrappedData();
 	}
     
-    @SuppressWarnings("unchecked")
-	@Override
-    public void setWrappedData(final Object data) {
-        this.uData = (List<U>)data;
-    }
-
     public int getRowStart() {
 		return rowStart;
 	}
@@ -380,15 +331,11 @@ public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> ext
 	}
     
     public int getCurrentRows() {
-        return currentRows;
-    }
-
-    public void setCurrentRows(final int currentRows) {
-        this.currentRows = currentRows;
+        return getRowCount();
     }
 
     public boolean isRenderScroller() {
-        return currentRows == rows || rowStart > 0;
+        return getRowCount() == rows || rowStart > 0;
     }
 
     public void setRowsUnlimited() {
@@ -420,8 +367,7 @@ public abstract class BaseDataModel<T extends PrimaryKeyHolder, U extends T> ext
     }
 
     public void clear() {
-        currentRows = 0;
-        uData = null;
+        setWrappedData(null);
     }
 
     public void clearSelection(AjaxBehaviorEvent event) {

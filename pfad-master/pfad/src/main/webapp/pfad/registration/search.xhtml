@@ -117,12 +117,15 @@
 
 
 			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table" paginatorAlwaysVisible="true"
-				value="#{registrationBean.dataModel}" var="r" editable="true" rows="#{registrationBean.rows}"
+				value="#{registrationBean.dataModel}" var="r" editable="true" rows="#{registrationBean.rows}" rowIndexVar="rowIndex"
 				sortMode="multiple" rowStyleClass="#{r.status}" paginator="true">
 
 				<p:ajax event="rowEdit" listener="#{registrationBean.onRowEdit}" update=":search:messages" />
 				<p:ajax event="rowEditCancel" listener="#{registrationBean.onRowCancel}" update=":search:messages" />
 
+				<p:column headerText="Nr" style="width:2em">
+					<h:outputText value="#{rowIndex+1}" />
+				</p:column>
 				<p:column headerText="ID" style="width:2em">
 					<h:outputText name="id" value="#{r.id}" />
 				</p:column>

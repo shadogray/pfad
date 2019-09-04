@@ -30,13 +30,13 @@
 
 				<p:focus />
 				<p:dataTable id="bookings" widgetVar="bookings" var="record" value="#{bookingTableBean.dataModel}" paginator="true"
-					rows="#{bookingTableBean.dataModel.rows}" tableStyle="width:auto;">
+					rows="#{bookingTableBean.dataModel.rows}" rowIndexVar="rowIndex" tableStyle="width:auto;">
 
 					<p:column width="2em">
 						<f:facet name="header">
 							<h:outputText value="Nr" />
 						</f:facet>
-						<h:outputText value="#{bookingTableBean.dataModel.rowIndex}" />
+						<h:outputText value="#{rowIndex+1}" />
 					</p:column>
 
 					<p:column width="3em">

@@ -30,14 +30,14 @@
 			<h:messages globalOnly="true" styleClass="error" />
 
 			<p:dataTable id="payments" widgetVar="payments" var="record" value="#{paymentTableBean.dataModel}"
-				rows="#{paymentTableBean.dataModel.rows}" paginator="true" tableStyle="width:auto"
+				rows="#{paymentTableBean.dataModel.rows}" rowIndexVar="rowIndex" paginator="true" tableStyle="width:auto"
 				styleClass="smsplus-management-table">
 
 				<p:column width="2em">
 					<f:facet name="header">
 						<h:outputText value="Nr" />
 					</f:facet>
-					<h:outputText value="#{paymentTableBean.dataModel.rowIndex}" />
+					<h:outputText value="#{rowIndex+1}" />
 				</p:column>
 
 				<p:column width="3em">

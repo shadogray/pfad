@@ -132,10 +132,10 @@
 
 			<p:accordionPanel id="acc" activeIndex="1" >
 				<p:tab title="Nachriten-Datem" closable="true" >
-					<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v">
+					<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v" rowIndexVar="rowIndex">
 						<p:column width="12">
 							<f:facet name="header">ID</f:facet>
-							<h:outputText value="#{mailerBean.values.rowIndex+1}" />
+							<h:outputText value="#{rowIndex+1}" />
 						</p:column>
 						<p:columns value="#{mailerBean.columns}" var="c">
 							<f:facet name="header">#{c.value}</f:facet>
@@ -146,10 +146,10 @@
 
 				<p:tab title="Emails zur Versendung" closable="true">
 					<p:dataTable id="mailMessages" rendered="#{mailerBean.mailMessages != null}"  value="#{mailerBean.mailMessages}" 
-						var="m" rowIndexVar="idx">
+						var="m" rowIndexVar="rowIndex">
 						<p:column width="12">
 							<f:facet name="header">ID</f:facet>
-							<h:outputText value="#{mailerBean.mailMessages.rowIndex+1}" />
+							<h:outputText value="#{rowIndex+1}" />
 						</p:column>
 						<p:column width="15">
 							<f:facet name="header">OK</f:facet>
