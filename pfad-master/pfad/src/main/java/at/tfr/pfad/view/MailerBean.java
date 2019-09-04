@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.annotation.PostConstruct;
+import javax.ejb.AccessTimeout;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
@@ -115,6 +117,7 @@ public class MailerBean extends BaseBean {
 		}
 	}
 
+	@AccessTimeout(unit = TimeUnit.SECONDS, value = 30)
 	public void executeQuery() {
 		if (mailConfig == null) {
 			error("Cannot execute Template for empty MailConfiguration!");
@@ -219,6 +222,7 @@ public class MailerBean extends BaseBean {
 		sendMessages(true);
 	}
 	
+	@AccessTimeout(unit = TimeUnit.MINUTES, value = 5)
 	public void sendRealMessages() {
 		sendMessages(false);
 	}
