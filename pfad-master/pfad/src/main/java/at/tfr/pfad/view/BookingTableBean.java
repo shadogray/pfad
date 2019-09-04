@@ -67,6 +67,7 @@ public class BookingTableBean extends BaseBean {
 		columns.add(new ColumnModel("comment", "Bemerkung", 8)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
 		bookingDataModel.setColumns(columns);
+		bookingDataModel.reloadRowData();
 	}
 
 	public List<ColumnModel> getColumns() {

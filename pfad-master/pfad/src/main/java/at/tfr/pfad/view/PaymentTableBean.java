@@ -58,6 +58,7 @@ public class PaymentTableBean extends BaseBean {
 		columns.add(new ColumnModel("comment", "Bemerkung", 8)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
 		paymentDataModel.setColumns(columns);
+		paymentDataModel.reloadRowData();
 	}
 
 	public List<ColumnModel> getColumns() {
