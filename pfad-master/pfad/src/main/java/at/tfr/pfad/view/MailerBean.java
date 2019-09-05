@@ -219,6 +219,10 @@ public class MailerBean extends BaseBean {
 			error("Cannot save: " + e);
 		}
 	}
+	
+	public void toggleAllMessageSend() {
+		mailMessages.forEach(m -> m.setSend(!m.isSend()));
+	}
 
 	public void sendTestMessage() {
 		sendMessages(true);

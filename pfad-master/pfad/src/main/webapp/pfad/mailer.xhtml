@@ -85,7 +85,7 @@
 				<h:outputLabel value="Query: "/>			
 				<h:panelGrid columns="2" style="width:100%" columnClasses="width40,width30">
 					<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" autoResize="false"
-						style="width:95%;height:5em;overflow:scroll;resize:both;font-size:smaller;overflow:hidden;">
+						style="width:95%;height:5em;overflow:hidden;white-space:nowrap;resize:both;font-size:smaller;">
 						<p:ajax event="keypress" onstart="return ctrlEnter(event)" process="@this" listener="#{mailerBean.executeQuery}" 
 							update="acc:values acc:mailMessages messages"/>
 						<f:ajax listener="#{mailerBean.executeQuery}" render="acc:values acc:mailMessages messages"/>
@@ -132,7 +132,8 @@
 
 			<p:accordionPanel id="acc" activeIndex="1" >
 				<p:tab title="Nachriten-Datem" closable="true" >
-					<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v" rowIndexVar="rowIndex">
+					<p:dataTable id="values" rendered="#{mailerBean.values != null}" value="#{mailerBean.values}" var="v" rowIndexVar="rowIndex"
+						style="table-layout:auto;">
 						<p:column width="12">
 							<f:facet name="header">ID</f:facet>
 							<h:outputText value="#{rowIndex+1}" />
@@ -146,7 +147,17 @@
 
 				<p:tab title="Emails zur Versendung" closable="true">
 					<p:dataTable id="mailMessages" rendered="#{mailerBean.mailMessages != null}"  value="#{mailerBean.mailMessages}" 
-						var="m" rowIndexVar="rowIndex">
+						var="m" rowIndexVar="rowIndex" style="table-layout:auto;">
+						<f:facet name="header">
+							<h:panelGrid columns="3" columnClasses="width10,width80" style="border: solid red;">
+								<h:panelGroup>
+									<h:commandButton value="Alle umschalten!">
+										<f:ajax listener="#{mailerBean.toggleAllMessageSend()}" render="mailMessages" />
+									</h:commandButton>
+								</h:panelGroup>
+								<h:outputText value="Emails zu versenden" />
+							</h:panelGrid>
+						</f:facet>
 						<p:column width="12">
 							<f:facet name="header">ID</f:facet>
 							<h:outputText value="#{rowIndex+1}" />
@@ -154,7 +165,7 @@
 						<p:column width="15">
 							<f:facet name="header">OK</f:facet>
 							<p:selectBooleanCheckbox value="#{m.send}" >
-								<f:ajax execute="@this" render="mailMessages" />
+								<f:ajax render="mailMessages" />
 							</p:selectBooleanCheckbox>
 						</p:column>
 						<p:column>
