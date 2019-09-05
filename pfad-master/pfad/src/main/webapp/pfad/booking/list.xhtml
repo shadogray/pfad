@@ -46,8 +46,6 @@
 							<p:ajax listener="#{bookingBean.retrieve(record.id)}" update=":editBooking:popupPanelEditBooking" />
 						</p:commandLink>
 						<p:commandLink value="EUR" oncomplete="PF('popupPanelEditPayment').show()" rendered="#{paymentBean.viewAllowed}">
-							<f:ajax listener="#{bookingBean.retrieveAndGetPayment(record.id)}" />
-							<f:setPropertyActionListener target="#{bookingBean.paymentPopupVisible}" value="true" />
 							<p:ajax listener="#{bookingBean.retrieveAndGetPayment(record.id)}" update=":editPayment:popupPanelEditPayment" />
 						</p:commandLink>
 					</p:column>
@@ -146,12 +144,12 @@
 									converter="#{paymentBean.converter}" readonly="#{paymentBean.id == null}">
 									<f:selectItem itemLabel="Zahlung hinzufügen.." />
 									<f:selectItems value="#{bookingBean.booking.sortedPayments}" var="p" itemLabel="#{p}" itemValue="#{p}" />
-									<f:ajax execute="@this" listener="#{bookingBean.initNewPayment()}" render="panelGroupEditPayment" />
+									<f:ajax execute="@this" listener="#{bookingBean.initNewPayment()}" render=":editPayment:panelGroupEditPayment" />
 								</h:selectOneMenu>
 								<h:message for="bookingBeanPaymentSelect" />
 							</h:panelGroup>
-							<p:commandLink value="Schließen" actionListener="#{bookingBean.setPaymentPopupVisible(false)}" immediate="true"
-								accesskey="c" title="Cancel [ALT]+[C]" render="panelGroupEditPayment" styleClass="btn btn-primary" />
+							<p:commandLink value="Schließen" accesskey="c" title="Cancel [ALT]+[C]" styleClass="btn btn-primary" 
+								onclick="PF('popupPanelEditPayment').hide()" />
 						</h:panelGrid>
 						<h:panelGroup id="popupPanelPayment">
 							<h:panelGroup rendered="#{paymentBean.payment != null}">
@@ -171,14 +169,14 @@
 											value="#{paymentBean.payment.payer}" converter="#{memberBean.converter}" tabindex="1">
 											<f:selectItem itemLabel="löschen.." noSelectionOption="true" />
 											<f:selectItem itemLabel="#{paymentBean.payment.payer}" itemValue="#{paymentBean.payment.payer.idStr}" />
-											<f:ajax render="panelGroupEditPayment" />
+											<f:ajax render=":editPayment:panelGroupEditPayment" />
 										</h:selectOneMenu>
 										<p:autoComplete id="paymentBeanPaymentPayerSelect" rendered="#{paymentBean.payment.payer == null}"
-											value="#{paymentBean.memberToAdd}" var="p" itemValue="#{p.id}" itemLabel="#{p}"
+											value="#{paymentBean.memberToAdd}" var="p" itemValue="#{p.id}" itemLabel="#{p}" style="width:100%"
 											converter="#{memberBean.converter}" completeMethod="#{paymentBean.filterMembers}" minQueryLength="3"
-											tabindex="1" styleClass="fullwidth manual" placeholder="Der Zahler oder das Mitglied.." dropdown="true">
+											tabindex="1" styleClass="fullwidth manual" placeholder="Der Zahler oder das Mitglied.." dropdown="true" >
 											<p:ajax event="itemSelect" process="@this" listener="#{paymentBean.selectPaymentPayer}"
-												update="panelGroupEditPayment" />
+												update=":editPayment:panelGroupEditPayment" />
 										</p:autoComplete>
 										<h:message for="paymentBeanPaymentPayer" styleClass="error" />
 										<h:message for="paymentBeanPaymentPayerSelect" styleClass="error" />
@@ -253,19 +251,18 @@
 												</h:link>
 											</h:column>
 											<h:column footerClass="remove-column" headerClass="remove-column">
-												<p:commandButton value="DEL" actionListener="#{paymentBean.deleteBooking(_item.id)}"
-													styleClass="remove-button">
-													<f:ajax execute="@this" render="paymentBeanPaymentBookingsPanel" />
+												<p:commandButton value="" styleClass="remove-button">
+													<f:ajax execute="@this" listener="#{paymentBean.deleteBooking(_item.id)}" render=":editPayment:paymentBeanPaymentBookingsPanel" />
 												</p:commandButton>
 											</h:column>
 										</h:dataTable>
-										<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer" style="width: 100%;">
-											<p:autoComplete id="paymentBeanBookingSelect" value="#{paymentBean.bookingToAdd}"
-												styleClass="fullwidth manual" converter="#{bookingBean.converter}" minQueryLength="1" forceSelection="true"
+										<h:panelGrid columnClasses=",remove-column" columns="2" styleClass="data-table-footer" >
+											<p:autoComplete id="paymentBeanBookingSelect" value="#{paymentBean.bookingToAdd}" style="width:100%;"
+												styleClass="manual" converter="#{bookingBean.converter}" minQueryLength="1" forceSelection="true"
 												dropdown="true" completeMethod="#{paymentBean.filterBookings}" var="b" itemLabel="#{b}" itemValue="#{b.id}"
 												placeholder="Buchung hinzufügen.." maxListHeight="100" listWidth="35em" showButton="false">
-												<f:ajax event="itemSelect" process="@none" listener="#{paymentBean.addPaymentBooking}"
-													update="paymentBeanPaymentBookingsPanel" />
+												<f:ajax event="itemSelect" listener="#{paymentBean.addPaymentBooking}"
+													render=":editPayment:paymentBeanPaymentBookingsPanel" />
 											</p:autoComplete>
 											<h:message for="paymentBeanBookingSelect" styleClass="error" />
 										</h:panelGrid>
@@ -304,23 +301,13 @@
 								</h:panelGrid>
 
 								<h:messages errorClass="error" />
-								<h:panelGrid columns="4" style="width: 100%;">
-									<p:commandLink id="saveAndClosePayment" value="SaveAndClose" accesskey="r"
-										title="Speichern und Zurück [ALT]+[R]" styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}">
-										<f:ajax execute="@form" listener='#{paymentBean.update}' />
-										<f:setPropertyActionListener target="#{bookingBean.paymentPopupVisible}" value="false" />
-										<p:ajax process="@none" listener="#{bookingTableBean.dataModel.filter}"
-											onsuccess="PF('popupPanelEditPayment').hide();" />
-									</p:commandLink>
-									<h:outputText />
+								<h:panelGrid columns="3" style="width: 100%;">
+									<h:outputText style="width:40em;display:inline-block;" />
 									<p:commandLink id="savePayment" value="Speichern" accesskey="s" title="Speichern [ALT]+[S]"
 										styleClass="btn btn-primary" disabled="#{!paymentBean.updateAllowed}">
-										<f:ajax execute="@form" listener='#{paymentBean.update}' render="@form" />
-										<p:ajax process="@none" listener="#{bookingTableBean.dataModel.filter}" />
+										<f:ajax execute="@form" listener='#{paymentBean.update}' render=":editPayment:panelGroupEditPayment" />
 									</p:commandLink>
-									<p:commandLink value="Schließen" accesskey="c" title="Cancel [ALT]+[C]" render="panelGroupEditPayment"
-										styleClass="btn btn-primary">
-										<f:setPropertyActionListener target="#{bookingBean.paymentPopupVisible}" value="false" />
+									<p:commandLink value="Schließen" accesskey="c" title="Cancel [ALT]+[C]" styleClass="btn btn-primary">
 										<p:ajax process="@none" listener="#{bookingTableBean.dataModel.filter}"
 											onsuccess="PF('popupPanelEditPayment').hide();" />
 									</p:commandLink>

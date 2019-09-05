@@ -485,7 +485,6 @@ select.manual {
 }
 
 .content table .required {
-	width: 1%;
 	color: red;
 	padding-top: 7pt;
 	padding-left: 4pt;
