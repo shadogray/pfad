@@ -3,7 +3,7 @@
 	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
 	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" xmlns:forgeview="http://jboss.org/forge/view"
 	xmlns:o="http://omnifaces.org/ui" xmlns:p="http://primefaces.org/ui" 
-	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+	xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions" xmlns:pt="http://xmlns.jcp.org/jsf/passthrough" 
 	template="/resources/scaffold/pageTemplate.xhtml">
 
 	<f:metadata>
@@ -85,7 +85,7 @@
 				<h:outputLabel value="Query: "/>			
 				<h:panelGrid columns="2" style="width:100%" columnClasses="width40,width30">
 					<p:inputTextarea value="#{mailerBean.mailTemplate.query}" rows="3" cols="100" autoResize="false"
-						style="width:95%;height:5em;overflow:hidden;white-space:nowrap;resize:both;font-size:smaller;">
+						style="width:95%;height:5em;overflow:hidden;white-space:pre;resize:both;font-size:smaller;" pt:wrap="off">
 						<p:ajax event="keypress" onstart="return ctrlEnter(event)" process="@this" listener="#{mailerBean.executeQuery}" 
 							update="acc:values acc:mailMessages messages"/>
 						<f:ajax listener="#{mailerBean.executeQuery}" render="acc:values acc:mailMessages messages"/>
