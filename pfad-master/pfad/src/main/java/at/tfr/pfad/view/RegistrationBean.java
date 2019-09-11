@@ -51,7 +51,6 @@ public class RegistrationBean extends BaseBean {
 	private Long id;
 	private Registration registration;
 	private Boolean storno, aktiv;
-	private int rows = 20;
 	private boolean all;
 	private TriStateConverter triStateConverter = new TriStateConverter();
 	private Map<String,Integer> rowVals = new LinkedHashMap<>();
@@ -66,7 +65,6 @@ public class RegistrationBean extends BaseBean {
 		rowVals.put("20", new Integer(20));
 		rowVals.put("50", new Integer(50));
 		rowVals.put("Alle", new Integer(10000));
-		rows = rowVals.get("20");
 		rowDm = new ArrayList<>(rowVals.entrySet());
 		paginate();
 	}
@@ -336,14 +334,6 @@ public class RegistrationBean extends BaseBean {
 	public void toggleAktiv() {
 		aktiv = (aktiv == null ? Boolean.TRUE : Boolean.TRUE.equals(aktiv) ? Boolean.FALSE : null);
 		paginate();
-	}
-	
-	public int getRows() {
-		return rows;
-	}
-	
-	public void setRows(int rows) {
-		this.rows = rows;
 	}
 	
 	public List<Entry<String,Integer>> getRowVals() {

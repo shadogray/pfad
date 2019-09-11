@@ -104,17 +104,12 @@
 					<f:ajax listener="#{registrationBean.paginate}" render="regBeanItemTable"/>
 					<f:ajax event="toggleSelect" listener="#{registrationBean.paginate}" render="regBeanItemTable"/>
 				</p:selectCheckboxMenu>
-				<p:outputLabel value="Anzahl:"/>
-				<p:selectOneMenu value="#{registrationBean.rows}" style="width:3em">
-					<f:selectItems value="#{registrationBean.rowVals}" var="v" itemLabel="#{v.key}" itemValue="#{v.value}" />
-					<f:ajax render="regBeanItemTable" />
-				</p:selectOneMenu>
 			</h:panelGrid>
 
 
 			<p:dataTable id="regBeanItemTable" widgetVar="regItemTable" styleClass="data-table" paginatorAlwaysVisible="true"
-				value="#{registrationBean.dataModel}" var="r" editable="true" rows="#{registrationBean.rows}" rowIndexVar="rowIndex"
-				sortMode="multiple" rowStyleClass="#{r.status}" paginator="true">
+				value="#{registrationBean.dataModel}" var="r" editable="true" rows="20" rowIndexVar="rowIndex"
+				sortMode="multiple" rowStyleClass="#{r.status}" paginator="true" rowsPerPageLabel="Anzahl:" rowsPerPageTemplate="20,50,10000">
 
 				<p:ajax event="rowEdit" listener="#{registrationBean.onRowEdit}" update=":search:messages" />
 				<p:ajax event="rowEditCancel" listener="#{registrationBean.onRowCancel}" update=":search:messages" />
