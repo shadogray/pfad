@@ -19,7 +19,7 @@
 		<f:viewParam name="registrationBeanExampleSchoolEntry" value="#{registrationBean.example.schoolEntry}" />
 		<f:viewParam name="regStornoBox" value="#{registrationBean.storno}" converter="#{triStateConverter}" />
 		<f:viewParam name="regAktivBox" value="#{registrationBean.aktiv}" converter="#{triStateConverter}" />
-		<f:viewAction action="#{registrationBean.paginate()}" onPostback="true"/>
+		<f:viewAction action="#{registrationBean.paginate()}"/>
 	</f:metadata>
 
 	<ui:define name="header">
@@ -34,7 +34,7 @@
 			<p:growl id="messages" showDetail="true" />
 			<p:focus />
 
-			<f:ajax execute="@form" render=":table:regBeanItemTable">
+			<f:ajax execute="@form" listener="#{registrationBean.paginate()}" render=":table:regBeanItemTable">
 				<h:panelGrid columnClasses="label3,component3,label3,component3,label3,component3,label3,component3" columns="10">
 				
 					<p:outputLabel value="Name:"/>
@@ -56,19 +56,19 @@
 					<p:inputText id="registrationBeanExamplePLZ" value="#{registrationBean.example.PLZ}" style="width:10em;"/>
 	
 					<p:outputLabel value="Geschlecht:"/>
-					<p:selectOneMenu id="registrationBeanExampleGeschlecht" value="#{registrationBean.example.geschlecht}">
+					<p:selectOneMenu id="registrationBeanExampleGeschlecht" value="#{registrationBean.example.geschlecht}" style="width:5em">
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems value="#{memberBean.sexes}" />
 					</p:selectOneMenu>
 	
 					<p:outputLabel value="Bis GebJahr:"/>
-					<p:selectOneMenu id="registrationBeanExampleGebJahr" value="#{registrationBean.example.gebJahr}">
+					<p:selectOneMenu id="registrationBeanExampleGebJahr" value="#{registrationBean.example.gebJahr}" style="width:5em">
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems value="#{registrationBean.distinctGebJahr}" />
 					</p:selectOneMenu>
 	
 					<p:outputLabel value="Bis SchulEintritt:"/>
-					<p:selectOneMenu id="registrationBeanExampleSchoolEntry" value="#{registrationBean.example.schoolEntry}">
+					<p:selectOneMenu id="registrationBeanExampleSchoolEntry" value="#{registrationBean.example.schoolEntry}" style="width:5em">
 						<f:selectItem noSelectionOption="true" />
 						<f:selectItems value="#{registrationBean.distinctSchoolEntry}" />
 					</p:selectOneMenu>
@@ -209,7 +209,7 @@
 						</f:facet>
 					</p:cellEditor>
 				</p:column>
-				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}">
+				<p:column headerText="GebJahr" sortBy="#{r.gebJahr}" >
 					<p:cellEditor>
 						<f:facet name="output">
 							<h:link outcome="create" includeViewParams="true">

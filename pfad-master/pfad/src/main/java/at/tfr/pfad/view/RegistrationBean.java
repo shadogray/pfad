@@ -48,7 +48,6 @@ public class RegistrationBean extends BaseBean {
 	private List<Integer> distinctGebJahr = new ArrayList<>();
 	private List<Integer> distinctSchoolEntry = new ArrayList<>();
 	private List<Registration> dataModel;
-	private List<Registration> filteredDataModel = new ArrayList<>();
 	private Long id;
 	private Registration registration;
 	private Boolean storno, aktiv;
@@ -263,14 +262,6 @@ public class RegistrationBean extends BaseBean {
 
 	public ListDataModel<Registration> getDataModel() {
 		return new ListDataModel<Registration>(dataModel);
-	}
-
-	public List<Registration> getFilteredDataModel() {
-		return filteredDataModel;
-	}
-	
-	public void setFilteredDataModel(List<Registration> filteredDataModel) {
-		this.filteredDataModel = filteredDataModel;
 	}
 
 	public Registration getExample() {
