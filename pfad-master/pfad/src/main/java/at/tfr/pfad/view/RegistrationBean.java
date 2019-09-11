@@ -24,6 +24,7 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
+import org.omnifaces.util.Faces;
 import org.primefaces.event.RowEditEvent;
 
 import at.tfr.pfad.RegistrationStatus;
@@ -87,9 +88,14 @@ public class RegistrationBean extends BaseBean {
 	}
 	
 	public String show(Long id) {
-		return "create?faces-redirect=true&id="+id;
+		return "create?faces-redirect=true&includeViewParams=true&id="+id;
 	}
 
+	public String paginateRedirect() {
+		paginate();
+		return Faces.getViewId()+"?faces-redirect=true&includeViewParams=true";
+	}
+	
 	public void paginate() {
 		// Belli: sollen alle sehen können
 		dataModel = regRepo.queryBy(example, filterStati, aktiv, storno);
