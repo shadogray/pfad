@@ -107,7 +107,7 @@
 				<p:outputLabel value="Anzahl:"/>
 				<p:selectOneMenu value="#{registrationBean.rows}" style="width:3em">
 					<f:selectItems value="#{registrationBean.rowVals}" var="v" itemLabel="#{v.key}" itemValue="#{v.value}" />
-					<f:ajax listener="#{registrationBean.paginate()}" render="regBeanItemTable" />
+					<f:ajax render="regBeanItemTable" />
 				</p:selectOneMenu>
 			</h:panelGrid>
 
