@@ -41,7 +41,7 @@
 
 		<h:form id="download">
 			<h:messages />
-			<h:panelGrid styleClass="buttons" columns="8">
+			<h:panelGrid styleClass="buttons" columns="8" rendered="#{sessionBean.kassier}">
 				<h:commandLink value="Download Gesamt" action="#{downloadBean.downloadAll()}" styleClass="btn btn-primary"
 					disabled="#{!downloadBean.downloadAllowed}" />
 				<h:commandLink value="Download Vor-Registrierung" action="#{downloadBean.downloadVorRegistrierung()}"

@@ -45,9 +45,16 @@ public class SessionBean implements Serializable {
 	@PostConstruct
 	public void init() {
 		config = configRepo.findAll();
-		if (!(isAdmin() || isGruppe())) {
+		if (!(isAdmin())) {
 			config = config.stream()
-				.filter(c -> c.getRole() == null || Role.none.equals(c.getRole()) || userSession.isCallerInRole(c.getRole().name()))
+				.filter(c -> c.getRole() == null || Role.none.equals(c.getRole()) || 
+					Role.kassier.equals(c.getRole()) && isKassier() ||
+					Role.gruppe.equals(c.getRole()) && isGruppe() ||
+					Role.leiter.equals(c.getRole()) && isLeiter() ||
+					Role.anmeldung.equals(c.getRole()) && isAnmeldung() ||
+					Role.registrierung.equals(c.getRole()) && isRegistrierung() ||
+					Role.training.equals(c.getRole()) && isTrainer() ||
+					userSession.isCallerInRole(c.getRole().name()))
 				.filter(c -> StringUtils.isEmpty(c.getOwners()) || 
 						c.getOwners().toLowerCase().contains(userSession.getCallerPrincipal().getName().toLowerCase()))
 				.collect(Collectors.toList());
@@ -96,23 +103,23 @@ public class SessionBean implements Serializable {
 	}
 	
 	public boolean isGruppe() {
-		return userSession.isCallerInRole(Role.gruppe.name());
+		return isVorstand() || userSession.isCallerInRole(Role.gruppe.name());
 	}
 
 	public boolean isLeiter() {
-		return userSession.isCallerInRole(Role.leiter.name());
+		return isGruppe() || userSession.isCallerInRole(Role.leiter.name());
 	}
 	
 	public boolean isRegistrierung() {
-		return userSession.isCallerInRole(Role.registrierung.name());
+		return isGruppe() || userSession.isCallerInRole(Role.registrierung.name());
 	}
 	
 	public boolean isAnmeldung() {
-		return userSession.isCallerInRole(Role.anmeldung.name());
+		return isGruppe() || userSession.isCallerInRole(Role.anmeldung.name());
 	}
 	
 	public boolean isTrainer() {
-		return userSession.isCallerInRole(Role.training.name());
+		return isGruppe() || userSession.isCallerInRole(Role.training.name());
 	}
 	
 	public Squad isResponsibleFor() {
@@ -151,11 +158,11 @@ public class SessionBean implements Serializable {
 	}
 
 	public boolean isKassier() {
-		return userSession.isCallerInRole(Role.kassier.name());
+		return isVorstand() || userSession.isCallerInRole(Role.kassier.name());
 	}
 
 	public boolean isVorstand() {
-		return userSession.isCallerInRole(Role.vorstand.name());
+		return isAdmin() || userSession.isCallerInRole(Role.vorstand.name());
 	}
 
 	public UserSession getUserSession() {
