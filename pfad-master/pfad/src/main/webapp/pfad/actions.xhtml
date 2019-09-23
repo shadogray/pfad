@@ -111,7 +111,7 @@
 								<f:facet name="header">Nr</f:facet>
 								<h:outputText value="#{rowIndex+1}" />
 							</p:column>
-							<p:columns var="c" value="#{downloadBean.columns}">
+							<p:columns var="c" value="#{downloadBean.columns}" sortable="true" sortBy="#{row[c.index].value}">
 								<f:facet name="header">#{c.value}</f:facet>
 								<h:outputText value="#{row[c.index].value}" />
 							</p:columns>
