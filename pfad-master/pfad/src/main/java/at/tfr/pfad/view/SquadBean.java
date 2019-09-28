@@ -10,10 +10,14 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Stateful;
@@ -23,6 +27,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.model.CollectionDataModel;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -33,9 +38,11 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.SquadType;
+import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
+import at.tfr.pfad.util.TemplateUtils;
 
 /**
  * Backing bean for Squad entities.
@@ -53,13 +60,31 @@ import at.tfr.pfad.model.Squad_;
 public class SquadBean extends BaseBean<Squad> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	/*
 	 * Support creating and retrieving Squad entities
 	 */
 
 	private Long id;
-
+	private final Map<String,Object> beans = new HashMap<>();
+	private List<Configuration> queries = Collections.emptyList();
+	
+	@PostConstruct
+	public void init() {
+		Squad responsibleFor = sessionBean.isResponsibleFor();
+		beans.put("truppName", responsibleFor != null ? responsibleFor.getName() : "");
+		beans.put("truppId", responsibleFor != null ? responsibleFor.getId() : "0");
+		beans.put("trupp", sessionBean.getSquad());
+		beans.put("user", sessionBean.getUser());
+		if (responsibleFor != null && (isGruppe() || responsibleFor.getId().equals(id))) {
+			queries = sessionBean.getConfig().stream()
+					.filter(q -> q.getCkey().startsWith(responsibleFor.getName()+".download."))
+					.collect(Collectors.toList());
+		}
+		queries.forEach(q -> q.setUiName(q.isDownload() ? q.getDownloadName() : q.getCkey()));
+		queries.forEach(q -> q.setUiName(templateUtils.replace(q.getUiName(), beans, q.getUiName())));
+	}
+	
 	public Long getId() {
 		return this.id;
 	}
@@ -105,7 +130,7 @@ public class SquadBean extends BaseBean<Squad> implements Serializable {
 			this.squad.getScouts().size();
 			this.squad.getAssistants().size();
 		}
-		
+		init();
 		scouts = new CollectionDataModel<>(squad.getScouts());
 		assistants = new CollectionDataModel<>(squad.getAssistants());
 	}
@@ -324,5 +349,9 @@ public class SquadBean extends BaseBean<Squad> implements Serializable {
 
 	public List<SquadType> getTypes() {
 		return Arrays.asList(SquadType.values());
+	}
+	
+	public List<Configuration> getQueries() {
+		return queries;
 	}
 }

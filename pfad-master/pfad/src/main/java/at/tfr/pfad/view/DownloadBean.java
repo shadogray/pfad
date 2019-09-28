@@ -13,19 +13,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.ListDataModel;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.Query;
@@ -39,10 +43,9 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jboss.logging.Logger;
 import org.joda.time.DateTime;
+import org.omnifaces.util.Messages;
 
 import at.tfr.pfad.ConfigurationType;
-import at.tfr.pfad.Role;
-import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
@@ -53,9 +56,10 @@ import at.tfr.pfad.processing.RegistrationDataGenerator.RegConfig;
 import at.tfr.pfad.util.ColumnModel;
 import at.tfr.pfad.util.QueryExecutor;
 import at.tfr.pfad.util.SessionBean;
+import at.tfr.pfad.util.TemplateUtils;
 
 @Named
-@SessionScoped
+@ViewScoped
 @Stateful
 public class DownloadBean implements Serializable {
 
@@ -71,6 +75,8 @@ public class DownloadBean implements Serializable {
 	private QueryExecutor qExec;
 	@Inject
 	private RegistrationDataGenerator regDataGenerator;
+	@Inject
+	private TemplateUtils templateUtils;
 	private Configuration configuration;
 	private boolean updateRegistered;
 	private boolean notRegisteredOnly;
@@ -81,6 +87,19 @@ public class DownloadBean implements Serializable {
 	private final List<ColumnModel> columns = new ArrayList<>();
 	private final List<String> columnHeaders = new ArrayList<>();
 	public static final String SafeDatePattern = "yyyy.MM.dd_HHmm";
+	
+	private final Map<String,Object> beans = new HashMap<>();
+	public List<Configuration> queries = Collections.emptyList();
+	
+	@PostConstruct
+	public void init() {
+		Squad responsibleFor = sessionBean.isResponsibleFor();
+		beans.put("truppName", responsibleFor != null ? responsibleFor.getName() : "");
+		beans.put("truppId", responsibleFor != null ? responsibleFor.getId() : "0");
+		beans.put("trupp", sessionBean.getSquad());
+		beans.put("user", sessionBean.getUser());
+		initQueries();
+	}
 
 	public String downloadVorRegistrierung() throws Exception {
 		Collection<Member> leaders = squadRepo.findLeaders();
@@ -163,7 +182,7 @@ public class DownloadBean implements Serializable {
 	public static ExternalContext setHeaders(String prefix) {
 		DataStructure dataStructure = DataStructure.XLSX;
 		String encoding = "UTF8";
-		return setHeaders(prefix, dataStructure, encoding);
+		return setHeaders(prefix.replaceAll("[ /\\\\:\\.,\\|\\?\"']+", "_"), dataStructure, encoding);
 	}
 
 	public static ExternalContext setHeaders(String prefix, DataStructure dataStructure) {
@@ -229,10 +248,16 @@ public class DownloadBean implements Serializable {
 	}
 
 	public List<Configuration> getQueries() {
-		return sessionBean.getConfig().stream()
+		return queries;
+	}
+	
+	public void initQueries() {
+		queries = sessionBean.getConfig().stream()
 				.filter(c -> c.getCkey() != null && (c.getType() == ConfigurationType.query || c.getType() == ConfigurationType.nativeQuery))
 				.sorted((x,y) -> x.getCkey().compareTo(y.getCkey()))
 				.collect(Collectors.toList());
+		queries.forEach(q -> q.setUiName(q.isDownload() ? q.getDownloadName() : q.getCkey()));
+		queries.forEach(q -> q.setUiName(templateUtils.replace(q.getUiName(), beans, q.getUiName())));
 	}
 
 	public void executeQuery(Long configurationId) {
@@ -247,37 +272,51 @@ public class DownloadBean implements Serializable {
 			}
 		} catch (Exception e) {
 			log.info("executeQuery: " + e, e);
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getLocalizedMessage(), null));
+			Messages.addError(null, e.getLocalizedMessage());
 		}
 	}
 
+	public void executeQuery(Configuration config) {
+		this.configuration = config;
+		query = configuration.getCvalue();
+		nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
+		executeQueryIntern();
+	}
+
 	public String executeQuery() {
-		Query q = null;
+		try {
+			executeQueryIntern();
+		} catch (Exception e) {
+			log.info("cannot execute: " + query + " : " + e, e);
+			Messages.addError(null, getMessage(e), e.getLocalizedMessage());
+		}
+		return "";
+	}
+
+	private void executeQueryIntern() {
+		results = Collections.emptyList();
 		if (configuration != null) {
 			nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
 		}
-		try {
-			columnHeaders.clear();
-			columns.clear();
-			resultModel = new ListDataModel<List<Entry<String,Object>>>(new ArrayList<List<Entry<String,Object>>>());
-			results = qExec.execute(query, nativeQuery);
-			if (results.size() > 0) {
-				resultModel.setWrappedData(results);
-				List<String> columnNames = results.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
+		columnHeaders.clear();
+		columns.clear();
+		resultModel = new ListDataModel<List<Entry<String,Object>>>(new ArrayList<List<Entry<String,Object>>>());
 
-				if (configuration != null) 
-					columnHeaders.addAll(Arrays.asList(configuration.toHeaders(columnNames)));
-				for (int i=0; i<columnNames.size(); i++) 
-					columns.add(new ColumnModel(columnNames.get(i), 
-							columnHeaders.size()>i ? columnHeaders.get(i) : columnNames.get(i), i));
-			}
-		} catch (Exception e) {
-			log.info("cannot execute: " + q + " : " + e, e);
-			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_ERROR, getMessage(e), e.getLocalizedMessage()));
+		String replQuery = query;
+		if (replQuery != null) {
+			replQuery = templateUtils.replace(replQuery, beans);
 		}
-		return "";
+		results = qExec.execute(replQuery, nativeQuery);
+		if (results.size() > 0) {
+			resultModel.setWrappedData(results);
+			List<String> columnNames = results.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
+
+			if (configuration != null) 
+				columnHeaders.addAll(Arrays.asList(configuration.toHeaders(columnNames)));
+			for (int i=0; i<columnNames.size(); i++) 
+				columns.add(new ColumnModel(columnNames.get(i), 
+						columnHeaders.size()>i ? columnHeaders.get(i) : columnNames.get(i), i));
+		}
 	}
 
 	String getMessage(Throwable e) {
@@ -294,14 +333,19 @@ public class DownloadBean implements Serializable {
 	}
 	
 	public String downloadResults() {
+		Configuration config = configuration;
+		if (config == null) {
+			config = new Configuration();
+			config.setCkey("Query");
+			config.setCvalue(query);
+		}
+		return downloadConfiguration(config);
+	}
+
+	public String downloadConfiguration(Configuration config) {
 		try {
-			Configuration config = configuration;
-			if (config == null) {
-				config = new Configuration();
-				config.setCkey("Query");
-				config.setCvalue(query);
-			}
-			ExternalContext ectx = setHeaders(config.getCkey());
+			executeQuery(config);
+			ExternalContext ectx = setHeaders(config.getUiName());
 			try (OutputStream os = ectx.getResponseOutputStream()) {
 				Workbook wb = generateResultsWorkbook(config, results);
 				wb.write(os);

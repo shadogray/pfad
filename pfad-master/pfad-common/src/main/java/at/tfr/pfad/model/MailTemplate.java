@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -64,6 +65,9 @@ public class MailTemplate extends BaseEntity implements Auditable {
 	@OneToMany(mappedBy="template")
 	private List<MailMessage> messages;
 
+	@Transient
+	private String uiName;
+	
 	@Override
 	public Long getId() {
 		return id;
@@ -189,6 +193,14 @@ public class MailTemplate extends BaseEntity implements Auditable {
 		this.createdBy = createdBy;
 	}
 
+	public String getUiName() {
+		return uiName;
+	}
+	
+	public void setUiName(String uiName) {
+		this.uiName = uiName;
+	}
+	
 	@Override
 	public String toString() {
 		return "MailTemplate [id=" + id + ", name=" + name + ", text=" + StringUtils.abbreviate(text, 50) + ", query=" + StringUtils.abbreviate(query, 50) + "]";

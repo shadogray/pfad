@@ -48,6 +48,7 @@ import at.tfr.pfad.model.Training;
 import at.tfr.pfad.util.Bookings;
 import at.tfr.pfad.util.Payments;
 import at.tfr.pfad.util.SessionBean;
+import at.tfr.pfad.util.TemplateUtils;
 
 /**
  * @author u0x27vo
@@ -90,6 +91,8 @@ public abstract class BaseBean<T> implements Serializable {
 	protected transient ActivityRepository activityRepo;
 	@Inject
 	protected PfadUI pfadUI;
+	@Inject
+	protected TemplateUtils templateUtils;
 	
 	protected int page;
 	protected long count;

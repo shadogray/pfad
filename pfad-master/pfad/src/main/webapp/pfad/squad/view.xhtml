@@ -51,12 +51,19 @@
 			<h:outputText />
 			<h:panelGroup styleClass="buttons">
 				<h:form>
-					<h:link value="View All" outcome="search" styleClass="btn btn-primary" />
-					<h:link value="Edit" outcome="create" includeViewParams="true" styleClass="btn btn-primary"
-						disabled="#{!squadBean.updateAllowed}" />
-					<h:link value="Neu" outcome="create" styleClass="btn btn-primary" />
-					<h:commandLink value="Download" action="#{downloadBean.downloadSquad(squadBean.squad)}" styleClass="btn btn-primary"
-						rendered="#{squadBean.downloadAllowed}" />
+					<h:panelGrid columns="4" styleClass="w100pct">
+						<h:link value="View All" outcome="search" styleClass="btn btn-primary" />
+						<h:link value="Edit" outcome="create" includeViewParams="true" styleClass="btn btn-primary"
+							disabled="#{!squadBean.updateAllowed}" />
+						<h:link value="Neu" outcome="create" styleClass="btn btn-primary" />
+						<h:commandLink value="Download" action="#{downloadBean.downloadSquad(squadBean.squad)}" styleClass="btn btn-primary"
+							rendered="#{squadBean.downloadAllowed}" />
+					</h:panelGrid>
+					<h:panelGroup styleClass="w100pct">
+						<ui:repeat var="qry" value="#{squadBean.queries}">
+							<h:commandLink value="#{qry.uiName}" action="#{downloadBean.downloadConfiguration(qry)}"  styleClass="btn btn-primary"/>
+						</ui:repeat>
+					</h:panelGroup>
 				</h:form>
 			</h:panelGroup>
 			<h:outputText />

@@ -9,6 +9,8 @@ package at.tfr.pfad.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +20,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,6 +42,7 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 	public static final String BADEN_KEYPFX = "3-BAD-";
 	public static final String REGEND_KEY = "RegistrationEnd";
 	public static final String BADEN_IBANS = "BadenIBANs";
+	public static final Pattern DOWNLOAD_PATTERN = Pattern.compile("^.+?\\.download\\.(.+)$");
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "configuration_seq")
@@ -73,6 +77,9 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 	
 	@Column(length = 1024)
 	private String headers;
+	
+	@Transient
+	private String uiName;
 	
 	@XmlID
 	public Long getId() {
@@ -167,6 +174,27 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 
 	public String getCvalueIntern() {
 		return cvalue;
+	}
+
+	public String getUiName() {
+		return uiName;
+	}
+	
+	public void setUiName(String uiName) {
+		this.uiName = uiName;
+	}
+	
+	public boolean isDownload() {
+		return ckey != null && DOWNLOAD_PATTERN.matcher(ckey).matches();
+	}
+	
+	public String getDownloadName() {
+		if (isDownload()) {
+			Matcher matcher = DOWNLOAD_PATTERN.matcher(ckey);
+			if (matcher.matches() && matcher.groupCount() >= 1)
+				return matcher.group(1);
+		}
+		return ckey;
 	}
 	
 	@Override

@@ -70,7 +70,7 @@
 			<h:panelGroup id="queryPanel">
 				<h:panelGroup layout="block" id="actionsQueries">
 					<ui:repeat value="#{downloadBean.queries}" var="query">
-						<h:commandLink actionListener="#{downloadBean.executeQuery(query.id)}" value="#{query.ckey}"
+						<h:commandLink actionListener="#{downloadBean.executeQuery(query.id)}" value="#{query.uiName}"
 							styleClass="btn btn-primary" title="#{query.toTitle()}">
 							<f:ajax execute="@this" render="@form" />
 						</h:commandLink>
@@ -78,9 +78,9 @@
 				</h:panelGroup>
 				<h:panelGrid columns="4" rendered="#{downloadBean.configuration != null}">
 					<h:outputLabel value="Query:" />
-					<h:outputText value="#{downloadBean.configuration.ckey}" />
+					<h:outputText value="#{downloadBean.configuration.uiName}" />
 					<h:commandLink action="#{downloadBean.downloadResults()}" value="Download" styleClass="btn btn-primary"
-						title="Download von: #{downloadBean.configuration.ckey}"/>
+						title="Download von: #{downloadBean.configuration.uiName}"/>
 					<h:outputText value="" />
 				</h:panelGrid>
 
