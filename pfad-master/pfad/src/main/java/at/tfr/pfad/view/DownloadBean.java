@@ -77,11 +77,9 @@ public class DownloadBean implements Serializable {
 	private RegistrationDataGenerator regDataGenerator;
 	@Inject
 	private TemplateUtils templateUtils;
-	private Configuration configuration;
+	private Configuration configuration = new Configuration().withCkey("undef").withUiName("undef");
 	private boolean updateRegistered;
 	private boolean notRegisteredOnly;
-	private String query;
-	private boolean nativeQuery;
 	private List<List<Entry<String,Object>>> results = Collections.emptyList();
 	private ListDataModel<List<Entry<String,Object>>> resultModel = new ListDataModel<>(new ArrayList<>());
 	private final List<ColumnModel> columns = new ArrayList<>();
@@ -215,19 +213,19 @@ public class DownloadBean implements Serializable {
 	}
 
 	public String getQuery() {
-		return query;
+		return configuration.getCvalue();
 	}
 
 	public void setQuery(String query) {
-		this.query = query;
+		configuration.setCvalue(query);
 	}
 
 	public boolean isNativeQuery() {
-		return nativeQuery;
+		return configuration.isNative();
 	}
 
 	public void setNativeQuery(boolean nativeQuery) {
-		this.nativeQuery = nativeQuery;
+		configuration.setNative(nativeQuery);
 	}
 
 	public ListDataModel<List<Entry<String,Object>>> getResults() {
@@ -265,10 +263,7 @@ public class DownloadBean implements Serializable {
 			Optional<Configuration> confOpt = getQueries().stream().filter(q -> configurationId.equals(q.getId()))
 					.findFirst();
 			if (confOpt.isPresent()) {
-				configuration = confOpt.get();
-				query = configuration.getCvalue();
-				nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
-				executeQuery();
+				executeQuery(confOpt.get());
 			}
 		} catch (Exception e) {
 			log.info("executeQuery: " + e, e);
@@ -278,8 +273,6 @@ public class DownloadBean implements Serializable {
 
 	public void executeQuery(Configuration config) {
 		this.configuration = config;
-		query = configuration.getCvalue();
-		nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
 		executeQueryIntern();
 	}
 
@@ -287,7 +280,7 @@ public class DownloadBean implements Serializable {
 		try {
 			executeQueryIntern();
 		} catch (Exception e) {
-			log.info("cannot execute: " + query + " : " + e, e);
+			log.info("cannot execute: " + configuration + " : " + e, e);
 			Messages.addError(null, getMessage(e), e.getLocalizedMessage());
 		}
 		return "";
@@ -295,18 +288,15 @@ public class DownloadBean implements Serializable {
 
 	private void executeQueryIntern() {
 		results = Collections.emptyList();
-		if (configuration != null) {
-			nativeQuery = ConfigurationType.nativeQuery.equals(configuration.getType());
-		}
 		columnHeaders.clear();
 		columns.clear();
 		resultModel = new ListDataModel<List<Entry<String,Object>>>(new ArrayList<List<Entry<String,Object>>>());
 
-		String replQuery = query;
+		String replQuery = configuration.getCvalue();
 		if (replQuery != null) {
 			replQuery = templateUtils.replace(replQuery, beans);
 		}
-		results = qExec.execute(replQuery, nativeQuery);
+		results = qExec.execute(replQuery, configuration.isNative());
 		if (results.size() > 0) {
 			resultModel.setWrappedData(results);
 			List<String> columnNames = results.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
@@ -333,13 +323,7 @@ public class DownloadBean implements Serializable {
 	}
 	
 	public String downloadResults() {
-		Configuration config = configuration;
-		if (config == null) {
-			config = new Configuration();
-			config.setCkey("Query");
-			config.setCvalue(query);
-		}
-		return downloadConfiguration(config);
+		return downloadConfiguration(configuration);
 	}
 
 	public String downloadConfiguration(Configuration config) {

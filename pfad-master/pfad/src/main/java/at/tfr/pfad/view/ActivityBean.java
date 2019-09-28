@@ -271,7 +271,7 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
 				if (value instanceof Activity) 
-					return ""+((Activity)value).getId();
+					return ((Activity)value).getId() != null ? ""+((Activity)value).getId() : null;
 				return ""+(value != null ? value : "");
 			}
 		};

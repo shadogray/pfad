@@ -284,9 +284,10 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		
-		query.getResultList().stream().forEach(p -> Hibernate.initialize(p.getPayer()));
-		query.getResultList().stream().flatMap(p -> p.getBookings().stream()).forEach(Hibernate::initialize);
-		this.pageItems = query.getResultList().stream().map(p -> new PaymentUI(p, p.getPayer(), p.getBookings())).collect(Collectors.toList());
+		List<Payment> resultList = query.getResultList();
+		resultList.stream().forEach(p -> Hibernate.initialize(p.getPayer()));
+		resultList.stream().flatMap(p -> p.getBookings().stream()).forEach(Hibernate::initialize);
+		this.pageItems = resultList.stream().map(p -> new PaymentUI(p, p.getPayer(), p.getBookings())).collect(Collectors.toList());
 		dataModel = new ListDataModel<>(pageItems);
 	}
 

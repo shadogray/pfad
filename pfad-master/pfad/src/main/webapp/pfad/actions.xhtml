@@ -76,7 +76,7 @@
 						</h:commandLink>
 					</ui:repeat>
 				</h:panelGroup>
-				<h:panelGrid columns="4" rendered="#{downloadBean.configuration != null}">
+				<h:panelGrid columns="4" rendered="#{not empty downloadBean.results}">
 					<h:outputLabel value="Query:" />
 					<h:outputText value="#{downloadBean.configuration.uiName}" />
 					<h:commandLink action="#{downloadBean.downloadResults()}" value="Download" styleClass="btn btn-primary"

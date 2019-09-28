@@ -131,8 +131,8 @@
 							</h:link>
 						</h:column>
 						<h:column footerClass="remove-column" headerClass="remove-column">
-							<h:commandLink actionListener="#{paymentBean.deleteBooking(_item.id)}" styleClass="remove-button" >
-								<f:ajax render="paymentBeanPaymentBookingsPanel"/>
+							<h:commandLink styleClass="remove-button" >
+								<f:ajax listener="#{paymentBean.deleteBooking(_item.id)}" render=":create:paymentBeanPaymentBookingsPanel"/>
 							</h:commandLink>
 						</h:column>
 					</h:dataTable>

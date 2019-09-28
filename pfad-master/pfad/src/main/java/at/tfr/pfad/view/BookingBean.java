@@ -295,12 +295,12 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 			predicatesList.add(builder.equal(root.get(Booking_.activity), getBookingExample().getActivity()));
 		}
 
-		if (memberSearch != null && memberSearch.getId() != null) {
-			predicatesList.add(builder.equal(root.get(Booking_.member), memberSearch));
+		if (memberExample.getId() != null) {
+			predicatesList.add(builder.equal(root.get(Booking_.member), memberExample));
 		}
 
-		if (memberSearch != null && StringUtils.isNotBlank(memberSearch.getName())) {
-			for (String val : memberSearch.getName().toLowerCase().split(" ")) {
+		if (memberExample != null && StringUtils.isNotBlank(memberExample.getName())) {
+			for (String val : memberExample.getName().toLowerCase().split(" ")) {
 				predicatesList.add(builder.or(
 						builder.like(builder.lower(root.get(Booking_.member).get(Member_.name)), "%"+val+"%"),
 						builder.like(builder.lower(root.get(Booking_.member).get(Member_.vorname)), "%"+val+"%")
@@ -374,7 +374,7 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
 				if (value instanceof Booking) 
-					return ""+((Booking)value).getId();
+					return ((Booking)value).getId() != null ? ""+((Booking)value).getId() : null;
 				return ""+(value != null ? value : "");
 			}
 		};

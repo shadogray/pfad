@@ -489,7 +489,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 			@Override
 			public String getAsString(FacesContext context, UIComponent component, Object value) {
 				if (value instanceof Member) 
-					return ""+((Member)value).getId();
+					return ((Member)value).getId() != null ? ""+((Member)value).getId() : null;
 				return ""+(value != null ? value : "");
 			}
 		};

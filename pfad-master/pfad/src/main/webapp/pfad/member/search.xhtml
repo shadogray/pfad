@@ -17,7 +17,6 @@
 		<f:viewParam name="mbeFunktionen" value="#{memberBean.exampleFunctions}" converter="#{functionBean.listConverter}"/>
 		<f:viewParam name="mbeAktiv" value="#{memberBean.exampleActive}"/>
 		<f:viewParam name="mbeFree" value="#{memberBean.exampleFree}"/>
-		<f:viewAction action="#{memberBean.paginate}" onPostback="true"/>
 	</f:metadata>
 
 	<ui:define name="header">

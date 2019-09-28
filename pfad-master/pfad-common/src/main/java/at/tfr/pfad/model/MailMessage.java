@@ -17,7 +17,7 @@ import javax.persistence.Version;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
-public class MailMessage extends BaseEntity {
+public class MailMessage extends BaseEntity implements Cloneable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mailMessage_seq")
@@ -185,5 +185,14 @@ public class MailMessage extends BaseEntity {
 	public String toString() {
 		return "MailMessage [id=" + id + ", member=" + member + ", receiver=" + receiver + ", tpl=" + template
 				+ ", text=" + StringUtils.abbreviate(text, 50) + "]";
+	}
+
+	public MailMessage getClone() throws CloneNotSupportedException {
+		return (MailMessage)clone();
+	}
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

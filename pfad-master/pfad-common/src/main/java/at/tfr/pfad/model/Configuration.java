@@ -162,6 +162,11 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 		this.ckey = ckey;
 	}
 
+	public Configuration withCkey(String ckey) {
+		setCkey(ckey);
+		return this;
+	}
+	
 	public String getCvalue() {
 		if ((""+ckey).toLowerCase().contains("password")) 
 			return "********";
@@ -172,6 +177,11 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 		this.cvalue = cvalue;
 	}
 
+	public Configuration withCValue(String cvalue) {
+		setCvalue(cvalue);
+		return this;
+	}
+	
 	public String getCvalueIntern() {
 		return cvalue;
 	}
@@ -184,6 +194,11 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 		this.uiName = uiName;
 	}
 	
+	public Configuration withUiName(String uiName) {
+		setUiName(uiName);
+		return this;
+	}
+		
 	public boolean isDownload() {
 		return ckey != null && DOWNLOAD_PATTERN.matcher(ckey).matches();
 	}
@@ -195,6 +210,14 @@ public class Configuration extends BaseEntity implements Comparable<Configuratio
 				return matcher.group(1);
 		}
 		return ckey;
+	}
+	
+	public boolean isNative() {
+		return ConfigurationType.nativeQuery.equals(type);
+	}
+	
+	public void setNative(boolean nativeQuery) {
+		type = nativeQuery ? ConfigurationType.nativeQuery : ConfigurationType.query;
 	}
 	
 	@Override

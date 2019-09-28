@@ -61,7 +61,7 @@
 
 						<h:outputLabel for="paymentBeanExamplePayer" value="Zahler:" />
 						<h:panelGroup id="paymentBeanExamplePayerPanel">
-							<p:autoComplete id="paymentBeanExamplePayer" value="#{paymentBean.memberExample}" completeMethod="#{members.filtered}" 
+							<p:autoComplete id="paymentBeanExamplePayer" value="#{paymentBean.memberSearch}" completeMethod="#{members.filtered}" 
 								var="p" itemLabel="#{p}" itemValue="#{p.idStr}" converter="#{memberBean.converter}" >
 								<f:ajax render="paymentBeanPageItems" />
 							</p:autoComplete>
@@ -99,7 +99,7 @@
 						<h:outputLabel for="paymentBeanActivity" value="Aktivität:" />
 						<h:panelGroup>
 							<p:selectOneMenu id="paymentBeanActivity" styleClass="fullwidth" p:placeholder="Aktivität.." 
-								value="#{paymentBean.activityExample}" converter="#{activityBean.converter}" 
+								value="#{paymentBean.activitySearch}" converter="#{activityBean.converter}" 
 								title="Aktivität..">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a.idStr}" />

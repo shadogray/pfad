@@ -298,6 +298,7 @@ public class MailerBean extends BaseBean {
 					
 					RecipientType to = RecipientType.TO;
 					if (testOnly) {
+						msg = msg.getClone();
 						addAddresses(mail, mailConfig.getTestTo(), to);
 						msg.setReceiver(mailConfig.getTestTo());
 						if (mailTemplate.isCc()) 
