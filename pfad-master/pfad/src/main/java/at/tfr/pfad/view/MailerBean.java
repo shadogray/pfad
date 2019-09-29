@@ -158,7 +158,7 @@ public class MailerBean extends BaseBean {
 						String join = e.getValue().stream()
 								.map(line -> (String)line.get(ccIdx).getValue())
 								.filter(StringUtils::isNotBlank)
-								.filter(v -> !v.equalsIgnoreCase(e.getKey()))
+								.filter(v -> !v.equalsIgnoreCase(e.getKey()) && !e.getKey().contains(v))
 								.distinct()
 								.collect(Collectors.joining(","));
 						e.getValue().get(0).get(ccIdx).setValue(join);
