@@ -48,10 +48,10 @@ public class TemplateUtils implements Serializable {
 		public String lookup(final String key) {
 			Optional<Entry<String, Object>> opt = map.stream().filter(e -> key.startsWith(e.getKey())).findFirst();
 			if (opt.isPresent()) {
-				if (opt.get().getKey().equals(key)) {
+				if (opt.get().getKey().equalsIgnoreCase(key)) {
 					return "" + opt.get().getValue();
 				}
-				if (key.startsWith(opt.get().getKey() + ".")) {
+				if (key.toLowerCase().startsWith(opt.get().getKey().toLowerCase() + ".")) {
 					try {
 						return "" + pub.getProperty(opt.get().getValue(), key.substring(opt.get().getKey().length() + 1));
 					} catch (Exception e) {}
