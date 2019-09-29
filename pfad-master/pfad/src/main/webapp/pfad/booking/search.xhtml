@@ -15,7 +15,7 @@
 		<f:viewParam name="bookingBeanExampleStatus" value="#{bookingBean.example.status}" />
 		<f:viewParam name="bookingBeanExampleComment" value="#{bookingBean.example.comment}" />
 		<f:viewParam name="bookingBeanShowFinished" value="#{bookingBean.showFinished}" />
-		<f:viewAction action="#{memberBean.paginate()}" onPostback="false" />
+		<f:viewAction action="#{bookingBean.paginate()}" onPostback="false" />
 	</f:metadata>
 
 	<ui:param name="pageTitle" value="Suche Buchungen" />
