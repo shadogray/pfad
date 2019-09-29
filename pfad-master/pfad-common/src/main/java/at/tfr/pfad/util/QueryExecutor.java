@@ -62,7 +62,7 @@ public class QueryExecutor implements Serializable {
 			Map<String,Object> result = new LinkedHashMap<>(tuple.length);
 			for ( int i=0; i<tuple.length; i++ ) {
 				String alias = aliases[i];
-				result.put( alias != null ? alias : Integer.toString(i), tuple[i] );
+				result.put( alias != null ? alias.toLowerCase() : Integer.toString(i), tuple[i] );
 			}
 			return result.entrySet().stream().collect(Collectors.toList());
 		}
