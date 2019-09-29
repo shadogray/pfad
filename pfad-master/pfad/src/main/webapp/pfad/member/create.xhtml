@@ -162,7 +162,9 @@
 				<h:outputLabel for="memberBeanMemberEmail" value="Email:" />
 				<h:panelGroup>
 					<h:inputText id="memberBeanMemberEmail" value="#{memberBean.member.email}"
-						pass:placeholder="#{configurationBean.getValue('email')}" title="#{configurationBean.getDescription('email')}" />
+						pass:placeholder="#{configurationBean.getValue('email')}" title="#{configurationBean.getDescription('email')}" >
+						<f:validator binding="#{emailValidator}"/>
+					</h:inputText>
 					<h:message for="memberBeanMemberEmail" styleClass="error" />
 				</h:panelGroup>
 				<h:outputText />

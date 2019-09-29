@@ -20,7 +20,7 @@
 			<f:convertDateTime pattern="dd.MM.yyyy"/>
 		</f:viewParam>
 		<f:viewParam name="paymentBeanActivity" value="#{paymentBean.activityExample}" converter="#{activityBean.converter}"/>
-		<f:viewParam name="paymentBeanBooking" value="#{paymentBean.bookingExample}" converter="#{bookingBean.converter}"/>
+		<f:viewParam name="paymentBeanBookingComment" value="#{paymentBean.bookingExample.comment}" />
 		<f:viewParam name="paymentBeanExampleComment" value="#{paymentBean.example.comment}"/>
 		<f:viewParam name="paymentBeanExampleFinished" value="#{paymentBean.exampleFinished}"/>
 		<f:viewParam name="paymentBeanExampleAconto" value="#{paymentBean.exampleAconto}"/>
@@ -111,10 +111,9 @@
 
 						<h:outputLabel value="Buchung:" />
 						<h:panelGroup id="paymentBeanBookingPanel">
-							<p:autoComplete id="paymentBeanBooking" value="#{paymentBean.bookingExample}" converter="#{bookingBean.converter}" 
-								completeMethod="#{bookings.filtered}">
-								<f:ajax render="paymentBeanPageItems" />
-							</p:autoComplete>
+							<p:inputText id="paymentBeanBookingComment" value="#{paymentBean.bookingExample.comment}">
+								<p:ajax event="keyup" onstart="return filterKey(event)" update="paymentBeanPageItems" />
+							</p:inputText>
 							<h:message for="paymentBeanBooking" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />

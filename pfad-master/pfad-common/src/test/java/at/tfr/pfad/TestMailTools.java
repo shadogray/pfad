@@ -3,8 +3,14 @@ package at.tfr.pfad;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.inject.Inject;
+import javax.mail.Message.RecipientType;
+import javax.mail.Session;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.Assert;
@@ -63,6 +69,13 @@ public class TestMailTools {
 		List<Entry<String,Object>> map = list.get(0);
 		String res = tu.replace(template, map);
 		Assert.assertEquals("Replacement failed.", "Das ist eine Nachricht an email.", res);
+	}
+	
+	@Test(expected = AddressException.class)
+	public void testMailAddresses() throws Exception {
+		String addr = "test@test@test.at;";
+		MimeMessage mail = new MimeMessage(Session.getDefaultInstance(new Properties()));
+		mail.setRecipients(RecipientType.TO, InternetAddress.parse(addr));
 	}
 	
 	@Before

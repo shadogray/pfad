@@ -212,6 +212,10 @@ public class MailerBean extends BaseBean {
 						.map(e -> (Registration) e.getValue()).findFirst().orElse(null));
 				mailMessages.add(msg);
 			}
+			
+			// Validate message addresses: 
+			validate(mailMessages);
+			
 			mailMessagesModel = new ListDataModel<>(mailMessages);
 			
 		} catch (Exception e) {
@@ -219,6 +223,27 @@ public class MailerBean extends BaseBean {
 			error("Cannot execute: " + mailTemplate + e);
 		}
 		
+	}
+
+	public void validate(List<MailMessage> mailMessgs) {
+		List<String> invalidAddrs = new ArrayList<>();
+		for (MailMessage msg : mailMessgs) {
+			validate(invalidAddrs, msg.getReceiver());
+			validate(invalidAddrs, msg.getCc());
+			validate(invalidAddrs, msg.getBcc());
+		}
+		if (invalidAddrs.size() > 0) {
+			warn("Ungültige Addressen: "+invalidAddrs);
+		}
+	}
+
+	public void validate(List<String> invalidAddrs, String mailAddr) {
+		try {
+			if (StringUtils.isNotBlank(mailAddr))
+				InternetAddress.parse(mailAddr.replaceAll(";", ","));
+		} catch (Exception e) {
+			invalidAddrs.add(mailAddr);
+		}
 	}
 
 	public void saveTemplate() {
@@ -238,7 +263,7 @@ public class MailerBean extends BaseBean {
 		sendMessages(true);
 	}
 	
-	@AccessTimeout(unit = TimeUnit.MINUTES, value = 5)
+	@AccessTimeout(unit = TimeUnit.MINUTES, value = 10)
 	public void sendRealMessages() {
 		sendMessages(false);
 	}
@@ -357,9 +382,9 @@ public class MailerBean extends BaseBean {
 		}
 	}
 
-	private void addAddresses(MimeMessage mail, String receivers, RecipientType type)
+	public void addAddresses(MimeMessage mail, String receivers, RecipientType type)
 			throws MessagingException, AddressException {
-		Arrays.stream(receivers.split("[,;]")).forEach(r -> {
+		Arrays.stream(receivers.split("[,; ]+")).forEach(r -> {
 			try {
 				if (StringUtils.isNotBlank(r)) {
 					mail.addRecipients(type, InternetAddress.parse(r));

@@ -31,9 +31,11 @@ import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
@@ -270,7 +272,7 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 
 		CriteriaQuery<Long> countCriteria = builder.createQuery(Long.class);
 		Root<Payment> root = countCriteria.from(Payment.class);
-		countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(root));
+		countCriteria = countCriteria.select(builder.count(root)).where(getSearchPredicates(countCriteria, root, builder));
 		this.count = this.entityManager.createQuery(countCriteria).getSingleResult();
 
 		// Populate this.pageItems
@@ -281,7 +283,7 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 		root.join(Payment_.bookings, JoinType.LEFT).join(Booking_.member, JoinType.LEFT).join(Member_.funktionen, JoinType.LEFT);
 		
 		TypedQuery<Payment> query = this.entityManager
-				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(root)));
+				.createQuery(criteria.select(root).distinct(true).where(getSearchPredicates(criteria, root, builder)));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		
 		List<Payment> resultList = query.getResultList();
@@ -291,9 +293,8 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 		dataModel = new ListDataModel<>(pageItems);
 	}
 
-	private Predicate[] getSearchPredicates(Root<Payment> root) {
+	private Predicate[] getSearchPredicates(CriteriaQuery<?> crit, Root<Payment> root, CriteriaBuilder builder) {
 
-		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		List<Predicate> predicatesList = new ArrayList<Predicate>();
 
 		if (memberSearch != null && memberSearch.getId() != null) {
@@ -326,7 +327,15 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 		if (bookingSearch != null && bookingSearch.getId() != null) {
 			predicatesList.add(builder.isMember(bookingSearch, root.get(Payment_.bookings)));
 		}
-
+		
+		if (StringUtils.isNotBlank(bookingExample.getComment()) && bookingExample.getComment().trim().length() > 2) {
+			Subquery<Booking> subquery = crit.subquery(Booking.class);
+			Root<Payment> subRoot = subquery.correlate(root);
+			List<Predicate> preds = bookings.filterPreds(subRoot.join(Payment_.bookings), builder, bookingExample.getComment(), activitySearch);
+			subquery.where(builder.and(preds.toArray(new Predicate[] {})));
+			predicatesList.add(builder.exists(subquery));
+		}
+		
 		if (activitySearch != null && activitySearch.getId() != null) {
 			predicatesList.add(builder.equal(root.join(Payment_.bookings).get(Booking_.activity), activitySearch));
 		}

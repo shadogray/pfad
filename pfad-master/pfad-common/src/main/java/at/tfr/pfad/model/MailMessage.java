@@ -114,7 +114,7 @@ public class MailMessage extends BaseEntity implements Cloneable {
 	}
 
 	public void setReceiver(String receiver) {
-		this.receiver = receiver;
+		this.receiver = receiver != null ? receiver.replaceAll(";", ",") : receiver;
 	}
 
 	public String getCc() {
@@ -122,7 +122,7 @@ public class MailMessage extends BaseEntity implements Cloneable {
 	}
 
 	public void setCc(String cc) {
-		this.cc = cc;
+		this.cc = cc != null ? cc.replaceAll(";", ",") : cc;
 	}
 
 	public String getBcc() {
@@ -130,7 +130,7 @@ public class MailMessage extends BaseEntity implements Cloneable {
 	}
 
 	public void setBcc(String bcc) {
-		this.bcc = bcc;
+		this.bcc = bcc != null ? bcc.replaceAll(";", ",") : bcc;
 	}
 
 	public String getText() {

@@ -434,7 +434,7 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 	}
 
 	public void setEmail(String Email) {
-		this.email = Email;
+		this.email = Email != null ? Email.replaceAll(";", ",") : Email;
 	}
 
 	@Pfad
