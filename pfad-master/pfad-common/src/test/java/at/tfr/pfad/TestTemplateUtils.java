@@ -46,4 +46,13 @@ public class TestTemplateUtils {
 		Assert.assertEquals("replace failed: "+res, "DEFAULT", res);
 	}
 
+	@Test
+	public void testReplaceMapCaseInsensitive() {
+		Map<String,Object> beans = new HashMap<>();
+		beans.put("TruPp", trupp);
+		
+		String res = templateUtils.replace("${trupp.name}", beans);
+		Assert.assertEquals("replace failed: "+res, trupp.getName(), res);
+	}
+		
 }

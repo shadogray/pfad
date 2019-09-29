@@ -46,7 +46,7 @@ public class TemplateUtils implements Serializable {
 
 		@Override
 		public String lookup(final String key) {
-			Optional<Entry<String, Object>> opt = map.stream().filter(e -> key.startsWith(e.getKey())).findFirst();
+			Optional<Entry<String, Object>> opt = map.stream().filter(e -> key.toLowerCase().startsWith(e.getKey().toLowerCase())).findFirst();
 			if (opt.isPresent()) {
 				if (opt.get().getKey().equalsIgnoreCase(key)) {
 					return "" + opt.get().getValue();
