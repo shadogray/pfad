@@ -163,7 +163,7 @@
 				<h:panelGroup>
 					<h:inputText id="memberBeanMemberEmail" value="#{memberBean.member.email}"
 						pass:placeholder="#{configurationBean.getValue('email')}" title="#{configurationBean.getDescription('email')}" >
-						<f:validator binding="#{emailValidator}"/>
+						<f:validator binding="#{emailValidator}" />
 					</h:inputText>
 					<h:message for="memberBeanMemberEmail" styleClass="error" />
 				</h:panelGroup>

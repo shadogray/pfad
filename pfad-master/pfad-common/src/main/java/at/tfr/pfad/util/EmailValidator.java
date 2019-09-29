@@ -1,15 +1,17 @@
 package at.tfr.pfad.util;
 
-import javax.enterprise.inject.Model;
+import javax.enterprise.context.ApplicationScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
+import javax.inject.Named;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.validation.ValidationException;
 
-@Model
+@Named
+@ApplicationScoped
 public class EmailValidator implements Validator {
 
 	@Override
@@ -23,7 +25,7 @@ public class EmailValidator implements Validator {
 					InternetAddress.parse(value.toString(), true);
 				}
 			} catch (Exception e) {
-				throw new ValidationException("Ungültige MailAddresse: "+value, e);
+				throw new ValidationException("Ungültige MailAddresse: "+value);
 			}
 		}
 	}
