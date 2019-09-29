@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -130,14 +131,23 @@ public class MailerBean extends BaseBean {
 		columns.clear();
 		mailMessages = new ArrayList<>();
 		try {
-			values = queryExec.execute(mailTemplate.getQuery()
+			String query = mailTemplate.getQuery();
+			boolean isNative = false;
+			if (query.startsWith("Configuration:")) {
+				Optional<Configuration> optConf = sessionBean.getConfig(query.replace("Configuration:", ""));
+				if (optConf.isPresent()) {
+					query = optConf.get().getCvalue();
+					isNative = optConf.get().isNative();
+				}
+			}
+			values = queryExec.execute(query
 					.replaceAll("\\$\\{templateId\\}", ""+mailTemplate.getId())
 					.replaceAll("\\$\\{templateName\\}", mailTemplate.getName())
 					.replaceAll("\\$\\{templateOwner\\}", mailTemplate.getOwner())
 					.replaceAll("\\$\\{user\\}", sessionBean.getUser().getName())
 					.replaceAll("\\$\\{role\\}", sessionBean.getRole().name())
 					.replaceAll("\\$\\{activityId\\}", activity != null ? activity.getIdStr() : "null"), 
-					false);
+					isNative);
 			if (values.size() > 0) {
 				realColHeaders = values.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
 				columnHeaders.addAll(realColHeaders);

@@ -69,6 +69,12 @@ public class SessionBean implements Serializable {
 	public List<Configuration> getConfig() {
 		return config;
 	}
+	
+	public Optional<Configuration> getConfig(final String ckey) {
+		Optional<Configuration> optConf = config.stream()
+				.filter(c -> c.getCkey().equals(ckey)).findFirst();
+		return optConf;
+	}
 
 	public void setConfig(List<Configuration> config) {
 		this.config = config;
