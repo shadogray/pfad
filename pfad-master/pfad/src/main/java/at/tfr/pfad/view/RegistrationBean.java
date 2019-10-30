@@ -196,7 +196,9 @@ public class RegistrationBean extends BaseBean {
 			
 			Member parent = registration.getParent();
 			if (parent == null) {
-				List<Member> members = memberRepo.findByNameAndVornameAndStrasseAndOrt(registration.getParentName(), 
+				List<Member> members = memberRepo.
+						findByNameEqualIgnoreCaseAndVornameEqualIgnoreCaseAndStrasseEqualIgnoreCaseAndOrtEqualIgnoreCase(
+								registration.getParentName(), 
 						registration.getParentVorname(), registration.getStrasse(), registration.getOrt());
 				if (members.size() == 1) {
 					parent = members.get(0);

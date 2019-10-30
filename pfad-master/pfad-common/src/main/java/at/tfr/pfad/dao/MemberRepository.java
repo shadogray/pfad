@@ -36,7 +36,7 @@ public abstract class MemberRepository implements EntityRepository<Member, Long>
 		return findBy(id);
 	}
 
-	public abstract List<Member> findByNameAndVornameAndStrasseAndOrt(String name, String vorname, String strasse, String ort);
+	public abstract List<Member> findByNameEqualIgnoreCaseAndVornameEqualIgnoreCaseAndStrasseEqualIgnoreCaseAndOrtEqualIgnoreCase(String name, String vorname, String strasse, String ort);
 	
 	public List<Member> fetchAll() {
 		return fetchAll(0, Integer.MAX_VALUE);
