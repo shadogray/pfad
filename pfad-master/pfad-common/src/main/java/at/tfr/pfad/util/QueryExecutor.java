@@ -1,6 +1,8 @@
 package at.tfr.pfad.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +24,8 @@ import at.tfr.pfad.model.Configuration;
 @Stateless
 public class QueryExecutor implements Serializable {
 
+	@Inject
+	private SessionBean sessionBean;
 	@Inject
 	private EntityManager em;
 	@Inject
@@ -45,6 +49,10 @@ public class QueryExecutor implements Serializable {
 		}
 		Query q;
 		if (nativeQuery) {
+			if (sessionBean.isAdmin() && query.startsWith("update ")) {
+				int updated = em.createNativeQuery(query).executeUpdate();
+				return toResult(updated);
+			}
 			q = em.createNativeQuery(query).unwrap(Query.class);
 		} else {
 			q = em.createQuery(query).unwrap(Query.class);
@@ -54,6 +62,16 @@ public class QueryExecutor implements Serializable {
 		List<List<Entry<String,Object>>> list = q.list();
 		
 		return list;
+	}
+
+	public List<List<Entry<String, Object>>> toResult(int updated) {
+		List<List<Entry<String,Object>>> result = new ArrayList<>();
+		List<Entry<String,Object>> e = new ArrayList<>();
+		Map<String,Object> entries = new HashMap<>();
+		entries.put("updated", updated);
+		e.addAll(entries.entrySet());
+		result.add(e);
+		return result;
 	}
 	
 	class AliasTransformer extends BasicTransformerAdapter {
