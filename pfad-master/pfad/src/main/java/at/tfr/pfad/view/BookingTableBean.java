@@ -10,8 +10,10 @@ package at.tfr.pfad.view;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.ConcurrencyManagement;
@@ -23,6 +25,7 @@ import javax.inject.Named;
 
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.util.ColumnModel;
+import at.tfr.pfad.view.convert.TrueFalseTristateConverter;
 
 @Named
 @ViewScoped
@@ -33,15 +36,17 @@ public class BookingTableBean extends BaseBean {
 	private static int cnt = 0;
 	private String selectionMode = "multiple";
 	private List<ColumnModel> columns = new ArrayList<>();
-	protected final Map<String,String> jaNeinAnz = new HashMap<>();
+	protected final Map<String,String> jaNeinAnz = new LinkedHashMap<>();
 
 	@Inject
 	private transient BookingDataModel bookingDataModel;
+	private TrueFalseTristateConverter trueFalseConverter = new TrueFalseTristateConverter();
 
 	public BookingTableBean() {
 		jaNeinAnz.put("Ja", "true");
 		jaNeinAnz.put("Nein", "false");
 		jaNeinAnz.put("Anz", "anz");
+		jaNeinAnz.put("Frei", "free");
 		jaNeinAnz.put("keine", "none");
 	}
 
@@ -56,7 +61,7 @@ public class BookingTableBean extends BaseBean {
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
 		columns.add(new ColumnModel("activity", "Aktivität", 4)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true)); //.items(activityRepo.findDistinctName()));
-		columns.add(new ColumnModel("activityFinished", "Beendet", 4).items(trueFalse).filter("false")
+		columns.add(new ColumnModel("activityFinished", "Beendet", 4).items(trueFalse).filter("false").colConverter(trueFalseConverter)
 				.headerStyle("border: solid 3px red;").headerStyleValue("false").headerStyleNotEmpty(true)); //.items(activityRepo.findDistinctName()));
 		columns.add(new ColumnModel("squadName", "Trupp", 5).items(squadRepo.findDistinctName())
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));

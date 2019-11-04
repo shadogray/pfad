@@ -8,6 +8,7 @@
 package at.tfr.pfad.view;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import at.tfr.pfad.ActivityType;
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
+import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Squad;
@@ -25,6 +27,7 @@ public class BookingUI extends Booking {
 	private boolean isPayed;
 	private Set<Member> payers;
 	private boolean free;
+	private String freeSuffix = "";
 	private Activity activity;
 	private Member member;
 	private Squad squad;
@@ -38,9 +41,16 @@ public class BookingUI extends Booking {
 		this.squad = squad;
 		this.payments = payments;
 		if (member != null) {
+			Optional<Function> funcOpt = booking.getMember().getFunktionen().stream().filter(f->Boolean.TRUE.equals(f.isFree())).findFirst();
 			if (activity != null && ActivityType.Membership.equals(activity.getType())) {
 				free = booking.getMember().isFree() || isLeader || isAssistant ||
 						booking.getMember().getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.isFree()));
+				if (booking.getMember().isFree()) freeSuffix = "(MF)";
+				else if (isLeader) freeSuffix = "(L)";
+				else if (isAssistant) freeSuffix = "(AS)";
+				else if (funcOpt.isPresent()) {
+					freeSuffix = "("+funcOpt.get().getKey()+")";
+				}
 			}
 		}
 		squadName = squad != null ? squad.getName() : null;
@@ -148,11 +158,15 @@ public class BookingUI extends Booking {
 		if (finished) {
 			return "JA";
 		}
+		String payed = "NEIN";
 		boolean aconto = payments.stream().anyMatch(p->Boolean.TRUE.equals(p.getAconto()));
 		if (aconto) {
-			return "ANZ";
+			payed = "ANZ";
 		}
-		return "NEIN";
+		if (free) {
+			payed = "FREI " + freeSuffix;
+		}
+		return payed;
 	}
 	
 	public String getPayer() {
@@ -177,6 +191,10 @@ public class BookingUI extends Booking {
 	
 	public void setFree(boolean free) {
 		this.free = free;
+	}
+
+	public String getFreeSuffix() {
+		return freeSuffix;
 	}
 	
 	public boolean isActivityFinished() {

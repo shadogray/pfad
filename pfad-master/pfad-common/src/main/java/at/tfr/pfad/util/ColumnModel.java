@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import javax.faces.convert.Converter;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class ColumnModel {
@@ -28,6 +30,7 @@ public class ColumnModel {
 	protected String fieldStyleValue;
 	protected boolean headerStyleNotEmpty;
 	protected boolean fieldStyleNotEmpty;
+	protected Converter converter;
 	
 	public ColumnModel(String key, String value, int index) {
 		this(key, value, index, null, null, null);
@@ -292,6 +295,24 @@ public class ColumnModel {
 
 	public ColumnModel fieldStyleNotEmpty(boolean fieldStyleNotEmpty) {
 		this.fieldStyleNotEmpty = fieldStyleNotEmpty;
+		return this;
+	}
+	
+	public Object converted(Object value) {
+		if (converter == null) return value;
+		return converter.getAsString(null, null, value);
+	}
+	
+	public Converter getConverter() {
+		return converter;
+	}
+	
+	public void setConverter(Converter converter) {
+		this.converter = converter;
+	}
+	
+	public ColumnModel colConverter(Converter converter) {
+		setConverter(converter);
 		return this;
 	}
 }

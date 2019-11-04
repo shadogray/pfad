@@ -10,7 +10,7 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -96,9 +96,9 @@ public abstract class BaseBean<T> implements Serializable {
 	
 	protected int page;
 	protected long count;
-	protected final Map<String,String> trueOnly = new HashMap<>();
-	protected final Map<String,String> falseOnly = new HashMap<>();
-	protected final Map<String,String> trueFalse = new HashMap<>();
+	protected final Map<String,String> trueOnly = new LinkedHashMap<>();
+	protected final Map<String,String> falseOnly = new LinkedHashMap<>();
+	protected final Map<String,String> trueFalse = new LinkedHashMap<>();
 
 	public BaseBean() {
 		trueFalse.put("Ja", Boolean.TRUE.toString());

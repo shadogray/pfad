@@ -60,16 +60,32 @@ public abstract class SquadRepository implements EntityRepository<Squad, Long>, 
 		return leaders;
 	}
 
-	@Query(named="Squad.distName")
+	public List<Long> findLeaderIds() {
+		List<Long> leaders = findLeadersFemaleIds();
+		leaders.addAll(findLeadersMaleIds());
+		leaders.addAll(findAssistantsIds());
+		return leaders;
+	}
+
+	@Query(named=Squad.SQUAD_DIST_NAME)
 	public abstract List<String> findDistinctName();
 
-	@Query(named="Squad.leadersFemale")
+	@Query(named=Squad.SQUAD_LEADERS_FEMALE)
 	public abstract List<Member> findLeadersFemale();
 
-	@Query(named="Squad.leadersMale")
+	@Query(named=Squad.SQUAD_LEADERS_MALE)
 	public abstract List<Member> findLeadersMale();
 
-	@Query(named="Squad.assistants")
+	@Query(named=Squad.SQUAD_ASSISTANTS)
 	public abstract List<Member> findAssistants();
+
+	@Query(named=Squad.SQUAD_LEADERS_FEMALE_ID)
+	public abstract List<Long> findLeadersFemaleIds();
+
+	@Query(named=Squad.SQUAD_LEADERS_MALE_ID)
+	public abstract List<Long> findLeadersMaleIds();
+
+	@Query(named=Squad.SQUAD_ASSISTANTS_ID)
+	public abstract List<Long> findAssistantsIds();
 
 }

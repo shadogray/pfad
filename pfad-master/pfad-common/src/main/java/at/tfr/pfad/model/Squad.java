@@ -44,10 +44,14 @@ import at.tfr.pfad.SquadType;
 import at.tfr.pfad.dao.AuditListener;
 
 @NamedQueries({
-	@NamedQuery(name = "Squad.distName", query = "select s.name from Squad s"),
-	@NamedQuery(name = "Squad.leadersFemale", query = "select s.leaderFemale from Squad s"),
-	@NamedQuery(name = "Squad.leadersMale", query = "select s.leaderMale from Squad s"),
-	@NamedQuery(name = "Squad.assistants", query = "select a from Squad s inner join s.assistants a"),})
+	@NamedQuery(name = Squad.SQUAD_DIST_NAME, query = "select s.name from Squad s"),
+	@NamedQuery(name = Squad.SQUAD_LEADERS_FEMALE, query = "select s.leaderFemale from Squad s"),
+	@NamedQuery(name = Squad.SQUAD_LEADERS_MALE, query = "select s.leaderMale from Squad s"),
+	@NamedQuery(name = Squad.SQUAD_ASSISTANTS, query = "select a from Squad s inner join s.assistants a"),
+	@NamedQuery(name = Squad.SQUAD_LEADERS_FEMALE_ID, query = "select s.leaderFemale.id from Squad s"),
+	@NamedQuery(name = Squad.SQUAD_LEADERS_MALE_ID, query = "select s.leaderMale.id from Squad s"),
+	@NamedQuery(name = Squad.SQUAD_ASSISTANTS_ID, query = "select a.id from Squad s inner join s.assistants a"),
+	})
 @Audited(withModifiedFlag = true)
 @Entity
 @EntityListeners({AuditListener.class})
@@ -56,6 +60,13 @@ import at.tfr.pfad.dao.AuditListener;
 @JsonIgnoreProperties(ignoreUnknown=true, value = {"handler", "hibernateLazyInitializer"})
 public class Squad extends BaseEntity implements Comparable<Squad>, Auditable, Presentable {
 
+	public static final String SQUAD_ASSISTANTS = "Squad.assistants";
+	public static final String SQUAD_LEADERS_MALE = "Squad.leadersMale";
+	public static final String SQUAD_LEADERS_FEMALE = "Squad.leadersFemale";
+	public static final String SQUAD_DIST_NAME = "Squad.distName";
+	public static final String SQUAD_ASSISTANTS_ID = "Squad.assistants.id";
+	public static final String SQUAD_LEADERS_MALE_ID = "Squad.leadersMale.id";
+	public static final String SQUAD_LEADERS_FEMALE_ID = "Squad.leadersFemale.id";
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "squad_seq")
 	@SequenceGenerator(name = "squad_seq", sequenceName = "squad_seq", allocationSize = 1, initialValue = 1)

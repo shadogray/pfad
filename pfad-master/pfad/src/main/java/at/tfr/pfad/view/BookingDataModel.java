@@ -32,6 +32,7 @@ import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
+import at.tfr.pfad.model.Function_;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
@@ -155,9 +156,17 @@ public class BookingDataModel extends BaseDataModel<Booking, BookingUI> {
 			Subquery<Booking> sq = criteriaQuery.subquery(entityClass);
 			Root<Booking> corr = sq.correlate(root);
 			Join<Booking,Payment> jpb = corr.join(Booking_.payments);
+			Subquery<Booking> sqm = criteriaQuery.subquery(entityClass);
+			Join<Booking,Member> memb = sqm.correlate(root).join(Booking_.member);
 			
-			
-			if ("true".equalsIgnoreCase(val)) {
+			if ("free".equalsIgnoreCase(val)) {
+				sqm.where(cb.or(
+						cb.equal(memb.get(Member_.free), true),
+						cb.equal(memb.join(Member_.funktionen).get(Function_.free), true),
+						memb.get(Member_.id).in(squadRepo.findLeaderIds())
+						));
+				return cb.exists(sqm);
+			} else if ("true".equalsIgnoreCase(val)) {
 				sq.where(cb.equal(jpb.get(Payment_.finished), true)); 
 				return cb.exists(sq);
 			} else if ("false".equalsIgnoreCase(val)) {

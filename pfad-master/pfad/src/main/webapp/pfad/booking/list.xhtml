@@ -63,14 +63,14 @@
 									update="@this" onsuccess="PF('bookings').filter()" />
 							</p:inputText>
 							<p:selectOneMenu value="#{col.filter}" 
-								style="min-width:4em;#{col.evalHeaderStyle(col.filter)}" rendered="#{col.search and ! empty col.items}">
+								style="min-width:4em;#{col.evalHeaderStyle(col.filter)}" rendered="#{col.search and ! empty col.items}" >
 								<f:attribute name="column" value="#{col}" />
 								<f:selectItem noSelectionOption="true" />
 								<f:selectItems value="#{col.itemEntries}" var="e" itemValue="#{e.value}" itemLabel="#{e.key}" />
 								<p:ajax listener="#{bookingTableBean.dataModel.reload}" update="@this" onsuccess="PF('bookings').filter()" />
 							</p:selectOneMenu>
 						</f:facet>
-						<h:outputText value="#{record[col.key]}"  style="#{col.evalFieldStyle(col.filter)}"/>
+						<h:outputText value="#{col.converted(record[col.key])}"  style="#{col.evalFieldStyle(col.filter)}"/>
 					</p:columns>
 
 				</p:dataTable>
@@ -293,7 +293,8 @@
 
 									<h:outputLabel for="paymentBeanPaymentFinished" value="Erledigt:" />
 									<h:panelGroup>
-										<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" />
+										<h:selectBooleanCheckbox id="paymentBeanPaymentFinished" value="#{paymentBean.payment.finished}" 
+											converter="#{trueFalseTristateConverter}"/>
 										<h:message for="paymentBeanPaymentFinished" styleClass="error" />
 									</h:panelGroup>
 									<h:outputText />
