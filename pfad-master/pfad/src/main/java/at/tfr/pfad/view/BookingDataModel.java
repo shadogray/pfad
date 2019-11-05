@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import at.tfr.pfad.ActivityStatus;
+import at.tfr.pfad.ActivityType;
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity;
@@ -158,20 +159,28 @@ public class BookingDataModel extends BaseDataModel<Booking, BookingUI> {
 			Join<Booking,Payment> jpb = corr.join(Booking_.payments);
 			Subquery<Booking> sqm = criteriaQuery.subquery(entityClass);
 			Join<Booking,Member> memb = sqm.correlate(root).join(Booking_.member);
+			sqm.where(
+				cb.and( // Membership: members that do not have to pay fee
+					cb.equal(root.get(Booking_.activity).get(Activity_.type), ActivityType.Membership),
+					cb.or(
+							cb.equal(memb.get(Member_.free), true),
+							cb.equal(memb.join(Member_.funktionen, JoinType.LEFT).get(Function_.free), true),
+							memb.get(Member_.id).in(squadRepo.findLeaderIds())
+					)
+				)
+			);
 			
 			if ("free".equalsIgnoreCase(val)) {
-				sqm.where(cb.or(
-						cb.equal(memb.get(Member_.free), true),
-						cb.equal(memb.join(Member_.funktionen).get(Function_.free), true),
-						memb.get(Member_.id).in(squadRepo.findLeaderIds())
-						));
 				return cb.exists(sqm);
 			} else if ("true".equalsIgnoreCase(val)) {
 				sq.where(cb.equal(jpb.get(Payment_.finished), true)); 
 				return cb.exists(sq);
 			} else if ("false".equalsIgnoreCase(val)) {
-				sq.where(cb.equal(jpb.get(Payment_.finished), true)); 
-				return cb.not(cb.exists(sq));
+				sq.where(cb.equal(jpb.get(Payment_.finished), true));
+				return cb.and(
+						cb.not(cb.exists(sqm)), // Member.free or exist Payment.finished
+						cb.not(cb.exists(sq))
+					);
 			} else if ("none".equalsIgnoreCase(val)) {
 				return cb.not(cb.exists(sq));
 			}
