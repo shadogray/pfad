@@ -9,12 +9,13 @@ import java.util.Optional;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StrLookup;
-import org.apache.commons.text.StrSubstitutor;
+import org.apache.commons.lang3.text.StrLookup;
+import org.apache.commons.lang3.text.StrSubstitutor;
+
 
 public class TemplateUtils implements Serializable {
 
-	private PropertyUtilsBean pub = new PropertyUtilsBean();
+    private PropertyUtilsBean pub = new PropertyUtilsBean();
 
 	public String replace(String template, Map<String, Object> map) {
 		return replace(template, map, null);
@@ -32,7 +33,8 @@ public class TemplateUtils implements Serializable {
 	}
 
 	public String replace(String template, Collection<Entry<String, Object>> map) {
-		StrSubstitutor strSub = new StrSubstitutor(new BeansStrLookup(map));
+		StrSubstitutor strSub = new PositiveStrSubstitutor(new BeansStrLookup(map));
+		strSub.setEnableSubstitutionInVariables(true);
 		return strSub.replace(template);
 	}
 

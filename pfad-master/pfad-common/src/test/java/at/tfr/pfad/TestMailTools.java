@@ -1,5 +1,6 @@
 package at.tfr.pfad;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -77,6 +78,63 @@ public class TestMailTools {
 		MimeMessage mail = new MimeMessage(Session.getDefaultInstance(new Properties()));
 		mail.setRecipients(RecipientType.TO, InternetAddress.parse(addr));
 	}
+	
+	@Test
+	public void testStringSubstitutor() throws Exception {
+		String template = "Das ist ein ${test:+PositiveContent}";
+		Map<String,Object> map = new HashMap<>();
+		map.put("test", "REPLACEMENT");
+		String result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein PositiveContent", result);
+	}
+	
+	@Test
+	public void testStringSubstitutorRecursive() throws Exception {
+		String template = "Das ist ein ${test:+${bla:-PositiveContent}}";
+		Map<String,Object> map = new HashMap<>();
+		map.put("test", "REPLACEMENT");
+		String result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein PositiveContent", result);
+	}
+	
+	@Test
+	public void testStringSubstitutorRecursiveReverse() throws Exception {
+		String template = "Das ist ein ${bla:-${test:+PositiveContent}}";
+		Map<String,Object> map = new HashMap<>();
+		map.put("test", "REPLACEMENT");
+		String result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein PositiveContent", result);
+	}
+	
+	@Test
+	public void testStringSubstitutorNormal() throws Exception {
+		String template = "Das ist ein ${test:-PositiveContent}";
+		Map<String,Object> map = new HashMap<>();
+		map.put("test", "REPLACEMENT");
+		String result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein REPLACEMENT", result);
+	}
+	
+	@Test
+	public void testStringSubstitutorNormalRecursive() throws Exception {
+		String template = "Das ist ein ${${test:-PositiveContent}}";
+		Map<String,Object> map = new HashMap<>();
+		map.put("repl", "REPLACEMENT");
+		map.put("test", "repl");
+		String result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein REPLACEMENT", result);
+	}
+	
+	@Test
+	public void testStringSubstitutorNormalRecursiveDefault() throws Exception {
+		String template = "Das ist ein ${${${bla:-test}}}";
+		Map<String,Object> map = new HashMap<>();
+		map.put("repl", "REPLACEMENT");
+		map.put("test", "repl");
+		String result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein REPLACEMENT", result);
+	}
+	
 	
 	@Before
 	public void init() {
