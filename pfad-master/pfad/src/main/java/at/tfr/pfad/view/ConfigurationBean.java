@@ -139,6 +139,8 @@ public class ConfigurationBean extends BaseBean<Configuration> implements Serial
 			log.info("update: "+e, e);
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(e.getMessage()));
 			return null;
+		} finally {
+			sessionBean.init();
 		}
 	}
 
