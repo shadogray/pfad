@@ -273,6 +273,10 @@ public class MailerBean extends BaseBean {
 			error("Cannot execute Template for empty MailConfiguration!");
 			return;
 		}
+		if (mailConfig.getFrom() == null) {
+			error("Cannot execute Template for empty FROM address in MailConfiguration!");
+			return;
+		}
 		
 		try {
 
