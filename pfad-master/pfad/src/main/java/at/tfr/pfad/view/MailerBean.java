@@ -461,6 +461,10 @@ public class MailerBean extends BaseBean {
 	public ListDataModel<MailMessage> getMailMessages() {
 		return mailMessagesModel;
 	}
+	
+	public long getMailMessagesToSend() {
+		return mailMessages.stream().filter(m -> m.isSend()).count();
+	}
 
 	public MailTemplate getMailTemplate() {
 		return mailTemplate;

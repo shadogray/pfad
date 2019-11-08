@@ -30,8 +30,8 @@
 			<h:messages globalOnly="true" styleClass="error" />
 
 			<p:dataTable id="payments" widgetVar="payments" var="record" value="#{paymentTableBean.dataModel}"
-				rows="#{paymentTableBean.dataModel.rows}" rowIndexVar="rowIndex" paginator="true" tableStyle="width:auto"
-				styleClass="smsplus-management-table">
+				paginator="true" rows="#{paymentTableBean.dataModel.rows}" rowsPerPageTemplate="20,50,100,200,500,1000"
+				rowIndexVar="rowIndex" tableStyle="width:auto" styleClass="smsplus-management-table">
 
 				<p:column width="2em">
 					<f:facet name="header">
