@@ -244,10 +244,11 @@ public class ActivityBean extends BaseBean<Activity> implements Serializable {
 	 */
 
 	public List<Activity> getAll() {
-
-		CriteriaQuery<Activity> criteria = this.entityManager.getCriteriaBuilder()
-				.createQuery(Activity.class);
-		return this.entityManager.createQuery(criteria.select(criteria.from(Activity.class)))
+		CriteriaBuilder cb = this.entityManager.getCriteriaBuilder();
+		CriteriaQuery<Activity> criteria = cb.createQuery(Activity.class);
+		Root<Activity> root = criteria.from(Activity.class);
+		criteria = criteria.select(root).orderBy(cb.desc(root.get(Activity_.start)), cb.asc(root.get(Activity_.name)));
+		return this.entityManager.createQuery(criteria)
 				.getResultList().stream().sorted((x,y)->x.getName().compareTo(y.getName())).collect(Collectors.toList());
 	}
 	
