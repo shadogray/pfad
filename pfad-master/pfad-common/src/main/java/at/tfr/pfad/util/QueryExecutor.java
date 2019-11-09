@@ -48,11 +48,16 @@ public class QueryExecutor implements Serializable {
 			throw new SecurityException("security check failed");
 		}
 		Query q;
-		if (nativeQuery) {
-			if (sessionBean.isAdmin() && query.startsWith("update ")) {
-				int updated = em.createNativeQuery(query).executeUpdate();
-				return toResult(updated);
+		if (sessionBean.isAdmin() && query.startsWith("update ")) {
+			int updated;
+			if (nativeQuery) {
+				updated = em.createNativeQuery(query).executeUpdate();
+			} else {
+				updated = em.createQuery(query).executeUpdate();
 			}
+			return toResult(updated);
+		}
+		if (nativeQuery) {
 			q = em.createNativeQuery(query).unwrap(Query.class);
 		} else {
 			q = em.createQuery(query).unwrap(Query.class);
