@@ -100,6 +100,10 @@ public class BookingUI extends Booking {
 	public void setMember(Member member) {
 		booking.setMember(member);
 	}
+	
+	public Boolean getAktiv() {
+		return booking.getMember() != null ? booking.getMember().isAktiv() : null;
+	}
 
 	public Activity getActivity() {
 		return booking.getActivity();

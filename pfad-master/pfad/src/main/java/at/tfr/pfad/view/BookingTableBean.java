@@ -25,6 +25,7 @@ import javax.inject.Named;
 
 import at.tfr.pfad.BookingStatus;
 import at.tfr.pfad.util.ColumnModel;
+import at.tfr.pfad.view.convert.BookingStatusConverter;
 import at.tfr.pfad.view.convert.TrueFalseTristateConverter;
 
 @Named
@@ -37,10 +38,12 @@ public class BookingTableBean extends BaseBean {
 	private String selectionMode = "multiple";
 	private List<ColumnModel> columns = new ArrayList<>();
 	protected final Map<String,String> jaNeinAnz = new LinkedHashMap<>();
+	protected final Map<String,BookingStatus> createdStorno = new LinkedHashMap<>();
 
 	@Inject
 	private transient BookingDataModel bookingDataModel;
 	private TrueFalseTristateConverter trueFalseConverter = new TrueFalseTristateConverter();
+	private BookingStatusConverter bookStatConverter = new BookingStatusConverter();
 
 	public BookingTableBean() {
 		jaNeinAnz.put("Ja", "true");
@@ -48,6 +51,8 @@ public class BookingTableBean extends BaseBean {
 		jaNeinAnz.put("Anz", "anz");
 		jaNeinAnz.put("Frei", "free");
 		jaNeinAnz.put("keine", "none");
+		createdStorno.put("Erst.", BookingStatus.created);
+		createdStorno.put("Storno", BookingStatus.storno);
 	}
 
 	@PostConstruct
@@ -59,17 +64,19 @@ public class BookingTableBean extends BaseBean {
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true)); //.items(memberRepo.findDistinctStrasse()));
 		columns.add(new ColumnModel("ort", "Ort", 3).items(memberRepo.findDistinctOrt())
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
-		columns.add(new ColumnModel("activity", "Aktivität", 4)
+		columns.add(new ColumnModel("aktiv", "Aktiv", 4, true).items(trueFalse).filter("true").colConverter(trueFalseConverter)
+				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
+		columns.add(new ColumnModel("activity", "Aktivität", 5)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true)); //.items(activityRepo.findDistinctName()));
-		columns.add(new ColumnModel("activityFinished", "Beendet", 4).items(trueFalse).filter("false").colConverter(trueFalseConverter)
+		columns.add(new ColumnModel("activityFinished", "Beendet", 6).items(trueFalse).filter("false").colConverter(trueFalseConverter)
 				.headerStyle("border: solid 3px red;").headerStyleValue("false").headerStyleNotEmpty(true)); //.items(activityRepo.findDistinctName()));
-		columns.add(new ColumnModel("squadName", "Trupp", 5).items(squadRepo.findDistinctName())
+		columns.add(new ColumnModel("squadName", "Trupp", 7).items(squadRepo.findDistinctName())
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
-		columns.add(new ColumnModel("status", "Status", 6).items(BookingStatus.values())
+		columns.add(new ColumnModel("status", "Status", 8).items(createdStorno).colConverter(bookStatConverter)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
-		columns.add(new ColumnModel("payed", "Bezahlt", 7).items(jaNeinAnz)
+		columns.add(new ColumnModel("payed", "Bezahlt", 9).items(jaNeinAnz)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
-		columns.add(new ColumnModel("comment", "Bemerkung", 8)
+		columns.add(new ColumnModel("comment", "Bemerkung", 10)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
 		bookingDataModel.setColumns(columns);
 		bookingDataModel.reloadRowData();

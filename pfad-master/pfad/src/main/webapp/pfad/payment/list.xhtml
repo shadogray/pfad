@@ -30,8 +30,20 @@
 			<h:messages globalOnly="true" styleClass="error" />
 
 			<p:dataTable id="payments" widgetVar="payments" var="record" value="#{paymentTableBean.dataModel}"
-				paginator="true" rows="#{paymentTableBean.dataModel.rows}" rowsPerPageTemplate="20,50,100,200,500,1000"
+				paginator="true" rows="#{paymentTableBean.dataModel.rows}" paginatorTemplate="{paginator}" paginatorPosition="top"
 				rowIndexVar="rowIndex" tableStyle="width:auto" styleClass="smsplus-management-table">
+					<f:facet name="{paginator}" >
+						<h:outputText value="Max. Anzahl Zahlungen:" />
+						<h:selectOneMenu value="#{paymentTableBean.dataModel.rows}">
+							<f:selectItem itemLabel="20" itemValue="20"/>
+							<f:selectItem itemLabel="50" itemValue="50"/>
+							<f:selectItem itemLabel="100" itemValue="100"/>
+							<f:selectItem itemLabel="200" itemValue="200"/>
+							<f:selectItem itemLabel="500" itemValue="500"/>
+							<f:selectItem itemLabel="10000" itemValue="10000"/>
+							<p:ajax process="@this" listener="#{paymentTableBean.dataModel.reload}" update="payments" />
+						</h:selectOneMenu>
+					</f:facet>
 
 				<p:column width="2em">
 					<f:facet name="header">

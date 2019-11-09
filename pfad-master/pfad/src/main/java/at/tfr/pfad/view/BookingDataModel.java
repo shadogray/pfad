@@ -128,6 +128,8 @@ public class BookingDataModel extends BaseDataModel<Booking, BookingUI> {
 		switch(propertyName) {
 		case "member":
 			return getSplittedPredicateName(root.join(Booking_.member), val);
+		case "aktiv":
+			return cb.equal(root.join(Booking_.member).get(Member_.aktiv), Boolean.parseBoolean(val));
 		case "strasse":
 			return cb.like(cb.lower(root.join(Booking_.member).get(Member_.strasse)), "%"+val+"%");
 		case "ort":
@@ -209,6 +211,8 @@ public class BookingDataModel extends BaseDataModel<Booking, BookingUI> {
 		switch(propertyName) {
 		case "member":
 			return path.get(Booking_.member).get(Member_.name);
+		case "aktiv":
+			return path.get(Booking_.member).get(Member_.aktiv);
 		case "strasse":
 			return path.get(Booking_.member).get(Member_.strasse);
 		case "ort":

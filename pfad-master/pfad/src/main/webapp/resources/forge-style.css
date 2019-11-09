@@ -15,6 +15,21 @@ legend {
     font-size: 0.8em;
 }
 
+.ui-datatable thead th {
+	padding: 1px 1px !important;
+	overflow: hidden;
+	border-width: 1px;
+	border-style: solid;
+}
+
+.ui-datatable thead th label {
+	display: inherit !important;
+	margin-left: 2px;
+	margin-right: 2px;
+	text-align: center;
+	font-weight: bold;
+}
+
 /* Bootstrap overrides: */
 label, input, button, select, textarea {
     font-size: 11px;
