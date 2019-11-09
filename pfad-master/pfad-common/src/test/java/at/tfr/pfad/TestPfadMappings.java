@@ -41,15 +41,16 @@ public class TestPfadMappings {
 		Squad s = new Squad();
 		s.setName("Squad");
 		s.setType(SquadType.WIWO);
-		final Squad saved = squadRepo.save(s);
+		final Squad saved = squadRepo.saveAndFlush(s);
 		
 		IntStream.range(0,NUM_SCOUTS).forEach(i->{
 			Member m = new Member();
 			m.setName("Scout"+i);
 			m.setTrupp(saved);
-			m = memberRepo.save(m);
+			m = memberRepo.saveAndFlush(m);
 		});
 
+		squadRepo.clear();
 		s = squadRepo.findBy(saved.getId());
 		
 		SquadDao dao = sm.squadToDao(s);
@@ -72,30 +73,31 @@ public class TestPfadMappings {
 		Squad s = new Squad();
 		s.setName("Squad");
 		s.setType(SquadType.WIWO);
-		final Squad saved = squadRepo.save(s);
+		final Squad saved = squadRepo.saveAndFlush(s);
 		
 		IntStream.range(0,NUM_SCOUTS).forEach(i->{
 			Member m = new Member();
 			m.setName("Scout"+i);
 			m.setTrupp(saved);
-			m = memberRepo.save(m);
+			m = memberRepo.saveAndFlush(m);
 		});
 		
 		// Given: an unassociated Member for later addition to Squad.assistants
 		Member theAssistant = new Member();
 		theAssistant.setName("TheAssistant");
-		theAssistant = memberRepo.save(theAssistant);
+		theAssistant = memberRepo.saveAndFlush(theAssistant);
 
 		IntStream.range(0,NUM_ASSISTANTS).forEach(i->{
 			Member m = new Member();
 			m.setName("Assistant"+i);
-			m = memberRepo.save(m);
+			m = memberRepo.saveAndFlush(m);
 			Squad sq = squadRepo.findBy(saved.getId());
 			sq.getAssistants().add(m);
-			squadRepo.save(sq);
+			squadRepo.saveAndFlush(sq);
 			squadRepo.flush();
 		});
 
+		squadRepo.clear();
 		final Squad sCheck = squadRepo.findBy(saved.getId());
 		
 		// Given: an external representation of Squad

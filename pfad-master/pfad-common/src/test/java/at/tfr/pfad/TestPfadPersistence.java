@@ -30,8 +30,6 @@ import at.tfr.pfad.model.Squad;
 public class TestPfadPersistence {
 
 	@Inject
-	private EntityManager em;
-	@Inject
 	private EntityManagerFactory emf;
 	@Inject
 	private MemberRepository memberRepo;
@@ -47,8 +45,8 @@ public class TestPfadPersistence {
 	 */
 	@Test
 	public void testObjectGraph() throws Exception {
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
 
 		Activity a = new Activity();
 		a.setType(ActivityType.Other);
@@ -93,7 +91,7 @@ public class TestPfadPersistence {
 		em.persist(s);
 		em.persist(b);
 		em.persist(p);
-		tx.commit();
+		em.getTransaction().commit();
 		
 		assertNotNull("persisting parent association failed", parent.getId());
 		assertNotNull("persisting sibling association failed", sibling.getId());

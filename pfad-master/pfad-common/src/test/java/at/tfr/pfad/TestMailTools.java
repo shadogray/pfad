@@ -34,6 +34,8 @@ public class TestMailTools {
 	@Inject
 	private TemplateUtils tu;
 	
+	private Member member;
+	
 	@Test
 	public void testExecutor() throws Exception {
 		List<List<Entry<String, Object>>> list = qe.execute("select m.name as Name, m.vorname as Vorname, m.email as Email from Member m", false);
@@ -52,7 +54,7 @@ public class TestMailTools {
 		String template = "Das ist eine Nachricht an ${Email}.";
 		
 		List<List<Entry<String, Object>>> list = qe.execute("select m.name as Name, m.vorname as Vorname, m.email as Email "
-				+ " from Member m where m.id = 1", false);
+				+ " from Member m where m.id = "+member.getId(), false);
 
 		List<Entry<String,Object>> map = list.get(0);
 		String res = tu.replace(template, map);
@@ -65,7 +67,7 @@ public class TestMailTools {
 		String template = "Das ist eine Nachricht an ${Member.email}.";
 		
 		List<List<Entry<String, Object>>> list = qe.execute("select m as Member, m.name as Name, m.vorname as Vorname, m.email as Email "
-				+ " from Member m where m.id = 1", false);
+				+ " from Member m where m.id = "+member.getId(), false);
 
 		List<Entry<String,Object>> map = list.get(0);
 		String res = tu.replace(template, map);
@@ -139,16 +141,16 @@ public class TestMailTools {
 	@Before
 	public void init() {
 
-		Member m = memberRepo.findBy(1L);
-		if (m == null) {
-			m = new Member();
-			m.setId(1L);
-			memberRepo.persist(m);
+		member = memberRepo.findBy(1L);
+		if (member == null) {
+			member = new Member();
+			//member.setId(1L); pretty useless.. 
+			member = memberRepo.merge(member);
 		}
-		m.setName("name");
-		m.setVorname("vorname");
-		m.setEmail("email");
-		memberRepo.save(m);
+		member.setName("name");
+		member.setVorname("vorname");
+		member.setEmail("email");
+		memberRepo.saveAndFlush(member);
 	}
 
 }

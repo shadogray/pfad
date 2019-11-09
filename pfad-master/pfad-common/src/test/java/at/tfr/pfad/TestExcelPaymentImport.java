@@ -73,7 +73,8 @@ public class TestExcelPaymentImport {
 		createBooking(activity, createMember("NameVier", "VornameVier2", s));
 		createBooking(activity, createMember("NameVier", "VornameVier3", s));
 		createBooking(activity, createMember("NameVier", "VornameVier4", s));
-}
+		bookingRepo.flush();
+	}
 
 	@Test
 	public void testFindBooking() throws Exception {
@@ -82,7 +83,8 @@ public class TestExcelPaymentImport {
 		Assert.assertFalse(bookings.isEmpty());
 		Assert.assertEquals(1, bookings.size());
 
-		bookings = bookingRepo.findByMemberNames("Gruppenbeitrag 16/17 NameDrei VornameDrei1 VornameDrei2 VornameDrei3", activity);
+		bookings = bookingRepo.findByMemberNames("Gruppenbeitrag 16/17 NameDrei VornameDrei1 VornameDrei2 VornameDrei3",
+				activity);
 		Assert.assertFalse(bookings.isEmpty());
 		Assert.assertEquals(3, bookings.size());
 	}
@@ -95,9 +97,9 @@ public class TestExcelPaymentImport {
 		row.createCell(2).setCellValue("123");
 		row.createCell(3).setCellValue("Gruppenbeitrag 16/17 NameEins VornameEins");
 		row.createCell(4).setCellValue(120.0D);
-		
+
 		ProcessData data = new ProcessData(activity);
-			
+
 		ProcessExcelPayments.BookingData bd = procPayments.findBooking(row, data);
 		Assert.assertEquals(1, bd.bookings.size());
 	}
@@ -106,17 +108,18 @@ public class TestExcelPaymentImport {
 	public void testFindIBAN() throws Exception {
 		final String badenIBAN = "AT112020500000007450";
 		final String targetIBAN = "AT252026702001284989";
-		String[] line = new String[]{"01.09.2016","Köhnigshöhle/Gruppenleitung Katharina Fiala","-199,9","EUR","Pfadfindergruppe Baden",
-				badenIBAN,"SPBDAT21XXX","Katharina Fiala", targetIBAN,"Köhnigshöhle/Gruppenleitung"};
+		String[] line = new String[] { "01.09.2016", "Köhnigshöhle/Gruppenleitung Katharina Fiala", "-199,9", "EUR",
+				"Pfadfindergruppe Baden", badenIBAN, "SPBDAT21XXX", "Katharina Fiala", targetIBAN,
+				"Köhnigshöhle/Gruppenleitung" };
 		XSSFWorkbook wb = new XSSFWorkbook();
 		XSSFRow row = wb.createSheet("TEST").createRow(1);
 		int idx = 1;
 		for (String val : Arrays.asList(line)) {
 			row.createCell(idx++).setCellValue(val);
 		}
-		
+
 		ProcessData data = new ProcessData(activity);
-			
+
 		String iban = procPayments.findIBAN(row, data);
 		Assert.assertEquals(targetIBAN, iban);
 	}
@@ -129,9 +132,9 @@ public class TestExcelPaymentImport {
 		row.createCell(2).setCellValue("123");
 		row.createCell(3).setCellValue("Gruppenbeitrag 16/17 NameDrei VornameDrei1 VornameDrei2 VornameDrei3");
 		row.createCell(4).setCellValue(120.0D);
-		
+
 		ProcessData data = new ProcessData(activity);
-			
+
 		ProcessExcelPayments.BookingData bd = procPayments.findBooking(row, data);
 		Assert.assertEquals(3, bd.bookings.size());
 		// find related members - see Vollzahler
@@ -144,11 +147,12 @@ public class TestExcelPaymentImport {
 		XSSFRow row = wb.createSheet("TEST").createRow(1);
 		row.createCell(1).setCellValue("01.01.2017");
 		row.createCell(2).setCellValue("123");
-		row.createCell(3).setCellValue("Gruppenbeitrag 16/17 NameVier VornameVier1, VornameVier2, VornameVier3, VornameVier4");
+		row.createCell(3)
+				.setCellValue("Gruppenbeitrag 16/17 NameVier VornameVier1, VornameVier2, VornameVier3, VornameVier4");
 		row.createCell(4).setCellValue(120.0D);
-		
+
 		ProcessData data = new ProcessData(activity);
-			
+
 		ProcessExcelPayments.BookingData bd = procPayments.findBooking(row, data);
 		// do not find unrelated members - see Vollzahler
 		Assert.assertFalse(procPayments.validateBookings(bd));
@@ -191,7 +195,7 @@ public class TestExcelPaymentImport {
 		List<Booking> bookings = bookingRepo.findByMemberNames(firstLine, activity);
 		Assert.assertFalse(bookings.isEmpty());
 		Assert.assertEquals(1, bookings.size());
-		
+
 		ProcessData data = new ProcessData(activity);
 		data.setCreatePayment(true);
 		data.setAccontoGrades(new Double[] { 50D, 100D });
@@ -205,9 +209,9 @@ public class TestExcelPaymentImport {
 				int lastrow = sheet.getLastRowNum();
 				for (Row row : sheet) {
 					row = procPayments.processRow((XSSFRow) row, data);
-					XSSFRow xssfRow = (XSSFRow)row;
+					XSSFRow xssfRow = (XSSFRow) row;
 					ProcessExcelPayments.BookingData bd = null;
-					
+
 					switch (row.getRowNum()) {
 					case 0:
 						bd = procPayments.findBooking(xssfRow, data);
@@ -222,7 +226,7 @@ public class TestExcelPaymentImport {
 						Assert.assertEquals(IBANDrei, data.getPayment().getPayerIBAN());
 						break;
 					}
-					
+
 					if (row.getRowNum() > lastrow) {
 						break;
 					}
@@ -240,14 +244,14 @@ public class TestExcelPaymentImport {
 		b.setMember(m);
 		b.setActivity(a);
 		b.setStatus(BookingStatus.created);
-		return bookingRepo.save(b);
+		return bookingRepo.saveAndFlush(b);
 	}
 
 	private Squad createSquad() {
 		Squad s = new Squad();
 		s.setName("TEST");
 		s.setType(SquadType.CAEX);
-		s = squadRepo.save(s);
+		s = squadRepo.saveAndFlush(s);
 		return s;
 	}
 
@@ -257,14 +261,14 @@ public class TestExcelPaymentImport {
 		a.setName("TEST");
 		a.setType(ActivityType.Membership);
 		a.setStatus(ActivityStatus.planned);
-		a = activityRepo.save(a);
+		a = activityRepo.saveAndFlush(a);
 		return a;
 	}
 
 	private Member createMember(String name, String vorname, Squad s) {
 		return createMember(name, vorname, s, null);
 	}
-	
+
 	private Member createMember(String name, String vorname, Squad s, Member vollzahler) {
 		Member m = new Member();
 		m.setName(name);
@@ -274,7 +278,7 @@ public class TestExcelPaymentImport {
 		m.setGebTag(1);
 		m.setTrupp(s);
 		m.setVollzahler(vollzahler);
-		m = memberRepo.save(m);
+		m = memberRepo.saveAndFlush(m);
 		return m;
 	}
 

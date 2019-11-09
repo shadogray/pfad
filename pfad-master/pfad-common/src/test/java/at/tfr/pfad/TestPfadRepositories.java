@@ -31,11 +31,11 @@ public class TestPfadRepositories {
 		
 		Member c = new Member();
 		c.setName("Child");
-		c = memberRepo.save(c);
+		c = memberRepo.saveAndFlush(c);
 		Member m = new Member();
 		m.setName("Name");
 		m.getSiblings().add(c);
-		Member saved = memberRepo.save(m);
+		Member saved = memberRepo.saveAndFlush(m);
 		
 		assertTrue("save failed", saved.getId() != null);
 		assertTrue("entity not found", em.find(Member.class, saved.getId()) != null);

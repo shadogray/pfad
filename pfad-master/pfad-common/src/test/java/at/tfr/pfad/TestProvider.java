@@ -9,8 +9,10 @@ package at.tfr.pfad;
 
 import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Alternative;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.Specializes;
 import javax.interceptor.Interceptor;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -22,6 +24,7 @@ import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 
 @Alternative
+@Specializes
 @Priority(Interceptor.Priority.APPLICATION + 100)
 @ApplicationScoped
 public class TestProvider extends at.tfr.pfad.Provider {
@@ -45,8 +48,11 @@ public class TestProvider extends at.tfr.pfad.Provider {
 	}
 	
 	@Produces
+	@RequestScoped
 	public EntityManager getEntityManager() {
-		return entityManagerFactory.createEntityManager();
+		EntityManager em = entityManagerFactory.createEntityManager();
+		em.getTransaction().begin();
+		return em;
 	}
 	
 	@Produces
