@@ -72,7 +72,7 @@
 								style="min-width:3em; max-width:8em;#{col.evalHeaderStyle(col.filter)}"
 								rendered="#{col.search and empty col.items}">
 								<f:attribute name="column" value="#{col}" />
-								<p:ajax event="keyup" delay="250" onstart="return filterKey(event)" listener="#{bookingTableBean.dataModel.reload}" 
+								<p:ajax event="keyup" delay="500" onstart="return filterKey(event)" listener="#{bookingTableBean.dataModel.reload}" 
 									update="@this" onsuccess="PF('bookings').filter()" />
 							</p:inputText>
 							<p:selectOneMenu value="#{col.filter}" 

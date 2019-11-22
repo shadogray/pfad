@@ -1030,3 +1030,7 @@ td.component2 .ui-autocomplete {
 .GuSpCaEx {
 	background-color: #cecece !important;
 }
+
+.removed {
+	text-decoration: line-through;
+}

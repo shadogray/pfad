@@ -254,9 +254,20 @@ public class MailerBean extends BaseBean {
 			error("Cannot save: " + e);
 		}
 	}
+
+	public boolean willSend(final int index) {
+		if (index < 0 || index > mailMessages.size()-1)
+			return false;
+		return mailMessages.get(index).isSend();
+	}
 	
 	public void toggleAllMessageSend() {
 		mailMessages.forEach(m -> m.setSend(!m.isSend()));
+	}
+
+	public void toggleForIndex(final int index) {
+		MailMessage m = mailMessages.get(index);
+		m.setSend(!m.isSend());
 	}
 
 	public void sendTestMessage() {

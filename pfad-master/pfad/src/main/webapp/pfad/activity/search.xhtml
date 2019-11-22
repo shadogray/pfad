@@ -34,7 +34,9 @@
 
 						<h:outputLabel for="activityBeanExampleName" value="Name:" />
 						<h:panelGroup>
-							<h:inputText id="activityBeanExampleName" value="#{activityBean.example.name}" />
+							<h:inputText id="activityBeanExampleName" value="#{activityBean.example.name}" >
+								<f:ajax event="keyup" delay="250" listener="#{activityBean.search()}" render="activityBeanPageItems"/>
+							</h:inputText>
 							<h:message for="activityBeanExampleName" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
@@ -44,6 +46,7 @@
 							<h:selectOneMenu id="activityBeanExampleType" value="#{activityBean.example.type}">
 								<f:selectItem noSelectionOption="true"/>
 								<f:selectItems value="#{activityBean.types}" />
+								<f:ajax listener="#{activityBean.search()}" render="activityBeanPageItems"/>
 							</h:selectOneMenu>
 							<h:message for="activityBeanExampleType" styleClass="error" />
 						</h:panelGroup>

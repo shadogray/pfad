@@ -48,6 +48,15 @@
 
 					<h:panelGrid columnClasses="label2,component2,required,label2,component2,required,label2,component2,required,label2,component2,required" columns="12">
 
+						<h:outputLabel value="Buchung:" />
+						<h:panelGroup id="paymentBeanBookingPanel">
+							<p:inputText id="paymentBeanBookingComment" value="#{paymentBean.bookingExample.comment}">
+								<p:ajax delay="250" event="keyup" onstart="return filterKey(event)" update="paymentBeanPageItems" />
+							</p:inputText>
+							<h:message for="paymentBeanBooking" styleClass="error" />
+						</h:panelGroup>
+						<h:outputText />
+
 						<h:outputLabel for="paymentBeanExampleType" value="Typ:" />
 						<h:panelGroup>
 							<h:selectOneMenu id="paymentBeanExampleType" value="#{paymentBean.example.type}">
@@ -56,16 +65,6 @@
 								<f:ajax render="paymentBeanPageItems" />
 							</h:selectOneMenu>
 							<h:message for="paymentBeanExampleType" styleClass="error" />
-						</h:panelGroup>
-						<h:outputText />
-
-						<h:outputLabel for="paymentBeanExamplePayer" value="Zahler:" />
-						<h:panelGroup id="paymentBeanExamplePayerPanel">
-							<p:autoComplete id="paymentBeanExamplePayer" value="#{paymentBean.memberSearch}" completeMethod="#{members.filtered}" 
-								var="p" itemLabel="#{p}" itemValue="#{p.idStr}" converter="#{memberBean.converter}" >
-								<f:ajax render="paymentBeanPageItems" />
-							</p:autoComplete>
-							<h:message for="paymentBeanExamplePayer" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
@@ -109,19 +108,20 @@
 						</h:panelGroup>
 						<h:outputText />
 
-						<h:outputLabel value="Buchung:" />
-						<h:panelGroup id="paymentBeanBookingPanel">
-							<p:inputText id="paymentBeanBookingComment" value="#{paymentBean.bookingExample.comment}">
-								<p:ajax event="keyup" onstart="return filterKey(event)" update="paymentBeanPageItems" />
-							</p:inputText>
-							<h:message for="paymentBeanBooking" styleClass="error" />
+						<h:outputLabel for="paymentBeanExamplePayer" value="Zahler:" />
+						<h:panelGroup id="paymentBeanExamplePayerPanel">
+							<p:autoComplete id="paymentBeanExamplePayer" value="#{paymentBean.memberSearch}" completeMethod="#{members.filtered}" 
+								var="p" itemLabel="#{p}" itemValue="#{p.idStr}" converter="#{memberBean.converter}" >
+								<f:ajax delay="250" render="paymentBeanPageItems" />
+							</p:autoComplete>
+							<h:message for="paymentBeanExamplePayer" styleClass="error" />
 						</h:panelGroup>
 						<h:outputText />
 
 						<h:outputLabel for="paymentBeanExampleIBAN" value="IBAN:" />
 						<h:panelGroup>
 							<h:inputText id="paymentBeanExampleIBAN" value="#{paymentBean.example.payerIBAN}" >
-								<f:ajax render="paymentBeanPageItems" />
+								<f:ajax delay="250" event="keyup" render="paymentBeanPageItems" />
 							</h:inputText>
 							<h:message for="paymentBeanExampleIBAN" styleClass="error" />
 						</h:panelGroup>
@@ -130,7 +130,7 @@
 						<h:outputLabel for="paymentBeanExampleComment" value="Bemerkung:" />
 						<h:panelGroup>
 							<h:inputText id="paymentBeanExampleComment" value="#{paymentBean.example.comment}" >
-								<f:ajax render="paymentBeanPageItems" />
+								<f:ajax delay="250" event="keyup" render="paymentBeanPageItems" />
 							</h:inputText>
 							<h:message for="paymentBeanExampleComment" styleClass="error" />
 						</h:panelGroup>
