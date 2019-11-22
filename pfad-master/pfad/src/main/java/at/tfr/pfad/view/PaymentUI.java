@@ -170,7 +170,7 @@ public class PaymentUI extends Payment {
 	}
 	
 	public String getBooking() {
-		return bookings.toString();
+		return bookings.stream().map(Booking::getShortString).collect(Collectors.joining());
 	}
 	
 	public String getMember() {

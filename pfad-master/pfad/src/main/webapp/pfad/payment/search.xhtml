@@ -170,7 +170,8 @@
 				</h:panelGroup>
 			</f:validateBean>
 
-			<h:dataTable id="paymentBeanPageItems" styleClass="data-table" value="#{paymentBean.dataModel}" var="_item">
+			<h:dataTable id="paymentBeanPageItems" styleClass="data-table" value="#{paymentBean.dataModel}" var="_item"
+				columnClasses=",,width30,">
 
 				<h:column>
 					<f:facet name="header">
@@ -187,13 +188,13 @@
 						<h:outputText id="itemPaymentType" value="#{_item.type}" />
 					</h:link>
 				</h:column>
-				<h:column>
+				<h:column >
 					<f:facet name="header">
-						<h:outputText value="Zahler" />
+						<h:outputText value="Buchung" />
 					</f:facet>
-					<h:link outcome="create" includeViewParams="true">
+					<h:link outcome="create" includeViewParams="true" >
 						<f:param name="id" value="#{_item.id}" />
-						<h:outputText id="itemPaymentPayer" value="#{_item.payer != null ? _item.payerName : 'kein Zahler..'}" />
+						<h:outputText id="itemPaymentBooking" value="#{_item.booking}" />
 					</h:link>
 				</h:column>
 				<h:column>
@@ -241,6 +242,15 @@
 					<h:link outcome="create" includeViewParams="true">
 						<f:param name="id" value="#{_item.id}" />
 						<h:outputText id="itemPaymentPaymentDate" value="#{_item.paymentDate}" converter="javax.faces.DateTime" />
+					</h:link>
+				</h:column>
+				<h:column>
+					<f:facet name="header">
+						<h:outputText value="Zahler" />
+					</f:facet>
+					<h:link outcome="create" includeViewParams="true">
+						<f:param name="id" value="#{_item.id}" />
+						<h:outputText id="itemPaymentPayer" value="#{_item.payer != null ? _item.payerName : 'kein Zahler..'}" />
 					</h:link>
 				</h:column>
 				<h:column>
