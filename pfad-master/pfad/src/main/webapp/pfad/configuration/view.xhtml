@@ -27,7 +27,8 @@
 			<h:outputText id="configurationBeanConfigurationCkey" value="#{configurationBean.configuration.ckey}" />
 			<h:outputText />
 			<h:outputLabel for="configurationBeanConfigurationCvalue" value="Cvalue:" />
-			<h:outputText id="configurationBeanConfigurationCvalue" value="#{configurationBean.configuration.cvalue}" />
+			<h:inputTextarea id="configurationBeanConfigurationCvalue" value="#{configurationBean.configuration.cvalue}" 
+				style="width:95%; height:10em !important;" rows="8"/>
 			<h:outputText />
 			<h:outputLabel for="configurationBeanConfigurationRole" value="Role:" />
 			<h:outputText id="configurationBeanConfigurationRole" value="#{configurationBean.configuration.role}" />
