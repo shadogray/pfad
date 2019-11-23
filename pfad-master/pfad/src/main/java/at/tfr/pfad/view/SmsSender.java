@@ -1,22 +1,19 @@
 package at.tfr.pfad.view;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
+import org.apache.http.Consts;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
@@ -30,10 +27,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.jboss.logging.Logger;
 
-import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MailMessageRepository;
 import at.tfr.pfad.model.MailMessage;
 import at.tfr.pfad.util.SessionBean;
@@ -84,10 +79,12 @@ public class SmsSender {
 				String receivers = msgOrig.getReceiver();
 				if (StringUtils.isNotBlank(msgOrig.getCc())) receivers += ","+msgOrig.getCc();
 				
+				String msgtext = msgOrig.getPlainText().replaceAll("\t","  ");
+				
 				nvps.addAll(configParams);
 				nvps.add(new BasicNameValuePair("recipients", receivers));
-				nvps.add(new BasicNameValuePair("msgtext", msgOrig.getPlainText().replaceAll("\t","  ")));
-				httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+				nvps.add(new BasicNameValuePair("msgtext", msgtext));
+				httpPost.setEntity(new UrlEncodedFormEntity(nvps, Consts.UTF_8));
 				CloseableHttpResponse response = httpclient.execute(httpPost);
 
 				try {
