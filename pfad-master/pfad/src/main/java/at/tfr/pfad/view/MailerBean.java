@@ -50,7 +50,6 @@ import org.jboss.logging.Logger;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
-import at.tfr.pfad.dao.MailMessageRepository;
 import at.tfr.pfad.dao.MailTemplateRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Configuration;
@@ -86,6 +85,7 @@ public class MailerBean extends BaseBean {
 	private Map<String, MailConfig> mailConfigs;
 	private MailConfig mailConfig;
 	private String mailConfigKey;
+	private String testTo;
 	private List<List<Entry<String, Object>>> values = Collections.emptyList();
 	private MailTemplate mailTemplate = new MailTemplate();
 	private List<MailMessage> mailMessages = Collections.emptyList();
@@ -95,7 +95,6 @@ public class MailerBean extends BaseBean {
 	private ListDataModel<MailMessage> mailMessagesModel = new ListDataModel<>();
 	private final Map<String,UpFile> files = new LinkedHashMap<>();
 	private Activity activity;
-	private Pattern htmlFilter = Pattern.compile("<.*?>");
 	private Pattern phoneNumber = Pattern.compile("[+\\d]{7,}");
 	private Pattern phoneNumberFilter = Pattern.compile("[ /()-]");
 
@@ -119,6 +118,10 @@ public class MailerBean extends BaseBean {
 		if (mailConfigs.isEmpty()) {
 			warn("No MailConfiguration found! Cannot execute any Mails.");
 		}
+	}
+	
+	public void reinit() {
+		testTo = null;
 	}
 
 	@AccessTimeout(unit = TimeUnit.SECONDS, value = 30)
@@ -200,9 +203,9 @@ public class MailerBean extends BaseBean {
 				}
 				msg.setText(text);
 				msg.setReceiver(templateUtils.replace("${to}", vals));
+				msg.setPlainText(TemplateUtils.htmlToText(msg.getText()));
 				
 				if (mailTemplate.isSms()) {
-					msg.setText(msg.getText().replaceAll(htmlFilter.pattern(), ""));
 					msg.setReceiver(msg.getReceiver().replaceAll(phoneNumberFilter.pattern(),""));
 				}
 				if (mailTemplate.isCc()) {
@@ -351,12 +354,8 @@ public class MailerBean extends BaseBean {
 
 					MimeMultipart multipart = new MimeMultipart("alternative");
 					
-					String plainText = msg.getText()
-							.replaceAll("<li>", "\t")
-							.replaceAll("</(p|li)>", "\n")
-							.replaceAll(htmlFilter.pattern(), "");
 					MimeBodyPart body = new MimeBodyPart();
-					body.setContent(plainText, "text/plain; charset=UTF-8");
+					body.setContent(msg.getPlainText(), "text/plain; charset=UTF-8");
 					multipart.addBodyPart(body);
 					
 					MimeBodyPart htmlBody = new MimeBodyPart();
@@ -375,14 +374,14 @@ public class MailerBean extends BaseBean {
 					if (testOnly) {
 						msg = msg.getClone();
 						if (!mailTemplate.isSms()) {
-							addAddresses(mail, mailConfig.getTestTo(), to);
-							msg.setReceiver(mailConfig.getTestTo());
+							addAddresses(mail, testTo, to);
+							msg.setReceiver(testTo);
 							if (mailTemplate.isCc()) 
-								msg.setCc(mailConfig.getTestTo());
+								msg.setCc(testTo);
 						} else {
-							msg.setReceiver(mailConfig.getSmsTestTo());
+							msg.setReceiver(testTo);
 							if (mailTemplate.isCc()) 
-								msg.setCc(mailConfig.getSmsTestTo());
+								msg.setCc(testTo);
 						}
 					} else {
 						addAddresses(mail, msg.getReceiver(), to);
@@ -459,6 +458,21 @@ public class MailerBean extends BaseBean {
 			log.info("cannot check: " + e);
 		}
 		return false;
+	}
+	
+	public String getTestTo() {
+		if (testTo == null && mailConfig != null) {
+			if (StringUtils.isNotBlank(mailConfig.getTestTo())) 
+				testTo = mailConfig.getTestTo();
+			if (mailTemplate != null && mailTemplate.isSms()) {
+				testTo =  mailConfig.getSmsTestTo();
+			}
+		}
+		return testTo;
+	}
+	
+	public void setTestTo(String testTo) {
+		this.testTo = testTo;
 	}
 	
 	public ListDataModel<List<Entry<String, Object>>> getValues() {
@@ -598,6 +612,7 @@ public class MailerBean extends BaseBean {
 			super.finalize();
 		}
 	}
+	
 	public static class MailConfig {
 		private final String key;
 		private final String prefix;
@@ -627,7 +642,7 @@ public class MailerBean extends BaseBean {
 			smsUsername = getValue(configs, "mail_smsUsername", null);
 			smsPassword = getValueIntern(configs, "mail_smsPassword", null);
 			smsService = getValue(configs, "mail_smsService", null);
-			smsTestTo = getValue(configs, "mail_smsTestTo", from != null ? from : testTo);
+			smsTestTo = getValue(configs, "mail_smsTestTo", null);
 
 
 			properties = new Properties();

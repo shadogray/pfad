@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.Test;
@@ -55,4 +57,12 @@ public class TestTemplateUtils {
 		Assert.assertEquals("replace failed: "+res, trupp.getName(), res);
 	}
 		
+	@Test
+	public void testHtmlToText() throws Exception {
+		MimeMessage msg = new MimeMessage(null, getClass().getResourceAsStream("/testmail.msg"));
+		MimeMultipart mm = (MimeMultipart)msg.getContent();
+		String text = TemplateUtils.htmlToText(""+mm.getBodyPart(1).getContent());
+		Assert.assertFalse("filter html failed: "+text, text.contains("<"));
+	}
+	
 }

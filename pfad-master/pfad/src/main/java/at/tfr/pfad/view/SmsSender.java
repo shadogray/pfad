@@ -53,6 +53,8 @@ public class SmsSender {
 		msg = msg.getClone();
 		if (!saveText) {
 			msg.setText(null);
+		} else {
+			msg.setText(msg.getPlainText());
 		}
 
 		msg = messageRepo.saveAndFlush(msg);
@@ -71,7 +73,7 @@ public class SmsSender {
 				if (StringUtils.isNotBlank(msgOrig.getCc())) receivers += ","+msgOrig.getCc();
 				
 				nvps.add(new BasicNameValuePair("recipients", receivers));
-				nvps.add(new BasicNameValuePair("msgtext", msgOrig.getText().replaceAll("\t","")));
+				nvps.add(new BasicNameValuePair("msgtext", msgOrig.getPlainText().replaceAll("\t","  ")));
 				httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 				CloseableHttpResponse response = httpclient.execute(httpPost);
 

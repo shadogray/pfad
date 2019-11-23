@@ -57,6 +57,8 @@ public class MailMessage extends BaseEntity implements Cloneable {
 	private List<Entry<String, Object>> values;
 	@Transient
 	private boolean send = true;
+	@Transient
+	private String plainText;
 
 	@Override
 	public Long getId() {
@@ -189,6 +191,14 @@ public class MailMessage extends BaseEntity implements Cloneable {
 	
 	public void setSend(boolean send) {
 		this.send = send;
+	}
+	
+	public String getPlainText() {
+		return plainText;
+	}
+	
+	public void setPlainText(String plainText) {
+		this.plainText = plainText;
 	}
 	
 	@Override

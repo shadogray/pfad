@@ -16,6 +16,7 @@ import org.primefaces.model.UploadedFile;
 
 import at.tfr.pfad.dao.MailMessageRepository;
 import at.tfr.pfad.model.MailMessage;
+import at.tfr.pfad.util.TemplateUtils;
 
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -31,6 +32,8 @@ public class MailSender {
 		msg = msg.getClone();
 		if (!saveText) {
 			msg.setText(null);
+		} else {
+			msg.setText(msg.getPlainText());
 		}
 		msg = messageRepo.saveAndFlush(msg);
 		try {

@@ -7,11 +7,13 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.inject.Inject;
+import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.junit.Assert;
@@ -156,8 +158,7 @@ public class TestMailTools {
 		result = tu.replace(template, map);
 		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein REPLACEMENT", result);
 	}
-	
-	
+
 	@Before
 	public void init() {
 

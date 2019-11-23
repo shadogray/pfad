@@ -67,17 +67,17 @@
 					<h:outputLabel value="Sender:" />
 					<h:outputText value="#{mailerBean.mailConfig.from}"/>
 					<h:outputLabel value="Alias:" />
-					<h:outputText value="#{mailerBean.mailConfig.alias}"/>
+					<h:inputText value="#{mailerBean.mailConfig.alias}"/>
 					<h:outputLabel value="Username:" />
 					<h:outputText value="#{mailerBean.mailConfig.username}"/>
 					<h:outputLabel value="Berechtigt:" />
 					<p:inputText value="#{mailerBean.mailTemplate.owner}" disabled="#{!mailerBean.changeOwnerAllowed}"/>
 					<h:outputLabel value="CC:" />
-					<h:outputText value="#{mailerBean.mailConfig.cc}"/>
+					<h:inputText value="#{mailerBean.mailConfig.cc}"/>
 					<h:outputLabel value="BCC:" />
-					<h:outputText value="#{mailerBean.mailConfig.bcc}"/>
+					<h:inputText value="#{mailerBean.mailConfig.bcc}"/>
 					<h:outputLabel value="Test-TO:" />
-					<h:outputText value="#{mailerBean.mailConfig.testTo}"/>
+					<h:inputText value="#{mailerBean.testTo}"/>
 					<h:outputLabel value="Vorlagenname:" />
 					<p:inputText value="#{mailerBean.mailTemplate.name}" />
 				</h:panelGrid>
@@ -99,7 +99,9 @@
 							<h:outputLabel value="Text:" title="#{configurationBean.getValue('mailer.saveText','Text abspeichern')}"/>
 							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.saveText}" title="#{configurationBean.getValue('mailer.saveText','Text abspeichern')}"/>
 							<h:outputLabel value="SMS:" title="#{configurationBean.getValue('mailer.sms','Als SMS senden')}"/>
-							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.sms}" title="#{configurationBean.getValue('mailer.sms','Als SMS senden')}"/>
+							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.sms}" title="#{configurationBean.getValue('mailer.sms','Als SMS senden')}">
+								<f:ajax execute="#{mailerBean.reinit()}" render="mailer"/>
+							</h:selectBooleanCheckbox>
 						</h:panelGrid>
 					</p:fieldset>
 				</h:panelGrid>
@@ -126,8 +128,8 @@
 				<h:panelGrid id="buttons" columns="4" with="100%">	
 					<h:commandButton value="Vorlage Speichern" action="#{mailerBean.saveTemplate}" disabled="#{!mailerBean.updateAllowed}"/>
 					<h:commandButton value="Vorbereiten" action="#{mailerBean.executeQuery}" disabled="#{!mailerBean.updateAllowed}"/>
-					<h:commandButton value="TestMail" action="#{mailerBean.sendTestMessage()}" disabled="#{!mailerBean.updateAllowed}"/>
-					<h:commandButton value="#{mailerBean.mailMessagesToSend} Echt-Mails Versenden!!" action="#{mailerBean.sendRealMessages()}" disabled="#{!mailerBean.updateAllowed}"
+					<h:commandButton value="Test-#{mailerBean.mailTemplate.sms ? 'SMS':'Email'}" action="#{mailerBean.sendTestMessage()}" disabled="#{!mailerBean.updateAllowed}"/>
+					<h:commandButton value="#{mailerBean.mailMessagesToSend} Echt-#{mailerBean.mailTemplate.sms ? 'SMS':'Emails'} Versenden!!" action="#{mailerBean.sendRealMessages()}" disabled="#{!mailerBean.updateAllowed}"
 						onclick="return confirm('Möchtest Du #{mailerBean.mailMessagesToSend} Emails senden?')">
 					</h:commandButton>
 				</h:panelGrid>
@@ -211,7 +213,7 @@
 						</p:column>
 						<p:column>
 							<f:facet name="header">Nachricht</f:facet>
-							<h:outputText value="#{fn:substring(m.text,0,20)}" title="#{m.text}"/>
+							<h:outputText value="#{fn:substring(m.plainText,0,20)}" title="#{m.plainText}"/>
 						</p:column>
 					</p:dataTable>
 				</p:tab>

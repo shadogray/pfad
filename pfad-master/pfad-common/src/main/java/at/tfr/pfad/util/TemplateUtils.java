@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,14 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 
 public class TemplateUtils implements Serializable {
 
+	public static final Pattern pFilter = Pattern.compile("<p[^>/]*?>");
+	public static final Pattern pEndFilter = Pattern.compile("<(/p|p/)>");
+	public static final Pattern liFilter = Pattern.compile("<li>");
+	public static final Pattern imgFilter = Pattern.compile("<img.+?\">");
+	public static final Pattern tagFilter = Pattern.compile("<[^>]+>");
+	public static final Pattern nbspFilter = Pattern.compile("&nbsp;");
+	public static final Pattern entityFilter = Pattern.compile("&\\w+;");
+	
     private PropertyUtilsBean pub = new PropertyUtilsBean();
 
 	public String replace(String template, Map<String, Object> map) {
@@ -65,6 +74,16 @@ public class TemplateUtils implements Serializable {
 			}
 			return "";
 		}
+	}
+	
+	public static String htmlToText(String html) {
+		html = html.replaceAll(imgFilter.pattern(), "");
+		html = html.replaceAll(liFilter.pattern(), "\t");
+		html = html.replaceAll(pEndFilter.pattern(), "\n");
+		html = html.replaceAll(tagFilter.pattern(), "");
+		html = html.replaceAll(nbspFilter.pattern(), " ");
+		html = html.replaceAll(entityFilter.pattern(), " ");
+		return html;
 	}
 
 }
