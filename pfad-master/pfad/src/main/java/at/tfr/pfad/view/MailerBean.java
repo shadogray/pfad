@@ -374,10 +374,16 @@ public class MailerBean extends BaseBean {
 					RecipientType to = RecipientType.TO;
 					if (testOnly) {
 						msg = msg.getClone();
-						addAddresses(mail, mailConfig.getTestTo(), to);
-						msg.setReceiver(mailConfig.getTestTo());
-						if (mailTemplate.isCc()) 
-							msg.setCc(mailConfig.getTestTo());
+						if (!mailTemplate.isSms()) {
+							addAddresses(mail, mailConfig.getTestTo(), to);
+							msg.setReceiver(mailConfig.getTestTo());
+							if (mailTemplate.isCc()) 
+								msg.setCc(mailConfig.getTestTo());
+						} else {
+							msg.setReceiver(mailConfig.getSmsTestTo());
+							if (mailTemplate.isCc()) 
+								msg.setCc(mailConfig.getSmsTestTo());
+						}
 					} else {
 						addAddresses(mail, msg.getReceiver(), to);
 						if (mailTemplate.isCc() && StringUtils.isNotBlank(msg.getCc())) {
@@ -605,6 +611,7 @@ public class MailerBean extends BaseBean {
 		private String smsUsername;
 		private String smsPassword;
 		private String smsService;
+		private String smsTestTo;
 		private final Properties properties;
 
 		public MailConfig(String key, Collection<Configuration> configs, boolean debug) {
@@ -620,6 +627,7 @@ public class MailerBean extends BaseBean {
 			smsUsername = getValue(configs, "mail_smsUsername", null);
 			smsPassword = getValueIntern(configs, "mail_smsPassword", null);
 			smsService = getValue(configs, "mail_smsService", null);
+			smsTestTo = getValue(configs, "mail_smsTestTo", from != null ? from : testTo);
 
 
 			properties = new Properties();
@@ -739,6 +747,10 @@ public class MailerBean extends BaseBean {
 		
 		public String getSmsService() {
 			return smsService;
+		}
+		
+		public String getSmsTestTo() {
+			return smsTestTo;
 		}
 	}
 }

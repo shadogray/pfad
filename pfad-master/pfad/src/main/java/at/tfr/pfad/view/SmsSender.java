@@ -14,6 +14,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -65,7 +66,11 @@ public class SmsSender {
 			try {
 				HttpPost httpPost = new HttpPost(config.getSmsService());
 				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-				nvps.add(new BasicNameValuePair("recipients", msgOrig.getReceiver()));
+				
+				String receivers = msgOrig.getReceiver();
+				if (StringUtils.isNotBlank(msgOrig.getCc())) receivers += ","+msgOrig.getCc();
+				
+				nvps.add(new BasicNameValuePair("recipients", receivers));
 				nvps.add(new BasicNameValuePair("msgtext", msgOrig.getText().replaceAll("\t","")));
 				httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 				CloseableHttpResponse response = httpclient.execute(httpPost);
