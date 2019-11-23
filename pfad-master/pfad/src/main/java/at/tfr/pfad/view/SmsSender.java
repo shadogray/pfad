@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -32,8 +33,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.jboss.logging.Logger;
 
+import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MailMessageRepository;
 import at.tfr.pfad.model.MailMessage;
+import at.tfr.pfad.util.SessionBean;
 import at.tfr.pfad.view.MailerBean.MailConfig;
 
 @Stateless
@@ -41,13 +44,22 @@ import at.tfr.pfad.view.MailerBean.MailConfig;
 public class SmsSender {
 
 	private Logger log = Logger.getLogger(getClass());
+	public static final String SMS_PARAM = "sms_param_";
 
 	@Inject
 	private MailMessageRepository messageRepo;
+	@Inject
+	private SessionBean sessionBean;
 
 	public MailMessage sendMail(MailMessage msg, MailConfig config, boolean saveText)
 			throws MessagingException, ClientProtocolException, IOException, CloneNotSupportedException {
 
+		List<BasicNameValuePair> configParams = new ArrayList<>();
+		sessionBean.getConfig().stream()
+			.filter(c -> c.getCkey().startsWith(SMS_PARAM))
+			.forEach(c -> configParams.add(
+					new BasicNameValuePair(c.getCkey().replace(SMS_PARAM,""), c.getCvalue())));
+		
 		msg.setSms(true);
 		MailMessage msgOrig = msg;
 		msg = msg.getClone();
@@ -72,6 +84,7 @@ public class SmsSender {
 				String receivers = msgOrig.getReceiver();
 				if (StringUtils.isNotBlank(msgOrig.getCc())) receivers += ","+msgOrig.getCc();
 				
+				nvps.addAll(configParams);
 				nvps.add(new BasicNameValuePair("recipients", receivers));
 				nvps.add(new BasicNameValuePair("msgtext", msgOrig.getPlainText().replaceAll("\t","  ")));
 				httpPost.setEntity(new UrlEncodedFormEntity(nvps));
