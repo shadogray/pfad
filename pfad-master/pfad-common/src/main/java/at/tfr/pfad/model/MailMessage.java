@@ -48,6 +48,8 @@ public class MailMessage extends BaseEntity implements Cloneable {
 	private String text;
 	@Column
 	private Boolean test;
+	@Column
+	private Boolean sms;
 	protected Date created;
 	protected String createdBy;
 
@@ -139,6 +141,14 @@ public class MailMessage extends BaseEntity implements Cloneable {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+	
+	public Boolean getSms() {
+		return sms;
+	}
+	
+	public void setSms(Boolean sms) {
+		this.sms = sms;
 	}
 
 	public Boolean getTest() {

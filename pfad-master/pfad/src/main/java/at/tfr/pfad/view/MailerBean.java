@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.activation.DataHandler;
@@ -39,12 +40,10 @@ import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
-import javax.mail.internet.HeaderTokenizer;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.mail.internet.MimeUtility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
@@ -78,15 +77,14 @@ public class MailerBean extends BaseBean {
 	@Inject
 	private MailTemplateRepository templateRepo;
 	@Inject
-	private MailMessageRepository messageRepo;
-	@Inject
 	private MailTemplateBean mailTemplateBean;
 	@Inject
 	private MailSender mailSender;
+	@Inject
+	private SmsSender smsSender;
 
 	private Map<String, MailConfig> mailConfigs;
 	private MailConfig mailConfig;
-	private List<String> mailConfigKeys;
 	private String mailConfigKey;
 	private List<List<Entry<String, Object>>> values = Collections.emptyList();
 	private MailTemplate mailTemplate = new MailTemplate();
@@ -97,6 +95,9 @@ public class MailerBean extends BaseBean {
 	private ListDataModel<MailMessage> mailMessagesModel = new ListDataModel<>();
 	private final Map<String,UpFile> files = new LinkedHashMap<>();
 	private Activity activity;
+	private Pattern htmlFilter = Pattern.compile("<.*?>");
+	private Pattern phoneNumber = Pattern.compile("[+\\d]{7,}");
+	private Pattern phoneNumberFilter = Pattern.compile("[ /()-]");
 
 	public enum MailProps {
 		mail_transport_protocol, mail_smtp_starttls_enable, mail_smtp_auth, mail_smtp_host, mail_smtp_port, mail_smtps_auth, mail_smtps_host, mail_smtps_port, mail_smtp_ssl_enable, mail_smtp_socketFactory_class, mail_smtp_socketFactory_port
@@ -199,12 +200,18 @@ public class MailerBean extends BaseBean {
 				}
 				msg.setText(text);
 				msg.setReceiver(templateUtils.replace("${to}", vals));
+				
+				if (mailTemplate.isSms()) {
+					msg.setText(msg.getText().replaceAll(htmlFilter.pattern(), ""));
+					msg.setReceiver(msg.getReceiver().replaceAll(phoneNumberFilter.pattern(),""));
+				}
 				if (mailTemplate.isCc()) {
 					msg.setCc(templateUtils.replace("${cc}", vals, mailConfig.getCc() != null ? mailConfig.getCc() : null));
 				}
 				if (mailTemplate.isBcc()) {
 					msg.setBcc(templateUtils.replace("${bcc}", vals, mailConfig.getBcc() != null ? mailConfig.getBcc() : null));
 				}
+				
 				msg.setSubject(templateUtils.replace(mailTemplate.getSubject(), msg.getValues()));
 				msg.setMember(vals.stream().filter(e -> e.getValue() instanceof Member)
 						.map(e -> (Member) e.getValue()).findFirst().orElse(null));
@@ -214,7 +221,7 @@ public class MailerBean extends BaseBean {
 			}
 			
 			// Validate message addresses: 
-			validate(mailMessages);
+			validate(mailMessages, mailTemplate.isSms());
 			
 			mailMessagesModel = new ListDataModel<>(mailMessages);
 			
@@ -225,12 +232,18 @@ public class MailerBean extends BaseBean {
 		
 	}
 
-	public void validate(List<MailMessage> mailMessgs) {
+	public void validate(List<MailMessage> mailMessgs, boolean isSms) {
 		List<String> invalidAddrs = new ArrayList<>();
 		for (MailMessage msg : mailMessgs) {
-			validate(invalidAddrs, msg.getReceiver());
-			validate(invalidAddrs, msg.getCc());
-			validate(invalidAddrs, msg.getBcc());
+			if (!isSms) {
+				validate(invalidAddrs, msg.getReceiver());
+				validate(invalidAddrs, msg.getCc());
+				validate(invalidAddrs, msg.getBcc());
+			} else {
+				if (!phoneNumber.matcher(msg.getReceiver()).matches()) {
+					invalidAddrs.add(msg.getReceiver());
+				}
+			}
 		}
 		if (invalidAddrs.size() > 0) {
 			warn("Ungültige Addressen: "+invalidAddrs);
@@ -315,28 +328,40 @@ public class MailerBean extends BaseBean {
 						warn("invalid Receiver: " + msg);
 						continue;
 					}
-					try {
-						InternetAddress[] ia = InternetAddress.parse(msg.getReceiver());
-					} catch (Exception e) {
-						warn("invalid Receiver: "+e.getMessage()+ " : " + msg);
-						continue;
+					if (!mailTemplate.isSms()) {
+						try {
+							InternetAddress[] ia = InternetAddress.parse(msg.getReceiver());
+						} catch (Exception e) {
+							warn("invalid Receiver: "+e.getMessage()+ " : " + msg);
+							continue;
+						}
+						if (StringUtils.isBlank(msg.getSubject())) {
+							warn("empty Subject: " + msg);
+							continue;
+						}
 					}
 					if (StringUtils.isBlank(msg.getText())) {
 						warn("empty MessageText: " + msg);
 						continue;
 					}
-					if (StringUtils.isBlank(msg.getSubject())) {
-						warn("empty Subject: " + msg);
-						continue;
-					}
+					
 					MimeMessage mail = new MimeMessage(session);
 					mail.setFrom(sender);
 					mail.setSubject(msg.getSubject());
 
-					MimeMultipart multipart = new MimeMultipart();
+					MimeMultipart multipart = new MimeMultipart("alternative");
+					
+					String plainText = msg.getText()
+							.replaceAll("<li>", "\t")
+							.replaceAll("</(p|li)>", "\n")
+							.replaceAll(htmlFilter.pattern(), "");
 					MimeBodyPart body = new MimeBodyPart();
-					body.setContent(msg.getText(), "text/html; charset=UTF-8");
+					body.setContent(plainText, "text/plain; charset=UTF-8");
 					multipart.addBodyPart(body);
+					
+					MimeBodyPart htmlBody = new MimeBodyPart();
+					htmlBody.setContent(msg.getText(), "text/html; charset=UTF-8");
+					multipart.addBodyPart(htmlBody);
 					for (Entry<String, UpFile> fup : files.entrySet()) {
 						MimeBodyPart filePart = new MimeBodyPart();
 						filePart.setDisposition(Part.ATTACHMENT);
@@ -372,13 +397,13 @@ public class MailerBean extends BaseBean {
 					msg.setSender(sender.getAddress()
 							+ (StringUtils.isNotBlank(sender.getPersonal()) ? ":" + sender.getPersonal() : ""));
 					msg.setTest(testOnly);
-					if (Boolean.FALSE.equals(mailTemplate.isSaveText())) {
-						msg.setText(null);
-					}
-					
 					msg.setCreatedBy(sessionBean.getUser().getName());
 					
-					mailSender.sendMail(mail, msg);
+					if (!mailTemplate.isSms()) {
+						mailSender.sendMail(mail, msg, mailTemplate.isSaveText());
+					} else {
+						smsSender.sendMail(msg, mailConfig, mailTemplate.isSaveText());
+					}
 					
 					if (testOnly) {
 						break;
@@ -577,6 +602,9 @@ public class MailerBean extends BaseBean {
 		private String username;
 		private String password;
 		private String testTo = "noreply@nomail.org";
+		private String smsUsername;
+		private String smsPassword;
+		private String smsService;
 		private final Properties properties;
 
 		public MailConfig(String key, Collection<Configuration> configs, boolean debug) {
@@ -589,6 +617,9 @@ public class MailerBean extends BaseBean {
 			cc = getValue(configs, "mail_cc");
 			bcc = getValue(configs, "mail_bcc", from);
 			testTo = getValue(configs, "mail_testTo", from != null ? from : testTo);
+			smsUsername = getValue(configs, "mail_smsUsername", null);
+			smsPassword = getValueIntern(configs, "mail_smsPassword", null);
+			smsService = getValue(configs, "mail_smsService", null);
 
 
 			properties = new Properties();
@@ -696,6 +727,18 @@ public class MailerBean extends BaseBean {
 		
 		public Properties getProperties() {
 			return properties;
+		}
+		
+		public String getSmsUsername() {
+			return smsUsername;
+		}
+		
+		public String getSmsPassword() {
+			return smsPassword;
+		}
+		
+		public String getSmsService() {
+			return smsService;
 		}
 	}
 }

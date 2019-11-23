@@ -137,6 +137,26 @@ public class TestMailTools {
 		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein REPLACEMENT", result);
 	}
 	
+	@Test
+	public void testScriptedStringSubstitutor() throws Exception {
+		Map<String,Object> map = new HashMap<>();
+		map.put("repl", "REPLACEMENT");
+		map.put("test", "repl");
+		map.put("checked", true);
+		map.put("unchecked", false);
+		String template = "Das ist ein ${js:-if (checked) repl; else test;}";
+		String result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein REPLACEMENT", result);
+		
+		template = "Das ist ein ${js:-if (unchecked) repl; else test;}";
+		result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein repl", result);
+
+		template = "Das ist ein ${${js:-if (unchecked) repl; else test;}}";
+		result = tu.replace(template, map);
+		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein REPLACEMENT", result);
+	}
+	
 	
 	@Before
 	public void init() {

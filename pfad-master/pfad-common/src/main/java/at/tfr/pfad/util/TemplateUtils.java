@@ -2,10 +2,12 @@ package at.tfr.pfad.util;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +35,9 @@ public class TemplateUtils implements Serializable {
 	}
 
 	public String replace(String template, Collection<Entry<String, Object>> map) {
-		StrSubstitutor strSub = new PositiveStrSubstitutor(new BeansStrLookup(map));
+		Map<String, Object> vals = new HashMap<>();
+		map.forEach(e -> vals.put(e.getKey(), e.getValue()));
+		StrSubstitutor strSub = new PositiveStrSubstitutor(new BeansStrLookup(map)).withValues(vals);
 		strSub.setEnableSubstitutionInVariables(true);
 		return strSub.replace(template);
 	}

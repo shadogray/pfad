@@ -96,7 +96,7 @@
 			</f:validateBean>
 
 			<p:dataTable id="mailMessageBeanPageItems" styleClass="data-table" value="#{mailMessageBean.pageItems}"
-				var="_item">
+				var="_item" resizableColumns="true" >
 				<p:column>
 					<f:facet name="header">
 						<h:outputText value="Receiver" />
@@ -173,6 +173,12 @@
 						<h:outputText value="Sender" />
 					</f:facet>
 					<h:outputText id="itemSender" value="#{_item.sender}"/>
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="SMS" />
+					</f:facet>
+					<h:outputText id="itemSms" value="#{_item.sms}"/>
 				</p:column>
 				<p:column>
 					<f:facet name="header">

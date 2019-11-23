@@ -26,8 +26,12 @@ public class MailSender {
 	@Inject
 	private MailMessageRepository messageRepo;
 
-	public MailMessage sendMail(Message mail, MailMessage msg) throws MessagingException {
-		
+	public MailMessage sendMail(Message mail, MailMessage msg, boolean saveText) throws MessagingException, CloneNotSupportedException {
+
+		msg = msg.getClone();
+		if (!saveText) {
+			msg.setText(null);
+		}
 		msg = messageRepo.saveAndFlush(msg);
 		try {
 

@@ -1,8 +1,14 @@
 package at.tfr.pfad.util;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.lang3.text.StrLookup;
@@ -12,6 +18,9 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 public class PositiveStrSubstitutor extends StrSubstitutor {
 
 	public static final StrMatcher POSITIVE_DEFAULT_VALUE_DELIMITER = StrMatcher.stringMatcher(":+");
+	public static final String SCRIPT_NAME = "js";
+	protected ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+	protected Map<String,?> valueMap = Collections.emptyMap();
 
 	public PositiveStrSubstitutor() {
 		super();
@@ -20,18 +29,22 @@ public class PositiveStrSubstitutor extends StrSubstitutor {
 	public <V> PositiveStrSubstitutor(Map<String, V> valueMap, String prefix, String suffix, char escape,
 			String valueDelimiter) {
 		super(valueMap, prefix, suffix, escape, valueDelimiter);
+		this.valueMap = valueMap;
 	}
 
 	public <V> PositiveStrSubstitutor(Map<String, V> valueMap, String prefix, String suffix, char escape) {
 		super(valueMap, prefix, suffix, escape);
+		this.valueMap = valueMap;
 	}
 
 	public <V> PositiveStrSubstitutor(Map<String, V> valueMap, String prefix, String suffix) {
 		super(valueMap, prefix, suffix);
+		this.valueMap = valueMap;
 	}
 
 	public <V> PositiveStrSubstitutor(Map<String, V> valueMap) {
 		super(valueMap);
+		this.valueMap = valueMap;
 	}
 
 	public PositiveStrSubstitutor(StrLookup<?> variableResolver, String prefix, String suffix, char escape,
@@ -55,6 +68,16 @@ public class PositiveStrSubstitutor extends StrSubstitutor {
 
 	public PositiveStrSubstitutor(StrLookup<?> variableResolver) {
 		super(variableResolver);
+	}
+	
+	public PositiveStrSubstitutor withEngine(ScriptEngine engine) {
+		this.engine = engine;
+		return this;
+	}
+	
+	public PositiveStrSubstitutor withValues(Map<String,?> valueMap) {
+		this.valueMap = valueMap;
+		return this;
 	}
 	
     //-----------------------------------------------------------------------
@@ -544,7 +567,17 @@ public class PositiveStrSubstitutor extends StrSubstitutor {
 								// resolve the variable
 								String varValue = resolveVariable(varName, buf, startPos, endPos);
 								if (varValue == null || (varValue.length()==0 && varDefaultValue != null)) {
-									varValue = varDefaultValue;
+									if (SCRIPT_NAME.equals(varName)) {
+										try {
+											Bindings bindings = engine.createBindings();
+											bindings.putAll(valueMap);
+											varValue = ""+engine.eval(varDefaultValue, bindings);
+										} catch (Throwable t) {
+											throw new IllegalArgumentException("cannot eval: " + varName + ":" + varDefaultValue + " : " + t, t);
+										}
+									} else {
+										varValue = varDefaultValue;
+									}
 								} else {
 									if (varPositiveValue != null && !"false".equalsIgnoreCase(varValue)) {
 										varValue = varPositiveValue;

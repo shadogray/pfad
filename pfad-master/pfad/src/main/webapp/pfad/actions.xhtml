@@ -106,7 +106,7 @@
 					<h:messages id="messages" />
 
 					<h:panelGroup id="results" layout="block" rendered="#{not empty downloadBean.results}">
-						<p:dataTable value="#{downloadBean.results}" var="row" rowIndexVar="rowIndex">
+						<p:dataTable value="#{downloadBean.results}" var="row" rowIndexVar="rowIndex" resizableColumns="true">
 							<p:column width="15">
 								<f:facet name="header">Nr</f:facet>
 								<h:outputText value="#{rowIndex+1}" />

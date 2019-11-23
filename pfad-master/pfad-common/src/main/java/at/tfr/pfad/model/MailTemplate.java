@@ -55,6 +55,8 @@ public class MailTemplate extends BaseEntity implements Auditable {
 	private Boolean cc;
 	@Column
 	private Boolean bcc;
+	@Column
+	private Boolean sms;
 	
 	protected Date changed;
 	protected Date created;
@@ -153,6 +155,14 @@ public class MailTemplate extends BaseEntity implements Auditable {
 		this.bcc = bcc;
 	}
 
+	public boolean isSms() {
+		return Boolean.TRUE.equals(sms);
+	}
+	
+	public void setSms(boolean sms) {
+		this.sms = sms;
+	}
+	
 	@Override
 	public Date getChanged() {
 		return changed;
