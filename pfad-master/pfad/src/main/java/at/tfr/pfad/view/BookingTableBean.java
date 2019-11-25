@@ -64,7 +64,7 @@ public class BookingTableBean extends BaseBean {
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true)); //.items(memberRepo.findDistinctStrasse()));
 		columns.add(new ColumnModel("ort", "Ort", 3).items(memberRepo.findDistinctOrt())
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
-		columns.add(new ColumnModel("aktiv", "Aktiv", 4, true).items(trueFalse).filter("true").colConverter(trueFalseConverter)
+		columns.add(new ColumnModel("aktiv", "Aktiv", 4, true).items(trueFalse).colConverter(trueFalseConverter)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true));
 		columns.add(new ColumnModel("activity", "Aktivität", 5)
 				.headerStyle("border: solid 3px red;").headerStyleNotEmpty(true)); //.items(activityRepo.findDistinctName()));
