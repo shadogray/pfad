@@ -10,7 +10,7 @@
 		<!-- Use commandLink, not outputLink, so that search criteria is not lost -->
 		<h:outputLabel value="JeSeite:" />
 		<h:inputText id="pageSize" value="#{pageSizeBean.pageSize}" style="width: 3em;">
-			<f:ajax render="@form" />
+			<f:ajax listener="#{paginatorBean.paginate()}" render="@form" />
 		</h:inputText> | 
 		<h:panelGroup rendered="#{paginatorBean.count gt paginatorBean.pageSize}">
 			<h:commandLink styleClass="btn btn-primary" rendered="#{paginatorBean.page gt 0}">

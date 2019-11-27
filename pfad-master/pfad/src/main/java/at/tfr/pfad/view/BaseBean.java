@@ -45,6 +45,9 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Participation;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Training;
+import at.tfr.pfad.svc.BookingMapper;
+import at.tfr.pfad.svc.MemberMapper;
+import at.tfr.pfad.svc.PaymentMapper;
 import at.tfr.pfad.util.Bookings;
 import at.tfr.pfad.util.Payments;
 import at.tfr.pfad.util.SessionBean;
@@ -93,6 +96,12 @@ public abstract class BaseBean<T> implements Serializable {
 	protected PfadUI pfadUI;
 	@Inject
 	protected TemplateUtils templateUtils;
+	@Inject
+	protected MemberMapper memberMapper;
+	@Inject
+	protected PaymentMapper paymentMapper;
+	@Inject
+	protected BookingMapper bookingMapper;
 	
 	protected int page;
 	protected long count;

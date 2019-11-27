@@ -70,6 +70,7 @@ public class MemberDao extends BaseDao {
 	protected Date created;
 	protected String changedBy;
 	protected String createdBy;
+	protected String uiString;
 
 	@XmlID
 	public Long getId() {
@@ -535,5 +536,13 @@ public class MemberDao extends BaseDao {
 	
 	public void setResponsible(Set<BaseDao> responsible) {
 		this.responsible = responsible;
+	}
+	
+	public String getUiString() {
+		return uiString;
+	}
+	
+	public void setUiString(String uiString) {
+		this.uiString = uiString;
 	}
 }

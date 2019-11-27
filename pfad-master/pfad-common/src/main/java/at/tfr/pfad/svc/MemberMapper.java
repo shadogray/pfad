@@ -28,6 +28,7 @@ public interface MemberMapper {
 		@Mapping(target="assisting", expression="java(baseDaoMapper.memberAssisting(member))"),
 		@Mapping(target="responsible", expression="java(baseDaoMapper.memberResponsible(member))"),
 		@Mapping(target="contacts", expression="java(baseDaoMapper.getContacts(member))"),
+		@Mapping(target="uiString", expression="java(member.toUiString())"),
 	})
 	MemberDao memberToDao(Member member);
 

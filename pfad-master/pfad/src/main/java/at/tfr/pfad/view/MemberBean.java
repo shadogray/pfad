@@ -50,6 +50,7 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.processing.MemberValidator;
+import at.tfr.pfad.svc.MemberDao;
 import at.tfr.pfad.util.CollectionUtil;
 import at.tfr.pfad.util.ValidationResult;
 import at.tfr.pfad.view.ViewUtils.Month;
@@ -241,7 +242,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	 */
 
 	private List<Member> pageItems;
-	private javax.faces.model.DataModel<Member> dataModel;
+	private javax.faces.model.DataModel<MemberDao> dataModel;
 
 	public int getPage() {
 		return this.page;
@@ -285,7 +286,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 						builder.asc(root.get(Member_.vorname)), builder.asc(root.get(Member_.id))));
 		query.setFirstResult(this.page * getPageSize()).setMaxResults(getPageSize());
 		this.pageItems = query.getResultList();
-		dataModel = new ListDataModel<>(pageItems);
+		dataModel = new ListDataModel<>(pageItems.stream().map(m -> memberMapper.memberToDao(m)).collect(Collectors.toList()));
 	}
 
 	private Predicate[] getSearchPredicates(Root<Member> root) {
@@ -372,7 +373,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 		return pageItems;
 	}
 	
-	public javax.faces.model.DataModel<Member> getDataModel() {
+	public javax.faces.model.DataModel<MemberDao> getDataModel() {
 		return dataModel;
 	}
 

@@ -2,11 +2,11 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 @Named
-@SessionScoped
+@ViewScoped
 public class PageSizeBean implements Serializable {
 
 	private int pageSize = 20;

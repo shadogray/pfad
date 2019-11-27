@@ -603,7 +603,7 @@ select.manual {
 
 .content .paginator {
 	display: block;
-	text-align: right;
+	text-align: center;
 	padding-bottom: 5px;
 }
 

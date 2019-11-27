@@ -168,19 +168,26 @@
 						</h:commandLink>
 						<h:link id="create" value="Neu" outcome="create" styleClass="btn btn-primary" />
 						<h:link id="history" value="History" outcome="history" styleClass="btn btn-primary" disabled="#{!memberBean.updateAllowed}" />
+						<h:panelGroup>
+							<h:outputLabel value="JeSeite:" />
+							<h:inputText id="pageSizeTop" value="#{pageSizeBean.pageSize}" style="width: 3em;">
+								<f:ajax listener="#{memberBean.paginate()}" render="@form" />
+							</h:inputText>
+						</h:panelGroup>
 					</h:panelGroup>
 				</h:panelGroup>
 			</f:validateBean>
 
 			<h:panelGroup id="memberBeanPageItems">
-				<h:dataTable id="memberBeanPageItemsTable" styleClass="data-table" value="#{memberBean.dataModel}" var="_item" >
-					<h:column>
+				<p:dataTable id="memberBeanPageItemsTable" value="#{memberBean.dataModel}" var="_item" liveResize="true" resizableColumns="true" 
+					tableStyle="width:auto" styleClass="data-table">
+					<p:column>
 						<f:facet name="header">
 							<h:outputText value="Nr" />
 						</f:facet>
-						<h:outputText name="id" value="#{memberBean.dataModel.rowIndex+1}" title="#{_item.toUiString()}" />
-					</h:column>
-					<h:column>
+						<h:outputText name="id" value="#{memberBean.dataModel.rowIndex+1}" title="#{_item.uiString}" />
+					</p:column>
+					<p:column sortBy="#{_item.BVKey}">
 						<f:facet name="header">
 							<h:outputText value="BV Key" />
 						</f:facet>
@@ -188,26 +195,35 @@
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemBVKey" value="#{_item.BVKey}" />
 						</h:link>
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column sortBy="#{_item.name}">
 						<f:facet name="header">
 							<h:outputText value="Name" />
 						</f:facet>
-						<h:link outcome="view" title="#{_item.toUiString()}" includeViewParams="true">
+						<h:link outcome="view" title="#{_item.uiString}" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemName" value="#{_item.name}" />
 						</h:link>
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column sortBy="#{_item.vorname}">
 						<f:facet name="header">
 							<h:outputText value="Vorname" />
 						</f:facet>
-						<h:link outcome="view" title="#{_item.toUiString()}" includeViewParams="true">
+						<h:link outcome="view" title="#{_item.uiString}" includeViewParams="true">
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemVorname" value="#{_item.vorname}" />
 						</h:link>
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column sortBy="#{_item.geschlecht}">
+						<f:facet name="header">
+							<h:outputText value="Geschl." />
+						</f:facet>
+						<h:link outcome="view" includeViewParams="true">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemGeschlecht" value="#{_item.geschlecht}" />
+						</h:link>
+					</p:column>
+					<p:column sortBy="#{_item.aktiv}">
 						<f:facet name="header">
 							<h:outputText value="Aktiv" />
 						</f:facet>
@@ -215,8 +231,8 @@
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemAktiv" value="#{_item.aktiv}" />
 						</h:link>
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column sortBy="#{_item.trupp.name}">
 						<f:facet name="header">
 							<h:outputText value="Trupp" />
 						</f:facet>
@@ -224,8 +240,8 @@
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemTrupp" value="#{_item.trupp.name}" />
 						</h:link>
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column sortBy="#{_item.gebJahr}">
 						<f:facet name="header">
 							<h:outputText value="GebJahr" />
 						</f:facet>
@@ -233,8 +249,8 @@
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemJahr" value="#{_item.gebJahr}" />
 						</h:link>
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column sortBy="#{_item.strasse}">
 						<f:facet name="header">
 							<h:outputText value="Strasse" />
 						</f:facet>
@@ -242,8 +258,8 @@
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemStrasse" value="#{_item.strasse}" />
 						</h:link>
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column sortBy="#{_item.telefon}">
 						<f:facet name="header">
 							<h:outputText value="Tel" />
 						</f:facet>
@@ -251,8 +267,8 @@
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemTelefon" value="#{_item.telefon}" />
 						</h:link>
-					</h:column>
-					<h:column>
+					</p:column>
+					<p:column sortBy="#{_item.email}" style="max-width:20em">
 						<f:facet name="header">
 							<h:outputText value="Email" />
 						</f:facet>
@@ -260,10 +276,28 @@
 							<f:param name="id" value="#{_item.id}" />
 							<h:outputText id="itemEmail" value="#{_item.email}" />
 						</h:link>
-					</h:column>
-				</h:dataTable>
+					</p:column>
+					<p:column sortBy="#{_item.free}">
+						<f:facet name="header">
+							<h:outputText value="Frei" />
+						</f:facet>
+						<h:link outcome="view" includeViewParams="true">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemFree" value="#{_item.free}" />
+						</h:link>
+					</p:column>
+					<p:column sortBy="#{_item.gilde}">
+						<f:facet name="header">
+							<h:outputText value="Gilde" />
+						</f:facet>
+						<h:link outcome="view" includeViewParams="true">
+							<f:param name="id" value="#{_item.id}" />
+							<h:outputText id="itemGilde" value="#{_item.gilde}" />
+						</h:link>
+					</p:column>
+				</p:dataTable>
 				<ui:include src="/resources/scaffold/paginator.xhtml">
-					<ui:param name="paginatorBean" value='#{memberBean}' />
+					<ui:param name="paginatorBean" value="#{memberBean}" />
 				</ui:include>
 			</h:panelGroup>
 		</h:form>
