@@ -75,6 +75,7 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	private MemberValidator memberValidator;
 	private Boolean exampleActive;
 	private Boolean exampleFree;
+	private Boolean exampleGilde;
 	private Boolean exampleSupport;
 	private Boolean exampleInfoMail;
 	private List<Function> exampleFunctions;
@@ -340,6 +341,9 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 		if (exampleFree != null) {
 			predicatesList.add(builder.equal(root.get(Member_.free), exampleFree));
 		}
+		if (exampleGilde != null) {
+			predicatesList.add(builder.equal(root.get(Member_.gilde), exampleGilde));
+		}
 		if (exampleSupport != null) {
 			predicatesList.add(builder.equal(root.get(Member_.support), exampleSupport));
 		}
@@ -394,6 +398,14 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 	
 	public Boolean getExampleSupport() {
 		return exampleSupport;
+	}
+	
+	public void setExampleGilde(Boolean exampleGilde) {
+		this.exampleGilde = exampleGilde;
+	}
+	
+	public Boolean getExampleGilde() {
+		return exampleGilde;
 	}
 	
 	public void setExampleSupport(Boolean exampleSupport) {

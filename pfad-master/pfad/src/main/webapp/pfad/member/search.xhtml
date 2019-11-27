@@ -134,6 +134,13 @@
 									<f:ajax listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
 								</p:selectOneMenu>
 	
+								<h:outputLabel for="mbeGilde" value="Gilde:" />
+								<p:selectOneMenu id="mbeGilde" value="#{memberBean.exampleGilde}" >
+									<f:selectItem noSelectionOption="true"/>
+									<f:selectItem itemLabel="Ja" itemValue="true"/>
+									<f:selectItem itemLabel="Nein" itemValue="false"/>
+									<f:ajax listener="#{memberBean.paginate()}" render="memberBeanPageItems"/>
+								</p:selectOneMenu>
 								<h:outputLabel for="mbeSupport" value="Support:" />
 								<p:selectOneMenu id="mbeSupport" value="#{memberBean.exampleSupport}" >
 									<f:selectItem noSelectionOption="true"/>
