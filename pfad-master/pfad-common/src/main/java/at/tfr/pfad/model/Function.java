@@ -38,6 +38,7 @@ public class Function extends BaseEntity implements Presentable, Comparable<Func
 
 	public static final String PTA = "P"; // Pfadfinder Trotz Allem
 	public static final String ZBV = "ZBV"; // Zur besonderen Verwendung
+	public static final String MIT = "MIT"; // Mitarbeiter
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "function_seq")
