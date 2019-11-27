@@ -21,6 +21,8 @@ public enum SquadType {
 
 	public String getKey(Sex sex) {
 		switch (this) {
+		case BIBE:
+			return Sex.W.equals(sex) ? "BI" : "BI"; // no sex distinction??
 		case WIWO:
 			return Sex.W.equals(sex) ? "WI" : "WÖ";
 		case GUSP:

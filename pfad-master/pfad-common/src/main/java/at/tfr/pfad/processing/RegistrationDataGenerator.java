@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -379,13 +380,17 @@ public class RegistrationDataGenerator {
 
 		// Wenn bisher keine Funktion gefunden:
 		// Kinder, die in keinem Trupp sind, dürfen nicht als MIT gemeldet werden:
-		if ((functions.isEmpty() || (functions.size()==1 && Function.MIT.equals(functions.get(0)))) && m.isAktiv() && m.getTrupp() == null) {
+		if ((functions.isEmpty() || (functions.size()==1 && (StringUtils.isEmpty(functions.get(0)) || Function.MIT.equals(functions.get(0))))) 
+				&& m.isAktiv() && m.getTrupp() == null) {
+			functions.clear(); // remove evtl. MIT for later replace
 			final int ageYears = DateTime.now().getYear()-m.getGebJahr();
 			if (ageYears <= SquadType.RARO.getMax()) {
 				functions.clear(); // remove evtl. MIT
 				Optional<SquadType> stOpt = Stream.of(SquadType.values())
 						.filter(st -> ageYears >= st.getMin() && ageYears <= st.getMax()).findFirst();
 				functions.add(stOpt.isPresent() ? stOpt.get().getKey(m.getGeschlecht()) : SquadType.BIBE.getKey(m.getGeschlecht()));
+			} else {
+				functions.add(Function.MIT);
 			}
 		}
 		
