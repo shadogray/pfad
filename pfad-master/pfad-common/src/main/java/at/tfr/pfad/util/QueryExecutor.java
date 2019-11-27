@@ -37,6 +37,14 @@ public class QueryExecutor implements Serializable {
 		securityFilter = configRepo.getValue("querySecurityFilter", securityFilter);
 	}
 	
+	public List<Object> list(Configuration config) {
+		if (ConfigurationType.nativeSource.equals(config.getType())) {
+			return em.createNativeQuery(config.getCvalue()).unwrap(Query.class).list();
+		} else {
+			return em.createQuery(config.getCvalue()).unwrap(Query.class).list();
+		}
+	}
+	
 	public List<List<Entry<String, Object>>> execute(Configuration config) {
 		return execute(config.getCvalue(), ConfigurationType.nativeQuery.equals(config.getType()));
 	}

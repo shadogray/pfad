@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,11 +41,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import at.tfr.pfad.ActivityStatus;
 import at.tfr.pfad.BookingStatus;
+import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Activity_;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
+import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
 import at.tfr.pfad.model.Payment;
@@ -80,7 +83,7 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 	private boolean showUnregistered;
 	private boolean squadBookingVisible;
 	private boolean allBookingVisible;
-	private boolean paymentPopupVisible;
+	private boolean paymentPopupVisible;	
 
 	@Override
 	@PostConstruct
@@ -140,7 +143,7 @@ public class BookingBean extends BaseBean<Booking> implements Serializable {
 			return active;
 		}
 	}
-
+	
 	public String create() {
 		return "create?faces-redirect=true";
 	}

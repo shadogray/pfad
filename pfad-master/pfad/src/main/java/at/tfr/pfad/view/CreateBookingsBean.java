@@ -2,15 +2,28 @@ package at.tfr.pfad.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.faces.model.ListDataModel;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.deltaspike.core.api.scope.WindowScoped;
+import org.hibernate.stat.CollectionStatistics;
 
+import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.model.Activity;
+import at.tfr.pfad.model.Configuration;
+import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
+import at.tfr.pfad.util.QueryExecutor;
+import at.tfr.pfad.util.SessionBean;
 
 @Named
 @WindowScoped
@@ -18,6 +31,10 @@ public class CreateBookingsBean implements Serializable {
 
 	@Inject
 	private transient BookingActionBean bookingActionBean;
+	@Inject
+	private SessionBean sessionBean;
+	@Inject
+	private QueryExecutor queryExecutor;
 	
 	private Activity activity;
 	private List<Squad> squads = new ArrayList<>();
@@ -28,7 +45,22 @@ public class CreateBookingsBean implements Serializable {
 	private boolean showFinished;
 	private boolean squadBookingVisible;
 	private boolean allBookingVisible;
+	private boolean sourceBookingVisible;
+	private List<Configuration> dataSources = Collections.emptyList();
+	private List<String> dataSourceKeys = Collections.emptyList();
+	private Configuration dataSource;
+	private String dataSourceKey;
 
+	@PostConstruct
+	public void init() {
+		dataSources = sessionBean.getConfig().stream()
+				.filter(c -> ConfigurationType.datasource.equals(c.getType())||ConfigurationType.nativeSource.equals(c.getType()))
+				.filter(c -> c.getCkey().startsWith("Booking:"))
+				.sorted((x,y) -> x.getCkey().compareTo(y.getCkey()))
+				.collect(Collectors.toList());
+		dataSourceKeys = dataSources.stream().map(c -> c.getCkey().substring("Booking:".length())).collect(Collectors.toList());
+	}
+	
 	public boolean isShowFinished() {
 		return showFinished;
 	}
@@ -81,6 +113,12 @@ public class CreateBookingsBean implements Serializable {
 	public String createBookings() {
 		return bookingActionBean.createBookings(squads, activity, withAssistants);
 	}
+	
+	public void createFromSource() {
+		Configuration config = dataSources.get(dataSourceKeys.indexOf(dataSourceKey));
+		List<Member> members = (List)queryExecutor.list(config);
+		bookingActionBean.createBookingsForMembers(members, targetActivity);
+	}
 
 	public String createBookingsForAllActive() {
 		return bookingActionBean.createBookingsForAllActive(activity);
@@ -114,5 +152,35 @@ public class CreateBookingsBean implements Serializable {
 		this.fromToVisible = fromToVisible;
 	}
 
-
+	public List<Configuration> getDataSources() {
+		return dataSources;
+	}
+	
+	public List<String> getDataSourceKeys() {
+		return dataSourceKeys;
+	}
+	
+	public Configuration getDataSource() {
+		return dataSource;
+	}
+	
+	public void setDataSource(Configuration dataSource) {
+		this.dataSource = dataSource;
+	}
+	
+	public String getDataSourceKey() {
+		return dataSourceKey;
+	}
+	
+	public void setDataSourceKey(String dataSourceKey) {
+		this.dataSourceKey = dataSourceKey;
+	}
+	
+	public boolean isSourceBookingVisible() {
+		return sourceBookingVisible;
+	}
+	
+	public void setSourceBookingVisible(boolean sourceBookingVisible) {
+		this.sourceBookingVisible = sourceBookingVisible;
+	}
 }

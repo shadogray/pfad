@@ -25,11 +25,12 @@
 	<ui:define name="main">
 
 		<h:form id="createBookings">
-			<p:accordionPanel>
-				<p:tab title="Trupps Buchen Auf Aktivität" expanded="#{createBookingsBean.squadBookingVisible}">
+			<p:accordionPanel activeIndex="-1">
+				<p:tab title="Trupps/Auswahl Buchen Auf Aktivität" expanded="#{createBookingsBean.squadBookingVisible}" closable="true">
+					
 					<h:messages styleClass="error" />
+					
 					<h:panelGrid columnClasses="label,component,required" columns="3">
-	
 						<h:outputLabel for="createBookingsBeanBookingActivity" value="Aktivität:" />
 						<h:panelGroup>
 							<h:selectOneListbox id="createBookingsBeanBookingActivity" value="#{createBookingsBean.activity}"
@@ -56,15 +57,47 @@
 						<h:commandButton id="createBookingsBeanCreateBookings" action="#{createBookingsBean.createBookings()}" value="Buchen"
 							disabled="#{!bookingBean.updateAllowed}" />
 						<h:messages for="createBookingsBeanCreateBookings" />
+					</h:panelGrid>
+				</p:tab>
+			</p:accordionPanel>
+		</h:form>
+
+		<h:form id="createFromSource">
+			<p:accordionPanel activeIndex="-1">
+				<p:tab title="Auswahl Buchen Auf Aktivität" expanded="#{createBookingsBean.sourceBookingVisible}" closable="true">
+					
+					<h:messages styleClass="error" />
+					
+					<h:panelGrid columnClasses="label,component,required" columns="3">
+						<h:outputLabel for="createBookingsBeanBookingSourceActivity" value="Aktivität:" />
+						<h:panelGroup>
+							<h:selectOneListbox id="createBookingsBeanBookingSourceActivity" value="#{createBookingsBean.targetActivity}"
+								converter="#{activityBean.converter}" required="true">
+								<f:selectItems value="#{activityBean.active}" var="item" itemLabel="#{item.name}" itemValue="#{item.idStr}" />
+							</h:selectOneListbox>
+						</h:panelGroup>
+						<h:message for="createBookingsBeanBookingSourceActivity" styleClass="error" />
 	
+						<h:outputLabel for="createBookingsBeanBookingSource" value="Auswahl:" />
+						<h:panelGroup>
+							<h:selectOneListbox id="createBookingsBeanBookingSource" value="#{createBookingsBean.dataSourceKey}" required="true" >
+								<f:selectItems value="#{createBookingsBean.dataSourceKeys}" />
+							</h:selectOneListbox>
+						</h:panelGroup>
+						<h:message for="createBookingsBeanBookingSource" styleClass="error" />
+	
+						<h:outputLabel value="Buchung durchführen:" />
+						<h:commandButton id="createBookingsBeanCreateFromSource" action="#{createBookingsBean.createFromSource()}" value="Buchen"
+							disabled="#{!bookingBean.updateAllowed}" />
+						<h:messages for="createBookingsBeanCreateFromSource" />
 					</h:panelGrid>
 				</p:tab>
 			</p:accordionPanel>
 		</h:form>
 
 		<h:form id="createBookingsForAllActive">
-			<p:accordionPanel>
-				<p:tab title="Alle Aktiven Auf Aktivität Buchen" expanded="#{createBookingsBean.allBookingVisible}">
+			<p:accordionPanel activeIndex="-1">
+				<p:tab title="Alle Aktiven Auf Aktivität Buchen" expanded="#{createBookingsBean.allBookingVisible}" closable="true">
 					<h:messages styleClass="error" />
 					<h:panelGrid columnClasses="label,component,required" columns="3">
 	
@@ -88,8 +121,8 @@
 		</h:form>
 
 		<h:form id="createBookingsFromSource">
-			<p:accordionPanel>
-				<p:tab title="Neu Buchen Von/Auf Aktivität" expanded="#{createBookingsBean.fromToVisible}">
+			<p:accordionPanel activeIndex="-1">
+				<p:tab title="Neu Buchen Von/Auf Aktivität" expanded="#{createBookingsBean.fromToVisible}" closable="true">
 					<h:messages styleClass="error" />
 					<h:panelGrid columnClasses="label,component,required" columns="3">
 	
@@ -103,15 +136,15 @@
 						</h:panelGroup>
 						<h:message for="createBookingsBeanBookingActivitySource" styleClass="error" />
 	
-						<h:outputLabel for="createBookingsBeanBookingActivityTarget" value="Ziel-Aktivität:" />
+						<h:outputLabel for="createBookingsBeanBookingActivitySourceTarget" value="Ziel-Aktivität:" />
 						<h:panelGroup>
-							<h:selectOneListbox id="createBookingsBeanBookingActivityTarget" value="#{createBookingsBean.targetActivity}"
+							<h:selectOneListbox id="createBookingsBeanBookingActivitySourceTarget" value="#{createBookingsBean.targetActivity}"
 								converter="#{activityBean.converter}" required="true">
 								<f:selectItems value="#{activityBean.active}" var="item" itemLabel="#{item.name}" itemValue="#{item.idStr}" />
 								<f:ajax render="createBookingsFromSource" />
 							</h:selectOneListbox>
 						</h:panelGroup>
-						<h:message for="createBookingsBeanBookingActivityTarget" styleClass="error" />
+						<h:message for="createBookingsBeanBookingActivitySourceTarget" styleClass="error" />
 	
 						<h:outputLabel value="Buchung Neu:" />
 						<h:commandButton id="createBookingsBeanCreateBookingsSource" action="#{createBookingsBean.createBookingsFromSource()}"

@@ -1,6 +1,7 @@
 package at.tfr.pfad.view;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
@@ -9,6 +10,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 
 import org.jboss.logging.Logger;
 
@@ -115,6 +117,26 @@ public class BookingActionBean {
 		return FacesContext.getCurrentInstance().getViewRoot().getViewId()+"?faces-redirect=true";
 	}
 	
+	public int createBookingsForMembers(List<Member> members, Activity activity) {
+		int created = 0;
+		try {
+			for (Member scout : members) {
+				scout = memberRepo.fetchBy(scout.getId());
+				if (!scout.getBookings().stream().filter(b -> activity.equals(b.getActivity())).findAny().isPresent()) {
+					createBooking(activity, scout, BookingStatus.created);
+					created++;
+				}
+			}
+		} catch (Exception e) {
+			log.info("createBookings: "+e, e);
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "createBookings: "+e, e.toString()));
+			return created;
+		}
+		
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Buchungen hergestellt: "+created, ""));
+		return created;
+	}
+
 	private void createBooking(Activity activity, Member scout, BookingStatus status) {
 		Booking booking = new Booking();
 		booking.setActivity(activity);
