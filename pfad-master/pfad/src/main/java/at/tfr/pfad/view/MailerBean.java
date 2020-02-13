@@ -18,6 +18,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -45,6 +46,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.primefaces.event.FileUploadEvent;
@@ -243,9 +245,12 @@ public class MailerBean extends BaseBean {
 				validate(invalidAddrs, msg.getCc());
 				validate(invalidAddrs, msg.getBcc());
 			} else {
-				if (!phoneNumber.matcher(msg.getReceiver()).matches()) {
-					invalidAddrs.add(msg.getReceiver());
-				}
+				Stream.of(msg.getReceiver().split(" *, *"))
+				.forEach(r -> {
+						if (!phoneNumber.matcher(r).matches()) {
+							invalidAddrs.add(msg.getReceiver());
+						}
+				});
 			}
 		}
 		if (invalidAddrs.size() > 0) {

@@ -69,8 +69,8 @@
 						value="#{bookingBean.booking.member}" minQueryLength="3"
 						completeMethod="#{bookingBean.filterMembers}" var="m" itemValue="#{m.idStr}" itemLabel="#{m}" converter="#{memberBean.converter}"
 						>
-						<f:ajax event="itemSelect" execute="@this" listener="#{bookingBean.selectBookingMember}"
-							render="bookingBeanBookingMemberPanel" />
+						<!-- f:ajax event="itemSelect" execute="@this" listener="#{bookingBean.selectBookingMember}"
+							render="bookingBeanBookingMemberPanel" /-->
 					</p:autoComplete>
 					<h:message for="bookingBeanBookingMember" styleClass="error" />
 				</h:panelGroup>
