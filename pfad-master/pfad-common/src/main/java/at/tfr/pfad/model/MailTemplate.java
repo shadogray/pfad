@@ -57,6 +57,8 @@ public class MailTemplate extends BaseEntity implements Auditable {
 	private Boolean bcc;
 	@Column
 	private Boolean sms;
+	@Column
+	private Boolean alternativeText;
 	
 	protected Date changed;
 	protected Date created;
@@ -211,6 +213,14 @@ public class MailTemplate extends BaseEntity implements Auditable {
 		this.uiName = uiName;
 	}
 	
+	public Boolean getAlternativeText() {
+		return alternativeText;
+	}
+
+	public void setAlternativeText(Boolean alternativeText) {
+		this.alternativeText = alternativeText;
+	}
+
 	@Override
 	public String toString() {
 		return "MailTemplate [id=" + id + ", name=" + name + ", text=" + StringUtils.abbreviate(text, 50) + ", query=" + StringUtils.abbreviate(query, 50) + "]";

@@ -91,13 +91,15 @@
 						<f:ajax listener="#{mailerBean.executeQuery}" render="mailer:acc messages"/>
 					</p:inputTextarea>
 					<p:fieldset legend="#{configurationBean.getValue('mailer.props','Mail Einstellungen')}" title="#{configurationBean.getValue('mailer.props','Mail Einstellungen')}" >
-						<h:panelGrid columns="10">
+						<h:panelGrid columns="12">
 							<h:outputLabel value="CC:" title="#{configurationBean.getValue('mailer.cc','Nachricht an CC')}"/>
 							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.cc}" title="#{configurationBean.getValue('mailer.cc','Nachricht an CC')}"/>
 							<h:outputLabel value="BCC:" title="#{configurationBean.getValue('mailer.bcc','Nachricht an BCC')}"/>
 							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.bcc}" title="#{configurationBean.getValue('mailer.bcc','Nachricht an BCC')}"/>
 							<h:outputLabel value="Text:" title="#{configurationBean.getValue('mailer.saveText','Text abspeichern')}"/>
 							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.saveText}" title="#{configurationBean.getValue('mailer.saveText','Text abspeichern')}"/>
+							<h:outputLabel value="Alt-Text:" title="#{configurationBean.getValue('mailer.alternativeText','HTML auch als Alternativ-Text senden')}"/>
+							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.alternativeText}" title="#{configurationBean.getValue('mailer.alternativeText','HTML auch als Alternativ-Text senden')}"/>
 							<h:outputLabel value="SMS:" title="#{configurationBean.getValue('mailer.sms','Als SMS senden')}"/>
 							<h:selectBooleanCheckbox value="#{mailerBean.mailTemplate.sms}" title="#{configurationBean.getValue('mailer.sms','Als SMS senden')}">
 								<f:ajax execute="#{mailerBean.reinit()}" render="mailer"/>

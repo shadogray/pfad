@@ -77,7 +77,9 @@ public class TemplateUtils implements Serializable {
 	}
 	
 	public static String htmlToText(String html) {
-		html = html.replaceAll(imgFilter.pattern(), "");
+		if (StringUtils.isBlank(html))
+				return html;
+		html.replaceAll(imgFilter.pattern(), "");
 		html = html.replaceAll(liFilter.pattern(), "\t");
 		html = html.replaceAll(pEndFilter.pattern(), "\n");
 		html = html.replaceAll(tagFilter.pattern(), "");

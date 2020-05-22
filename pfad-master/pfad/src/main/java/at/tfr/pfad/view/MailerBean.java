@@ -359,9 +359,11 @@ public class MailerBean extends BaseBean {
 
 					MimeMultipart multipart = new MimeMultipart("alternative");
 					
-					MimeBodyPart body = new MimeBodyPart();
-					body.setContent(msg.getPlainText(), "text/plain; charset=UTF-8");
-					multipart.addBodyPart(body);
+					if (Boolean.TRUE.equals(mailTemplate.getAlternativeText())) {
+						MimeBodyPart body = new MimeBodyPart();
+						body.setContent(msg.getPlainText(), "text/plain; charset=UTF-8");
+						multipart.addBodyPart(body);
+					}
 					
 					MimeBodyPart htmlBody = new MimeBodyPart();
 					htmlBody.setContent(msg.getText(), "text/html; charset=UTF-8");
