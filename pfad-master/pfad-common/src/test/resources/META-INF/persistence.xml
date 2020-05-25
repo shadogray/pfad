@@ -13,6 +13,7 @@
 		<class>at.tfr.pfad.model.Registration</class>
 		<class>at.tfr.pfad.model.Training</class>
 		<class>at.tfr.pfad.model.Participation</class>
+		<class>at.tfr.pfad.model.Registration</class>
 		<class>at.tfr.pfad.model.MailTemplate</class>
 		<class>at.tfr.pfad.model.MailMessage</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>

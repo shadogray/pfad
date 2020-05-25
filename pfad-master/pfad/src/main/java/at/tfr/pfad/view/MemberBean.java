@@ -223,6 +223,9 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 			Hibernate.initialize(deletableEntity.getVollzahler());
 			Hibernate.initialize(deletableEntity.getSiblings());
 
+			// cleanup of relationships:
+			deletableEntity.getMailMessages().stream().forEach(mm -> mm.setMember(null));
+
 			this.entityManager.remove(deletableEntity);
 			this.entityManager.flush();
 			return "search?faces-redirect=true";

@@ -260,6 +260,10 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 	@OrderBy(value = "id DESC")
 	private Set<Participation> participations = new TreeSet<>();
 	
+	@NotAudited
+	@OneToMany(mappedBy = "member")
+	private Set<MailMessage> mailMessages = new TreeSet<>();
+	
 	@XmlID
 	public Long getId() {
 		return this.id;
@@ -846,5 +850,9 @@ public class Member extends BaseEntity implements Comparable<Member>, Auditable,
 	
 	public DateTime geburtstag() {
 		return new DateTime(gebJahr, gebMonat > 0 ? gebMonat : 1, gebTag > 0 ? gebTag : 1, 0, 0);
+	}
+	
+	public Set<MailMessage> getMailMessages() {
+		return mailMessages;
 	}
 }
