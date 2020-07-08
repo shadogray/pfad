@@ -69,9 +69,8 @@
 			<scope>provided</scope>
 		</dependency>
       <dependency>
-        <groupId>com.sun.mail</groupId>
-        <artifactId>javax.mail</artifactId>
-        <scope>provided</scope>
+        <groupId>javax.mail</groupId>
+        <artifactId>javax.mail-api</artifactId>
       </dependency>
 <!--
  		<dependency>
