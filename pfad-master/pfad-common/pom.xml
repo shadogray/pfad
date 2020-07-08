@@ -138,12 +138,12 @@
 			<artifactId>commons-beanutils</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>javax.mail</groupId>
-		    <artifactId>mail</artifactId>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpclient</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -185,19 +185,25 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-	    <dependency>
-	      <groupId>org.apache.logging.log4j</groupId>
-	      <artifactId>log4j-api</artifactId>
-	      <version>2.12.1</version>
-	      <scope>test</scope>
-	    </dependency>
-	    <dependency>
-	      <groupId>org.apache.logging.log4j</groupId>
-	      <artifactId>log4j-core</artifactId>
-	      <version>2.12.1</version>
-	      <scope>test</scope>
-	    </dependency>
-    	</dependencies>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.12.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.12.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>smtp</artifactId>
+			<version>1.5.5</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<build>
 		<finalName>pfad-common</finalName>
 		<testResources>
@@ -259,7 +265,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.4</version>
+				<version>3.2.0</version>
 			</plugin>
 		</plugins>
 	</build>
