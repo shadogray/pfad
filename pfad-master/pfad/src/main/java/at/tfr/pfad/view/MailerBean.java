@@ -34,10 +34,9 @@ import javax.faces.model.ListDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
+import javax.mail.Authenticator;
 import javax.mail.MessagingException;
-import javax.mail.Part;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
@@ -45,8 +44,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimePart;
+import javax.servlet.http.Part;
 
-import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.primefaces.event.FileUploadEvent;
@@ -357,25 +357,46 @@ public class MailerBean extends BaseBean {
 					mail.setFrom(sender);
 					mail.setSubject(msg.getSubject());
 
-					MimeMultipart multipart = new MimeMultipart("alternative");
+					MimeMultipart mixed = new MimeMultipart("mixed");
+					
+					MimeMultipart alternative = new MimeMultipart("alternative");
 					
 					if (Boolean.TRUE.equals(mailTemplate.getAlternativeText())) {
 						MimeBodyPart body = new MimeBodyPart();
 						body.setContent(msg.getPlainText(), "text/plain; charset=UTF-8");
-						multipart.addBodyPart(body);
+						alternative.addBodyPart(body);
 					}
 					
 					MimeBodyPart htmlBody = new MimeBodyPart();
 					htmlBody.setContent(msg.getText(), "text/html; charset=UTF-8");
-					multipart.addBodyPart(htmlBody);
+					alternative.addBodyPart(htmlBody);
+					MimeBodyPart alternativeBody = new MimeBodyPart();
+					alternativeBody.setContent(alternative);
+					
+					if (false) { /// if embedded images are supported
+						MimeMultipart related = new MimeMultipart();
+						MimeBodyPart relatedBody = new MimeBodyPart();
+						relatedBody.setContent(alternative);
+						related.addBodyPart(relatedBody);
+						//for each image:
+						//  MimeBodyPart imgBody = new MimeBodyPart();
+						//  imgBody.setContent(image);
+						//	related.addBodyPart(imgBody);
+						relatedBody.setContent(related);
+						mixed.addBodyPart(relatedBody);
+					} else {
+						mixed.addBodyPart(alternativeBody);
+					}
+					
 					for (Entry<String, UpFile> fup : files.entrySet()) {
 						MimeBodyPart filePart = new MimeBodyPart();
-						filePart.setDisposition(Part.ATTACHMENT);
+						filePart.setDisposition(MimePart.ATTACHMENT);
 						filePart.setFileName(fup.getKey());
 						filePart.setDataHandler(new DataHandler(new FileDataSource(fup.getValue().content.toFile())));
-						multipart.addBodyPart(filePart);
+						mixed.addBodyPart(filePart);
 					}
-					mail.setContent(multipart);
+					
+					mail.setContent(mixed);
 					
 					RecipientType to = RecipientType.TO;
 					if (testOnly) {
