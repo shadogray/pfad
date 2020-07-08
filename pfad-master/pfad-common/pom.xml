@@ -199,8 +199,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
-			<artifactId>smtp</artifactId>
-			<version>1.5.5</version>
+			<artifactId>javax.mail</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
