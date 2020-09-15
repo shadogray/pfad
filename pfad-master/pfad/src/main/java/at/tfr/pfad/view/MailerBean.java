@@ -84,21 +84,21 @@ public class MailerBean extends BaseBean {
 	@Inject
 	private SmsSender smsSender;
 
-	private Map<String, MailConfig> mailConfigs;
 	private MailConfig mailConfig;
 	private String mailConfigKey;
 	private String testTo;
-	private List<List<Entry<String, Object>>> values = Collections.emptyList();
 	private MailTemplate mailTemplate = new MailTemplate();
-	private List<MailMessage> mailMessages = Collections.emptyList();
-	private ListDataModel<List<Entry<String, Object>>> valuesModel = new ListDataModel<>();
+	private Activity activity;
 	private final List<ColumnModel> columns = new ArrayList<>();
 	private final List<String> columnHeaders = new ArrayList<>();
-	private ListDataModel<MailMessage> mailMessagesModel = new ListDataModel<>();
-	private final Map<String,UpFile> files = new LinkedHashMap<>();
-	private Activity activity;
-	private Pattern phoneNumber = Pattern.compile("[+\\d]{7,}");
-	private Pattern phoneNumberFilter = Pattern.compile("[ /()-]");
+	private final Pattern phoneNumber = Pattern.compile("[+\\d]{7,}");
+	private final Pattern phoneNumberFilter = Pattern.compile("[ /()-]");
+	private transient Map<String, MailConfig> mailConfigs;
+	private transient List<List<Entry<String, Object>>> values = Collections.emptyList();
+	private transient List<MailMessage> mailMessages = Collections.emptyList();
+	private transient ListDataModel<List<Entry<String, Object>>> valuesModel = new ListDataModel<>();
+	private transient ListDataModel<MailMessage> mailMessagesModel = new ListDataModel<>();
+	private transient final Map<String,UpFile> files = new LinkedHashMap<>();
 
 	public enum MailProps {
 		mail_transport_protocol, mail_smtp_starttls_enable, mail_smtp_auth, mail_smtp_host, mail_smtp_port, mail_smtps_auth, mail_smtps_host, mail_smtps_port, mail_smtp_ssl_enable, mail_smtp_socketFactory_class, mail_smtp_socketFactory_port
@@ -211,10 +211,16 @@ public class MailerBean extends BaseBean {
 					msg.setReceiver(msg.getReceiver().replaceAll(phoneNumberFilter.pattern(),""));
 				}
 				if (mailTemplate.isCc()) {
-					msg.setCc(templateUtils.replace("${cc}", vals, mailConfig.getCc() != null ? mailConfig.getCc() : null));
+					String ccVal = templateUtils.replace("${cc}", vals, mailConfig.getCc());
+					if (StringUtils.isNotBlank(ccVal)) {
+						msg.setCc(ccVal);
+					}
 				}
 				if (mailTemplate.isBcc()) {
-					msg.setBcc(templateUtils.replace("${bcc}", vals, mailConfig.getBcc() != null ? mailConfig.getBcc() : null));
+					String bccVal = templateUtils.replace("${bcc}", vals, mailConfig.getBcc());
+					if (StringUtils.isNotBlank(bccVal)) {
+						msg.setBcc(bccVal);
+					}
 				}
 				
 				msg.setSubject(templateUtils.replace(mailTemplate.getSubject(), msg.getValues()));
@@ -698,12 +704,18 @@ public class MailerBean extends BaseBean {
 		}
 
 		private String getValue(Collection<Configuration> configs, String valueKey) {
-			return configs.stream().filter(c -> c.getCkey().startsWith(prefix + valueKey)).map(c -> c.getCvalue())
+			return getCValues(configs, valueKey)
+					.filter(StringUtils::isNotEmpty).map(String::trim)
 					.findFirst().orElse(null);
 		}
 
+		public Stream<String> getCValues(Collection<Configuration> configs, String valueKey) {
+			return configs.stream().filter(c -> c.getCkey().startsWith(prefix + valueKey)).map(c -> c.getCvalue());
+		}
+
 		private String getValue(Collection<Configuration> configs, String valueKey, String defVal) {
-			return configs.stream().filter(c -> c.getCkey().startsWith(prefix + valueKey)).map(c -> c.getCvalue())
+			return getCValues(configs, valueKey)
+					.filter(StringUtils::isNotEmpty).map(String::trim)
 					.findFirst().orElse(defVal);
 		}
 
