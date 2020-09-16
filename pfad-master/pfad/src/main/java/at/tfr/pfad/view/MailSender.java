@@ -39,6 +39,7 @@ public class MailSender {
 		try {
 
 			Transport.send(mail);
+			log.info("sent " + msg);
 			
 			msg.setCreated(new Date());
 			return messageRepo.saveAndFlushAndRefresh(msg);

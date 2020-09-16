@@ -152,7 +152,8 @@ public class MailerBean extends BaseBean {
 					.replaceAll("\\$\\{templateOwner\\}", mailTemplate.getOwner())
 					.replaceAll("\\$\\{user\\}", sessionBean.getUser().getName())
 					.replaceAll("\\$\\{role\\}", sessionBean.getRole().name())
-					.replaceAll("\\$\\{activityId\\}", activity != null ? activity.getIdStr() : "null"), 
+					.replaceAll("\\$\\{activityId\\}", activity != null ? activity.getIdStr() : "null")
+					.replaceAll("\\$\\{subject\\}", mailTemplate.getSubject()), 
 					isNative);
 			if (values.size() > 0) {
 				realColHeaders = values.get(0).stream().map(Entry::getKey).collect(Collectors.toList());
@@ -437,12 +438,15 @@ public class MailerBean extends BaseBean {
 							+ (StringUtils.isNotBlank(sender.getPersonal()) ? ":" + sender.getPersonal() : ""));
 					msg.setTest(testOnly);
 					msg.setCreatedBy(sessionBean.getUser().getName());
-					
+
+					MailMessage sentMsg;
 					if (!mailTemplate.isSms()) {
-						mailSender.sendMail(mail, msg, mailTemplate.isSaveText());
+						sentMsg = mailSender.sendMail(mail, msg, mailTemplate.isSaveText());
 					} else {
-						smsSender.sendMail(msg, mailConfig, mailTemplate.isSaveText());
+						sentMsg = smsSender.sendMail(msg, mailConfig, mailTemplate.isSaveText());
 					}
+					msg.setSend(false);
+					msg.setCreated(sentMsg.getCreated());
 					
 					if (testOnly) {
 						break;
@@ -450,8 +454,7 @@ public class MailerBean extends BaseBean {
 					
 				} catch (MessagingException me) {
 					log.info("send failed: " + me + " msg: " + msg, me);
-					warn("send failed: " + me + " msg: " + msg);
-					break;
+					warn("send failed: " + me + " to: " + msg.getReceiver());
 				}
 			}
 
