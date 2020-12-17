@@ -26,8 +26,7 @@
 		<h:messages styleClass="error" />
 
 		<h:form id="createBookings">
-			<p:accordionPanel multiple="true" activeIndex="#{createBookingsBean.squadBookingVisible ? 0 : -1}"
-				rendered="#{facesContext.currentPhaseId.ordinal ne 4}">
+			<p:accordionPanel multiple="true" activeIndex="#{createBookingsBean.squadBookingActiveIndex}">
 				<p:ajax event="tabChange" listener="#{createBookingsBean.onTabChange}" />
 				<p:ajax event="tabClose" listener="#{createBookingsBean.onTabChange}" />
 				<p:tab id="squadBooking" title="Trupps/Auswahl Buchen Auf Aktivität" expanded="#{createBookingsBean.squadBookingVisible}"
@@ -68,8 +67,7 @@
 		</h:form>
 
 		<h:form id="createFromSource">
-			<p:accordionPanel multiple="true" activeIndex="#{createBookingsBean.sourceBookingVisible ? 0 : -1}"
-				rendered="#{facesContext.currentPhaseId.ordinal ne 4}">
+			<p:accordionPanel multiple="true" activeIndex="#{createBookingsBean.sourceBookingActiveIndex}">
 				<p:ajax event="tabChange" listener="#{createBookingsBean.onTabChange}" />
 				<p:ajax event="tabClose" listener="#{createBookingsBean.onTabChange}" />
 				<p:tab id="sourceBooking" title="Auswahl Buchen Auf Aktivität" expanded="#{createBookingsBean.sourceBookingVisible}" closable="true">
@@ -104,8 +102,7 @@
 		</h:form>
 
 		<h:form id="createBookingsForAllActive">
-			<p:accordionPanel multiple="true" activeIndex="#{createBookingsBean.allBookingVisible ? 0 : -1}"
-				rendered="#{facesContext.currentPhaseId.ordinal ne 4}">
+			<p:accordionPanel multiple="true" activeIndex="#{createBookingsBean.allBookingActiveIndex}">
 				<p:ajax event="tabChange" listener="#{createBookingsBean.onTabChange}" />
 				<p:ajax event="tabClose" listener="#{createBookingsBean.onTabChange}" />
 				<p:tab id="allBooking" title="Alle Aktiven Auf Aktivität Buchen" expanded="#{createBookingsBean.allBookingVisible}" closable="true">
@@ -132,8 +129,7 @@
 		</h:form>
 
 		<h:form id="createBookingsFromSource">
-			<p:accordionPanel multiple="true" activeIndex="#{createBookingsBean.fromToVisible ? 0 : -1}"
-				rendered="#{facesContext.currentPhaseId.ordinal ne 4}">
+			<p:accordionPanel multiple="true" activeIndex="#{createBookingsBean.fromToActiveIndex}">
 				<p:ajax event="tabChange" listener="#{createBookingsBean.onTabChange}" />
 				<p:ajax event="tabClose" listener="#{createBookingsBean.onTabChange}" />
 				<p:tab id="fromTo" title="Neu Buchen Von/Auf Aktivität" expanded="#{createBookingsBean.fromToVisible}" closable="true">

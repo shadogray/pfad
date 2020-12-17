@@ -77,6 +77,9 @@ public class BookingActionBean {
 		int created = 0;
 		
 		try {
+			if (activity == null) {
+				throw new NullPointerException("activity cannot be null");
+			}
 			for (Member scout : memberRepo.findActive()) {
 				if (!scout.getBookings().stream().filter(b -> activity.equals(b.getActivity())).findAny().isPresent()) {
 					createBooking(activity, scout, BookingStatus.created);

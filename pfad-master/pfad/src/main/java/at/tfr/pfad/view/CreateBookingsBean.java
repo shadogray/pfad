@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -47,6 +48,10 @@ public class CreateBookingsBean implements Serializable {
 	private boolean allBookingVisible;
 	private boolean sourceBookingVisible;
 	private boolean fromToVisible;
+	private String squadBookingActiveIndex = "";
+	private String allBookingActiveIndex = "";
+	private String sourceBookingActiveIndex = "";
+	private String fromToActiveIndex = "";
 	private List<Configuration> dataSources = Collections.emptyList();
 	private List<String> dataSourceKeys = Collections.emptyList();
 	private Configuration dataSource;
@@ -85,6 +90,38 @@ public class CreateBookingsBean implements Serializable {
 
 	public void setAllBookingVisible(boolean allBookingVisible) {
 		this.allBookingVisible = allBookingVisible;
+	}
+	
+	public String getSquadBookingActiveIndex() {
+		return squadBookingActiveIndex;
+	}
+
+	public void setSquadBookingActiveIndex(String squadBookingActiveIndex) {
+		this.squadBookingActiveIndex = squadBookingActiveIndex;
+	}
+
+	public String getAllBookingActiveIndex() {
+		return allBookingActiveIndex;
+	}
+
+	public void setAllBookingActiveIndex(String allBookingActiveIndex) {
+		this.allBookingActiveIndex = allBookingActiveIndex;
+	}
+
+	public String getSourceBookingActiveIndex() {
+		return sourceBookingActiveIndex;
+	}
+
+	public void setSourceBookingActiveIndex(String sourceBookingActiveIndex) {
+		this.sourceBookingActiveIndex = sourceBookingActiveIndex;
+	}
+
+	public String getFromToActiveIndex() {
+		return fromToActiveIndex;
+	}
+
+	public void setFromToActiveIndex(String fromToActiveIndex) {
+		this.fromToActiveIndex = fromToActiveIndex;
 	}
 
 	public List<Squad> getSquads() {
