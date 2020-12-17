@@ -121,8 +121,10 @@ public class RegistrationDataGenerator {
 
 		for (final Member m : members) {
 			
-			if (config.getPayedActivity() != null && !m.isFree() && 
-					!(m.getFunktionen() != null && m.getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.isFree())))) {
+			if (config.getPayedActivity() != null 
+					&& !m.isFree() // Mitglied is frei 
+					&& !leaders.contains(m) // Leiter/Funktionen sind frei..
+					&& !(m.getFunktionen() != null && m.getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.isFree())))) {
 				List<Long> payments = paymentRepo.findIdByMemberAndActivityAndFinished(m, config.getPayedActivity(), true);
 				if (payments.isEmpty()) {
 					continue;
