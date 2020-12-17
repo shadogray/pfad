@@ -41,7 +41,30 @@
 
 		<h:form id="download">
 			<h:messages />
-			<h:panelGrid styleClass="buttons" columns="8" rendered="#{sessionBean.kassier}">
+			<h:panelGrid styleClass="buttons" columns="6" rendered="#{sessionBean.kassier}">
+                <h:panelGroup>
+					<h:outputLabel value="NurAktive:"/>
+					<h:selectBooleanCheckbox value="#{downloadBean.activeOnly}" />
+				</h:panelGroup>
+				<h:panelGroup>
+	                <h:outputLabel value="Nur NeuReg:" />
+	                <h:selectBooleanCheckbox value="#{downloadBean.notRegisteredOnly}" immediate="true" disabled="#{!sessionBean.regActionsAllowed}"/>
+				</h:panelGroup>
+				<h:panelGroup>
+	                <h:outputLabel value="Mit RegUpdate:" />
+	                <h:selectBooleanCheckbox value="#{downloadBean.updateRegistered}" immediate="true" disabled="#{!sessionBean.regActionsAllowed}"/>
+				</h:panelGroup>
+				<h:panelGroup>
+					<h:outputLabel value="Aktivität: "/>
+					<p:selectOneMenu value="#{downloadBean.payedActivity}" converter="#{activityBean.converter}" styleClass="width10"
+						filter="true" filterMatchMode="contains">
+						<f:selectItem noSelectionOption="true"/>
+						<f:selectItems value="#{activityBean.all}" var="a" itemLabel="#{a}" itemValue="#{a}"/>
+						<p:ajax process="@this" update="@this"/>
+					</p:selectOneMenu>
+				</h:panelGroup>
+				<h:panelGroup/>
+				<h:panelGroup/>
 				<h:commandLink value="Download Gesamt" action="#{downloadBean.downloadAll()}" styleClass="btn btn-primary"
 					disabled="#{!downloadBean.downloadAllowed}" />
 				<h:commandLink value="Download Vor-Registrierung" action="#{downloadBean.downloadVorRegistrierung()}"
@@ -50,16 +73,10 @@
                     styleClass="btn btn-primary" disabled="#{!downloadBean.downloadAllowed}" />
                 <h:commandLink value="Download Nach-Registrierung" action="#{downloadBean.downloadNachRegistrierung()}"
                     styleClass="btn btn-primary" disabled="#{!downloadBean.downloadAllowed}" />
-                <h:outputLabel value="Nur NeuReg:" />
-                <h:selectBooleanCheckbox value="#{downloadBean.notRegisteredOnly}" immediate="true" disabled="#{!sessionBean.regActionsAllowed}"/>
-                <h:outputLabel value="Mit RegUpdate:" />
-                <h:selectBooleanCheckbox value="#{downloadBean.updateRegistered}" immediate="true" disabled="#{!sessionBean.regActionsAllowed}"/>
-
-				<h:commandLink value="Download MitBuchgn" action="#{downloadBean.downloadAllWithBookings()}" styleClass="btn btn-primary"
-					disabled="#{!downloadBean.downloadAllowed}" />
-				<h:outputText value="" />
-				<h:outputText value="" />
-				<h:outputText value="" />
+				<h:panelGroup>
+					<h:commandLink value="Download MitBuchgn" action="#{downloadBean.downloadAllWithBookings()}" styleClass="btn btn-primary"
+						disabled="#{!downloadBean.downloadAllowed}" />
+				</h:panelGroup>
 			</h:panelGrid>
 
 		</h:form>

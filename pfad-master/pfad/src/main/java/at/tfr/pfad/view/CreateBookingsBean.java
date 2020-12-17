@@ -3,19 +3,16 @@ package at.tfr.pfad.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.faces.model.ListDataModel;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.deltaspike.core.api.scope.WindowScoped;
-import org.hibernate.stat.CollectionStatistics;
+import org.primefaces.event.TabEvent;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.model.Activity;
@@ -35,17 +32,22 @@ public class CreateBookingsBean implements Serializable {
 	private SessionBean sessionBean;
 	@Inject
 	private QueryExecutor queryExecutor;
-	
+
 	private Activity activity;
 	private List<Squad> squads = new ArrayList<>();
 	private boolean withAssistants;
-	private boolean fromToVisible;
 	private Activity sourceActivity;
 	private Activity targetActivity;
+
+	private enum TabVisible {
+		squadBooking, allBooking, sourceBooking, fromTo
+	};
+
 	private boolean showFinished;
 	private boolean squadBookingVisible;
 	private boolean allBookingVisible;
 	private boolean sourceBookingVisible;
+	private boolean fromToVisible;
 	private List<Configuration> dataSources = Collections.emptyList();
 	private List<String> dataSourceKeys = Collections.emptyList();
 	private Configuration dataSource;
@@ -54,13 +56,14 @@ public class CreateBookingsBean implements Serializable {
 	@PostConstruct
 	public void init() {
 		dataSources = sessionBean.getConfig().stream()
-				.filter(c -> ConfigurationType.datasource.equals(c.getType())||ConfigurationType.nativeSource.equals(c.getType()))
-				.filter(c -> c.getCkey().startsWith("Booking:"))
-				.sorted((x,y) -> x.getCkey().compareTo(y.getCkey()))
+				.filter(c -> ConfigurationType.datasource.equals(c.getType())
+						|| ConfigurationType.nativeSource.equals(c.getType()))
+				.filter(c -> c.getCkey().startsWith("Booking:")).sorted((x, y) -> x.getCkey().compareTo(y.getCkey()))
 				.collect(Collectors.toList());
-		dataSourceKeys = dataSources.stream().map(c -> c.getCkey().substring("Booking:".length())).collect(Collectors.toList());
+		dataSourceKeys = dataSources.stream().map(c -> c.getCkey().substring("Booking:".length()))
+				.collect(Collectors.toList());
 	}
-	
+
 	public boolean isShowFinished() {
 		return showFinished;
 	}
@@ -84,7 +87,6 @@ public class CreateBookingsBean implements Serializable {
 	public void setAllBookingVisible(boolean allBookingVisible) {
 		this.allBookingVisible = allBookingVisible;
 	}
-
 
 	public List<Squad> getSquads() {
 		return squads;
@@ -113,10 +115,10 @@ public class CreateBookingsBean implements Serializable {
 	public String createBookings() {
 		return bookingActionBean.createBookings(squads, activity, withAssistants);
 	}
-	
+
 	public void createFromSource() {
 		Configuration config = dataSources.get(dataSourceKeys.indexOf(dataSourceKey));
-		List<Member> members = (List)queryExecutor.list(config);
+		List<Member> members = (List) queryExecutor.list(config);
 		bookingActionBean.createBookingsForMembers(members, targetActivity);
 	}
 
@@ -155,32 +157,55 @@ public class CreateBookingsBean implements Serializable {
 	public List<Configuration> getDataSources() {
 		return dataSources;
 	}
-	
+
 	public List<String> getDataSourceKeys() {
 		return dataSourceKeys;
 	}
-	
+
 	public Configuration getDataSource() {
 		return dataSource;
 	}
-	
+
 	public void setDataSource(Configuration dataSource) {
 		this.dataSource = dataSource;
 	}
-	
+
 	public String getDataSourceKey() {
 		return dataSourceKey;
 	}
-	
+
 	public void setDataSourceKey(String dataSourceKey) {
 		this.dataSourceKey = dataSourceKey;
 	}
-	
+
 	public boolean isSourceBookingVisible() {
 		return sourceBookingVisible;
 	}
-	
+
 	public void setSourceBookingVisible(boolean sourceBookingVisible) {
 		this.sourceBookingVisible = sourceBookingVisible;
+	}
+
+	public void onTabChange(TabEvent evt) {
+		if (evt == null || evt.getTab() == null) 
+			return;
+		for (TabVisible tv : TabVisible.values()) {
+			if (evt.getTab().getId().contains(tv.name())) {
+				switch (tv) {
+				case squadBooking:
+					squadBookingVisible = !squadBookingVisible;
+					break;
+				case allBooking:
+					allBookingVisible = !allBookingVisible;
+					break;
+				case sourceBooking:
+					sourceBookingVisible = !sourceBookingVisible;
+					break;
+				case fromTo:
+					fromToVisible = !fromToVisible;
+					break;
+				}
+			}
+		}
 	}
 }

@@ -47,6 +47,7 @@ import org.omnifaces.util.Messages;
 
 import at.tfr.pfad.ConfigurationType;
 import at.tfr.pfad.dao.SquadRepository;
+import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
@@ -87,6 +88,8 @@ public class DownloadBean implements Serializable {
 	public static final String SafeDatePattern = "yyyy.MM.dd_HHmm";
 	
 	private final Map<String,Object> beans = new HashMap<>();
+	private boolean activeOnly = true;
+	private Activity payedActivity;
 	public List<Configuration> queries = Collections.emptyList();
 	
 	@PostConstruct
@@ -103,27 +106,31 @@ public class DownloadBean implements Serializable {
 		Collection<Member> leaders = squadRepo.findLeaders();
 		Predicate<Member> filter = 
 				m -> (leaders.contains(m) || m.getFunktionen().stream().anyMatch(f -> f.isExportReg()));
-		return downloadData(new RegConfig().asVorRegistrierung(), filter);
+		return downloadData(getRegConfig().asVorRegistrierung(), filter);
 	}
 
 	public String downloadRegistrierung() throws Exception {
-		return downloadData(new RegConfig().withUpdateRegistered(updateRegistered), null);
+		return downloadData(getRegConfig().withUpdateRegistered(updateRegistered), null);
 	}
 
 	public String downloadNachRegistrierung() throws Exception {
-		return downloadData(new RegConfig().withUpdateRegistered(updateRegistered).notRegistered(notRegisteredOnly), null);
+		return downloadData(getRegConfig().withUpdateRegistered(updateRegistered).notRegistered(notRegisteredOnly), null);
 	}
 
 	public String downloadAll() throws Exception {
-		return downloadData(new RegConfig().withLocal(), null, sessionBean.getSquad());
+		return downloadData(getRegConfig().withLocal(), null, sessionBean.getSquad());
 	}
 
 	public String downloadAllWithBookings() throws Exception {
-		return downloadData(new RegConfig().withLocal().withBookings(), x->true, sessionBean.getSquad());
+		return downloadData(getRegConfig().withLocal().withBookings(), x->true, sessionBean.getSquad());
 	}
 
 	public String downloadSquad(Squad squad) throws Exception {
-		return downloadData(new RegConfig().withLocal(), x ->true, squad);
+		return downloadData(getRegConfig().withLocal(), x ->true, squad);
+	}
+
+	private RegConfig getRegConfig() {
+		return new RegConfig(payedActivity);
 	}
 
 	public boolean isDownloadAllowed() {
@@ -151,6 +158,22 @@ public class DownloadBean implements Serializable {
 	
 	public void setNotRegisteredOnly(boolean notRegisteredOnly) {
 		this.notRegisteredOnly = notRegisteredOnly;
+	}
+	
+	public Activity getPayedActivity() {
+		return payedActivity;
+	}
+	
+	public void setPayedActivity(Activity payedActivity) {
+		this.payedActivity = payedActivity;
+	}
+	
+	public boolean isActiveOnly() {
+		return activeOnly;
+	}
+	
+	public void setActiveOnly(boolean activeOnly) {
+		this.activeOnly = activeOnly;
 	}
 	
 	public String downloadData(RegConfig config, Predicate<Member> filter, Squad... squads) throws Exception {

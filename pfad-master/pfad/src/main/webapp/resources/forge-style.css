@@ -771,6 +771,11 @@ p.logo {
 	vertical-align: top;
 }
 
+.menu-top {
+	vertical-align: top;
+	width: 11em;
+}
+
 .center {
 	text-align: center;
 	width: 100%;

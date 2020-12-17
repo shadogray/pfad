@@ -29,11 +29,13 @@ import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.ConfigurationRepository;
 import at.tfr.pfad.dao.MemberRepository;
+import at.tfr.pfad.dao.PaymentRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.util.SessionBean;
 import at.tfr.pfad.util.ValidationResult;
@@ -69,6 +71,8 @@ public class RegistrationDataGenerator {
 	private ActivityRepository activityRepo;
 	@Inject
 	private BookingRepository bookingRepo;
+	@Inject
+	private PaymentRepository paymentRepo;
 	@Inject
 	private SessionBean sessionBean;
 	@Inject
@@ -114,9 +118,17 @@ public class RegistrationDataGenerator {
 				.filter(a -> ActivityType.Membership.equals(a.getType())).findFirst().orElse(null);
 		 
 		final Collection<Member> leaders = squadRepo.findLeaders();
-		final List<Member> members = getMembers().stream().filter(filter).collect(Collectors.toList());
+		final List<Member> members = getMembers(config.isActiveOnly()).stream().filter(filter).collect(Collectors.toList());
 
 		for (final Member m : members) {
+			
+			if (config.getPayedActivity() != null && !m.isFree() && 
+					!(m.getFunktionen() != null && m.getFunktionen().stream().anyMatch(f->Boolean.TRUE.equals(f.isFree())))) {
+				List<Long> payments = paymentRepo.findIdByMemberAndActivityAndFinished(m, config.getPayedActivity(), true);
+				if (payments.isEmpty()) {
+					continue;
+				}
+			}
 			
 			if (!config.withLocal && !memberValidator.isGrinsExportable(m, leaders))
 				continue;
@@ -331,8 +343,13 @@ public class RegistrationDataGenerator {
 		return h;
 	}
 
-	private List<Member> getMembers() {
-		List<Member> members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
+	private List<Member> getMembers(Boolean active) {
+		List<Member> members;
+		if (active != null) {
+			members = membRepo.findActive();
+		} else {
+			members = membRepo.findAll().stream().sorted().collect(Collectors.toList());
+		}
 		if (sessionBean.isAdmin() || sessionBean.isGruppe() || sessionBean.isVorstand())
 			return members;
 		if (sessionBean.isLeiter()) {
@@ -400,14 +417,25 @@ public class RegistrationDataGenerator {
 	}
 	
 	public static class RegConfig {
+		private boolean activeOnly;
 		private boolean withLocal;
 		private boolean notRegistered;
 		private boolean withBookings;
 		private boolean vorRegistrierung;
 		private boolean withUpdateRegistered;
+		private Activity payedActivity;
 		
 		public RegConfig() {
 			// TODO Auto-generated constructor stub
+		}
+
+		public RegConfig(Activity payedActivity) {
+			this.payedActivity = payedActivity;
+		}
+
+		public RegConfig(Activity payedActivity, boolean activeOnly) {
+			this.payedActivity = payedActivity;
+			this.activeOnly = activeOnly;
 		}
 
 		public RegConfig(boolean withLocal, boolean notRegistered, boolean withBookings) {
@@ -415,6 +443,14 @@ public class RegistrationDataGenerator {
 			this.withLocal = withLocal;
 			this.notRegistered = notRegistered;
 			this.withBookings = withBookings;
+		}
+
+		public RegConfig(boolean withLocal, boolean notRegistered, boolean withBookings, Activity payedActivity) {
+			super();
+			this.withLocal = withLocal;
+			this.notRegistered = notRegistered;
+			this.withBookings = withBookings;
+			this.payedActivity = payedActivity;
 		}
 
 		public RegConfig notRegistered(boolean notRegistered) {
@@ -441,7 +477,26 @@ public class RegistrationDataGenerator {
 			withUpdateRegistered = update;
 			return this;
 		}
+		
+		public RegConfig withPayedActivity(Activity payedActivity) {
+			this.payedActivity = payedActivity;
+			return this;
+		}
 
+		public RegConfig withActiveOnly(boolean activeOnly) {
+			this.activeOnly = activeOnly;
+			return this;
+		}
+		
+		public RegConfig withActiveOnly() {
+			this.activeOnly = true;
+			return this;
+		}
+		
+		public boolean isActiveOnly() {
+			return activeOnly;
+		}
+		
 		public boolean isWithLocal() {
 			return withLocal;
 		}
@@ -460,6 +515,10 @@ public class RegistrationDataGenerator {
 
 		public boolean isWithUpdateRegistered() {
 			return withUpdateRegistered;
+		}
+		
+		public Activity getPayedActivity() {
+			return payedActivity;
 		}
 	}
 
