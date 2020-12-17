@@ -3,8 +3,6 @@ package at.tfr.pfad;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashSet;
-
 import org.junit.Test;
 
 import at.tfr.pfad.action.RegistrationHandlerBean;

@@ -35,7 +35,6 @@ import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
-import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.util.SessionBean;
 import at.tfr.pfad.util.ValidationResult;

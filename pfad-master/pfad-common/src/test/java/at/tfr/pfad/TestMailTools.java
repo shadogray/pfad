@@ -7,15 +7,15 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.mail.Message;
 import javax.mail.Message.RecipientType;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import javax.persistence.EntityTransaction;
 
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -159,9 +159,11 @@ public class TestMailTools {
 		Assert.assertEquals("positive replacement failed: " + result, "Das ist ein REPLACEMENT", result);
 	}
 
+	EntityTransaction tx;
 	@Before
 	public void init() {
 
+		tx = memberRepo.getTransaction();
 		member = memberRepo.findBy(1L);
 		if (member == null) {
 			member = new Member();
@@ -172,6 +174,15 @@ public class TestMailTools {
 		member.setVorname("vorname");
 		member.setEmail("email");
 		memberRepo.saveAndFlush(member);
+		tx.commit();
+		tx = memberRepo.getTransaction();
+	}
+	
+	@After
+	public void tearDown() {
+		if (tx != null && tx.isActive())
+			tx.rollback();
 	}
 
+	
 }

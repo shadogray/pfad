@@ -34,8 +34,8 @@ import javax.faces.model.ListDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.mail.Message.RecipientType;
 import javax.mail.Authenticator;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
@@ -45,12 +45,11 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
-import javax.servlet.http.Part;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
+import org.primefaces.model.file.UploadedFile;
 
 import at.tfr.pfad.dao.MailTemplateRepository;
 import at.tfr.pfad.model.Activity;
@@ -601,7 +600,7 @@ public class MailerBean extends BaseBean {
 		try {
 			UploadedFile file = event.getFile();
 			Path tmp = Files.createTempFile(Paths.get(System.getProperty("jboss.server.temp.dir")), file.getFileName(), ".upload");
-			Files.copy(file.getInputstream(), tmp, StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(file.getInputStream(), tmp, StandardCopyOption.REPLACE_EXISTING);
 			files.put(file.getFileName(), new UpFile(file,tmp));
 		} catch (Exception e) {
 			error("Datei konnte nicht geladen werden: "+e.getLocalizedMessage());

@@ -10,7 +10,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 
 import org.jboss.logging.Logger;
 

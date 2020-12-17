@@ -27,7 +27,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.model.CollectionDataModel;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -42,7 +41,6 @@ import at.tfr.pfad.model.Configuration;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
-import at.tfr.pfad.util.TemplateUtils;
 
 /**
  * Backing bean for Squad entities.

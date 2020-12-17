@@ -1,6 +1,5 @@
 package at.tfr.pfad.util;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

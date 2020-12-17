@@ -2,8 +2,8 @@ package at.tfr.pfad.view;
 
 import java.util.Properties;
 
-import javax.mail.Session;
 import javax.mail.Message.RecipientType;
+import javax.mail.Session;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;

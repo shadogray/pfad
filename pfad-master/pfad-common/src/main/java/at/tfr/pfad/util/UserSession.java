@@ -13,8 +13,6 @@ import javax.ejb.TransactionManagementType;
 
 import org.jboss.logging.Logger;
 
-import at.tfr.pfad.Role;
-
 @Stateful
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)

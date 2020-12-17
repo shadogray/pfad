@@ -7,12 +7,8 @@
 
 package at.tfr.pfad.dao;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-
-import javax.persistence.criteria.JoinType;
 
 import org.apache.deltaspike.data.api.EntityGraph;
 import org.apache.deltaspike.data.api.EntityManagerDelegate;

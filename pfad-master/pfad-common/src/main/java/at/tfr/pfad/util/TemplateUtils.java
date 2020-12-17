@@ -3,12 +3,10 @@ package at.tfr.pfad.util;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang3.StringUtils;

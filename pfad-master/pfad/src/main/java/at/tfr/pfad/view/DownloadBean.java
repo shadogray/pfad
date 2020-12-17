@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -32,7 +31,6 @@ import javax.faces.model.ListDataModel;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.Query;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.poi.ss.usermodel.CellStyle;

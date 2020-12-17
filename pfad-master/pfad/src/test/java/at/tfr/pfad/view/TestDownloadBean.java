@@ -16,7 +16,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.deltaspike.core.api.provider.BeanProvider;
 import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.joda.time.DateTime;
 import org.junit.Before;

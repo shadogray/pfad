@@ -3,12 +3,10 @@ package at.tfr.pfad.dao;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
 
 import org.apache.deltaspike.data.api.EntityManagerDelegate;
 import org.apache.deltaspike.data.api.EntityRepository;
@@ -18,7 +16,6 @@ import org.apache.deltaspike.data.api.criteria.CriteriaSupport;
 
 import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
-import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Payment;
 
