@@ -29,7 +29,7 @@
 	<ui:define name="main">
 		<h:form id="create" rendered="#{paymentBean.viewAllowed}">
 		
-			<p:focus rendered="#{empty paymentBean.focusId}"/>
+			<p:focus for="paymentBeanPaymentAmount" rendered="#{empty paymentBean.focusId}"/>
 			<p:focus id="focus" for="#{paymentBean.focusId}" rendered="#{!empty paymentBean.focusId}"/>
 			
 			<h:messages globalOnly="true" styleClass="error" />
@@ -38,7 +38,8 @@
 
 				<h:outputLabel for="paymentBeanPaymentType" value="Typ:" />
 				<h:panelGroup>
-					<h:selectOneMenu id="paymentBeanPaymentType" value="#{paymentBean.payment.type}" required="true" styleClass="fullwidth">
+					<h:selectOneMenu id="paymentBeanPaymentType" value="#{paymentBean.payment.type}" styleClass="fullwidth">
+						<f:selectItem noSelectionOption="true" />
 						<f:selectItems value="#{paymentBean.types}" />
 					</h:selectOneMenu>
 					<h:message for="paymentBeanPaymentType" styleClass="error" />
@@ -59,7 +60,7 @@
 						var="p" itemValue="#{p.idStr}" itemLabel="#{p}" converter="#{memberBean.converter}" 
 						forceSelection="true" dropdownMode="true" size="40">
 						<f:ajax event="itemSelect" listener="#{paymentBean.selectPaymentPayer}"
-							render="paymentBeanPaymentPayerPanel" />
+							render="@form" />
 					</p:autoComplete>
 					<h:message for="paymentBeanPaymentPayer" styleClass="error" />
 					<h:message for="paymentBeanPaymentPayerSelect" styleClass="error" />
@@ -70,6 +71,7 @@
 				<p:inputText id="paymentBeanPaymentAmount" value="#{paymentBean.payment.amount}" required="true"
 					 requiredMessage="Betrag fehlt!" validatorMessage="Betrag ungültig!" styleClass="fullwidth">
 					<f:convertNumber maxFractionDigits="2" />
+					<f:ajax />
 				</p:inputText>
 				<h:message for="paymentBeanPaymentAmount" />
 
@@ -142,7 +144,7 @@
 							var="b" itemLabel="#{b}" itemValue="#{b.idStr}" converter="#{bookingBean.converter}"
 							forceSelection="true" placeholder="Buchung wählen.." size="40">
 							<f:ajax event="itemSelect" listener="#{paymentBean.addPaymentBooking}" 
-								render="paymentBeanPaymentBookingsPanel" />
+								render="@form" />
 						</p:autoComplete>
 						<h:message for="paymentBeanBookingSelect" styleClass="error" />
 					</h:panelGrid>

@@ -33,6 +33,8 @@ import org.joda.time.DateTime;
 
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
+import at.tfr.pfad.model.Membera;
+import at.tfr.pfad.dao.MemberA;
 import at.tfr.pfad.svc.MemberDao;
 import at.tfr.pfad.svc.MemberMapper;
 import at.tfr.pfad.svc.MemberService;
@@ -132,14 +134,14 @@ public class MemberEndpoint extends EndpointBase<Member> {
 	@POST
 	@Path("/query")
 	public List<MemberDao> queryByExample(Member example) {
-		return memberSvc.map(memberRepo.findBy(example, 0, 10, Member_.name, Member_.vorname, 
-				Member_.geschlecht, Member_.email, 
-				Member_.aktiv, Member_.aktivExtern, 
-				Member_.bvKey, Member_.trupp, 
-				Member_.gebJahr, Member_.gebMonat, Member_.gebTag, 
-				Member_.strasse, Member_.ort, Member_.plz, 
-				Member_.rolle, 
-				Member_.free, Member_.support, Member_.trail, Member_.gilde));
+		return memberSvc.map(memberRepo.findBy(example, 0, 10, MemberA.name, MemberA.vorname, 
+				MemberA.geschlecht, MemberA.email, 
+				MemberA.aktiv, MemberA.aktivExtern, 
+				MemberA.bvKey, MemberA.truppId, 
+				MemberA.gebJahr, MemberA.gebMonat, MemberA.gebTag, 
+				MemberA.strasse, MemberA.ort, MemberA.plz, 
+				MemberA.rolle, 
+				MemberA.free, MemberA.support, MemberA.trail, MemberA.gilde));
 	}
 
 	@GET

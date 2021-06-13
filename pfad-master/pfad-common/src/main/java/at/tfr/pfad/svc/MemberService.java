@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.Members;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Membera;
 
 @Stateless
 public class MemberService {

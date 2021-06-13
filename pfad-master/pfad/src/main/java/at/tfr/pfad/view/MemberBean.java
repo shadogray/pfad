@@ -45,6 +45,7 @@ import org.omnifaces.util.Faces;
 import at.tfr.pfad.ScoutRole;
 import at.tfr.pfad.Sex;
 import at.tfr.pfad.model.Configuration;
+import at.tfr.pfad.model.DelMember;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
@@ -634,5 +635,11 @@ public class MemberBean extends BaseBean<Member> implements Serializable {
 
 	public List<Month> getMonths() {
 		return Arrays.asList(Month.values());
+	}
+	
+	public void deActivate(Member m) {
+		memberRepo.detach(m);
+		memberRepo.deActivate(m.getId());
+		member = memberRepo.findBy(m.getId());
 	}
 }

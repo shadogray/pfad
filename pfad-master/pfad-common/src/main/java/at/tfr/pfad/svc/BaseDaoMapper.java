@@ -23,6 +23,7 @@ import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Membera;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.PrimaryKeyHolder;
 import at.tfr.pfad.model.Squad;
@@ -91,7 +92,7 @@ public class BaseDaoMapper {
         return bd;
     }
 
-	public List<Contact> getContacts(Member member) {
+	public List<Contact> getContacts(Membera member) {
 		List<Contact> contacts = new ArrayList<>();
 		if (StringUtils.isNotBlank(member.getTelefon())) {
 			contacts.add(new Contact("tel", (member.getTelefon() != null ? member.getTelefon().replaceAll("[ \\-/]+", "") : "")));
@@ -102,7 +103,7 @@ public class BaseDaoMapper {
 		return contacts;
 	}
     
-    public Date memberGeburtstag(Member m) {
+    public Date memberGeburtstag(Membera m) {
     	Calendar cal = new GregorianCalendar();
     	cal.set(Calendar.YEAR, m.getGebJahr() > 1900 ? m.getGebJahr() : 2000);
     	cal.set(Calendar.MONTH, m.getGebMonat() > 0 ? m.getGebMonat()+1 : 1);  // ATTENTION: Pfad starts with "1"!!

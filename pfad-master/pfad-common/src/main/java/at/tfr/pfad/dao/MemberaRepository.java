@@ -1,12 +1,17 @@
+/*
+ * Copyright 2015 Thomas Frühbeck, fruehbeck(at)aon(dot)at.
+ *
+ * Licensed under the Eclipse Public License version 1.0, available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
+
 package at.tfr.pfad.dao;
 
 import java.util.Collection;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import org.apache.deltaspike.data.api.AbstractFullEntityRepository;
 import org.apache.deltaspike.data.api.EntityGraph;
+import org.apache.deltaspike.data.api.FullEntityRepository;
 import org.apache.deltaspike.data.api.Modifying;
 import org.apache.deltaspike.data.api.Query;
 import org.apache.deltaspike.data.api.QueryResult;
@@ -16,34 +21,29 @@ import at.tfr.pfad.Pfad;
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Member_;
+import at.tfr.pfad.model.Membera;
+import at.tfr.pfad.model.Membera_;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.model.Squad_;
 
+@Pfad
 @Repository
-public abstract class MemberRepository extends AbstractFullEntityRepository<Member,Long> {
+public abstract class MemberaRepository implements FullEntityRepository<Membera, Long> {
 
-	@Inject
-	@Pfad
-	private MemberaRepository a;
-
-	public MemberaRepository a() {
-		return a;
-	}
-	
 	@EntityGraph("fetchAll")
-	public Member fetchBy(Long id) {
+	public Membera fetchBy(Long id) {
 		return findBy(id);
 	}
 
-	public List<Member> fetchAll() {
+	public List<Membera> fetchAll() {
 		return fetchAll(0, Integer.MAX_VALUE);
 	}
 	
-	public List<Member> fetchAll(int max) {
+	public List<Membera> fetchAll(int max) {
 		return fetchAll(0, max);
 	}
 	
-	public List<Member> fetchAll(int start, int max) {
+	public List<Membera> fetchAll(int start, int max) {
 		List<Long> ids = queryAllIdsIntern()
 				.firstResult(start).maxResults(max).getResultList();
 		return fetch(ids)
@@ -54,44 +54,36 @@ public abstract class MemberRepository extends AbstractFullEntityRepository<Memb
 
 	@EntityGraph("fetchAll")
 	@Query("select e from Member e where e.id in (?1)")
-	protected abstract QueryResult<Member> fetch(Collection<Long> memberIds);
+	protected abstract QueryResult<Membera> fetch(Collection<Long> memberIds);
 	
 	@EntityGraph("fetchAll")
 	@Query("select e from Member e")
-	protected abstract QueryResult<Member> fetchAllIntern();
+	protected abstract QueryResult<Membera> fetchAllIntern();
 	
 	@EntityGraph("fetchAll")
-	public List<Member> findActive() {
-		return criteria().eq(Member_.aktiv, true).orderAsc(Member_.name).orderAsc(Member_.vorname)
-				.orderAsc(Member_.gebJahr).orderAsc(Member_.gebMonat).getResultList();
+	public List<Membera> findActive() {
+		return criteria().eq(Membera_.aktiv, true).orderAsc(Membera_.name).orderAsc(Membera_.vorname)
+				.orderAsc(Membera_.gebJahr).orderAsc(Membera_.gebMonat).getResultList();
 	}
 
 
-	public abstract List<Member> findByNameEqualIgnoreCaseAndVornameEqualIgnoreCaseAndStrasseEqualIgnoreCaseAndOrtEqualIgnoreCase(String name, String vorname, String strasse, String ort);
+	public abstract List<Membera> findByNameEqualIgnoreCaseAndVornameEqualIgnoreCaseAndStrasseEqualIgnoreCaseAndOrtEqualIgnoreCase(String name, String vorname, String strasse, String ort);
 	
 	@Query(named="Member.withFunction")
-	public abstract List<Member> findByFunction(Function function);
+	public abstract List<Membera> findByFunction(Function function);
 	
-	protected QueryResult<Member> queryAllIntern(int start, int max) {
+	protected QueryResult<Membera> queryAllIntern(int start, int max) {
 		return queryAllIntern()
 				.firstResult(start)
 				.maxResults(max);
 	}
 	
 	@Query("select e from Member e")
-	protected abstract QueryResult<Member> queryAllIntern();
+	protected abstract QueryResult<Membera> queryAllIntern();
 	
 	@Query("select e.id from Member e")
 	protected abstract QueryResult<Long> queryAllIdsIntern();
 	
-	public List<Member> findAccessible(Member member) {
-		return criteria()
-				.join(Member_.trupp,
-						where(Squad.class).join(Squad_.leaderFemale, where(Member.class).eq(Member_.id, member.getId())))
-				.getResultList();
-	}
-	
-
 	@Query(named="Member.distName")
 	public abstract List<String> findDistinctName();
 

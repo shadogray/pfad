@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.primefaces.event.SelectEvent;
 
+import at.tfr.pfad.PaymentType;
 import at.tfr.pfad.dao.ActivityRepository;
 import at.tfr.pfad.dao.BookingRepository;
 import at.tfr.pfad.dao.MemberRepository;
@@ -45,6 +46,7 @@ import at.tfr.pfad.model.Member;
 import at.tfr.pfad.model.Participation;
 import at.tfr.pfad.model.Payment;
 import at.tfr.pfad.model.Training;
+import at.tfr.pfad.model.TypeUtils;
 import at.tfr.pfad.svc.BookingMapper;
 import at.tfr.pfad.svc.MemberMapper;
 import at.tfr.pfad.svc.PaymentMapper;
@@ -434,6 +436,11 @@ public abstract class BaseBean<T> implements Serializable {
 		focusId = event.getComponent().getClientId();
 		Booking b2a = attachBookingToAdd();
 		if (b2a != null) {
+			if (payment.getType() == null && b2a.getActivity() != null) {
+				payment.setType(TypeUtils.toPayType(b2a.getActivity().getType()));
+			} else {
+				payment.setType(PaymentType.Membership);
+			}
 			payment.getBookings().add(b2a);
 			b2a.getPayments().add(payment);
 			payment.updateType(b2a.getActivity());

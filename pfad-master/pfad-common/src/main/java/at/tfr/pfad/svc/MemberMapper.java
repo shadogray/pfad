@@ -10,6 +10,7 @@ import org.mapstruct.factory.Mappers;
 
 import at.tfr.pfad.model.Function;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Membera;
 import at.tfr.pfad.model.Squad;
 
 @Mapper(uses={BaseDaoMapper.class})

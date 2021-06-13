@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import at.tfr.pfad.dao.MemberRepository;
 import at.tfr.pfad.dao.SquadRepository;
 import at.tfr.pfad.model.Member;
+import at.tfr.pfad.model.Membera;
 import at.tfr.pfad.model.Squad;
 import at.tfr.pfad.svc.BaseDao;
 import at.tfr.pfad.svc.BaseDaoMapper;
@@ -56,7 +57,7 @@ public class TestPfadMappings {
 		SquadDao dao = sm.squadToDao(s);
 		assertTrue("Squad has no scouts", dao.getScouts().size() > 0);
 		assertTrue("Squad has wrong number of scouts", dao.getScouts().size() == NUM_SCOUTS);
-		Collection<Member> scouts = Collections.unmodifiableCollection(new TreeSet<Member>(s.getScouts()));
+		Collection<Membera> scouts = Collections.unmodifiableCollection(new TreeSet<Membera>(s.getScouts()));
 		
 		sm.updateSquad(dao, s);
 		assertTrue("Scouts have been manipulated", s.getScouts().size() == scouts.size());
@@ -104,7 +105,7 @@ public class TestPfadMappings {
 		SquadDao dao = sm.squadToDao(sCheck);
 		assertTrue("Squad has no scouts", dao.getScouts().size() > 0);
 		assertTrue("Squad has wrong number of scouts", dao.getScouts().size() == NUM_SCOUTS);
-		Collection<Member> scouts = Collections.unmodifiableCollection(new TreeSet<Member>(sCheck.getScouts()));
+		Collection<Membera> scouts = Collections.unmodifiableCollection(new TreeSet<Membera>(sCheck.getScouts()));
 
 		assertTrue("Squad has no assistants", dao.getAssistants().size() > 0);
 		assertTrue("Squad has wrong number of scouts", dao.getAssistants().size() == NUM_ASSISTANTS);

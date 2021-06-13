@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 
 import at.tfr.pfad.PaymentType;
+import at.tfr.pfad.model.Activity;
 import at.tfr.pfad.model.Booking;
 import at.tfr.pfad.model.Booking_;
 import at.tfr.pfad.model.Member_;
@@ -140,6 +141,9 @@ public class PaymentBean extends BaseBean<Payment> implements Serializable {
 		
 		try {
 			if (payment.getId() == null) {
+				if (this.payment.getType() == null) { 
+					this.payment.setType(PaymentType.Membership);
+				}
 				if (this.payment.getPaymentDate() == null) {
 					this.payment.setPaymentDate(new Date());
 				}

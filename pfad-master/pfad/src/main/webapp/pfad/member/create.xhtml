@@ -335,6 +335,8 @@
 						</h:link>
 						<h:commandLink value="#{memberBean.updateAllowed ? 'Delete' : 'RegistrierungsSperre!'}"
 							action="#{memberBean.delete}" styleClass="btn btn-primary" disabled="#{!memberBean.deleteAllowed}" />
+						<h:commandLink value="DeActivate"
+							action="#{memberBean.deActivate(memberBean.member)}" styleClass="btn btn-primary" disabled="#{!memberBean.deleteAllowed}" />
 					</c:when>
 					<c:otherwise>
 						<h:link value="Cancel" outcome="search" styleClass="btn btn-primary" />

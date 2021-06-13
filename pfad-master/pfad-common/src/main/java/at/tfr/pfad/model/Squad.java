@@ -107,12 +107,12 @@ public class Squad extends BaseEntity implements Comparable<Squad>, Auditable, P
 	@ManyToMany
 	@OrderBy("Name, Vorname")
 	@JoinTable(name = "squad_member", joinColumns = @JoinColumn(name = "squad_id"), inverseJoinColumns = @JoinColumn(name = "assistants_id"))
-	private Set<Member> assistants = new HashSet<Member>();
+	private Set<Member> assistants = new HashSet<>();
 
 	@NotAudited // inverse side!
 	@OneToMany(mappedBy = "trupp")
 	@OrderBy("Name, Vorname")
-	private Set<Member> scouts = new HashSet<Member>();
+	private Set<Member> scouts = new HashSet<>();
 
 	@XmlID
 	public Long getId() {
